@@ -1,7 +1,7 @@
 ---
-title: Orthoptera Species File
+title: The title
 lead: Taxa from your imagination to the web
-project: Orthoptera Species File
+project: Your project
 ---
 
 # {{frontmatter.title}}
