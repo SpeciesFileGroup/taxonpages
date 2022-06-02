@@ -1,0 +1,9 @@
+@import '@/assets/css/tailwind.css';
+@import 'leaflet/dist/leaflet.css';
+
+* {
+  box-sizing: content-box;
+}
+body {
+  @apply bg-gray-100;
+}
