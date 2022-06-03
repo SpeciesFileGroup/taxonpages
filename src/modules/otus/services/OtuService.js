@@ -2,11 +2,9 @@ import { makeAPIRequest } from "@/utils/request"
 
 export default class OtuService {
 
-  static getTaxonNameCitations (taxonId) {
-    return makeAPIRequest.get('/citations.json', { 
+  static getTaxonNameCitations (otuId) {
+    return makeAPIRequest.get(`/otus/${otuId}/inventory/nomenclature_citations`, { 
       params: {
-        citation_object_id: taxonId,
-        citation_object_type: 'TaxonName',
         extend: ['source']
       }
     })

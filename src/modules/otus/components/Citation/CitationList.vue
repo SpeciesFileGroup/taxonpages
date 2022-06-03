@@ -23,7 +23,7 @@ import CitationRow from './CitationRow.vue'
 import OtuService from '../../services/OtuService';
 
 const props = defineProps({
-  taxonId: {
+  otuId: {
     type: [Number, String],
     required: true
   }
@@ -31,10 +31,10 @@ const props = defineProps({
 
 const citations = ref([])
 
-watch(() => props.taxonId, async () => {
-  if (!props.taxonId) { return }
+watch(() => props.otuId, async () => {
+  if (!props.otuId) { return }
 
-  citations.value = (await OtuService.getTaxonNameCitations(props.taxonId)).data
+  citations.value = (await OtuService.getTaxonNameCitations(props.otuId)).data
 }, { immediate: true })
 
 </script>
