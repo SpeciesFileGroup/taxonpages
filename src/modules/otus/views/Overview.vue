@@ -66,7 +66,7 @@ defineProps({
   },
 
   taxonRank: {
-    type: String,
+    type: [String, null],
     required: true
   },
 
@@ -76,6 +76,6 @@ defineProps({
   }
 })
 
-const isComponentForRank = (available, rankString) => available.some(rankGroup => rankString.includes(rankGroup))
+const isComponentForRank = (available, rankString) => available.some(rankGroup => rankString?.includes(rankGroup))
 
 </script>

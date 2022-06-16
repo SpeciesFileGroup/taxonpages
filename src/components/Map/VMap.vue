@@ -21,6 +21,7 @@ import iconRetina from 'leaflet/dist/images/marker-icon-2x.png'
 import iconUrl from 'leaflet/dist/images/marker-icon.png'
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png'
 import geojsonDefaultOptions from './utils/geojsonOptions'
+import mappingConfiguration from '@/config/mapping.yml'
 
 delete L.Icon.Default.prototype._getIconUrl
 
@@ -30,9 +31,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: shadowUrl
 })
 
-const {
-  VITE_MAP_SERVER_TILES
-} = import.meta.env
+const { map_server_tils } = mappingConfiguration
 
 const props = defineProps({
   zoomAnimate: {
@@ -83,7 +82,7 @@ let observeMap
 let geoJSONGroup = new L.FeatureGroup()
 const leafletMap = ref(null)
 const tiles = {
-  osm: L.tileLayer(VITE_MAP_SERVER_TILES, {
+  osm: L.tileLayer(map_server_tils, {
     maxZoom: 18
   })
 }

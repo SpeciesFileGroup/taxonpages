@@ -2,16 +2,16 @@
   <nav class="bg-white border-gray-200 px-2 sm:px-4 py-2.5 rounded border-b pl-4 pr-4">
     <div class="container flex flex-wrap justify-between items-center mx-auto">
       <a
-        href="#"
+        href="/"
         class="flex"
       >
         <img
-          v-if="VITE_PAGE_HEADER_LOGO"
+          v-if="logo"
           class="mr-3 h-10"
-          :src="logoUrl"
+          :src="logo_url"
         >
         <span v-else>
-          {{ VITE_PROJECT_NAME }}
+          {{ project_name }}
         </span>
       </a>
 
@@ -49,7 +49,10 @@
       </button>
       <div class="hidden w-full md:block md:w-auto">
         <ul class="flex flex-col md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium">
-          <li v-for="item in navItems">
+          <li 
+            v-for="(item, index) in links"
+            :key="index"
+          >
             <router-link
               :to="item.link"
               class="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0"
@@ -87,26 +90,16 @@
 
 <script setup>
 
-import { computed } from 'vue'
-const { VITE_PAGE_HEADER_LOGO, VITE_BASE_URL, VITE_PROJECT_NAME } = import.meta.env
-const logoUrl = computed(() => VITE_BASE_URL + VITE_PAGE_HEADER_LOGO)
+import headerConfiguration from '@/config/header.yml'
+import projectConfiguration from '@/config/project.yml'
 
-const navItems = [
-  {
-    label: 'Home',
-    link: '/'
-  },
-  {
-    label: 'About',
-    link: '/about'
-  }
-/*   {
-    label: 'Search',
-    link: '#'
-  },
-  {
-    label: 'Language',
-    link: '#'
-  } */
-]
+const {
+  logo,
+  links
+} = headerConfiguration
+
+const {
+  project_name
+} = projectConfiguration
+
 </script>

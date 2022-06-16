@@ -1,14 +1,15 @@
 import axios from 'axios'
+import requiredConfiguration from '@/config/api.yml'
 
 const {
-  VITE_API_HOST,
-  VITE_PROJECT_TOKEN
-} = import.meta.env
+  url,
+  project_token
+} = requiredConfiguration
 
 const makeAPIRequest = axios.create({
-  baseURL: VITE_API_HOST,
+  baseURL: url,
   params: {
-    project_token: VITE_PROJECT_TOKEN
+    project_token
   }
 })
 

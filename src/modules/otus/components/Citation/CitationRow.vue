@@ -34,7 +34,4 @@ defineProps({
 
 const isExpanded = ref(false)
 
-const toggleCitation = () => {
-  isExpanded.value = !isExpanded.value
-}
 </script>
