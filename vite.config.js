@@ -2,6 +2,8 @@ import { defineConfig, loadEnv } from 'vite'
 import Vue from '@vitejs/plugin-vue'
 import Markdown from 'vite-plugin-md'
 import path from 'path'
+import Pages from 'vite-plugin-pages'
+import Content from '@originjs/vite-plugin-content'
 
 // https://vitejs.dev/config/
 export default ({ mode }) => {
@@ -16,9 +18,22 @@ export default ({ mode }) => {
     },
     plugins: [
       Vue({
-        include: [/\.vue$/, /\.md$/], // <--
+        include: [/\.vue$/, /\.md$/]
       }),
-      Markdown()
+      Content(),
+      Markdown(),
+      Pages({
+        dirs: 'src/content',
+        extensions: ['vue', 'md'],
+        extendRoute(route) {
+          if (route.path === '/home') {
+            route.alias = '/home'
+            route.path = '/'
+
+            return route
+          }
+        }
+      })
     ],
   })
 }
