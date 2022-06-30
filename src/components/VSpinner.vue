@@ -2,7 +2,7 @@
   <transition name="fade">
     <div 
       ref="spinnerElement"
-      class="box-spinner mx-spinner absolute bg-white dark:bg-gray-800 opacity-90"
+      class="box-spinner mx-spinner absolute bg-white dark:bg-black opacity-90"
       :style="cssProperties"
     >
       <div
@@ -75,6 +75,7 @@
           />
         </svg>
         <div
+          class="text-gray-900 dark:text-slate-400"
           :style="legendStyle"
         >
           <span
@@ -124,7 +125,6 @@ const props = defineProps({
     type: Object,
     default: () =>
       ({
-        color: '#444',
         marginTop: '30px',
         textAlign: 'center'
       })

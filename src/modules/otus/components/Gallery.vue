@@ -1,15 +1,14 @@
 <template>
   <VCard v-if="images.length">
     <VCardContent>
-      <GalleryMain :images="images" />
+      <GalleryImage :images="images" />
     </VCardContent>
   </VCard>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
-import GalleryMain from '@/components/Gallery/Main.vue'
-import OtuService from '../services/OtuService';
+import OtuService from '../services/OtuService'
 
 const props = defineProps({
   otuId: {

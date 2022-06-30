@@ -9,6 +9,9 @@ module.exports = {
 
   theme: {
     extend: {
+      fontFamily: {
+        inter: ['Inter', 'sans-serif']
+      },
       colors: {
         'primary': { // Sky
           50: '#f0f9ff',

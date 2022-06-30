@@ -25,6 +25,7 @@
         <GalleryThumbnail
           :image="image"
           :title="image.depictions.map(d => d.label).join(';')"
+          class="first:ml-0"
           @click="
             galleryIndex = index;
             isImageViewerOpen = true
@@ -47,8 +48,6 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import GalleryThumbnail from './GalleryThumbnail.vue'
-import ImageViewer from './ImageViewer.vue';
 
 const props = defineProps({
   images: {
