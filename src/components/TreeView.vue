@@ -8,7 +8,7 @@
       v-model="isTreeVisible"
     />
     <router-link 
-      class="text-blue-500"
+      class="text-primary-500"
       :to="{ name: 'otus-id', params: { id: taxonomy.otu_id } }"
       v-html="taxonomy.name"
     />
@@ -114,8 +114,8 @@ const loadDescendants = () => {
 
   .button-expand {
     position: absolute;
-    top: 4px;
-    left: -8px;
+    top: 2px;
+    left: -9px;
   }
 
 }

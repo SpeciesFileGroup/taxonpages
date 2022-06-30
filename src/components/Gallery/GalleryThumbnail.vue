@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="ml-1 mr-1 mt-2 bg-white flex flex-col justify-center cursor-pointer w-24 h-24 border"
+    class="ml-1 mr-1 mt-2 bg-white dark:bg-gray-800 flex flex-col justify-center cursor-pointer w-24 h-24 border dark:border-gray-700"
     :title="title"
   >
     <img 

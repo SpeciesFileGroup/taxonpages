@@ -1,8 +1,17 @@
 <template>
   <div>
-    <div class="bg-white border-b pt-6 pl-4 pr-4">
+    <div 
+      class="
+      bg-white
+      dark:bg-gray-800
+      dark:text-slate-400
+      dark:border-b-gray-800
+        border-b 
+        pl-4 
+        pr-4"
+    >
       <div 
-        class="container mx-auto"
+        class="container mx-auto pt-6 pb-6"
       >
         <div 
           class="
@@ -33,7 +42,7 @@
           />
         </div>
 
-        <div class="mt-8 mb-10">
+        <div class="mt-8">
           <TaxaInfo
             :taxon="taxon"
             :otu-id="otu.id"

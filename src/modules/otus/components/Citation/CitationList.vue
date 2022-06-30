@@ -1,11 +1,11 @@
 <template>
   <VCard>
-    <CardHeader>
+    <VCardHeader>
       <h1 class="text-md">
         Nomenclature citations
       </h1>
-    </CardHeader>
-    <CardContent>
+    </VCardHeader>
+    <VCardContent>
       <ul class="text-sm">
         <CitationRow
           v-for="citation in citations"
@@ -13,14 +13,14 @@
           :citation="citation"
         />
       </ul>
-    </CardContent>
+    </VCardContent>
   </VCard>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
 import CitationRow from './CitationRow.vue'
-import OtuService from '../../services/OtuService';
+import OtuService from '../../services/OtuService'
 
 const props = defineProps({
   otuId: {

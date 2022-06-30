@@ -1,13 +1,13 @@
 <template>
   <VCard>
-    <CardHeader>
+    <VCardHeader>
       <h1 class="text-md">
         Type
       </h1>
-    </CardHeader>
-    <CardContent class="text-sm">
+    </VCardHeader>
+    <VCardContent class="text-sm">
       <p v-html="typeSpeciesLabel" />
-    </CardContent>
+    </VCardContent>
   </VCard>
 </template>
 

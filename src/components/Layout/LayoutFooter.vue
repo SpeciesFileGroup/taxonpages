@@ -1,5 +1,5 @@
 <template>
-  <footer class="footer text-white bottom-0 border-t border-gray-200 bg-zinc-800 pl-4 pr-4">
+  <footer class="footer text-white bottom-0 border-gray-200 bg-zinc-800 pl-4 pr-4">
     <div class="container mx-auto text-sm pt-2 pb-4">
       <div class="pt-4 pb-4">
         {{ project_authors }}
@@ -7,7 +7,7 @@
         <span v-if="project_url">
           &lt;
           <a
-            class="text-blue-500"
+            class="text-primary-500"
             :href="project_url"
           >
             {{ project_url }} 

@@ -1,18 +1,18 @@
 <template>
   <VCard>
-    <CardHeader>
+    <VCardHeader>
       <h1 class="text-md">
         Descendants and synonyms
       </h1>
-    </CardHeader>
-    <CardContent class="text-sm">
+    </VCardHeader>
+    <VCardContent class="text-sm">
       <ul class="tree">
         <TreeView
           v-if="taxonomy && (taxonomy.nomenclatural_synonyms.length || taxonomy.descendants.length)"
           :taxonomy="taxonomy" 
         />
       </ul>
-    </CardContent>
+    </VCardContent>
   </VCard>
 </template>
 

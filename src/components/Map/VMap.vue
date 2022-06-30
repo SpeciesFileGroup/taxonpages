@@ -166,6 +166,7 @@ const setGeoJSON = geojson => {
 .leaflet-marker-icon {
   width: 20px;
   height: 20px;
+  border-radius: 50%;
   background-color: red;
   opacity: 0.5;
 }

@@ -1,6 +1,16 @@
+const fs = require('fs')
+const { 
+  userTailwindConfigPath,
+  defaultTailwindConfigPath
+} = require('./src/constants/configPaths')
+
 module.exports = {
   plugins: {
-    tailwindcss: {},
+    tailwindcss: { 
+      config: fs.existsSync(userTailwindConfigPath) 
+      ? userTailwindConfigPath
+      : defaultTailwindConfigPath
+    },
     autoprefixer: {},
   },
 }

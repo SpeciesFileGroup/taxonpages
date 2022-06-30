@@ -1,6 +1,14 @@
 <template>
   <div class="flex flex-col">
-    <div class="flex justify-center bg-white border print:hidden">
+    <div
+      class="
+        flex
+        justify-center 
+        bg-white  
+        dark:bg-gray-800 
+        border print:hidden 
+        dark:border-gray-700"
+    >
       <div class="h-80 max-h-80 flex items-center justify-center">
         <img
           class="max-h-80 h-max w-100 cursor-zoom-in m-auto"

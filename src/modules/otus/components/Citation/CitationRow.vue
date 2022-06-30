@@ -22,8 +22,7 @@
 </template>
 
 <script setup>
-import ButtonExpand from '@/components/Button/ButtonExpand.vue'
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 defineProps({
   citation: {

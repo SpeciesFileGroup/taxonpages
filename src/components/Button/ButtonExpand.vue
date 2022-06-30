@@ -1,7 +1,18 @@
 <template>
   <button
     type="button"
-    class="button-expand"
+    class="
+      button-expand
+      bg-white
+      dark:text-gray-400
+      dark:bg-gray-900 border
+      border-black
+      w-[14px]
+      h-[14px]
+      min-w-[14px]
+      min-h-[14px]
+      rounded
+      leading-3"
     @click="isExpanded = !isExpanded"
   >
     <span v-if="isExpanded">-</span>
@@ -33,16 +44,3 @@ const isExpanded = computed({
 })
 
 </script>
-
-<style scoped>
-.button-expand {
-  width: 13px;
-  height: 13px;
-  min-width: 13px;
-  min-height: 13px;
-  line-height: 12px;
-  border: 1px solid black;
-  background-color: white;
-  border-radius: 4px;
-}
-</style>

@@ -1,8 +1,8 @@
 <template>
   <VCard v-if="images.length">
-    <CardContent>
+    <VCardContent>
       <GalleryMain :images="images" />
-    </CardContent>
+    </VCardContent>
   </VCard>
 </template>
 
