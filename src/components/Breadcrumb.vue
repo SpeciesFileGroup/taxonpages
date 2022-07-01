@@ -1,5 +1,5 @@
 <template>
-  <ul class="inline-flex items-center space-x-1 flex-wrap">
+  <ul class="inline-flex items-center flex-wrap">
     <li
       v-for="(item, key, index) in list"
       :key="item.id"
@@ -20,7 +20,7 @@
       </svg>
       <router-link 
         v-if="item.length === 1"
-        class="inline-flex items-center text-sm text-accent-100 hover:text-gray-900"
+        class="inline-flex items-center text-sm text-accent-100 hover:text-gray-900 text-primary-500"
         :to="{ name: 'otus-id', params: { id: item[0].id } }"
       >
         {{ key }}
@@ -34,7 +34,7 @@
     </li>
 
     <li 
-      class="inline-flex items-center"
+      class="inline-flex items-center ml-0"
     >
       <svg
         class="w-4 h-4 text-gray-400"
@@ -57,9 +57,9 @@
 </template>
 
 <script setup>
-import BreadcrumbDropdown from './BreadcrumbDropdown.vue';
+import BreadcrumbDropdown from './BreadcrumbDropdown.vue'
 
-const props = defineProps({
+defineProps({
   list: {
     type: Object,
     default: () => ({})

@@ -25,7 +25,26 @@
     <input
       v-model="typed"
       type="text"
-      class="autocomplete__input block box-border min-w-full p-2 pl-10 text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-sm focus:ring-blue-500 focus:border-blue-500"
+      class="
+        autocomplete__input
+        block
+        box-border
+        min-w-full
+        p-2
+        pl-10
+        text-gray-900
+        bg-gray-50
+        dark:bg-slate-700
+        dark:text-white
+        rounded-md
+        border
+        dark:border-gray-800
+        border-gray-300
+        dark:border-gray-800
+        sm:text-sm
+        dark:placeholder:text-white
+        focus:ring-primary-500
+        focus:border-primary-500"
       :placeholder="placeholder"
     >
     <AutocompleteSpinner
@@ -35,12 +54,20 @@
 
     <ul
       v-if="list.length"
-      class="autocomplete__list list absolute z-[500] max-h-52 overflow-y-auto border bg-white"
+      class="autocomplete__list list absolute z-[500] max-h-52 overflow-y-auto border bg-white dark:bg-gray-800 dark:border-gray-700"
     >
       <li
         v-for="item in list"
         :key="item.id"
-        class="autocomplete__item p-2 border-b bg-white text-sm cursor-pointer hover:bg-gray-200"
+        class="
+          autocomplete__item
+          p-2 border-b 
+          bg-white
+          text-sm
+          cursor-pointer
+          hover:bg-gray-200
+          dark:border-gray-700
+          dark:bg-gray-800"
         @click="selectItem(item)"
       >
         <span v-html="item[label]" />

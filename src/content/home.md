@@ -4,7 +4,7 @@ lead: Taxa from your imagination to the web
 project: Your project
 ---
 <div class="container mx-auto mt-4 pl-4 pr-4">
-  <div class="prose lg:prose-base max-w-none">
+  <div class="prose dark:prose-invert lg:prose-base max-w-none">
    
   # {{frontmatter.title}}
   _{{frontmatter.lead}}_

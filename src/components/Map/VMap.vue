@@ -83,7 +83,8 @@ let geoJSONGroup = new L.FeatureGroup()
 const leafletMap = ref(null)
 const tiles = {
   osm: L.tileLayer(map_server_tils, {
-    maxZoom: 18
+    maxZoom: 18,
+    className: 'map-tiles'
   })
 }
 

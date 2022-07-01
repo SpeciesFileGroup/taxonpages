@@ -2,12 +2,12 @@
   <div class="relative">
     <div>
       <button
-        class="inline-flex items-center text-sm text-gray-700 hover:text-gray-900"
+        class="inline-flex items-center text-sm hover:text-gray-900 text-primary-500 dark:hover:text-gray-500"
         @click="dropdownOpen = !dropdownOpen"
       >
         <slot />
         <svg
-          class="h-5 w-5 text-gray-800 print:hidden"
+          class="h-5 w-5 text-primary-500 print:hidden"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
           fill="currentColor"
@@ -28,12 +28,12 @@
 
       <div
         v-if="dropdownOpen"
-        class="absolute right-0 py-2 bg-white rounded-md shadow-xl z-20"
+        class="absolute right-0 py-2 bg-white dark:bg-gray-900 rounded-md shadow-xl z-20"
       >
         <router-link
           v-for="otu in list"
           :key="otu.id"
-          class="block px-4 py-2 text-sm capitalize text-gray-700 hover:bg-blue-500 hover:text-white"
+          class="block px-4 py-2 text-sm capitalize text-gray-700 dark:text-slate-400 hover:bg-gray-700 hover:text-white"
           :to="{ name: 'otus-id', params: { id: otu.id } }"
         >
           {{ otu.name || key }}

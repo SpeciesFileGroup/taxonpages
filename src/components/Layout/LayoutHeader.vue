@@ -9,7 +9,7 @@
       rounded
       border-b
       dark:border-b-gray-800
-      dark:bg-gray-900
+      dark:bg-gray-800/50
       pl-4
       pr-4
       h-9
