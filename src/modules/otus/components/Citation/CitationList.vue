@@ -11,6 +11,7 @@
           v-for="citation in citations"
           :key="citation.id"
           :citation="citation"
+          class="flex justify-start border-b p-3 pl-0 last:border-b-0 dark:border-b-slate-700"
         />
       </ul>
     </VCardContent>

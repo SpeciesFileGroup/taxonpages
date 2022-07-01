@@ -1,5 +1,5 @@
 <template>
-  <li class="flex justify-start mb-1">
+  <li>
     <ButtonExpand
       v-model="isExpanded"
       class="mr-2"

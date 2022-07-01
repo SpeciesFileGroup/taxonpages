@@ -7,8 +7,8 @@
         border
         print:hidden
         bg-white  
-        dark:bg-zinc-800 
-        dark:border-zinc-800"
+        dark:bg-slate-800 
+        dark:border-slate-800"
     >
       <div class="h-80 max-h-80 flex items-center justify-center">
         <img

@@ -4,7 +4,7 @@
     @click="emit('close')"
   >
     <div 
-      class="container bg-white dark:bg-zinc-900 relative max-h-full w-full md:h-auto rounded-lg shadow-sm"
+      class="container bg-white dark:bg-slate-900 relative max-h-full w-full md:h-auto rounded-lg shadow-sm"
       @click.stop
     >
       <VSpinner v-if="isLoading" />
@@ -17,7 +17,7 @@
         >
       </div>
 
-      <div class="bg-white dark:bg-zinc-900 attributions bottom-0 h-24 p-4 rounded-b-lg align-middle flex justify-between flex-col text-center">
+      <div class="bg-white dark:bg-slate-900 attributions bottom-0 h-24 p-4 rounded-b-lg align-middle flex justify-between flex-col text-center">
         <ImageDepictions
           class="my-auto"
           :depictions="image.depictions" 

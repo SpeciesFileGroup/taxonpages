@@ -3,9 +3,9 @@
     <div 
       class="
       bg-white
-      dark:bg-zinc-900
+      dark:bg-slate-900
       dark:text-slate-400
-      dark:border-b-zinc-800
+      dark:border-b-slate-800
         border-b 
         pl-4 
         pr-4"
