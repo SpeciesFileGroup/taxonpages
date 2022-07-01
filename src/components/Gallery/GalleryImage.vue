@@ -4,10 +4,11 @@
       class="
         flex
         justify-center 
+        border
+        print:hidden
         bg-white  
-        dark:bg-gray-800 
-        border print:hidden 
-        dark:border-gray-700"
+        dark:bg-zinc-800 
+        dark:border-zinc-800"
     >
       <div class="h-80 max-h-80 flex items-center justify-center">
         <img
@@ -21,11 +22,15 @@
       <div 
         v-for="(image, index) in images"
         :key="image.id"
+        class="
+          pr-1
+          pt-1
+          pb-1
+          last:pr-0"
       >
         <GalleryThumbnail
           :image="image"
           :title="image.depictions.map(d => d.label).join(';')"
-          class="first:ml-0"
           @click="
             galleryIndex = index;
             isImageViewerOpen = true

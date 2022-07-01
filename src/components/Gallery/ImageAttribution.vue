@@ -6,7 +6,7 @@
 
 <script setup>
 
-const props = defineProps({
+defineProps({
   attribution: {
     type: Object,
     default: () => ({})

@@ -8,8 +8,8 @@
       py-2.5
       rounded
       border-b
-      dark:border-b-gray-800
-      dark:bg-gray-800/50
+      dark:border-b-zinc-800
+      dark:bg-zinc-900
       pl-4
       pr-4
       h-9
