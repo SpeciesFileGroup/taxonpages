@@ -8,7 +8,7 @@
         print:hidden
         bg-white  
         dark:bg-slate-800 
-        dark:border-slate-800"
+        dark:border-slate-600"
     >
       <div class="h-80 max-h-80 flex items-center justify-center">
         <img
@@ -18,33 +18,20 @@
         >
       </div>
     </div>
-    <div class="flex flex-row overflow-x-auto print:flex-wrap">
-      <div 
-        v-for="(image, index) in images"
-        :key="image.id"
-        class="
-          pr-1
-          pt-1
-          pb-1
-          last:pr-0"
-      >
-        <GalleryThumbnail
-          :image="image"
-          :title="image.depictions.map(d => d.label).join(';')"
-          @click="
-            galleryIndex = index;
-            isImageViewerOpen = true
-          "
-        />
-      </div>
-    </div>
+    <GalleryThumbnailList
+      class="pt-2 pb-2"
+      :images="images"
+      @select-index="galleryIndex = $event; isImageViewerOpen = true"
+    />
   </div>
 
   <ImageViewer 
     v-if="isImageViewerOpen"
-    :image="currentImage"
+    :index="galleryIndex"
+    :images="images"
     :next="galleryIndex < (props.images.length - 1)"
     :previous="galleryIndex > 0"
+    @select-index="galleryIndex = $event"
     @next="nextImage()"
     @previous="previousImage()"
     @close="isImageViewerOpen = false"
@@ -53,6 +40,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import GalleryThumbnailList from './GalleryThumbnailList.vue';
 
 const props = defineProps({
   images: {

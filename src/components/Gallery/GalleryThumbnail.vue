@@ -1,10 +1,10 @@
 <template>
   <div 
-    class="bg-white dark:bg-gray-800 flex flex-col justify-center cursor-pointer w-24 h-24 border dark:border-gray-700"
+    class="bg-white dark:bg-gray-800 flex flex-col justify-center cursor-pointer w-24 h-24 dark:border-gray-600 rounded-md shadow box-border"
     :title="title"
   >
     <img 
-      class="h-24 w-24 max-h-24 max-w-24 object-cover"
+      class="max-h-24 max-w-24 h-24 w-24 object-cover rounded-md"
       :src="image.thumb"
     >
   </div>
