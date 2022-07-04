@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="bg-white dark:bg-gray-800 flex flex-col justify-center cursor-pointer w-24 h-24 dark:border-gray-600 rounded-md shadow box-border"
+    class="bg-white dark:bg-gray-800 flex flex-col justify-center cursor-pointer w-24 h-24 dark:border-gray-600 rounded-md border box-border"
     :title="title"
   >
     <img 

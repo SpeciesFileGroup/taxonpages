@@ -3,7 +3,7 @@
     <h2 class="text-1xl text-gray-700 capitalize dark:text-gray-400">
       {{ taxon.rank || taxon.type }}
     </h2>
-    <h1 class="text-2xl dark:text-gray-100">
+    <h1 class="text-xl dark:text-gray-100">
       <span v-html="taxonNameString" />
       <span 
         class="ml-2"

@@ -27,12 +27,14 @@
           />
           <Autocomplete
             class="
-              print:hidden 
+              print:hidden
               min-w-full 
               mb-2
               md:min-w-fit
               md:ml-2
-              md:mb-0"
+              md:mb-0
+              w-60
+            "
             url="/otus/autocomplete"
             query-param="term"
             label="label_html"
@@ -49,7 +51,9 @@
           />
         </div>
 
-        <TabMenu class="m-[-1px] print:hidden">
+        <TabMenu
+          v-if="tabs.length"
+          class="m-[-1px] print:hidden">
           <TabItem
             v-for="({ name, label }) in tabs"
             :key="name"

@@ -1,0 +1,21 @@
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  -webkit-transition: background .3s;
+  transition: background .3s;
+}
+
+::-webkit-scrollbar-corner {
+  background: 0 0;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background: rgb(0,0,0, .16);
+  @apply dark:bg-slate-600;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(0,0,0, .06);
+  @apply dark:bg-slate-700;
+}

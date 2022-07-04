@@ -11,7 +11,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        inter: ['Inter', 'sans-serif']
+        main: ['-apple-system','BlinkMacSystemFont','San Francisco','Segoe UI','Roboto','Helvetica Neue','sans-serif']
       },
       colors: {
         'primary': colors.sky,

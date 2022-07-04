@@ -1,6 +1,6 @@
 <template>
   <VCard>
-    <VCardContent class="h-96 max-h-96">
+
       <VSpinner v-if="isLoading" />
       <VMap
         ref="map"
@@ -9,7 +9,7 @@
         :geojson="geojson"
         @geojson:ready="isLoading = false"
       />
-    </VCardContent>
+
   </VCard>
 </template>
 
