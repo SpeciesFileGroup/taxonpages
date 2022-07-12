@@ -20,7 +20,7 @@
       </svg>
       <router-link 
         v-if="item.length === 1"
-        class="inline-flex items-center text-sm text-accent-100 hover:text-gray-900 text-primary-500"
+        class="inline-flex items-center text-sm text-accent-100 hover:text-gray-900 dark:hover:text-gray-500 text-primary-500"
         :to="{ name: 'otus-id', params: { id: item[0].id } }"
       >
         {{ key }}
