@@ -31,7 +31,7 @@
         <p>{{ copyright_text }}</p>
       </div>
 
-      <hr class="mt-3 mb-3 border-gray-500">
+      <hr class="mt-3 mb-3 border-gray-500 dark:border-slate-700">
 
       <div class="flex items-center">
         <span>
