@@ -1,10 +1,9 @@
 import axios from 'axios'
-import requiredConfiguration from '@/config/api.yml'
 
 const {
   url,
   project_token
-} = requiredConfiguration
+} = __APP_ENV__
 
 const makeAPIRequest = axios.create({
   baseURL: url,

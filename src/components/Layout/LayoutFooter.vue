@@ -74,19 +74,13 @@
 </template>
 <script setup>
 
-import projectConfiguration from '@/config/project.yml'
-import copyrightConfiguration from '@/config/copyright.yml'
-
 const {
   project_authors,
   project_citation,
-  project_url
-} = projectConfiguration
-
-const {
+  project_url,
   copyright_text,
   copyright_image,
   copyright_image_link
-} = copyrightConfiguration
+} = __APP_ENV__
 
 </script>

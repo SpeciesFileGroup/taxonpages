@@ -6,7 +6,7 @@ import {
 
 import otusRoutes from '@/modules/otus/router'
 import dynamicRoutes from '~pages'
-import routerConfiguration from '@/config/router.yml'
+import routerConfiguration from '../../config/router.yml'
 
 const { base_url, hash_mode } = routerConfiguration
 

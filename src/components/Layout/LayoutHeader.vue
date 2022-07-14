@@ -90,18 +90,12 @@
 </template>
 
 <script setup>
-
-import headerConfiguration from '@/config/header.yml'
-import projectConfiguration from '@/config/project.yml'
-import SwitchTheme from '../SwitchTheme.vue';
+import SwitchTheme from '../SwitchTheme.vue'
 
 const {
   logo,
-  links
-} = headerConfiguration
-
-const {
+  links,
   project_name
-} = projectConfiguration
+} = __APP_ENV__
 
 </script>

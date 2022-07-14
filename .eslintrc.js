@@ -8,7 +8,8 @@ module.exports = {
   ],
   globals: {
     defineEmits: true,
-    defineProps: true
+    defineProps: true,
+    __APP_ENV__: true
   },
   rules: {
     'vue/no-v-html': 'off'
