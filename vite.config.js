@@ -27,7 +27,7 @@ export default ({ mode }) => {
       Content(),
       Markdown(),
       Pages({
-        dirs: 'src/pages',
+        dirs: 'pages',
         extensions: ['vue', 'md'],
         extendRoute(route) {
           if (route.path === '/home') {

@@ -34,14 +34,13 @@
         pl-10
         text-gray-900
         bg-gray-50
-        dark:bg-slate-700
-        dark:text-white
+        dark:bg-slate-800
         rounded-md
         border
-        dark:border-gray-800
-        border-gray-300
-        dark:border-gray-800
         sm:text-sm
+        dark:text-white
+        dark:border-slate-700
+        border-gray-300
         dark:placeholder:text-white
         focus:ring-primary-500
         focus:border-primary-500"

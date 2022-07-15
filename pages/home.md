@@ -24,7 +24,3 @@ project: Your project
 
   </div>
 </div>
-
-<script setup>
-import AutocompleteOtu from '@/components/Autocomplete/AutocompleteOtu.vue'
-</script>
