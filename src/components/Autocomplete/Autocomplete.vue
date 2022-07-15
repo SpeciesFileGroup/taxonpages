@@ -41,7 +41,7 @@
         dark:text-white
         dark:border-slate-700
         border-gray-300
-        dark:placeholder:text-white
+        dark:placeholder:text-slate-400
         focus:ring-primary-500
         focus:border-primary-500"
       :placeholder="placeholder"
