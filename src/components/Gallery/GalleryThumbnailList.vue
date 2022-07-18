@@ -4,7 +4,7 @@
       v-for="(image, index) in images"
       :key="image.id"
       class="
-        pr-2
+        pr-1.5
         last:pr-0"
     >
       <GalleryThumbnail

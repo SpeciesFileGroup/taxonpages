@@ -1,37 +1,47 @@
 <template>
   <div 
-    class="fixed z-[10000] bg-opacity-60 bg-black overflow-y-hidden overflow-x-hidden w-full h-full top-0 left-0 flex flex-col items-center justify-center backdrop-blur-md"
+    class="fixed z-[10000] h-full bg-opacity-90 bg-black overflow-y-hidden overflow-x-hidden w-full top-0 left-0 flex flex-col items-center justify-center backdrop-blur-md"
     @click="emit('close')"
   >
     <div 
-      class="min-w-96 dark:bg-slate-900  rounded-lg shadow-sm mb-24"
+      class="min-w-96 dark:bg-slate-900 rounded-lg shadow-sm mb-24"
       @click.stop
     >
-      <VSpinner v-if="isLoading" />
-      <div class="relative rounded-t-lg w-auto bg-white">
+      <div class="absolute rounded-t-lg w-auto max-h-full h-auto top-12 bottom-40 left-0 right-0 flex justify-center align-middle">
+        <VSpinner v-if="isLoading" />
         <img
           ref="imageElement"
-          class="mx-auto cursor-zoom-out max-w-7 w-auto max-w-full max-h-[70vh]"
+          class="mx-auto cursor-zoom-out w-auto max-w-full max-h-full h-auto my-auto"
           :src="image.original"
           @click="emit('close')"
         >
-      </div>
 
+        <ControlNextImage
+          v-if="next"
+          class="right-0 absolute my-auto top-1/2 -translate-y-1/2"
+          @click="emit('next')"
+        />
+        <ControlPreviousImage 
+          v-if="previous"
+          class="left-0 absolute my-auto top-1/2 -translate-y-1/2"
+          @click="emit('previous')"
+        />
+      </div>
+    </div>
+    <div class="bottom-0 fixed overflow-x-auto max-w-full pb-2">
       <div 
         class="
-        bg-white
-        dark:bg-slate-900
-        dark:text-white
+        text-white
+        text-sm
         attributions
-        bottom-0
-        h-24
-        p-4
-        rounded-b-lg
+        p-6
         align-middle
         flex
         justify-between
         flex-col
-        text-center"
+        text-center
+        [text-shadow:0_1px_5px_rgba(0,0,0,1)]
+      "
       >
         <ImageDepictions
           class="my-auto"
@@ -42,34 +52,32 @@
           :attribution="image.attribution"
         />
       </div>
-
-      <ControlNextImage
-        v-if="next"
-        class="right-0 absolute my-auto top-1/2 -translate-y-1/2"
-        @click="emit('next')"
-      />
-      <ControlPreviousImage 
-        v-if="previous"
-        class="left-0 absolute my-auto top-1/2 -translate-y-1/2"
-        @click="emit('previous')"
+      <GalleryThumbnailList
+        :current="index"
+        :images="images"
+        @select-index="emit('selectIndex', $event)"
+        @click.stop
       />
     </div>
-    <GalleryThumbnailList
-      class="bottom-0 fixed overflow-x-auto max-w-full pb-2"
-      :current="index"
-      :images="images"
-      @select-index="emit('selectIndex', $event)"
-      @click.stop
-    />
+    <ImageToolbar
+      class="w-full absolute top-0 h-12 left-0"
+    >
+      <ImageViewerCounter
+        :current-image="index"
+        :total-images="images.length"
+      />
+    </ImageToolbar>
   </div>
 </template>
 
 <script setup>
 import { onMounted, onUnmounted, ref, watch, computed } from 'vue'
-import ImageAttribution from './ImageAttribution.vue';
-import ImageDepictions from './ImageDepictions.vue';
+import ImageAttribution from './ImageAttribution.vue'
+import ImageDepictions from './ImageDepictions.vue'
+import ImageViewerCounter from './ImageViewerCounter.vue'
 import ControlNextImage from './ControlImageNext.vue'
 import ControlPreviousImage from './ControlImagePrevious.vue'
+import ImageToolbar from './ImageToolbar.vue'
 
 const props = defineProps({
   index: {
