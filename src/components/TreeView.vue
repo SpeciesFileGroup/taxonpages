@@ -37,7 +37,6 @@
 <script setup>
 import TreeView from '@/components/TreeView.vue'
 import SynonymList from './SynonymList.vue'
-import ButtonExpand from '@/components/Button/ButtonExpand.vue'
 import OtuService from '@/modules/otus/services/OtuService';
 import { ref, watch } from 'vue'
 

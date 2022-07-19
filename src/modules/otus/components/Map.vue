@@ -1,22 +1,19 @@
 <template>
   <VCard>
-
-      <VSpinner v-if="isLoading" />
-      <VMap
-        ref="map"
-        class="h-96 max-h-96"
-        :zoom="zoom"
-        :geojson="geojson"
-        @geojson:ready="isLoading = false"
-      />
-
+    <VSpinner v-if="isLoading" />
+    <VMap
+      ref="map"
+      class="h-96 max-h-96"
+      :zoom="zoom"
+      :geojson="geojson"
+      @geojson:ready="isLoading = false"
+    />
   </VCard>
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
-import VMap from '@/components/Map/VMap.vue'
-import OtuService from "../services/OtuService";
+import { ref, watch } from "vue"
+import OtuService from "../services/OtuService"
 
 const props = defineProps({
   otuId: {

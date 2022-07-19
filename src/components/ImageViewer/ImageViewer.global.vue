@@ -77,6 +77,7 @@ import ImageDepictions from './ImageDepictions.vue'
 import ImageViewerCounter from './ImageViewerCounter.vue'
 import ControlNextImage from './ControlImageNext.vue'
 import ControlPreviousImage from './ControlImagePrevious.vue'
+import GalleryThumbnailList from '@/components/Gallery/GalleryThumbnailList.vue'
 import ImageToolbar from './ImageToolbar.vue'
 
 const props = defineProps({

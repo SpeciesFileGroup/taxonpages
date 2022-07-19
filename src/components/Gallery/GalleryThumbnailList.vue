@@ -18,6 +18,8 @@
 </template>
 
 <script setup>
+import GalleryThumbnail from './GalleryThumbnail.vue'
+
 defineProps({
   images: {
     type: Array,

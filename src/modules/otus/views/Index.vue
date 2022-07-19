@@ -53,7 +53,8 @@
 
         <TabMenu
           v-if="tabs.length"
-          class="m-[-1px] print:hidden">
+          class="m-[-1px] print:hidden"
+        >
           <TabItem
             v-for="({ name, label }) in tabs"
             :key="name"
@@ -82,10 +83,7 @@
 
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import TabMenu from '@/components/Tab/TabMenu.vue'
-import TabItem from '@/components/Tab/TabItem.vue'
 import Breadcrumb from '@/components/Breadcrumb.vue'
-import Autocomplete from '@/components/Autocomplete/Autocomplete.vue'
 import TaxaInfo from '@/modules/otus/components/TaxaInfo.vue'
 import useChildrenRoutes from '../composables/useChildrenRoutes'
 import OtuService from '../services/OtuService'

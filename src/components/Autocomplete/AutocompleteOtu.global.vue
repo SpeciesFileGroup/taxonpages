@@ -10,7 +10,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
-import Autocomplete from '@/components/Autocomplete/Autocomplete.vue'
+import Autocomplete from '@/components/Autocomplete/Autocomplete.global.vue'
 
 const router = useRouter()
 
