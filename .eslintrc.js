@@ -9,7 +9,8 @@ module.exports = {
   globals: {
     defineEmits: true,
     defineProps: true,
-    __APP_ENV__: true
+    __APP_ENV__: true,
+    __basedir: true
   },
   rules: {
     'vue/no-v-html': 'off'

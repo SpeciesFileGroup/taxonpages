@@ -1,5 +1,5 @@
 module.exports = {
   presets: [
-    require('../../tailwind.config.js')
+    require(__basedir + '/tailwind.config.js')
   ]
 }

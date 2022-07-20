@@ -4,9 +4,10 @@ import {
   createWebHashHistory
 } from 'vue-router'
 
-import otusRoutes from '@/modules/otus/router'
 import dynamicRoutes from '~pages'
 
+const moduleRoutes = import.meta.globEager('@/modules/**/router/*.js')
+const routerObjects = [].concat(...Object.values(moduleRoutes).map(route => route.default))
 const { base_url, hash_mode } = __APP_ENV__
 
 const router = createRouter({
@@ -16,7 +17,7 @@ const router = createRouter({
 
   routes: [
     ...dynamicRoutes,
-    ...otusRoutes,
+    ...routerObjects,
   ]
 })
 
