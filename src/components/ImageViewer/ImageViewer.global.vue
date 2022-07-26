@@ -28,7 +28,7 @@
         />
       </div>
     </div>
-    <div class="bottom-0 fixed overflow-x-auto max-w-full pb-2">
+    <div class="bottom-0 fixed max-w-full w-full">
       <div 
         class="
         text-white
@@ -52,12 +52,15 @@
           :attribution="image.attribution"
         />
       </div>
-      <GalleryThumbnailList
-        :current="index"
-        :images="images"
-        @select-index="emit('selectIndex', $event)"
-        @click.stop
-      />
+      <div class="flex justify-center">
+        <GalleryThumbnailList
+          class="pb-2"
+          :current="index"
+          :images="images"
+          @select-index="emit('selectIndex', $event)"
+          @click.stop
+        />
+      </div>
     </div>
     <ImageToolbar
       class="w-full absolute top-0 h-12 left-0"
@@ -133,8 +136,15 @@ const image = computed(() => props.images[props.index])
 
 document.addEventListener('keyup', handleKeyboard)
 
-onMounted(() => imageElement.value.addEventListener('load', () => isLoading.value = false))
-onUnmounted(() => document.removeEventListener('keyup', handleKeyboard))
+onMounted(() => {
+  imageElement.value.addEventListener('load', () => isLoading.value = false)
+  document.body.classList.add('overflow-hidden')
+})
+
+onUnmounted(() => { 
+  document.removeEventListener('keyup', handleKeyboard)
+  document.body.classList.remove('overflow-hidden')
+})
 
 watch(
   () => props.index, 
