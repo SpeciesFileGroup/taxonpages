@@ -1,0 +1,8 @@
+---
+  logo_url:
+  links:
+    - label: Home
+      link: /
+
+    - label: About
+      link: /about
