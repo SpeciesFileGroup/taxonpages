@@ -23,7 +23,7 @@ watch(
   () => props.otuId,
   async () => {
     const params = {
-      extend: ['depictions', 'attribution'],
+      extend: ['depictions', 'attribution', 'source', 'citations'],
       otu_scope: ['all']
     }
   

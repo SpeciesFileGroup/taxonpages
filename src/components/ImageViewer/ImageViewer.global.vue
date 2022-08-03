@@ -51,6 +51,10 @@
           class="my-auto"
           :attribution="image.attribution"
         />
+        <ImageSource
+          class="my-auto"
+          :source="image.source"
+        />
       </div>
       <div class="flex justify-center">
         <GalleryThumbnailList
@@ -77,6 +81,7 @@
 import { onMounted, onUnmounted, ref, watch, computed } from 'vue'
 import ImageAttribution from './ImageAttribution.vue'
 import ImageDepictions from './ImageDepictions.vue'
+import ImageSource from './ImageSource.vue'
 import ImageViewerCounter from './ImageViewerCounter.vue'
 import ControlNextImage from './ControlImageNext.vue'
 import ControlPreviousImage from './ControlImagePrevious.vue'

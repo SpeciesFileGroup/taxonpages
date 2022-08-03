@@ -15,17 +15,8 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import { SPECIMEN_TYPES } from '../constants'
 import OtuService from '../services/OtuService'
-
-const TYPE_ORDER = [
-  'neotype',
-  'holotype',
-  'neolectotype',
-  'lectotype',
-  'syntype',
-  'paratype',
-  'paratypes'
-]
 
 const props = defineProps({
   otuId: {
@@ -37,11 +28,12 @@ const props = defineProps({
 const typeMaterials = ref([])
 
 watch(
-  () => props.otuId, async () => {
+  () => props.otuId,
+  () => {
   if (!props.otuId) { return }
 
   OtuService.getTypes(props.otuId).then(({ data }) => {
-    typeMaterials.value = data.type_materials_catalog_labels.sort((a, b) => TYPE_ORDER.indexOf(a.type_type) - TYPE_ORDER.indexOf(b.type_type))
+    typeMaterials.value = data.type_materials_catalog_labels.sort((a, b) => SPECIMEN_TYPES.indexOf(a.type_type) - SPECIMEN_TYPES.indexOf(b.type_type))
   })
 }, { immediate: true })
 </script>
