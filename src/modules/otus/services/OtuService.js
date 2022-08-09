@@ -3,11 +3,7 @@ import { makeAPIRequest } from "@/utils/request"
 export default class OtuService {
 
   static getTaxonNameCitations (otuId) {
-    return makeAPIRequest.get(`/otus/${otuId}/inventory/nomenclature_citations`, { 
-      params: {
-        extend: ['source']
-      }
-    })
+    return makeAPIRequest.get(`/otus/${otuId}/inventory/nomenclature_citations`, { params: { extend: ['source'] } })
   }
 
   static getOtu (id) {
@@ -36,5 +32,9 @@ export default class OtuService {
 
   static getGeoJSON (otuId) {
     return makeAPIRequest.get(`/otus/${otuId}/inventory/distribution`)
+  }
+
+  static getContent (otuId) {
+    return makeAPIRequest.get(`/otus/${otuId}/inventory/content`)
   }
 }

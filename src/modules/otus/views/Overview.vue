@@ -38,6 +38,7 @@ import OtuTypeDesignation from '@/modules/otus/components/TypeDesignation.vue'
 import OtuCitations from '@/modules/otus/components/Citation/CitationList.vue'
 import OtuMap from '@/modules/otus/components/Map.vue'
 import OtuDescendants from '@/modules/otus/components/Descendants.vue'
+import OtuContent from '@/modules/otus/components/Content/Content.vue'
 import { FAMILY_GROUP, GENUS_GROUP, SPECIES_GROUP } from '@/constants/rankGroups'
 
 const componentsLayout = {
@@ -55,7 +56,8 @@ const componentsLayout = {
   ],
   right: [
     { component: OtuMap },
-    { component: OtuDescendants }
+    { component: OtuContent },
+    { component: OtuDescendants },
   ]
 }
 
