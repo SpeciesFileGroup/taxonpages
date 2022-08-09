@@ -25,7 +25,8 @@ const props = defineProps({
 const typeSpecies = ref({})
 const typeSpeciesLabel = computed(() => [
   typeSpecies.value.subject_object_tag || '', 
-  typeSpecies.value.subject_status_tag || ''
+  typeSpecies.value.subject_status_tag || '',
+  typeSpecies.value.object_object_tag || ''
 ].join(' '))
 
 watch(
