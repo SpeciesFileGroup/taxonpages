@@ -1,13 +1,13 @@
 <template>
   <div 
-    class="fixed z-[10000] h-full bg-opacity-90 bg-black overflow-y-hidden overflow-x-hidden w-full top-0 left-0 flex flex-col items-center justify-center backdrop-blur-md"
+    class="fixed z-[10000] h-full bg-white overflow-y-hidden overflow-x-hidden w-full top-0 left-0 flex flex-col items-center justify-center backdrop-blur-md dark:bg-black"
     @click="emit('close')"
   >
     <div 
       class="min-w-96 dark:bg-slate-900 rounded-lg shadow-sm mb-24"
       @click.stop
     >
-      <div class="absolute rounded-t-lg w-auto max-h-full h-auto top-12 bottom-40 left-0 right-0 flex justify-center align-middle">
+      <div class="absolute rounded-t-lg w-auto max-h-full h-auto top-12 bottom-44 left-0 right-0 flex justify-center align-middle">
         <VSpinner v-if="isLoading" />
         <img
           ref="imageElement"
@@ -31,7 +31,8 @@
     <div class="bottom-0 fixed max-w-full w-full">
       <div 
         class="
-        text-white
+        text-black
+        dark:text-white
         text-sm
         attributions
         p-6
@@ -40,7 +41,7 @@
         justify-between
         flex-col
         text-center
-        [text-shadow:0_1px_5px_rgba(0,0,0,1)]
+        dark:[text-shadow:0_1px_5px_rgba(0,0,0,1)]
       "
       >
         <ImageDepictions
