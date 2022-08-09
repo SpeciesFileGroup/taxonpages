@@ -6,7 +6,6 @@
       px-2
       sm:px-4
       py-2.5
-      rounded
       border-b
       dark:border-b-slate-800
       dark:bg-slate-900
@@ -16,21 +15,21 @@
       align-middle
       flex
       items-center"
-    :class="background_class"
+    :class="header_class"
   >
     <div class="container flex flex-wrap justify-between items-center mx-auto dark:text-slate-200 font-medium">
       <a
         href="/"
-        class="flex"
-        :class="link_class"
+        class="flex items-center"
+        :class="header_link_class"
       >
         <img
-          v-if="logo"
+          v-if="header_logo_url"
           class="mr-3 h-10"
-          :src="logo_url"
+          :src="header_logo_url"
         >
-        <span v-else>
-          {{ project_name }}
+        <span>
+          {{ header_logo_text }}
         </span>
       </a>
 
@@ -70,13 +69,13 @@
         <nav class="text-sm leading-6 font-semibold text-slate-700 dark:text-slate-200">
           <ul class="flex space-x-8">
             <li
-              v-for="(item, index) in links"
+              v-for="(item, index) in header_links"
               :key="index"
             >
               <router-link
                 :to="item.link"
                 class="hover:text-sky-500 dark:hover:text-sky-400"
-                :class="link_class"
+                :class="header_link_class"
               >
                 {{ item.label }}
               </router-link>
@@ -96,11 +95,11 @@
 import SwitchTheme from '../SwitchTheme.vue'
 
 const {
-  logo,
-  links,
-  project_name,
-  background_class,
-  link_class
+  header_class,
+  header_link_class,
+  header_links,
+  header_logo_text,
+  header_logo_url
 } = __APP_ENV__
 
 </script>

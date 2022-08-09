@@ -28,7 +28,7 @@
     <svg
       xmlns="http://www.w3.org/2000/svg"
       class="h-6 w-6 text-slate-400 hover:text-primary-500 dark:hover:text-slate-300"
-      :class="link_class"
+      :class="header_link_class"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -47,7 +47,7 @@
 import { watch, ref } from 'vue'
 
 const {
-  link_class
+  header_link_class
 } = __APP_ENV__
 
 const themeModes = {
