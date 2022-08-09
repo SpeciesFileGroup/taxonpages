@@ -1,0 +1,26 @@
+@import '@/assets/css/tailwind.css';
+@import 'leaflet/dist/leaflet.css';
+@import '@/assets/css/leaflet.css';
+@import '@/assets/css/webkit.css';
+
+* {
+  box-sizing: content-box;
+}
+
+body {
+  background-color: #f5f7fb;
+  @apply 
+    font-main
+    dark:bg-slate-900
+    dark:text-slate-400;
+}
+
+a {
+  @apply 
+    text-primary-500
+    hover:text-gray-900;
+}
+
+.dark {
+  color-scheme: dark;
+}

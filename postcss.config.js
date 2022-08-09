@@ -6,6 +6,7 @@ const {
 
 module.exports = {
   plugins: {
+    'tailwindcss/nesting': {},
     tailwindcss: { 
       config: fs.existsSync(userTailwindConfigPath) 
       ? userTailwindConfigPath
