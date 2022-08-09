@@ -1,5 +1,7 @@
 ---
   logo_url:
+  background_class: bg-[#89a741]
+  link_class: text-white 
   links:
     - label: Home
       link: /

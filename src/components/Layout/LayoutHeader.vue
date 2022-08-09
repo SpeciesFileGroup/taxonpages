@@ -16,11 +16,13 @@
       align-middle
       flex
       items-center"
+    :class="background_class"
   >
     <div class="container flex flex-wrap justify-between items-center mx-auto dark:text-slate-200 font-medium">
       <a
         href="/"
         class="flex"
+        :class="link_class"
       >
         <img
           v-if="logo"
@@ -74,6 +76,7 @@
               <router-link
                 :to="item.link"
                 class="hover:text-sky-500 dark:hover:text-sky-400"
+                :class="link_class"
               >
                 {{ item.label }}
               </router-link>
@@ -95,7 +98,9 @@ import SwitchTheme from '../SwitchTheme.vue'
 const {
   logo,
   links,
-  project_name
+  project_name,
+  background_class,
+  link_class
 } = __APP_ENV__
 
 </script>
