@@ -5,7 +5,7 @@
     </div>
     <button
       type="button"
-      class="p-2 cursor-pointer text-black dark:text-white opacity-50"
+      class="p-2 cursor-pointer opacity-50 text-base-content"
     >
       <IconClose />
     </button>

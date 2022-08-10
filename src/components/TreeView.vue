@@ -6,6 +6,7 @@
     <button-expand
       v-if="!taxonomy.leaf_node"
       v-model="isTreeVisible"
+      class="absolute -left-2.5"
     />
     <router-link 
       class="text-primary-500"
@@ -87,7 +88,7 @@ const loadDescendants = () => {
   li {
     position: relative;
     margin: 0;
-    padding: 0px 7px;
+    padding: 0px 6px;
     border-left:1px solid rgb(100,100,100);
   }
 
@@ -104,19 +105,12 @@ const loadDescendants = () => {
     border-bottom:1px solid rgb(100,100,100);
     content:"";
     display:inline-block;
-    left:-7px;
+    left:-6px;
   }
 
   li:last-child:before {
     border-left:1px solid rgb(100,100,100);   
   }
-
-  .button-expand {
-    position: absolute;
-    top: 2px;
-    left: -9px;
-  }
-
 }
 
 </style>

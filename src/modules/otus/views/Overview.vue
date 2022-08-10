@@ -56,8 +56,8 @@ const componentsLayout = {
   ],
   right: [
     { component: OtuMap },
-    { component: OtuContent },
     { component: OtuDescendants },
+    { component: OtuContent }
   ]
 }
 

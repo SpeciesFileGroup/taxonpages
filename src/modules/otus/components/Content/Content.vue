@@ -1,19 +1,12 @@
 <template>
   <VCard>
-    <VCardHeader>
-      <h1 class="text-md">
-        Content
-      </h1>
-    </VCardHeader>
-    <VCardContent class="text-sm">
-      <ContentTopic
-        v-for="(text, title) in contentList"
-        :key="title"
-        class="mb-6 last:mb-0"
-        :title="title"
-        :text-list="text"
-      />
-    </VCardContent>
+    <ContentTopic
+      v-for="(text, title) in contentList"
+      :key="title"
+      class="last:mb-0"
+      :title="title"
+      :text-list="text"
+    />
   </VCard>
 </template>
 

@@ -1,12 +1,12 @@
 <template>
   <div :class="{ invisible: !taxon.id }">
-    <h2 class="text-1xl text-gray-700 capitalize dark:text-gray-400">
+    <h2 class="text-1xl capitalize">
       {{ taxon.rank || taxon.type }}
     </h2>
     <h1 class="text-xl dark:text-gray-100">
       <span v-html="taxonNameString" />
     </h1>
-    <h2 class="text-1xl text-gray-700 dark:text-gray-200">
+    <h2 class="text-1xl">
       <CommonNames :otu-id="props.otuId" />
     </h2>
   </div>

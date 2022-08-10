@@ -6,9 +6,9 @@
         justify-center 
         border
         print:hidden
-        bg-white  
-        dark:bg-slate-800 
-        dark:border-slate-600"
+        bg-base-0
+        border-base-200
+      "
     >
       <div class="h-80 max-h-80 flex items-center justify-center">
         <img

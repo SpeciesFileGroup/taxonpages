@@ -2,11 +2,10 @@
   <div>
     <div 
       class="
-      bg-white
-      dark:bg-slate-900
-      dark:text-slate-400
-      dark:border-b-slate-800
-        border-b 
+        bg-base-0
+
+        border-b
+        border-base-200
         pl-4 
         pr-4"
     >

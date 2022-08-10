@@ -1,17 +1,16 @@
 <template>
-  <div>
-    <h2 class="text-sm font-medium flex">
-      <IconDocument class="h-4 w-4 mr-1" />
-      {{ title }}
-    </h2>
+  <VCardHeader class="border-t border-base-200 first:border-t-0">
+    {{ title }}
+  </VCardHeader>
+  <VCardContent>
     <ul 
       v-for="(text, index) in textList"
       :key="index"
-      class="pt-1 pl-5"
+      class="pt-1 text-sm "
     >
       <li v-html="text" />
     </ul>
-  </div>
+  </VCardContent>
 </template>
 
 <script setup>

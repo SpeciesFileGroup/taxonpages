@@ -1,10 +1,10 @@
 <template>
   <button
-    v-if="themeMode === themeModes.dark"
     type="button"
-    @click="themeMode = themeModes.light"
+    @click="toggleTheme"
   >
     <svg
+      v-if="themeMode === themeModes.dark"
       xmlns="http://www.w3.org/2000/svg"
       class="h-6 w-6"
       fill="none"
@@ -18,17 +18,11 @@
         d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
       />
     </svg>
-  </button>
 
-  <button
-    v-else
-    type="button"
-    @click="themeMode = themeModes.dark"
-  >
     <svg
+      v-else
       xmlns="http://www.w3.org/2000/svg"
-      class="h-6 w-6 text-slate-400 hover:text-primary-500 dark:hover:text-slate-300"
-      :class="header_link_class"
+      class="h-6 w-6"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -45,10 +39,6 @@
 
 <script setup>
 import { watch, ref } from 'vue'
-
-const {
-  header_link_class
-} = __APP_ENV__
 
 const themeModes = {
   dark: 'dark',
@@ -74,5 +64,13 @@ watch(
   },
   { immediate: true }
 )
+
+const toggleTheme = () => {
+  if (themeMode.value === themeModes.dark) {
+    themeMode.value = themeModes.light
+  } else {
+    themeMode.value = themeModes.dark
+  }
+}
 
 </script>

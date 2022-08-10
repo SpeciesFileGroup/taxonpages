@@ -1,39 +1,20 @@
 <template>
   <li>
-    <ButtonExpand
-      v-if="false"
-      v-model="isExpanded"
-      class="mr-2"
-    />
-    <div>
-      <svg 
+    <div 
+      class="h-5 w-5 text-secondary-color opacity-60 mr-2 cursor-pointer"
+      @click="isExpanded = !isExpanded"
+    >
+      <IconArrowRight 
         v-if="!isExpanded"
-        xmlns="http://www.w3.org/2000/svg" 
-        class="h-6 w-6 text-primary-700 opacity-60 mr-2"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
-        @click="isExpanded = !isExpanded"
-      >
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-
-      <svg
+        class="h-5 w-5"
+      />
+      <IconArrowDown
         v-else
-        xmlns="http://www.w3.org/2000/svg" 
-        class="h-6 w-6 text-primary-700 opacity-60 mr-2" 
-        fill="none" 
-        viewBox="0 0 24 24" 
-        stroke="currentColor"
-        stroke-width="2"
-        @click="isExpanded = !isExpanded"
-      >
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
+        class="h-5 w-5"
+      />
     </div>
  
-    <div class="pt-0.5">
+    <div>
       <div v-if="isExpanded">
         <span v-html="citation.source.label" />
         <span v-if="citation.pages">

@@ -1,8 +1,8 @@
 <template>
   <div 
     class="
-      bg-white
-      border-gray-200
+      bg-header
+      border-base-200
       px-2
       sm:px-4
       py-2.5
@@ -14,14 +14,14 @@
       h-9
       align-middle
       flex
-      items-center"
-    :class="header_class"
+      items-center
+      bg-primary-color
+    "
   >
-    <div class="container flex flex-wrap justify-between items-center mx-auto dark:text-slate-200 font-medium">
+    <div class="container flex flex-wrap justify-between items-center mx-auto font-medium text-secondary-content">
       <a
         href="/"
-        class="flex items-center"
-        :class="header_link_class"
+        class="flex items-center text-primary-content"
       >
         <img
           v-if="header_logo_url"
@@ -66,7 +66,7 @@
         </svg>
       </button>
       <div class="relative hidden lg:flex items-center ml-auto">
-        <nav class="text-sm leading-6 font-semibold text-slate-700 dark:text-slate-200">
+        <nav class="text-sm leading-6 font-semibold">
           <ul class="flex space-x-8">
             <li
               v-for="(item, index) in header_links"
@@ -74,8 +74,7 @@
             >
               <router-link
                 :to="item.link"
-                class="hover:text-sky-500 dark:hover:text-sky-400"
-                :class="header_link_class"
+                class="hover:text-primary-content text-primary-content"
               >
                 {{ item.label }}
               </router-link>
@@ -84,7 +83,7 @@
         </nav>
 
         <div class="flex items-center border-l border-slate-200 ml-6 pl-6 dark:border-slate-800">
-          <SwitchTheme />
+          <SwitchTheme class="text-primary-content" />
         </div>
       </div>
     </div>
@@ -95,7 +94,6 @@
 import SwitchTheme from '../SwitchTheme.vue'
 
 const {
-  header_class,
   header_link_class,
   header_links,
   header_logo_text,

@@ -7,7 +7,7 @@
         <span v-if="project_url">
           &lt;
           <a
-            class="text-primary-500"
+            class="text-secondary-color"
             :href="project_url"
           >
             {{ project_url }} 

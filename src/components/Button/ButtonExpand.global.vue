@@ -3,20 +3,20 @@
     type="button"
     class="
       button-expand
-      bg-white
-      dark:text-gray-400
-      dark:bg-gray-900 border
-      border-black
-      w-[14px]
-      h-[14px]
-      min-w-[14px]
-      min-h-[14px]
-      rounded
-      leading-3"
+      bg-base-0
+      text-secondary-color
+      w-5
+      h-5"
     @click="isExpanded = !isExpanded"
   >
-    <span v-if="isExpanded">-</span>
-    <span v-else>+</span>
+    <IconMinusCircle
+      v-if="isExpanded" 
+      class="w-5 h-5"
+    />
+    <IconPlusCircle
+      v-else
+      class="w-5 h-5"
+    />
   </button>
 </template>
 

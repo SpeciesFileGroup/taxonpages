@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="fixed z-[10000] h-full bg-white overflow-y-hidden overflow-x-hidden w-full top-0 left-0 flex flex-col items-center justify-center backdrop-blur-md dark:bg-black"
+    class="fixed z-[10000] h-full overflow-y-hidden overflow-x-hidden w-full top-0 left-0 flex flex-col items-center justify-center backdrop-blur-md bg-base-0"
     @click="emit('close')"
   >
     <div 
@@ -31,8 +31,7 @@
     <div class="bottom-0 fixed max-w-full w-full">
       <div 
         class="
-        text-black
-        dark:text-white
+        text-base-content
         text-sm
         attributions
         p-6
@@ -41,7 +40,6 @@
         justify-between
         flex-col
         text-center
-        dark:[text-shadow:0_1px_5px_rgba(0,0,0,1)]
       "
       >
         <ImageDepictions

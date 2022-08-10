@@ -5,8 +5,7 @@ import htmlPlugin from './src/plugins/htmlPlugin.js'
 import Vue from '@vitejs/plugin-vue'
 import Markdown from 'vite-plugin-md'
 import Pages from 'vite-plugin-pages'
-
-global.__basedir = process.env.PWD
+import './src/utils/globalVars'
 
 export default () => {
   const configuration = loadConfiguration(__dirname)

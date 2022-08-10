@@ -1,3 +1,54 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: 137, 167, 65;
+    --color-primary-content: 255, 255, 255;
+
+    --color-secondary: 14, 165, 233;
+    --color-secondary-content: 255, 255, 255;
+
+    --color-base-0: 255, 255, 255;
+    --color-base-100: 245, 247, 251;
+    --color-base-200: 226, 232, 240;
+    --color-base-300: 203, 213, 225;
+    --color-base-content: 0, 0, 0;
+  }
+
+  .dark {
+    --color-primary: 14, 165, 233;
+    --color-primary-content: 255, 255, 255;
+    
+    --color-secondary: 14, 165, 233;
+    --color-secondary-content: 255, 255, 255;
+
+    --color-base-0: 17,24,39;
+    --color-base-100: 15, 23, 42;
+    --color-base-200: 30, 41, 59;
+    --color-base-300: 30, 41, 59;
+    --color-base-content: 255, 255, 255;
+  }
+
+  * {
+    box-sizing: content-box;
+  }
+  
+  body {
+    @apply 
+      font-main
+      bg-base-100
+      dark:text-slate-400;
+  }
+  
+  a {
+    @apply 
+      text-secondary-color;
+      hover:text-gray-900;
+  }
+  
+  .dark {
+    color-scheme: dark;
+  }
+}
