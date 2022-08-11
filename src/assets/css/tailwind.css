@@ -10,8 +10,8 @@
     --color-secondary: 14, 165, 233;
     --color-secondary-content: 255, 255, 255;
 
-    --color-base-0: 255, 255, 255;
-    --color-base-100: 245, 247, 251;
+    --color-base-foreground: 255, 255, 255;
+    --color-base-background: 245, 247, 251;
     --color-base-200: 226, 232, 240;
     --color-base-300: 203, 213, 225;
     --color-base-content: 0, 0, 0;
@@ -24,8 +24,8 @@
     --color-secondary: 14, 165, 233;
     --color-secondary-content: 255, 255, 255;
 
-    --color-base-0: 17,24,39;
-    --color-base-100: 15, 23, 42;
+    --color-base-background: 17,24,39;
+    --color-base-foreground: 15, 23, 42;
     --color-base-200: 30, 41, 59;
     --color-base-300: 30, 41, 59;
     --color-base-content: 255, 255, 255;
@@ -38,7 +38,7 @@
   body {
     @apply 
       font-main
-      bg-base-100
+      bg-base-background
       dark:text-slate-400;
   }
   

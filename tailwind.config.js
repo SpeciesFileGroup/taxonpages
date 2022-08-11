@@ -20,12 +20,12 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        main: ['-apple-system','BlinkMacSystemFont','San Francisco','Segoe UI','Roboto','Helvetica Neue','sans-serif']
+        main: ['Roboto','sans-serif']
       },
       colors: {
         base: {
-          0: withOpacity('--color-base-0'),
-          100: withOpacity('--color-base-100'),
+          background: withOpacity('--color-base-background'),
+          foreground: withOpacity('--color-base-foreground'),
           200: withOpacity('--color-base-200'),
           300: withOpacity('--color-base-300'),
           content: withOpacity('--color-base-content')

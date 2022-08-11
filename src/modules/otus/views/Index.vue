@@ -2,8 +2,7 @@
   <div>
     <div 
       class="
-        bg-base-0
-
+        bg-base-foreground
         border-b
         border-base-200
         pl-4 

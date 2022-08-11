@@ -3,7 +3,7 @@
     type="button"
     class="
       button-expand
-      bg-base-0
+      bg-base-foreground
       text-secondary-color
       w-5
       h-5"

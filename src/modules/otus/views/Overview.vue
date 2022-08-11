@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-      <div class="grid grid-cols-1 gap-4 auto-rows-min">
+    <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+      <div class="grid grid-cols-1 gap-3 auto-rows-min">
         <template
           v-for="({ component, available }) in componentsLayout.left"
           :key="component"
@@ -14,7 +14,7 @@
           />
         </template>
       </div>
-      <div class="grid grid-cols-1 auto-rows-min gap-4">
+      <div class="grid grid-cols-1 auto-rows-min gap-3">
         <template
           v-for="({ component, available }) in componentsLayout.right"
           :key="component"
