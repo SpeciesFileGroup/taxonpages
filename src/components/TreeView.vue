@@ -18,27 +18,31 @@
       class="pb-4"
       :list="taxonomy.nomenclatural_synonyms"
     />
-    <ul
-      v-if="descendants.length"
-      class="tree"
-    >
-      <template 
-        v-for="item in descendants"
-        :key="item.otu_id"
+    <AnimationOpacity>
+      <ul
+        v-if="descendants.length"
+        class="tree"
       >
-        <TreeView
-          v-if="isTreeVisible"
-          :taxonomy="item"
-        />
-      </template>
-    </ul>
+        <template 
+          v-for="item in descendants"
+          :key="item.otu_id"
+        >
+          <AnimationOpacity>
+            <TreeView
+              v-if="isTreeVisible"
+              :taxonomy="item"
+            />
+          </AnimationOpacity>
+        </template>
+      </ul>
+    </AnimationOpacity>
   </li>
 </template>
 
 <script setup>
 import TreeView from '@/components/TreeView.vue'
 import SynonymList from './SynonymList.vue'
-import OtuService from '@/modules/otus/services/OtuService';
+import OtuService from '@/modules/otus/services/OtuService'
 import { ref, watch } from 'vue'
 
 const props = defineProps({

@@ -7,10 +7,12 @@
     </VCardHeader>
     <VCardContent class="text-sm">
       <ul class="tree ml-2">
-        <TreeView
-          v-if="taxonomy && (taxonomy.nomenclatural_synonyms.length || taxonomy.descendants.length)"
-          :taxonomy="taxonomy" 
-        />
+        <AnimationOpacity>
+          <TreeView
+            v-if="taxonomy && (taxonomy.nomenclatural_synonyms.length || taxonomy.descendants.length)"
+            :taxonomy="taxonomy" 
+          />
+        </AnimationOpacity>
       </ul>
     </VCardContent>
   </VCard>

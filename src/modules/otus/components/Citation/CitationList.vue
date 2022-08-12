@@ -5,21 +5,46 @@
         Nomenclature citations
       </h1>
     </VCardHeader>
-    <ul class="text-sm">
+
+    <div class="text-sm">
       <CitationRow
-        v-for="citation in citations"
+        v-for="citation in citationList.start"
         :key="citation.id"
         :citation="citation"
-        class="flex justify-start border-b p-3 px-4 last:border-b-0 dark:border-b-slate-700"
       />
-    </ul>
+
+      <CitationRowShowMore
+        v-if="!showAll && citationList.middle.length"
+        :count="citationList.middle.length"
+        @click="showAll = true"
+      />
+      <AnimationOpacity>
+        <div v-if="showAll">
+          <CitationRow
+            v-for="citation in citationList.middle"
+            :key="citation.id"
+            :citation="citation"
+          />
+        </div>
+      </AnimationOpacity>
+
+      <CitationRow
+        v-for="citation in citationList.last"
+        :key="citation.id"
+        :citation="citation"
+        class="last:border-b-0"
+      />
+    </div>
   </VCard>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import CitationRow from './CitationRow.vue'
+import { ref, watch, computed } from 'vue'
 import OtuService from '../../services/OtuService'
+import CitationRow from './CitationRow.vue'
+import CitationRowShowMore from './CitationRowShowMore.vue'
+
+const MAX_CITATIONS = 5
 
 const props = defineProps({
   otuId: {
@@ -28,7 +53,20 @@ const props = defineProps({
   }
 })
 
+const showAll = ref(false)
 const citations = ref([])
+const citationList = computed(() => {
+  const copyArr = citations.value.slice()
+
+  const start = copyArr.splice(0, MAX_CITATIONS)
+  const last = copyArr.splice(-MAX_CITATIONS)
+  const middle = copyArr
+  return {
+    start,
+    middle,
+    last
+  }
+})
 
 watch(() => props.otuId, async () => {
   if (!props.otuId) { return }

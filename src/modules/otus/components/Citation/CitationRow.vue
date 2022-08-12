@@ -1,5 +1,13 @@
 <template>
-  <li>
+  <div
+    class="
+      flex
+      justify-start
+      border-b
+      p-3
+      px-4
+      dark:border-b-slate-700"
+  >
     <div 
       class="h-5 w-5 text-secondary-color opacity-60 mr-2 cursor-pointer"
       @click="isExpanded = !isExpanded"
@@ -28,7 +36,7 @@
         v-html="citation.citation_source_body"
       />
     </div>
-  </li>
+  </div>
 </template>
 
 <script setup>
