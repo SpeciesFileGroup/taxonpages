@@ -1,5 +1,5 @@
 <template>
-  <footer class="footer text-white bottom-0 border-gray-200 bg-zinc-800 dark:bg-slate-800 pl-4 pr-4">
+  <footer class="footer text-white bottom-0 border-gray-200 bg-zinc-800 pl-4 pr-4">
     <div class="container mx-auto text-sm pt-2 pb-4">
       <div class="pt-4 pb-2">
         {{ project_authors }}
@@ -31,7 +31,7 @@
         <p>{{ copyright_text }}</p>
       </div>
 
-      <hr class="mt-3 mb-3 border-gray-500 dark:border-slate-700">
+      <hr class="mt-3 mb-3 border-gray-500">
 
       <div class="flex items-center">
         <span>

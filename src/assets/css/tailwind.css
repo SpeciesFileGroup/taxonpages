@@ -2,9 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
+
   :root {
-    --color-primary: 137, 167, 65;
+    --color-primary: 0, 0, 0;
     --color-primary-content: 255, 255, 255;
 
     --color-secondary: 14, 165, 233;
@@ -51,4 +51,3 @@
   .dark {
     color-scheme: dark;
   }
-}
