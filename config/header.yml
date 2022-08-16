@@ -1,5 +1,6 @@
 ---
   header_logo_url:
+  header_logo_text:
   header_links:
     - label: Home
       link: /
