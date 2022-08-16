@@ -1,0 +1,27 @@
+:root {
+  --color-primary: 0, 0, 0;
+  --color-primary-content: 255, 255, 255;
+
+  --color-secondary: 14, 165, 233;
+  --color-secondary-content: 255, 255, 255;
+
+  --color-base-foreground: 255, 255, 255;
+  --color-base-background: 245, 247, 251;
+  --color-base-200: 226, 232, 240;
+  --color-base-300: 203, 213, 225;
+  --color-base-content: 0, 0, 0;
+}
+
+.dark {
+  --color-primary: 14, 165, 233;
+  --color-primary-content: 255, 255, 255;
+  
+  --color-secondary: 14, 165, 233;
+  --color-secondary-content: 255, 255, 255;
+
+  --color-base-background: 23,23,23;
+  --color-base-foreground: 38,38,38;
+  --color-base-200: 30, 41, 59;
+  --color-base-300: 30, 41, 59;
+  --color-base-content: 255, 255, 255;
+}
