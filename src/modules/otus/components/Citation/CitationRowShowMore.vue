@@ -7,6 +7,7 @@
       p-3
       px-4
       last:border-b-0
+      cursor-pointer
       dark:border-b-slate-700"
   >
     <div 
