@@ -3,12 +3,9 @@
     <div>
       <slot />
     </div>
-    <button
-      type="button"
-      class="p-2 cursor-pointer opacity-50 text-base-content"
-    >
-      <IconClose />
-    </button>
+    <div>
+      <slot name="right" />
+    </div>
   </div>
 </template>
 

@@ -44,7 +44,7 @@ import OtuService from '../../services/OtuService'
 import CitationRow from './CitationRow.vue'
 import CitationRowShowMore from './CitationRowShowMore.vue'
 
-const MAX_CITATIONS = 5
+const MAX_CITATIONS = 3
 
 const props = defineProps({
   otuId: {

@@ -1,7 +1,6 @@
 <template>
   <div 
     class="fixed z-[10000] h-full overflow-y-hidden overflow-x-hidden w-full top-0 left-0 flex flex-col items-center justify-center backdrop-blur-md bg-base-foreground"
-    @click="emit('close')"
   >
     <div 
       class="min-w-96 dark:bg-slate-900 rounded-lg shadow-sm mb-24"
@@ -72,6 +71,9 @@
         :current-image="index"
         :total-images="images.length"
       />
+      <template #right>
+        <ImageViewerClose @click="emit('close')" />
+      </template>
     </ImageToolbar>
   </div>
 </template>
@@ -86,6 +88,7 @@ import ControlNextImage from './ControlImageNext.vue'
 import ControlPreviousImage from './ControlImagePrevious.vue'
 import GalleryThumbnailList from '@/components/Gallery/GalleryThumbnailList.vue'
 import ImageToolbar from './ImageToolbar.vue'
+import ImageViewerClose from './ImageViewerClose.vue'
 
 const props = defineProps({
   index: {
