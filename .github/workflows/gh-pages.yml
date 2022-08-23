@@ -2,7 +2,7 @@ name: public-build
 
 on:
   push:
-    branches: [main]
+    branches: [main, setup]
   workflow_dispatch:
 
 jobs:
@@ -12,7 +12,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          ref: 'main'
           fetch-depth: 0
+      
+      - uses: actions/checkout@v2
+        with:
+          ref: 'setup'
+          fetch-depth: 0
+          path: _setup
+
+      - name: Insert setup branch
+        run: cp -r _setup/* .
 
       - name: Setup Node.js
         uses: actions/setup-node@v1
