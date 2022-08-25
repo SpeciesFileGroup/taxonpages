@@ -6,8 +6,12 @@ import {
 
 import dynamicRoutes from '~pages'
 
-const moduleRoutes = import.meta.globEager('@/modules/**/router/*.js')
-const routerObjects = [].concat(...Object.values(moduleRoutes).map(route => route.default))
+const coreModuleRoutes = import.meta.globEager('@/modules/**/router/*.js', { import: 'default' })
+const userModuleRoutes = import.meta.globEager('#/modules/**/router/*.js', { import: 'default' })
+const moduleRoutes = [].concat(
+  ...Object.values(coreModuleRoutes),
+  ...Object.values(userModuleRoutes)
+)
 const { base_url, hash_mode } = __APP_ENV__
 
 const router = createRouter({
@@ -17,7 +21,7 @@ const router = createRouter({
 
   routes: [
     ...dynamicRoutes,
-    ...routerObjects,
+    ...moduleRoutes
   ]
 })
 

@@ -13,7 +13,7 @@ project: Your project
   Welcome to *{{ frontmatter.project }}*, a website of taxon pages generated from the {{ frontmatter.project }} Project, a comprehensive collaborative effort managed in [TaxonWorks](https://taxonworks.org). 
 
   ## Get started!
-  <autocomplete-otu/>
+  <autocomplete-otu class="w-80"/>
 
   ## Announcements
   * 5/1/2022 - We've grown!  

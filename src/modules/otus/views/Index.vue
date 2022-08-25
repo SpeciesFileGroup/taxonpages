@@ -30,8 +30,8 @@
               mb-2
               md:min-w-fit
               md:ml-2
-              md:mb-0
-              w-60
+              md:mb-0 
+              w-80
             "
             url="/otus/autocomplete"
             query-param="term"

@@ -21,12 +21,11 @@
         min-w-full
         p-1.5
         pl-10
-        text-gray-900
-        dark:bg-slate-800
+        text-base-content
         rounded
         border
         sm:text-sm
-        dark:text-white
+        placeholder:text-sm
         dark:border-slate-700
         border-gray-300
         dark:placeholder:text-slate-400
@@ -41,7 +40,18 @@
 
     <ul
       v-if="list.length"
-      class="autocomplete__list list absolute z-[500] max-h-52 overflow-y-auto border bg-white dark:bg-gray-800 dark:border-gray-700"
+      class="
+        autocomplete__list
+        list
+        absolute
+        z-[500]
+        max-h-52
+        w-full
+        overflow-y-auto
+        border
+        bg-base-foreground
+        border-base-300
+        !m-0"
     >
       <li
         v-for="item in list"
@@ -49,12 +59,11 @@
         class="
           autocomplete__item
           p-2 border-b 
-          bg-white
           text-sm
           cursor-pointer
-          hover:bg-gray-200
-          dark:border-gray-700
-          dark:bg-gray-800"
+          hover:bg-secondary-color
+          hover:bg-opacity-5
+          border-base-300"
         @click="selectItem(item)"
       >
         <span v-html="item[label]" />
