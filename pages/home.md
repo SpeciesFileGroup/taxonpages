@@ -3,7 +3,7 @@ title: The title
 lead: Taxa from your imagination to the web
 project: Your project
 ---
-<div class="container mx-auto mt-4 pl-4 pr-4">
+<div class="container mx-auto p-4">
   <div class="prose dark:prose-invert lg:prose-base max-w-none">
    
   # {{frontmatter.title}}

@@ -4,7 +4,7 @@ contact_email: user@example.com
 copyright: All content is CC 0 so that it maybe be shared throughout the world in places like Wikipedia.
 citation: Project collaborative. 2022. Website title. Available at https://example.com. 
 ---
-<div class="container mx-auto mt-4 pl-4 pr-4">
+<div class="container mx-auto p-4">
   <div class="prose dark:prose-invert lg:prose-base max-w-none">
 
 # {{frontmatter.title}}
