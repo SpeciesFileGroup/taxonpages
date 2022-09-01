@@ -9,7 +9,6 @@
       py-2.5
       border-b
       dark:border-b-slate-800
-      dark:bg-slate-900
       pl-4
       pr-4
       h-9
@@ -37,7 +36,7 @@
       <NavbarMobile />
 
       <div class="relative hidden lg:flex items-center ml-auto">
-        <nav class="text-sm leading-6 font-semibold">
+        <nav class="text-sm leading-6 font-medium">
           <ul class="flex space-x-8">
             <li
               v-for="(item, index) in header_links"

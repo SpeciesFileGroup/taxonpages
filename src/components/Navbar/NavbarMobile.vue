@@ -30,26 +30,28 @@
         w-full
         z-50
         bg-base-foreground
+        text-base-content
         block
+        shadow-md
         md:hidden
         print:hidden"
     >
-      <nav class="font-normal">
-        <ul class="flex flex-col m-0 p-0">
+      <nav class="font-normal container mx-auto">
+        <ul class="flex flex-col m-0 p-0 border-t border-base-300">
           <li
             v-for="(item, index) in header_links"
             :key="index"
-            class="border-b"
+            class="border-b border-base-300"
           >
             <router-link
               :to="item.link"
-              class="text-base-content w-full p-4 block box-border"
+              class="text-base-content w-full p-4 pt-3 pb-3 block box-border"
             >
               {{ item.label }}
             </router-link>
           </li>
           <li>
-            <SwitchTheme class="text-primary-content" />
+            <SwitchTheme class="text-base-content p-4 pt-3 pb-3 border-b w-full border-base-300" />
           </li>
         </ul>
       </nav>

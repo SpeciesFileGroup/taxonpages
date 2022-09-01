@@ -33,7 +33,7 @@ module.exports = {
 
         primary: {
           color: withOpacity('--color-primary'),
-          content: withOpacity('--color-secondary-content')
+          content: withOpacity('--color-primary-content')
         },
 
         secondary: {
