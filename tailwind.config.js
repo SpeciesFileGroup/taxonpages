@@ -10,6 +10,7 @@ function withOpacity(variableName) {
 module.exports = {
   content: [
     "./index.html",
+    "./vite.config.js",
     "./src/**/*.{vue,js,ts,jsx,tsx,md}",
     "./pages/*.{vue,md}",
     "./config/*.yml",

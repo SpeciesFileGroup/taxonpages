@@ -3,8 +3,7 @@ title: The title
 lead: Taxa from your imagination to the web
 project: Your project
 ---
-<div class="container mx-auto p-4">
-  <div class="prose dark:prose-invert lg:prose-base max-w-none">
+
    
   # {{frontmatter.title}}
   _{{frontmatter.lead}}_
@@ -21,6 +20,3 @@ project: Your project
 
   ## Find out more
   Learn how to collaborate with the {{ frontmatter.title }} project. Contact information, technical details, and more are available at [About](/about).
-
-  </div>
-</div>
