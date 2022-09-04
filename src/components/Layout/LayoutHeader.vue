@@ -3,7 +3,7 @@
     class="
       relative
       bg-header
-      border-base-200
+      border-base-muted
       px-2
       sm:px-4
       py-2.5

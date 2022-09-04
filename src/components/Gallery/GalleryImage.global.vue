@@ -7,7 +7,7 @@
         border
         print:hidden
         bg-base-0
-        border-base-200
+        border-base-muted
       "
     >
       <div class="h-80 max-h-80 flex items-center justify-center">

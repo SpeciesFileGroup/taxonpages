@@ -1,5 +1,5 @@
 <template>
-  <VCardHeader class="border-t border-base-200 first:border-t-0">
+  <VCardHeader class="border-t border-base-muted first:border-t-0">
     {{ title }}
   </VCardHeader>
   <VCardContent>

@@ -50,7 +50,7 @@
         overflow-y-auto
         border
         bg-base-foreground
-        border-base-300
+        border-base-border
         !m-0"
     >
       <li
@@ -63,7 +63,7 @@
           cursor-pointer
           hover:bg-secondary-color
           hover:bg-opacity-5
-          border-base-300"
+          border-base-border"
         @click="selectItem(item)"
       >
         <span v-html="item[label]" />

@@ -8,6 +8,16 @@
       :geojson="geojson"
       @geojson:ready="isLoading = false"
     />
+    <div v-if="false" class="text-sm flex flex-row justify-around">
+      <div class="flex flex-row items-center p-2">
+        <div class="w-3 h-3 bg-map-georeference m-1" />
+        <span>Georeference</span>
+      </div>
+      <div class="flex flex-row items-center p-2 ">
+        <div class="w-3 h-3 m-1 bg-map-asserted" />
+        <span>Asserted distribution</span>
+      </div>
+    </div>
   </VCard>
 </template>
 

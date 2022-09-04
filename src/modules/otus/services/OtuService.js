@@ -35,6 +35,6 @@ export default class OtuService {
   }
 
   static getContent (otuId) {
-    return makeAPIRequest.get(`/otus/${otuId}/inventory/content`)
+    return makeAPIRequest.get(`/otus/${otuId}/inventory/content`, { extend: ['depiction']})
   }
 }

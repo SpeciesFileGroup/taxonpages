@@ -27,9 +27,14 @@ module.exports = {
         base: {
           background: withOpacity('--color-base-background'),
           foreground: withOpacity('--color-base-foreground'),
-          200: withOpacity('--color-base-200'),
-          300: withOpacity('--color-base-300'),
+          muted: withOpacity('--color-base-muted'),
+          border: withOpacity('--color-base-border'),
           content: withOpacity('--color-base-content')
+        },
+
+        map: {
+          georeference: withOpacity('--color-map-georeference-marker'),
+          asserted: withOpacity('--color-map-asserted')
         },
 
         primary: {

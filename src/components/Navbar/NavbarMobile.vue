@@ -37,11 +37,11 @@
         print:hidden"
     >
       <nav class="font-normal container mx-auto">
-        <ul class="flex flex-col m-0 p-0 border-t border-base-300">
+        <ul class="flex flex-col m-0 p-0 border-t border-base-border">
           <li
             v-for="(item, index) in header_links"
             :key="index"
-            class="border-b border-base-300"
+            class="border-b border-base-border"
           >
             <router-link
               :to="item.link"
@@ -51,7 +51,7 @@
             </router-link>
           </li>
           <li>
-            <SwitchTheme class="text-base-content p-4 pt-3 pb-3 border-b w-full border-base-300" />
+            <SwitchTheme class="text-base-content p-4 pt-3 pb-3 border-b w-full border-base-border" />
           </li>
         </ul>
       </nav>

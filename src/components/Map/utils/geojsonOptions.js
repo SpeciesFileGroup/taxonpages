@@ -21,7 +21,7 @@ export default ({
   style: (feature) => {
     if (feature.properties?.base?.type === 'AssertedDistribution') {
       return { 
-        color: generateHue(5),
+        color: 'rgb(var(--color-map-asserted))',
         weight: 1,
         dashArray: '3',
         dashOffset: '3',

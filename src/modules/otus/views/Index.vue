@@ -4,7 +4,7 @@
       class="
         bg-base-foreground
         border-b
-        border-base-200
+        border-base-muted
         pl-4 
         pr-4"
     >
