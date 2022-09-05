@@ -13,7 +13,7 @@
       :to="{ name: 'otus-id', params: { id: taxonomy.otu_id } }"
       v-html="taxonomy.name"
     />
-    <SynonymList 
+    <DescendantsSynonymList 
       v-if="taxonomy.nomenclatural_synonyms.length"
       class="pb-4"
       :list="taxonomy.nomenclatural_synonyms"
@@ -28,7 +28,7 @@
           :key="item.otu_id"
         >
           <AnimationOpacity>
-            <TreeView
+            <DescendantsTree
               v-if="isTreeVisible"
               :taxonomy="item"
             />
@@ -40,9 +40,9 @@
 </template>
 
 <script setup>
-import TreeView from '@/components/TreeView.vue'
-import SynonymList from './SynonymList.vue'
-import OtuService from '@/modules/otus/services/OtuService'
+import DescendantsTree from './DescendantsTree.vue'
+import DescendantsSynonymList from './DescendantsSynonymList.vue'
+import TaxonWorks from '../../../services/TaxonWorks'
 import { ref, watch } from 'vue'
 
 const props = defineProps({
@@ -71,7 +71,7 @@ watch(
 
 const loadDescendants = () => {
   if (descendants.value.length) { return }
-  OtuService.getDescendants(props.taxonomy.otu_id, { max_descendants_depth: 1 }).then(({ data }) => {
+  TaxonWorks.getOtuDescendants(props.taxonomy.otu_id, { max_descendants_depth: 1 }).then(({ data }) => {
     descendants.value = data.descendants
   })
 }

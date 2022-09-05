@@ -84,7 +84,7 @@ import { useRoute, useRouter } from 'vue-router'
 import Breadcrumb from '@/components/Breadcrumb.vue'
 import TaxaInfo from '@/modules/otus/components/TaxaInfo.vue'
 import useChildrenRoutes from '../composables/useChildrenRoutes'
-import OtuService from '../services/OtuService'
+import TaxonWorks from '../services/TaxonWorks'
 
 const route = useRoute()
 const router = useRouter()
@@ -103,8 +103,8 @@ watch(routeParams, async (newParams, oldParams) => {
   otu.value = {}
   taxon.value = {}
 
-  otu.value = (await OtuService.getOtu(route.params.id)).data
-  taxon.value = (await OtuService.getTaxon(otu.value.taxon_name_id)).data
+  otu.value = (await TaxonWorks.getOtu(route.params.id)).data
+  taxon.value = (await TaxonWorks.getTaxon(otu.value.taxon_name_id)).data
 
 }, { immediate: true })
 

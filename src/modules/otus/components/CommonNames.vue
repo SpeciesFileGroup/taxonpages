@@ -4,7 +4,7 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue'
-import OtuService from '../services/OtuService'
+import TaxonWorks from '../services/TaxonWorks'
 
 const props = defineProps({
   otuId: {
@@ -20,7 +20,7 @@ watch(
   () => props.otuId,
   id => {
     if (id) {
-      OtuService.getDescendants(id, { 
+      TaxonWorks.getOtuDescendants(id, { 
         max_descendants_depth: 0,
         extend: ['common_names']
       }).then(({ data }) => {

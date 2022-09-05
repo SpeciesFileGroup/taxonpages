@@ -3,7 +3,6 @@
     <ContentTopic
       v-for="(text, title) in contentList"
       :key="title"
-      class="last:mb-0"
       :title="title"
       :text-list="text"
     />
@@ -12,8 +11,8 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue'
-import OtuService from '../../services/OtuService'
-import ContentTopic from './ContentTopic.vue'
+import TaxonWorks from '../../../services/TaxonWorks'
+import ContentTopic from './PanelContentTopic.vue'
 
 const props = defineProps({
   otuId: {
@@ -40,7 +39,7 @@ watch(
   () => props.otuId,
   id => {
     if (id) {
-      OtuService.getContent(id).then(({ data }) => {
+      TaxonWorks.getOtuContent(id).then(({ data }) => {
         contents.value = data
       })
     } else {

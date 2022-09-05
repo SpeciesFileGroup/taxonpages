@@ -1,6 +1,6 @@
 import { makeAPIRequest } from "@/utils/request"
 
-export default class OtuService {
+export default class TaxonWorks {
 
   static getTaxonNameCitations (otuId) {
     return makeAPIRequest.get(`/otus/${otuId}/inventory/nomenclature_citations`, { params: { extend: ['source'] } })
@@ -14,7 +14,7 @@ export default class OtuService {
     return makeAPIRequest.get(`/taxon_names/${id}`)
   }
 
-  static getTaxonTypeSpecies (id) {
+  static getTaxonTypeDesignation (id) {
     return makeAPIRequest.get(`/taxon_names/${id}`, { params: { extend: ['type_taxon_name_relationship'] } })
   }
 
@@ -22,19 +22,19 @@ export default class OtuService {
     return makeAPIRequest.get(`/otus/${otuId}/inventory/images.json`, { params })
   }
 
-  static getDescendants (otuId, params) {
+  static getOtuDescendants (otuId, params) {
     return makeAPIRequest.get(`/otus/${otuId}/inventory/taxonomy.json`, { params })
   }
 
-  static getTypes (otuId) {
+  static getOtuTypeMaterial (otuId) {
     return makeAPIRequest.get(`/otus/${otuId}/inventory/type_material.json`)
   }
 
-  static getGeoJSON (otuId) {
+  static getOtuDistribution (otuId) {
     return makeAPIRequest.get(`/otus/${otuId}/inventory/distribution`)
   }
 
-  static getContent (otuId) {
+  static getOtuContent (otuId) {
     return makeAPIRequest.get(`/otus/${otuId}/inventory/content`, { extend: ['depiction']})
   }
 }

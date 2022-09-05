@@ -23,7 +23,7 @@
 
 <script setup>
 import { ref, watch } from "vue"
-import OtuService from "../services/OtuService"
+import TaxonWorks from '../../../services/TaxonWorks'
 
 const props = defineProps({
   otuId: {
@@ -42,7 +42,7 @@ watch(
     if(newId === oldId) return
     isLoading.value = true
 
-    OtuService.getGeoJSON(props.otuId).then(({ data }) => {
+    TaxonWorks.getOtuDistribution(props.otuId).then(({ data }) => {
       geojson.value = data.request_too_large
         ? null
         : data

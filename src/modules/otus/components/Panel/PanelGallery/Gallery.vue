@@ -8,7 +8,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import OtuService from '../services/OtuService'
+import TaxonWorks from '../../../services/TaxonWorks'
 
 const props = defineProps({
   otuId: {
@@ -27,7 +27,7 @@ watch(
       otu_scope: ['all']
     }
   
-    images.value = (await OtuService.getOtuImages(props.otuId, params)).data
+    images.value = (await TaxonWorks.getOtuImages(props.otuId, params)).data
   },
   { immediate: true }
 )

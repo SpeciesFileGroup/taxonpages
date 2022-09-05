@@ -15,8 +15,8 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { SPECIMEN_TYPES } from '../constants'
-import OtuService from '../services/OtuService'
+import { SPECIMEN_TYPES } from '../../../constants'
+import TaxonWorks from '../../../services/TaxonWorks'
 
 const props = defineProps({
   otuId: {
@@ -32,7 +32,7 @@ watch(
   () => {
   if (!props.otuId) { return }
 
-  OtuService.getTypes(props.otuId).then(({ data }) => {
+  TaxonWorks.getOtuTypeMaterial(props.otuId).then(({ data }) => {
     typeMaterials.value = data.type_materials_catalog_labels.sort((a, b) => SPECIMEN_TYPES.indexOf(a.type_type) - SPECIMEN_TYPES.indexOf(b.type_type))
   })
 }, { immediate: true })

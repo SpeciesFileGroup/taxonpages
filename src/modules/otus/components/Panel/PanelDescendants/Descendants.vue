@@ -8,7 +8,7 @@
     <VCardContent class="text-sm">
       <ul class="tree ml-2">
         <AnimationOpacity>
-          <TreeView
+          <DescendantsTree
             v-if="taxonomy && (taxonomy.nomenclatural_synonyms.length || taxonomy.descendants.length)"
             :taxonomy="taxonomy" 
           />
@@ -19,9 +19,9 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
-import TreeView from '@/components/TreeView.vue'
-import OtuService from '../services/OtuService';
+import { ref, watch } from 'vue'
+import DescendantsTree from './DescendantsTree.vue'
+import TaxonWorks from '../../../services/TaxonWorks'
 
 const props = defineProps({
   otuId: {
@@ -35,7 +35,7 @@ const taxonomy = ref(null)
 watch(() => props.otuId, async () => {
   if (!props.otuId) { return }
 
-  OtuService.getDescendants(props.otuId, { max_descendants_depth: 1 }).then(({ data }) => {
+  TaxonWorks.getOtuDescendants(props.otuId, { max_descendants_depth: 1 }).then(({ data }) => {
     taxonomy.value = data
   })
 }, { immediate: true })

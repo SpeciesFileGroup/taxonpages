@@ -8,7 +8,7 @@
 
     <div class="text-sm">
       <CitationRow
-        v-for="citation in citationList.start"
+        v-for="citation in citationList.first"
         :key="citation.id"
         :citation="citation"
       />
@@ -40,9 +40,9 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-import OtuService from '../../services/OtuService'
-import CitationRow from './CitationRow.vue'
-import CitationRowShowMore from './CitationRowShowMore.vue'
+import TaxonWorks from '../../../services/TaxonWorks'
+import CitationRow from './PanelCitationRow.vue'
+import CitationRowShowMore from './PanelCitationShowMore.vue'
 
 const MAX_CITATIONS = 3
 
@@ -57,21 +57,27 @@ const showAll = ref(false)
 const citations = ref([])
 const citationList = computed(() => {
   const copyArr = citations.value.slice()
-
-  const start = copyArr.splice(0, MAX_CITATIONS)
+  const first = copyArr.splice(0, MAX_CITATIONS)
   const last = copyArr.splice(-MAX_CITATIONS)
   const middle = copyArr
+
   return {
-    start,
+    first,
     middle,
     last
   }
 })
 
-watch(() => props.otuId, async () => {
-  if (!props.otuId) { return }
+watch(
+  () => props.otuId,
+  async () => {
+    if (!props.otuId) { return }
 
-  citations.value = (await OtuService.getTaxonNameCitations(props.otuId)).data
-}, { immediate: true })
+    citations.value = (await TaxonWorks.getTaxonNameCitations(props.otuId)).data
+  },
+  {
+    immediate: true
+  }
+)
 
 </script>

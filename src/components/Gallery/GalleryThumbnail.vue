@@ -5,6 +5,7 @@
   >
     <img 
       class="max-h-20 max-w-24 h-20 w-24 object-cover rounded"
+      :alt="title"
       :src="image.thumb"
     >
   </div>
