@@ -81,10 +81,10 @@
 
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import Breadcrumb from '@/components/Breadcrumb.vue'
-import TaxaInfo from '@/modules/otus/components/TaxaInfo.vue'
-import useChildrenRoutes from '../composables/useChildrenRoutes'
+import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
+import TaxaInfo from '../components/TaxaInfo.vue'
 import TaxonWorks from '../services/TaxonWorks'
+//import useChildrenRoutes from '../composables/useChildrenRoutes'
 
 const route = useRoute()
 const router = useRouter()
