@@ -1,9 +1,0 @@
----
-  header_logo_url: https://i.ibb.co/5n5jMWL/SiteLogo.jpg
-  header_logo_text: Orthoptera Species File
-  header_links:
-    - label: Home
-      link: /
-
-    - label: About
-      link: /about
