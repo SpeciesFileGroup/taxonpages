@@ -27,6 +27,7 @@
           v-if="header_logo_url"
           class="mr-3 h-10"
           :src="header_logo_url"
+          :alt="header_logo_text"
         >
         <span>
           {{ header_logo_text }}

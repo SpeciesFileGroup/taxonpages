@@ -26,7 +26,7 @@ export default () => {
         include: [/\.vue$/, /\.md$/]
       }),
       Markdown({
-        wrapperClasses: '!container mx-auto pt-4 pb-4 prose dark:prose-invert box-border'
+        wrapperClasses: '!container mx-auto p-4 sm:pl-0 sm:pr-0 prose dark:prose-invert box-border'
       }),
       Pages({
         dirs: 'pages',
