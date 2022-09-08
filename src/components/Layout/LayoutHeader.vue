@@ -19,8 +19,8 @@
     "
   >
     <div class="container flex flex-wrap justify-between items-center mx-auto font-medium text-secondary-content">
-      <a
-        href="/"
+      <router-link
+        to="/"
         class="flex items-center text-primary-content"
       >
         <img
@@ -31,7 +31,7 @@
         <span>
           {{ header_logo_text }}
         </span>
-      </a>
+      </router-link>
 
       <NavbarMobile />
 
