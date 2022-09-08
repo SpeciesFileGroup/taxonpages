@@ -8,7 +8,6 @@
       sm:px-4
       py-2.5
       border-b
-      dark:border-b-slate-800
       pl-4
       pr-4
       h-9
@@ -53,7 +52,7 @@
           </ul>
         </nav>
 
-        <div class="flex items-center border-l border-slate-200 ml-6 pl-6 dark:border-slate-800">
+        <div class="flex items-center border-l ml-6 pl-6 border-base-muted">
           <SwitchTheme class="text-primary-content" />
         </div>
       </div>

@@ -4,9 +4,10 @@
       flex
       justify-start
       border-b
+      border-base-muted
       p-3
       px-4
-      dark:border-b-slate-700"
+    "
   >
     <div 
       class="h-5 w-5 text-secondary-color opacity-60 mr-2 cursor-pointer"
