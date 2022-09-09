@@ -1,4 +1,3 @@
-import { generateHue } from "@/utils/color"
 import { squareMarker } from "../markers"
 import L from 'leaflet'
 
@@ -19,7 +18,6 @@ export default ({
   },
 
   style: (feature) => {
-    console.log(feature.properties?.base?.type)
     if (feature.properties?.base?.type === 'AssertedDistribution') {
       return { 
         color: 'rgb(var(--color-map-asserted))',

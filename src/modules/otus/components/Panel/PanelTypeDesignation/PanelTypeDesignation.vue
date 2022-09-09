@@ -2,7 +2,7 @@
   <VCard>
     <VCardHeader>
       <h1 class="text-md">
-        Type
+        Type designation
       </h1>
     </VCardHeader>
     <VCardContent class="text-sm">

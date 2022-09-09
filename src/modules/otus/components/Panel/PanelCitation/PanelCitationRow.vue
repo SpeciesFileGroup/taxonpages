@@ -24,13 +24,10 @@
     </div>
  
     <div>
-      <div v-if="isExpanded">
-        <span v-html="citation.source.label" />
-        <span v-if="citation.pages">
-          :{{ citation.pages }}
-        </span>
-      </div>
-
+      <span 
+        v-if="isExpanded"
+        v-html="sourceLabel" 
+      />
       <span
         v-else
         :title="citation.source.label"
@@ -41,9 +38,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
-defineProps({
+const props = defineProps({
   citation: {
     type: Object,
     required: true
@@ -51,5 +48,10 @@ defineProps({
 })
 
 const isExpanded = ref(false)
+const sourceLabel = computed(() => 
+  [
+    props.citation.source.label,
+    props.citation.pages
+  ].filter(Boolean).join(':'))
 
 </script>
