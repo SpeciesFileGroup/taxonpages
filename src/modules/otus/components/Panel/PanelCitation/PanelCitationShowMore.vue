@@ -8,7 +8,8 @@
       px-4
       last:border-b-0
       cursor-pointer
-      dark:border-b-slate-700"
+      border-base-muted
+    "
   >
     <div 
       class="h-5 w-5 text-secondary-color opacity-60 mr-2 cursor-pointer"
