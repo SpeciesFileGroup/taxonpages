@@ -33,8 +33,10 @@ module.exports = {
         },
 
         map: {
-          georeference: withOpacity('--color-map-georeference-marker'),
-          asserted: withOpacity('--color-map-asserted')
+          georeference: withOpacity('--color-map-georeference'),
+          asserted: withOpacity('--color-map-asserted'),
+          'type-material': withOpacity('--color-map-type-material'),
+          'collection-object': withOpacity('--color-map-collection-object')
         },
 
         primary: {
