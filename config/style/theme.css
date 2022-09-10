@@ -10,16 +10,21 @@
   --color-base-muted: 226, 232, 240;
   --color-base-border: 203, 213, 225;
   --color-base-content: 0, 0, 0;
+
+  --color-map-georeference: 239, 68, 68;
+  --color-map-asserted: 249, 115, 22;
+  --color-map-type-material: 51, 136, 255;
+  --color-map-collection-object: 239, 68, 68;
 }
 
 .dark {
-  --color-primary: 23,23,23;
+  --color-primary: 23, 23, 23;
   --color-primary-content: 255, 255, 255;
   
   --color-secondary: 14, 165, 233;
   --color-secondary-content: 255, 255, 255;
 
-  --color-base-background: 23,23,23;
+  --color-base-background: 23, 23, 23;
   --color-base-foreground: 38,38,38;
   --color-base-muted: 48, 48, 48;
   --color-base-border: 38, 38, 38;
