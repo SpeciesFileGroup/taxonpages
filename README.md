@@ -2,7 +2,7 @@
 TaxonPages is a tool to serve taxon pages for TaxonWorks projects.
 
 ## Status Warning
-TaxonPages software is in active development and changes are expected that will cause the early first-adopters' instances to require rebuilding by refreshing one's forked branch. A first _stable version_ is expected by Spring 2023.
+TaxonPages software is in active development and changes are expected that will cause the early first-adopters' instances to require rebuilding by refreshing one's forked branch using `git pull`. A first _stable version_ is expected by Spring 2023.
 
 ## Usage
 
