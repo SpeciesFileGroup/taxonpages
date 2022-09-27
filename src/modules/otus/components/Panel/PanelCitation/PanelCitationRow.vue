@@ -23,7 +23,7 @@
       />
     </div>
  
-    <div>
+    <div class="break-all">
       <span 
         v-if="isExpanded"
         v-html="sourceLabel" 
