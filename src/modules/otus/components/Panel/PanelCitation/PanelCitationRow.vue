@@ -23,7 +23,7 @@
       />
     </div>
  
-    <div>
+    <div class="break-all">
       <span 
         v-if="isExpanded"
         v-html="sourceLabel" 
@@ -53,5 +53,13 @@ const sourceLabel = computed(() =>
     props.citation.source.label,
     props.citation.pages
   ].filter(Boolean).join(':'))
+
+const setExpanded = value => {
+  isExpanded.value = value
+}
+
+defineExpose({
+  setExpanded
+})
 
 </script>
