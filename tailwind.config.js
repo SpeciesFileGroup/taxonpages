@@ -26,10 +26,12 @@ module.exports = {
       colors: {
         base: {
           background: withOpacity('--color-base-background'),
-          foreground: withOpacity('--color-base-foreground'),
-          muted: withOpacity('--color-base-muted'),
           border: withOpacity('--color-base-border'),
-          content: withOpacity('--color-base-content')
+          content: withOpacity('--color-base-content'),
+          foreground: withOpacity('--color-base-foreground'),
+          lighter: withOpacity('--color-base-lighter'),
+          muted: withOpacity('--color-base-muted'),
+          soft: withOpacity('--color-base-soft'),
         },
 
         map: {

@@ -1,9 +1,16 @@
 <template>
   <VCard>
-    <VCardHeader>
+    <VCardHeader class="flex justify-between">
       <h1 class="text-md">
         Nomenclature citations
       </h1>
+      <Dropdown
+        :items="menuOptions"
+      >
+        <template #button>
+          <IconHamburger class="text-base-soft h-3" />
+        </template>
+      </Dropdown>
     </VCardHeader>
 
     <div class="text-sm">
@@ -11,6 +18,7 @@
         v-for="citation in citationList.first"
         :key="citation.id"
         :citation="citation"
+        ref="rowRefs"
       />
 
       <CitationRowShowMore
@@ -19,11 +27,12 @@
         @click="showAll = true"
       />
       <AnimationOpacity>
-        <div v-if="showAll">
+        <div v-show="showAll">
           <CitationRow
             v-for="citation in citationList.middle"
             :key="citation.id"
             :citation="citation"
+            ref="rowRefs"
           />
         </div>
       </AnimationOpacity>
@@ -32,6 +41,7 @@
         v-for="citation in citationList.last"
         :key="citation.id"
         :citation="citation"
+        ref="rowRefs"
         class="last:border-b-0"
       />
     </div>
@@ -53,6 +63,7 @@ const props = defineProps({
   }
 })
 
+const rowRefs = ref([])
 const showAll = ref(false)
 const citations = ref([])
 const citationList = computed(() => {
@@ -68,6 +79,23 @@ const citationList = computed(() => {
   }
 })
 
+const menuOptions = computed(() => [
+  {
+    label: showAll.value
+      ? 'Show less'
+      : 'Show all',
+    action: () => showAll.value = !showAll.value
+  },
+  {
+    label: 'Expand',
+    action: () => changeRowExpandedState(true)
+  },
+  {
+    label: 'Collapse',
+    action: () => changeRowExpandedState(false)
+  }
+])
+
 watch(
   () => props.otuId,
   async () => {
@@ -80,4 +108,9 @@ watch(
   }
 )
 
+const changeRowExpandedState = value => {
+  rowRefs.value.forEach(component => {
+    component.setExpanded(value)
+  })
+}
 </script>

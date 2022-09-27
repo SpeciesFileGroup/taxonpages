@@ -54,4 +54,12 @@ const sourceLabel = computed(() =>
     props.citation.pages
   ].filter(Boolean).join(':'))
 
+const setExpanded = value => {
+  isExpanded.value = value
+}
+
+defineExpose({
+  setExpanded
+})
+
 </script>
