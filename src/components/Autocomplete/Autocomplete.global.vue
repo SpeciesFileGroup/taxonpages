@@ -59,7 +59,7 @@
         class="
           autocomplete__item
           p-2 border-b 
-          text-sm
+          text-xs
           cursor-pointer
           hover:bg-secondary-color
           hover:bg-opacity-5
