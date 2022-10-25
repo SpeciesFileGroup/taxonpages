@@ -16,10 +16,12 @@
             flex
             flex-col-reverse
             md:flex-row
-            justify-between 
-            items-start"
+            justify-between
+            items-start
+          "
         >
-          <Breadcrumb 
+          <Breadcrumb
+            class="w-3/4"
             :list="otu.parents"
             :current="taxon"
           />
@@ -31,7 +33,7 @@
               md:min-w-fit
               md:ml-2
               md:mb-0 
-              w-80
+              w-1/4
             "
             url="/otus/autocomplete"
             query-param="term"
