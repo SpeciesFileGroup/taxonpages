@@ -25,13 +25,13 @@
  
     <div class="break-all">
       <span 
-        v-if="isExpanded"
+        :title="citation.source.name"
         v-html="sourceLabel" 
       />
+      <span> — </span>
       <span
-        v-else
-        :title="citation.source.label"
-        v-html="citation.citation_source_body"
+        class=" text-base-lighter"
+        v-html="taxonNames"
       />
     </div>
   </div>
@@ -48,11 +48,15 @@ const props = defineProps({
 })
 
 const isExpanded = ref(false)
-const sourceLabel = computed(() => 
-  [
-    props.citation.source.label,
-    props.citation.pages
-  ].filter(Boolean).join(':'))
+const sourceLabel = computed(() => {
+  const { source } = props.citation
+
+  return isExpanded.value 
+    ? source.name
+    : source.short_name
+})
+
+const taxonNames = computed(() => props.citation.names.join(', '))
 
 const setExpanded = value => {
   isExpanded.value = value
