@@ -1,12 +1,12 @@
 <template>
-  <VCard>
+  <VCard v-if="typeMaterials.length">
     <VCardHeader>
       <h1 class="text-md">
         Type specimen
       </h1>
     </VCardHeader>
     <VCardContent class="text-sm">
-      <p v-if="typeMaterials.length">
+      <p>
         {{ typeMaterials[0].label }}
       </p>
     </VCardContent>

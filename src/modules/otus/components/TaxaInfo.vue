@@ -4,13 +4,22 @@
       {{ taxon.rank || taxon.type }}
     </h2>
     <h1 class="text-xl dark:text-gray-100">
-      <span v-html="taxonNameString" />
-      <span 
-        class="ml-2"
-        :class="statusStyle"
-        v-html="status"
-      />
+      <span>
+        <span 
+          :title="taxon.short_status"
+          v-html="taxon.full_name" 
+        />
+        <span 
+          v-if="!taxon.is_valid"
+          class="ml-1"
+          :class="statusStyle"
+          title="Invalid"
+          v-html="status"
+        />
+        
+      </span>
     </h1>
+    {{ taxon.status }}
     <h2 class="text-1xl">
       <CommonNames :otu-id="props.otuId" />
     </h2>
@@ -24,7 +33,7 @@ import CommonNames from './CommonNames.vue'
 const props = defineProps({
   taxon: {
     type: Object,
-    default: () => {}
+    default: () => ({})
   },
 
   otuId: {
@@ -44,11 +53,4 @@ const statusStyle = computed(() =>
     : 'text-red-600'
 )
 
-const isValid = computed(() => props.taxon.id === props.taxon.cached_valid_taxon_name_id)
-
-const taxonNameString = computed(() => 
-  isValid.value
-    ? props.taxon.cached_html + ' ' + (props.taxon.cached_author_year || '')
-    : props.taxon.original_combination
-)
 </script>

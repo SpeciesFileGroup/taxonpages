@@ -71,7 +71,7 @@
           v-if="taxon.id && otu.id"
           :key="route.fullPath"
           :taxon-id="taxon.id"
-          :taxon-rank="taxon.rank_string"
+          :taxon-rank="taxon.rank"
           :otu-id="otu.id"
         />
       </div>
@@ -106,7 +106,7 @@ watch(routeParams, async (newParams, oldParams) => {
   taxon.value = {}
 
   otu.value = (await TaxonWorks.getOtu(route.params.id)).data
-  taxon.value = (await TaxonWorks.getTaxon(otu.value.taxon_name_id)).data
+  taxon.value = (await TaxonWorks.summary(otu.value.taxon_name_id)).data
 
 }, { immediate: true })
 

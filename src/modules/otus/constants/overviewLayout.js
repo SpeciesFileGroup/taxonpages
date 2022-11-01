@@ -6,10 +6,12 @@ import PanelCitations from '../components/Panel/PanelCitation/PanelCitation.vue'
 import PanelMap from '../components/Panel/PanelMap/PanelMap.vue'
 import PanelDescendants from '../components/Panel/PanelDescendants/Descendants.vue'
 import PanelContent from '../components/Panel/PanelContent/PanelContent.vue'
+import PanelStatus from '../components/Panel/PanelStatus/PanelStatus.vue'
 
 export const overviewLayout = {
   left: [
     { component: PanelGallery },
+    { component: PanelStatus },
     {
       component: PanelTypeSpecimen,
       available: [SPECIES_GROUP]

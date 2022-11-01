@@ -14,6 +14,10 @@ export default class TaxonWorks {
     return makeAPIRequest.get(`/taxon_names/${id}`)
   }
 
+  static summary (id) {
+    return makeAPIRequest.get(`/taxon_names/${id}/inventory/summary`)
+  }
+
   static getTaxonTypeDesignation (id) {
     return makeAPIRequest.get(`/taxon_names/${id}`, { params: { extend: ['type_taxon_name_relationship'] } })
   }

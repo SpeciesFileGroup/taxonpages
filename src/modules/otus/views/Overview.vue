@@ -51,6 +51,6 @@ defineProps({
   }
 })
 
-const isComponentForRank = (available, rankString) => available.some(rankGroup => rankString?.includes(rankGroup))
+const isComponentForRank = (available, rankString) => available.some(rankGroup => rankGroup?.toLowerCase().includes(rankString.toLowerCase()))
 
 </script>
