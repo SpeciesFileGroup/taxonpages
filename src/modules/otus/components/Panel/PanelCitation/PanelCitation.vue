@@ -2,7 +2,7 @@
   <VCard>
     <VCardHeader class="flex justify-between">
       <h1 class="text-md">
-        Nomenclature, citations
+        Nomenclature, citations ({{ citations.length }})
       </h1>
       <Dropdown
         :items="menuOptions"
