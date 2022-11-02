@@ -1,7 +1,7 @@
 <template>
   <div :class="{ invisible: !taxon.id }">
     <h2 class="text-1xl capitalize">
-      {{ taxon.rank || taxon.type }}
+      {{ taxon.rank || 'Combination' }}
     </h2>
     <h1 class="text-xl dark:text-gray-100">
       <span>
