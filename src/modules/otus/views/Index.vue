@@ -71,7 +71,7 @@
           v-if="taxon.id && otu.id"
           :key="route.fullPath"
           :taxon-id="taxon.id"
-          :taxon-rank="taxon.rank"
+          :taxon-rank="taxon.rank_string"
           :otu-id="otu.id"
         />
       </div>
