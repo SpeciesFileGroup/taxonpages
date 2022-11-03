@@ -26,7 +26,43 @@ TaxonPages software is in active development and changes are expected that will 
 3. Push the changes after update the configuration files inside `setup` branch
 4. GitHub actions will build TaxonPages with the current configuration in `setup` branch and publish it to the `gh-pages` branch
 
-## Customization
+# Install
+
+Follow this steps to run TaxonPages in your local machine.
+
+1. Install [NodeJS](https://nodejs.org/en/download/)
+2. We recommend you to fork this repository to keep getting updates. Use [GIT](https://git-scm.com/) to clone the repo.
+
+```
+git clone https://github.com/<your_username>/<your_repository_name>.git
+```
+But if you don't want to fork it, you can clone directly from this
+```
+git clone https://github.com/SpeciesFileGroup/taxonpages.git
+```
+3. Go to `taxonpages` folder and switch to `main` branch
+```
+cd taxonpages
+git checkout main
+```
+4. [Download](https://github.com/SpeciesFileGroup/taxonpages/archive/refs/heads/setup.zip) configuration branch and paste `config` and `pages` folders inside taxonpages folder.
+
+5. Setup `config/api.yml` with the API server configuration
+
+6. Install node dependencies
+```
+npm install
+```
+
+## Start TaxonPages
+
+```
+npm run dev
+```
+
+TaxonPages will be running at http://localhost:5173/
+
+# Customization
 
 ### Pages
 
