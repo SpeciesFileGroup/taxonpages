@@ -1,13 +1,20 @@
 # TaxonPages
-TaxonPages is a tool to serve taxon pages.
+TaxonPages is a tool to serve taxon pages for TaxonWorks projects.
 
-## Usage
+## Status Warning
+TaxonPages software is in active development and changes are expected that will cause the early first-adopters' instances to require rebuilding by refreshing one's forked branch using `git pull`. A first _stable version_ is expected by Spring 2023.
 
-Click on "Use this template" button to create your own repository from this
+## Usage - GitHub Pages
 
-### Setup - Github Pages
+1. Click on "Fork" button to create your own repository from this.
+2. Uncheck `Copy the setup branch only` and press `Save`
+3. After create your repo, go to `Settings > Pages`, on "Branch" select `gh-pages` and `/(root)`. Then press save
+4. Open `router.yml` file and change `base_url` to the name of your repository.
+5. After a couple of minutes, your public page should be available at `https://<your_user_name>.github.io/<your_repo_name>`
 
-1. Switch to `config` branch in your TaxonPages repository.
+### Setup
+
+1. Switch to `setup` branch in your TaxonPages repository.
 2. We provide some settings by default to setup your public pages, but API parameters are required and must be configured to get the data from your TaxonWorks project.
 
 ```yaml
@@ -24,8 +31,12 @@ Click on "Use this template" button to create your own repository from this
 Follow this steps to run TaxonPages in your local machine.
 
 1. Install [NodeJS](https://nodejs.org/en/download/)
-2. Fork this repository and clone it, or clone this repository using [GIT](https://git-scm.com/):
+2. We recommend you to fork this repository to keep getting updates. Use [GIT](https://git-scm.com/) to clone the repo.
 
+```
+git clone https://github.com/<your_username>/<your_repository_name>.git
+```
+But if you don't want to fork it, you can clone directly from this
 ```
 git clone https://github.com/SpeciesFileGroup/taxonpages.git
 ```
