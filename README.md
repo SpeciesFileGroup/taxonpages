@@ -4,7 +4,7 @@ TaxonPages is a tool to serve taxon pages for TaxonWorks projects.
 ## Status Warning
 TaxonPages software is in active development and changes are expected that will cause the early first-adopters' instances to require rebuilding by refreshing one's forked branch using `git pull`. A first _stable version_ is expected by Spring 2023.
 
-## Usage - GitHub Pages
+## Usage
 
 1. Click on "Fork" button to create your own repository from this.
 2. Uncheck `Copy the setup branch only` and press `Save`
@@ -23,8 +23,8 @@ TaxonPages software is in active development and changes are expected that will 
   url: https://<your.taxonworks.server>/api/v1
   project_token: yourprojecttoken
 ```
-3. Push the changes after update the configuration files inside `config` branch
-4. GitHub actions will build TaxonPages with the current configuration in `config` branch and publish it to the `gh-pages` branch
+3. Push the changes after update the configuration files inside `setup` branch
+4. GitHub actions will build TaxonPages with the current configuration in `setup` branch and publish it to the `gh-pages` branch
 
 # Install
 
@@ -66,11 +66,10 @@ TaxonPages will be running at http://localhost:5173/
 
 ### Pages
 
-TaxonPages provides the ability to add content sites. Add your content inside "Pages", these files must be in markdown format or vue component. Markdown files support HTML and VueJS components
-By default, TaxonPages takes the name of your files to create the route.
-For example, if you create a file named "contributors.md" the route to access it will be http://yourtaxonpagessite/contributors
-
+TaxonPages out of the box support markdown and vue for content sites. Add your content pages inside `pages` folder. By default, TaxonPages use the file name to create the route.
+For example, if the filename is "contributors.md" the route to access it will be http://yourtaxonpagessite/contributors
 
 ### Style
 
-TaxonPages use [TailwindCSS](https://tailwindcss.com/docs/configuration) framework for the style. We already provide default settings for colors and markdowns. If you want to make any changes to your configuration, you must do so in the `config/vendor/tailwind.config.js` file. This file uses the TaxonPages configuration as a default. It is possible to overwrite it as long as you use it as a preset.
+If you want to change the color palette, you can edit  `/config/style/theme.css` file, colors must be in RGB format.
+TaxonPages use [TailwindCSS](https://tailwindcss.com/docs/configuration) framework for the style. We already provide default settings for colors and markdown. If you want to make any change to your configuration, you must do so in the `config/vendor/tailwind.config.js` file. This file uses the TaxonPages configuration as a default. It is possible to overwrite it as long as you use it as a preset.
