@@ -7,7 +7,7 @@
       <span>
         <span 
           :title="taxon.short_status"
-          v-html="taxon.full_name" 
+          v-html="taxon.full_name_tag" 
         />
         <span 
           v-if="!taxon.is_valid"
