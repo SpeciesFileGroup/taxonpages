@@ -11,6 +11,7 @@
             v-if="!available || isComponentForRank(available, taxonRank)"
             :otu-id="otuId"
             :taxon-id="taxonId"
+            :taxon="taxon"
           />
         </template>
       </div>
@@ -24,6 +25,7 @@
             v-if="!available || isComponentForRank(available, taxonRank)"
             :otu-id="otuId"
             :taxon-id="taxonId"
+            :taxon="taxon"
           />
         </template>
       </div>
@@ -47,6 +49,11 @@ defineProps({
 
   otuId: {
     type: [Number, String],
+    required: true
+  },
+
+  taxon: {
+    type: Object,
     required: true
   }
 })

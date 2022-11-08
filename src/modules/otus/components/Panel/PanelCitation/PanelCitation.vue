@@ -17,8 +17,8 @@
       <CitationRow
         v-for="citation in citationList.first"
         :key="citation.id"
-        :citation="citation"
         ref="rowRefs"
+        :citation="citation"
       />
 
       <CitationRowShowMore
@@ -31,8 +31,8 @@
           <CitationRow
             v-for="citation in citationList.middle"
             :key="citation.id"
-            :citation="citation"
             ref="rowRefs"
+            :citation="citation"
           />
         </div>
       </AnimationOpacity>
@@ -40,8 +40,8 @@
       <CitationRow
         v-for="citation in citationList.last"
         :key="citation.id"
-        :citation="citation"
         ref="rowRefs"
+        :citation="citation"
         class="last:border-b-0"
       />
     </div>
@@ -59,6 +59,11 @@ const MAX_CITATIONS = 3
 const props = defineProps({
   otuId: {
     type: [Number, String],
+    required: true
+  },
+
+  taxon: {
+    type: Object,
     required: true
   }
 })
@@ -100,12 +105,13 @@ watch(
   () => props.otuId,
   async () => {
     if (!props.otuId) { return }
+    const list = (await TaxonWorks.getTaxonNameCitations(props.otuId)).data
 
-    citations.value = (await TaxonWorks.getTaxonNameCitations(props.otuId)).data
+    citations.value = !props.taxon.is_valid
+      ? list.filter(c => c.names.includes(props.taxon.full_name_tag))
+      : list
   },
-  {
-    immediate: true
-  }
+  { immediate: true }
 )
 
 const changeRowExpandedState = value => {

@@ -10,8 +10,8 @@ import PanelStatus from '../components/Panel/PanelStatus/PanelStatus.vue'
 
 export const overviewLayout = {
   left: [
-    { component: PanelGallery },
     { component: PanelStatus },
+    { component: PanelGallery },
     {
       component: PanelTypeSpecimen,
       available: [SPECIES_GROUP]
