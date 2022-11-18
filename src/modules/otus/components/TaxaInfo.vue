@@ -18,7 +18,6 @@
         />
       </span>
     </h1>
-    {{ taxon.status }}
     <h2 class="text-1xl">
       <CommonNames :otu-id="props.otuId" />
     </h2>
