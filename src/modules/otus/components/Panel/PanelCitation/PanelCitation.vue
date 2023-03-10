@@ -40,7 +40,7 @@
   </VCard>
   <VCard>
     <VCardHeader class="flex justify-between">
-      <h2 class="text-md">Nomenclature references</h2>
+      <h2 class="text-md">Nomenclature references ({{ sources.length }})</h2>
     </VCardHeader>
     <ul class="text-sm">
       <PanelReferenceRow
