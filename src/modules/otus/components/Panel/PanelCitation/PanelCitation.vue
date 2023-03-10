@@ -1,23 +1,18 @@
 <template>
   <VCard>
     <VCardHeader class="flex justify-between">
-      <h1 class="text-md">
-        Nomenclature, citations ({{ citations.length }})
-      </h1>
-      <Dropdown
-        :items="menuOptions"
-      >
+      <h2 class="text-md">Timeline ({{ citations.length }})</h2>
+      <Dropdown :items="menuOptions">
         <template #button>
-          <IconHamburger class="text-base-soft h-3" />
+          <IconHamburger class="text-base-soft h-4" />
         </template>
       </Dropdown>
     </VCardHeader>
 
-    <div class="text-sm">
+    <ul class="text-sm">
       <CitationRow
         v-for="citation in citationList.first"
-        :key="citation.id"
-        ref="rowRefs"
+        :key="citation.label"
         :citation="citation"
       />
 
@@ -30,8 +25,7 @@
         <div v-show="showAll">
           <CitationRow
             v-for="citation in citationList.middle"
-            :key="citation.id"
-            ref="rowRefs"
+            :key="citation.label"
             :citation="citation"
           />
         </div>
@@ -39,12 +33,22 @@
 
       <CitationRow
         v-for="citation in citationList.last"
-        :key="citation.id"
-        ref="rowRefs"
+        :key="citation.label"
         :citation="citation"
-        class="last:border-b-0"
       />
-    </div>
+    </ul>
+  </VCard>
+  <VCard>
+    <VCardHeader class="flex justify-between">
+      <h2 class="text-md">References</h2>
+    </VCardHeader>
+    <ul class="text-sm">
+      <PanelReferenceRow
+        v-for="source in sources"
+        :key="source"
+        :source="source"
+      />
+    </ul>
   </VCard>
 </template>
 
@@ -53,8 +57,9 @@ import { ref, watch, computed } from 'vue'
 import TaxonWorks from '../../../services/TaxonWorks'
 import CitationRow from './PanelCitationRow.vue'
 import CitationRowShowMore from './PanelCitationShowMore.vue'
+import PanelReferenceRow from './PanelReferenceRow.vue'
 
-const MAX_CITATIONS = 3
+const MAX_CITATIONS = 5
 
 const props = defineProps({
   otuId: {
@@ -62,15 +67,15 @@ const props = defineProps({
     required: true
   },
 
-  taxon: {
-    type: Object,
+  taxonId: {
+    type: [Number, String],
     required: true
   }
 })
 
-const rowRefs = ref([])
 const showAll = ref(false)
 const citations = ref([])
+const sources = ref([])
 const citationList = computed(() => {
   const copyArr = citations.value.slice()
   const first = copyArr.splice(0, MAX_CITATIONS)
@@ -86,37 +91,22 @@ const citationList = computed(() => {
 
 const menuOptions = computed(() => [
   {
-    label: showAll.value
-      ? 'Show less'
-      : 'Show all',
-    action: () => showAll.value = !showAll.value
-  },
-  {
-    label: 'Expand',
-    action: () => changeRowExpandedState(true)
-  },
-  {
-    label: 'Collapse',
-    action: () => changeRowExpandedState(false)
+    label: showAll.value ? 'Show less' : 'Show all',
+    action: () => (showAll.value = !showAll.value)
   }
 ])
 
 watch(
-  () => props.otuId,
+  () => props.taxonId,
   async () => {
-    if (!props.otuId) { return }
-    const list = (await TaxonWorks.getTaxonNameCitations(props.otuId)).data
+    if (!props.taxonId) {
+      return
+    }
+    const { data } = await TaxonWorks.getTaxonNameCitations(props.taxonId)
 
-    citations.value = !props.taxon.is_valid
-      ? list.filter(c => c.names.includes(props.taxon.full_name_tag))
-      : list
+    citations.value = data.timeline
+    sources.value = data.sources
   },
   { immediate: true }
 )
-
-const changeRowExpandedState = value => {
-  rowRefs.value.forEach(component => {
-    component.setExpanded(value)
-  })
-}
 </script>
