@@ -1,7 +1,7 @@
 <template>
   <VCard>
     <VCardHeader class="flex justify-between">
-      <h2 class="text-md">Timeline ({{ citations.length }})</h2>
+      <h2 class="text-md">Nomenclature ({{ citations.length }})</h2>
       <Dropdown :items="menuOptions">
         <template #button>
           <IconHamburger class="text-base-soft h-4" />
@@ -40,7 +40,7 @@
   </VCard>
   <VCard>
     <VCardHeader class="flex justify-between">
-      <h2 class="text-md">References</h2>
+      <h2 class="text-md">Nomenclature references</h2>
     </VCardHeader>
     <ul class="text-sm">
       <PanelReferenceRow
