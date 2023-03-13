@@ -1,9 +1,7 @@
 <template>
   <VCard>
     <VCardHeader>
-      <h1 class="text-md">
-        Type
-      </h1>
+      <h1 class="text-md">Type</h1>
     </VCardHeader>
     <VCardContent class="text-sm">
       <p v-html="typeDesignationLabel" />
@@ -25,18 +23,21 @@ const props = defineProps({
 const typeDesignation = ref({})
 const typeDesignationLabel = computed(() =>
   [
-    typeDesignation.value.subject_object_tag || '', 
+    typeDesignation.value.subject_object_tag || '',
     typeDesignation.value.subject_status_tag || '',
     typeDesignation.value.object_object_tag || ''
-  ].join(' '))
+  ].join(' ')
+)
 
 watch(
   () => props.taxonId,
   async () => {
-    if (!props.taxonId) { return }
+    if (!props.taxonId) {
+      return
+    }
 
     TaxonWorks.getTaxonTypeDesignation(props.taxonId).then(({ data }) => {
-      typeDesignation.value = data.type_taxon_name_relationship
+      typeDesignation.value = data.type_taxon_name_relationship || {}
     })
   },
   { immediate: true }
