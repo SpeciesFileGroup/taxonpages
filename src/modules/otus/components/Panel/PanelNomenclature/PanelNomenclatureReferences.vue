@@ -42,7 +42,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { useSplitList } from './useSplitList'
+import { splitList } from './splitList'
 import PanelNomenclatureShowMore from './PanelNomenclatureShowMore.vue'
 import PanelReferenceRow from './PanelReferenceRow.vue'
 
@@ -56,7 +56,7 @@ const props = defineProps({
 })
 
 const showAll = ref(false)
-const referenceList = useSplitList(props, MAX_REFERENCES)
+const referenceList = computed(() => splitList(props.list, MAX_REFERENCES))
 
 const menuOptions = computed(() => [
   {

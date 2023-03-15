@@ -42,7 +42,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useSplitList } from './useSplitList'
+import { splitList } from './splitList'
 import CitationRow from './PanelCitationRow.vue'
 import PanelNomenclatureShowMore from './PanelNomenclatureShowMore.vue'
 
@@ -56,7 +56,7 @@ const props = defineProps({
 })
 
 const showAll = ref(false)
-const citationList = useSplitList(props, MAX_CITATIONS)
+const citationList = computed(() => splitList(props.list, MAX_CITATIONS))
 
 const menuOptions = computed(() => [
   {
