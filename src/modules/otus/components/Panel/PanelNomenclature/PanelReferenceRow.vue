@@ -2,15 +2,15 @@
   <li class="border-b border-base-muted p-3 px-5">
     <span
       class="break-all block"
-      :title="source"
-      v-html="source"
+      :title="reference"
+      v-html="reference"
     />
   </li>
 </template>
 
 <script setup>
 defineProps({
-  source: {
+  reference: {
     type: String,
     required: true
   }
