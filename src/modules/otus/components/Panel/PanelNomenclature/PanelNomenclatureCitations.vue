@@ -1,0 +1,67 @@
+<template>
+  <VCard>
+    <VCardHeader class="flex justify-between">
+      <h2 class="text-md">Nomenclature ({{ list.length }})</h2>
+      <Dropdown :items="menuOptions">
+        <template #button>
+          <IconHamburger class="text-base-soft h-4" />
+        </template>
+      </Dropdown>
+    </VCardHeader>
+
+    <ul class="text-sm">
+      <CitationRow
+        v-for="citation in citationList.first"
+        :key="citation.label"
+        :citation="citation"
+      />
+
+      <PanelNomenclatureShowMore
+        v-if="!showAll && citationList.middle.length"
+        :count="citationList.middle.length"
+        @click="showAll = true"
+      />
+      <AnimationOpacity>
+        <div v-show="showAll">
+          <CitationRow
+            v-for="citation in citationList.middle"
+            :key="citation.label"
+            :citation="citation"
+          />
+        </div>
+      </AnimationOpacity>
+
+      <CitationRow
+        v-for="citation in citationList.last"
+        :key="citation.label"
+        :citation="citation"
+      />
+    </ul>
+  </VCard>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue'
+import { useSplitList } from './useSplitList'
+import CitationRow from './PanelCitationRow.vue'
+import PanelNomenclatureShowMore from './PanelNomenclatureShowMore.vue'
+
+const MAX_CITATIONS = 5
+
+const props = defineProps({
+  list: {
+    type: Array,
+    default: () => []
+  }
+})
+
+const showAll = ref(false)
+const citationList = useSplitList(props, MAX_CITATIONS)
+
+const menuOptions = computed(() => [
+  {
+    label: showAll.value ? 'Show less' : 'Show all',
+    action: () => (showAll.value = !showAll.value)
+  }
+])
+</script>
