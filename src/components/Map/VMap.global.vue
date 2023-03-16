@@ -6,21 +6,15 @@
 </template>
 
 <script setup>
-
-import { 
-  computed,
-  onMounted,
-  onUnmounted,
-  ref,
-  watch,
-  nextTick
-} from 'vue'
-
+import { computed, onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
 import L from 'leaflet'
 import iconRetina from 'leaflet/dist/images/marker-icon-2x.png'
 import iconUrl from 'leaflet/dist/images/marker-icon.png'
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png'
 import geojsonDefaultOptions from './utils/geojsonOptions'
+
+import '@geoman-io/leaflet-geoman-free'
+import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
 
 delete L.Icon.Default.prototype._getIconUrl
 
@@ -33,6 +27,11 @@ L.Icon.Default.mergeOptions({
 const { map_server_tils } = __APP_ENV__
 
 const props = defineProps({
+  controls: {
+    type: Boolean,
+    default: false
+  },
+
   zoomAnimate: {
     type: Boolean,
     default: false
@@ -87,18 +86,16 @@ const tiles = {
   })
 }
 
-const fitBoundsOptions = computed(() =>
-  ({
-    maxZoom: props.zoomBounds,
-    zoom: {
-      animate: props.zoomAnimate
-    }
-  })
-)
+const fitBoundsOptions = computed(() => ({
+  maxZoom: props.zoomBounds,
+  zoom: {
+    animate: props.zoomAnimate
+  }
+}))
 
 watch(
-  () => props.geojson, 
-  newVal => {
+  () => props.geojson,
+  (newVal) => {
     geoJSONGroup.clearLayers()
     setGeoJSON(newVal)
   },
@@ -111,6 +108,17 @@ onMounted(() => {
     zoom: props.zoom
   })
 
+  if (props.controls) {
+    mapObject.pm.addControls({
+      position: 'topleft',
+      drawText: false,
+      drawCircle: false,
+      drawPolyline: false,
+      drawMarker: false,
+      cutPolygon: false
+    })
+  }
+
   geoJSONGroup = new L.FeatureGroup()
   geoJSONGroup.addTo(mapObject)
 
@@ -119,7 +127,7 @@ onMounted(() => {
 })
 
 const resizeMap = () => {
-  if(!geoJSONGroup) return
+  if (!geoJSONGroup) return
   const bounds = geoJSONGroup.getBounds()
 
   mapObject.invalidateSize()
@@ -131,7 +139,7 @@ const resizeMap = () => {
 }
 
 const initEvents = () => {
-  observeMap = new ResizeObserver(entries => {
+  observeMap = new ResizeObserver((entries) => {
     const { width } = entries[0].contentRect
     resizeMap(width)
   })
@@ -143,13 +151,13 @@ onUnmounted(() => {
   observeMap?.disconnect()
 })
 
-const setGeoJSON = geojson => {
+const setGeoJSON = (geojson) => {
   if (geojson) {
     L.geoJSON(geojson, {
       ...geojsonDefaultOptions,
       ...props.geojsonOptions
     }).addTo(geoJSONGroup)
-    
+
     const bounds = geoJSONGroup.getBounds()
 
     if (bounds.isValid()) {
@@ -159,9 +167,6 @@ const setGeoJSON = geojson => {
 
   emit('geojson:ready', geoJSONGroup)
 }
-
 </script>
 
-<style>
-
-</style>
+<style></style>

@@ -1,16 +1,7 @@
 <template>
-  <div 
+  <div
     ref="spinnerElement"
-    class="
-      box-spinner
-      mx-spinner
-      absolute
-      bg-base-foreground
-      opacity-90
-      h-full
-      flex
-      items-center
-    "
+    class="box-spinner mx-spinner absolute bg-base-foreground opacity-90 h-full flex items-center"
     :style="cssProperties"
   >
     <div
@@ -26,7 +17,7 @@
         x="0px"
         y="0px"
         viewBox="0 0 194.6 200"
-        style="enable-background:new 0 0 194.6 200;"
+        style="enable-background: new 0 0 194.6 200"
         xml:space="preserve"
       >
         <path
@@ -130,11 +121,10 @@ const props = defineProps({
 
   legendStyle: {
     type: Object,
-    default: () =>
-      ({
-        marginTop: '30px',
-        textAlign: 'center'
-      })
+    default: () => ({
+      marginTop: '30px',
+      textAlign: 'center'
+    })
   },
 
   showLegend: {
@@ -175,37 +165,43 @@ onMounted(() => {
 onUnmounted(() => clearInterval(resizeInterval.value))
 
 const init = () => {
-  const domElement = props.target 
-    ? document.querySelector(props.target) 
+  const domElement = props.target
+    ? document.querySelector(props.target)
     : spinnerElement.value.parentNode
 
   Object.assign(
-    cssProperties.value, 
-    props.fullScreen 
-      ? FULL_SCREEN_STYLE
-      : calculateSpinnerStyle(domElement)
+    cssProperties.value,
+    props.fullScreen ? FULL_SCREEN_STYLE : calculateSpinnerStyle(domElement)
   )
 }
 
-const calculateSpinnerStyle = element => {
+const calculateSpinnerStyle = (element) => {
   const size = element.getBoundingClientRect()
   const computedStyle = window.getComputedStyle(element, null)
-  const paddingLeft = parseInt(computedStyle.getPropertyValue('padding-left'), 10)
-  const paddingRight = parseInt(computedStyle.getPropertyValue('padding-right'), 10)
+  const paddingLeft = parseInt(
+    computedStyle.getPropertyValue('padding-left'),
+    10
+  )
+  const paddingRight = parseInt(
+    computedStyle.getPropertyValue('padding-right'),
+    10
+  )
   const paddingTop = parseInt(computedStyle.getPropertyValue('padding-top'), 10)
-  const paddingBottom = parseInt(computedStyle.getPropertyValue('padding-bottom'), 10)
+  const paddingBottom = parseInt(
+    computedStyle.getPropertyValue('padding-bottom'),
+    10
+  )
 
   return {
     position: 'absolute',
     width: size.width - paddingLeft - paddingRight + 'px',
-    height: size.height - paddingTop - paddingBottom + 'px',
+    height: size.height - paddingTop - paddingBottom + 'px'
   }
 }
 
 const checkResize = () => {
   resizeInterval.value = setInterval(init(), 500)
 }
-
 </script>
 <style lang="scss" scoped>
 .tw-spinner {
@@ -216,11 +212,13 @@ const checkResize = () => {
   align-items: center;
   justify-content: center;
 }
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
 }
-.fade-enter, .fade-leave-to {
-  opacity: 0
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 .tw-spinner-left {
   flex-direction: row;
@@ -236,7 +234,7 @@ const checkResize = () => {
 }
 
 .box-spinner {
-  z-index: 9999;
+  z-index: 4000;
 }
 
 .tw-spinner {
@@ -256,46 +254,64 @@ const checkResize = () => {
   #Tail {
     opacity: 0;
     animation: tail 2s ease infinite;
-    fill:#41BA8D;
+    fill: #41ba8d;
   }
   #LeftBottom {
-    fill:#00845D;
+    fill: #00845d;
     opacity: 0;
     animation: spinner 1s ease alternate infinite;
     animation-delay: 0s;
   }
   #LeftMid {
-    fill:#28221B;
+    fill: #28221b;
     opacity: 0;
     animation: spinner 1s ease alternate infinite;
     animation-delay: 0.2s;
   }
   #LeftTop {
-    fill:#342D25;
+    fill: #342d25;
     opacity: 0;
     animation: spinner 1s ease alternate infinite;
     animation-delay: 0.4s;
   }
   #Head {
-    fill:#342D25;
+    fill: #342d25;
     opacity: 0;
     animation: spinner 1s ease alternate infinite;
     animation-delay: 0.6s;
   }
-    
+
   @keyframes spinner {
-    0% { opacity: 0; }
-    30% { opacity: 0; }
-    90% { opacity: 1; }
-    100% { opacity: 1; }
+    0% {
+      opacity: 0;
+    }
+    30% {
+      opacity: 0;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 1;
+    }
   }
 
   @keyframes tail {
-    0% { opacity: 0; }
-    30% { opacity: 1; }
-    50% { opacity: 1; }
-    90% { opacity: 0; }
-    100% { opacity: 0; }
+    0% {
+      opacity: 0;
+    }
+    30% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0;
+    }
   }
 }
 </style>
