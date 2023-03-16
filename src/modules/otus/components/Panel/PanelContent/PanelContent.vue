@@ -1,5 +1,5 @@
 <template>
-  <VCard v-if="contentList.length">
+  <VCard v-if="contents.length">
     <ContentTopic
       v-for="(text, title) in contentList"
       :key="title"
@@ -23,7 +23,7 @@ const props = defineProps({
 
 const contents = ref([])
 
-const contentList = computed(() => 
+const contentList = computed(() =>
   contents.value.reduce((acc, current) => {
     if (acc[current.name]) {
       acc[current.name].push(current.text)
@@ -37,7 +37,7 @@ const contentList = computed(() =>
 
 watch(
   () => props.otuId,
-  id => {
+  (id) => {
     if (id) {
       TaxonWorks.getOtuContent(id).then(({ data }) => {
         contents.value = data
@@ -48,5 +48,4 @@ watch(
   },
   { immediate: true }
 )
-
 </script>
