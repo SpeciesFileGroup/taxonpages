@@ -46,7 +46,7 @@ import { splitList } from './splitList'
 import CitationRow from './PanelCitationRow.vue'
 import PanelNomenclatureShowMore from './PanelNomenclatureShowMore.vue'
 
-const MAX_CITATIONS = 5
+const MAX_CITATIONS = 2
 
 const props = defineProps({
   list: {
