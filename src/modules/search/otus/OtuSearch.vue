@@ -3,21 +3,27 @@
     ref="root"
     class="w-screen h-screen fixed top-0 left-0 z-[5000]"
   >
-    <div class="absolute right-0 top-0 w-96 h-screen z-[1100] p-4">
-      <!--       <h2 class="text-xl text-base-content mb-4">Search by geographic area</h2> -->
-      <FilterView />
+    <SearchBar @search="loadOTUs" />
+    <div class="relative">
+      <VMap
+        class="w-screen h-screen"
+        controls
+        @geojson="
+          ($event) =>
+            (parameters.geo_json = JSON.stringify(
+              $event.features.map((feature) => feature.geometry)[0]
+            ))
+        "
+        :zoom="4"
+      />
     </div>
-    <VMap
-      class="w-screen h-screen"
-      controls
-      :zoom="4"
-    />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import FilterView from './Filter/FilterView.vue'
+import { makeAPIRequest } from '@/utils/request'
+import SearchBar from './SearchBar.vue'
 
 const root = ref()
 const emit = defineEmits(['close'])
@@ -39,5 +45,9 @@ const handleKeyboard = ({ key }) => {
       emit('close')
       break
   }
+}
+
+function loadOTUs() {
+  makeAPIRequest.get('/otus.json', { params: parameters.value })
 }
 </script>

@@ -1,7 +1,7 @@
 <template>
   <button
     type="button"
-    class="px-2 py-2 rounded-md hover:bg-opacity-80"
+    class="px-3 py-1 hover:bg-opacity-80"
     :class="{
       'bg-primary-color': primary,
       'bg-secondary-color': secondary,

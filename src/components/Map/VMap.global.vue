@@ -73,11 +73,13 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['geojson:ready'])
+const emit = defineEmits(['geojson:ready', 'geojson'])
 
 let mapObject
 let observeMap
-let geoJSONGroup = new L.FeatureGroup()
+let drawnItems
+let geoJSONGroup
+
 const leafletMap = ref(null)
 const tiles = {
   osm: L.tileLayer(map_server_tils, {
@@ -103,10 +105,23 @@ watch(
 )
 
 onMounted(() => {
+  drawnItems = new L.FeatureGroup()
+  geoJSONGroup = new L.FeatureGroup()
+
   mapObject = L.map(leafletMap.value, {
     center: props.center,
-    zoom: props.zoom
+    zoom: props.zoom,
+    worldCopyJump: true
   })
+
+  mapObject.pm.setGlobalOptions({
+    layerGroup: drawnItems
+  })
+
+  geoJSONGroup.addTo(mapObject)
+
+  mapObject.addLayer(drawnItems)
+  mapObject.addLayer(geoJSONGroup)
 
   if (props.controls) {
     mapObject.pm.addControls({
@@ -117,10 +132,22 @@ onMounted(() => {
       drawMarker: false,
       cutPolygon: false
     })
-  }
 
-  geoJSONGroup = new L.FeatureGroup()
-  geoJSONGroup.addTo(mapObject)
+    mapObject.on('pm:create', () => {
+      const fg = L.featureGroup()
+
+      drawnItems.eachLayer((layer) => {
+        if (
+          (layer instanceof L.Path || layer instanceof L.Marker) &&
+          layer.pm
+        ) {
+          fg.addLayer(layer)
+        }
+      })
+
+      emit('geojson', fg.toGeoJSON())
+    })
+  }
 
   tiles.osm.addTo(mapObject)
   initEvents()
