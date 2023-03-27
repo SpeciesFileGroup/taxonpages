@@ -9,6 +9,7 @@
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
   },
   "dependencies": {
+    "@geoman-io/leaflet-geoman-free": "^2.14.2",
     "axios": "^1.3.4",
     "js-yaml": "^4.1.0",
     "leaflet": "^1.9.3",

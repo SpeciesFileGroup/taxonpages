@@ -3,13 +3,14 @@
     <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
       <div class="grid grid-cols-1 gap-3 auto-rows-min">
         <template
-          v-for="({ component, available }) in overviewLayout.left"
+          v-for="{ component, available } in overviewLayout.left"
           :key="component"
         >
           <component
             :is="component"
             v-if="!available || isComponentForRank(available, taxonRank)"
             :otu-id="otuId"
+            :otu="otu"
             :taxon-id="taxonId"
             :taxon="taxon"
           />
@@ -17,13 +18,14 @@
       </div>
       <div class="grid grid-cols-1 auto-rows-min gap-3">
         <template
-          v-for="({ component, available }) in overviewLayout.right"
+          v-for="{ component, available } in overviewLayout.right"
           :key="component"
         >
           <component
             :is="component"
             v-if="!available || isComponentForRank(available, taxonRank)"
             :otu-id="otuId"
+            :otu="otu"
             :taxon-id="taxonId"
             :taxon="taxon"
           />
@@ -52,12 +54,17 @@ defineProps({
     required: true
   },
 
+  otu: {
+    type: Object,
+    required: true
+  },
+
   taxon: {
     type: Object,
     required: true
   }
 })
 
-const isComponentForRank = (available, rankString) => available.some(rankGroup => rankString?.includes(rankGroup))
-
+const isComponentForRank = (available, rankString) =>
+  available.some((rankGroup) => rankString?.includes(rankGroup))
 </script>

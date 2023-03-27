@@ -1,24 +1,9 @@
 <template>
   <div>
-    <div 
-      class="
-        bg-base-foreground
-        border-b
-        border-base-muted
-        pl-4 
-        pr-4"
-    >
-      <div 
-        class="container mx-auto pt-6 pb-6"
-      >
-        <div 
-          class="
-            flex
-            flex-col-reverse
-            md:flex-row
-            justify-between
-            items-start
-          "
+    <div class="bg-base-foreground border-b border-base-muted pl-4 pr-4">
+      <div class="container mx-auto pt-6 pb-6">
+        <div
+          class="flex flex-col-reverse md:flex-row justify-between items-start"
         >
           <Breadcrumb
             class="w-3/4"
@@ -26,15 +11,7 @@
             :current="taxon"
           />
           <Autocomplete
-            class="
-              print:hidden
-              min-w-full 
-              mb-2
-              md:min-w-fit
-              md:ml-2
-              md:mb-0 
-              w-1/4
-            "
+            class="print:hidden min-w-full mb-2 md:min-w-fit md:ml-2 md:mb-0 w-1/4"
             url="/otus/autocomplete"
             query-param="term"
             label="label_html"
@@ -44,7 +21,7 @@
           />
         </div>
 
-        <div class="mt-8">
+        <div class="mt-8 flex justify-between middle">
           <TaxaInfo
             :taxon="taxon"
             :otu-id="otu.id"
@@ -56,7 +33,7 @@
           class="m-[-1px] print:hidden"
         >
           <TabItem
-            v-for="({ name, label }) in tabs"
+            v-for="{ name, label } in tabs"
             :key="name"
             :to="{ name }"
           >
@@ -74,14 +51,18 @@
           :taxon="taxon"
           :taxon-rank="taxon.rank_string"
           :otu-id="otu.id"
+          :otu="otu"
         />
       </div>
     </div>
   </div>
+  <OtuSearch
+    v-if="isOtuSearchVisible"
+    @close="() => (isOtuSearchVisible = false)"
+  />
 </template>
 
 <script setup>
-
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
@@ -93,24 +74,30 @@ const route = useRoute()
 const router = useRouter()
 const routeParams = ref(route.params)
 const tabs = [] // useChildrenRoutes()
+const isOtuSearchVisible = ref(false)
 
-router.afterEach(route => { routeParams.value = route.params })
+router.afterEach((route) => {
+  routeParams.value = route.params
+})
 
 const otu = ref({})
 const taxon = ref({})
 
-watch(routeParams, async (newParams, oldParams) => {
+watch(
+  routeParams,
+  async (newParams, oldParams) => {
+    if (!newParams.id || newParams.id == oldParams?.id) {
+      return
+    }
 
-  if (!newParams.id || newParams.id == oldParams?.id) { return }
+    otu.value = {}
+    taxon.value = {}
 
-  otu.value = {}
-  taxon.value = {}
-
-  otu.value = (await TaxonWorks.getOtu(route.params.id)).data
-  taxon.value = (await TaxonWorks.summary(otu.value.taxon_name_id)).data
-
-}, { immediate: true })
-
+    otu.value = (await TaxonWorks.getOtu(route.params.id)).data
+    taxon.value = (await TaxonWorks.summary(otu.value.taxon_name_id)).data
+  },
+  { immediate: true }
+)
 
 const loadOtu = ({ id }) => {
   router.push({
@@ -120,5 +107,4 @@ const loadOtu = ({ id }) => {
     }
   })
 }
-
 </script>
