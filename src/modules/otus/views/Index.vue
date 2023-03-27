@@ -6,7 +6,7 @@
           class="flex flex-col-reverse md:flex-row justify-between items-start"
         >
           <Breadcrumb
-            class="w-3/4"
+            class="w-4/4 md:w-3/4"
             :list="otu.parents"
             :current="taxon"
           />
