@@ -1,7 +1,7 @@
 <template>
-  <td class="px-6 py-4">
+  <th class="px-4 py-3">
     <slot />
-  </td>
+  </th>
 </template>
 
 <script setup></script>

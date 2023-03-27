@@ -21,7 +21,7 @@
           />
         </div>
 
-        <div class="mt-8">
+        <div class="mt-8 flex justify-between middle">
           <TaxaInfo
             :taxon="taxon"
             :otu-id="otu.id"
@@ -51,11 +51,15 @@
           :taxon="taxon"
           :taxon-rank="taxon.rank_string"
           :otu-id="otu.id"
+          :otu="otu"
         />
       </div>
     </div>
   </div>
-  <OtuSearch />
+  <OtuSearch
+    v-if="isOtuSearchVisible"
+    @close="() => (isOtuSearchVisible = false)"
+  />
 </template>
 
 <script setup>
@@ -64,13 +68,13 @@ import { useRoute, useRouter } from 'vue-router'
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
 import TaxaInfo from '../components/TaxaInfo.vue'
 import TaxonWorks from '../services/TaxonWorks'
-import OtuSearch from '@/modules/search/otus/OtuSearch.vue'
 //import useChildrenRoutes from '../composables/useChildrenRoutes'
 
 const route = useRoute()
 const router = useRouter()
 const routeParams = ref(route.params)
 const tabs = [] // useChildrenRoutes()
+const isOtuSearchVisible = ref(false)
 
 router.afterEach((route) => {
   routeParams.value = route.params

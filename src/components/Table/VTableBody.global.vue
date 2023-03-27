@@ -1,5 +1,5 @@
 <template>
-  <tbody class="normal-case">
+  <tbody class="normal-case text-xs">
     <slot />
   </tbody>
 </template>

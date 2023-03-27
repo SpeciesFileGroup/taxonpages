@@ -73,7 +73,12 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['geojson:ready', 'geojson'])
+const emit = defineEmits([
+  'geojson:ready',
+  'geojson',
+  'add:layer',
+  'draw:start'
+])
 
 let mapObject
 let observeMap
@@ -129,11 +134,12 @@ onMounted(() => {
       drawText: false,
       drawCircle: false,
       drawPolyline: false,
+      drawCircleMarker: false,
       drawMarker: false,
       cutPolygon: false
     })
 
-    mapObject.on('pm:create', () => {
+    mapObject.on('pm:create', (e) => {
       const fg = L.featureGroup()
 
       drawnItems.eachLayer((layer) => {
@@ -146,12 +152,32 @@ onMounted(() => {
       })
 
       emit('geojson', fg.toGeoJSON())
+      emit('add:layer', convertGeoJSONWithPointRadius(e.layer))
+    })
+
+    mapObject.on('pm:drawstart', (e) => {
+      clearDrawLayers()
+      emit('draw:start', e)
     })
   }
 
   tiles.osm.addTo(mapObject)
   initEvents()
 })
+
+function clearDrawLayers() {
+  drawnItems.clearLayers()
+}
+
+function convertGeoJSONWithPointRadius(layer) {
+  const layerJson = layer.toGeoJSON()
+
+  if (typeof layer.getRadius === 'function') {
+    layerJson.properties.radius = layer.getRadius()
+  }
+
+  return layerJson
+}
 
 const resizeMap = () => {
   if (!geoJSONGroup) return
@@ -194,6 +220,8 @@ const setGeoJSON = (geojson) => {
 
   emit('geojson:ready', geoJSONGroup)
 }
-</script>
 
-<style></style>
+defineExpose({
+  clearDrawLayers
+})
+</script>
