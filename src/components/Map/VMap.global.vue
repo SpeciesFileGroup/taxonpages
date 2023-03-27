@@ -32,6 +32,11 @@ const props = defineProps({
     default: false
   },
 
+  dragging: {
+    type: Boolean,
+    default: false
+  },
+
   zoomAnimate: {
     type: Boolean,
     default: false
@@ -50,6 +55,11 @@ const props = defineProps({
   zoom: {
     type: Number,
     default: 18
+  },
+
+  disableZoom: {
+    type: Boolean,
+    default: false
   },
 
   center: {
@@ -110,14 +120,27 @@ watch(
 )
 
 onMounted(() => {
+  const options = {
+    center: props.center,
+    zoom: props.zoom,
+    worldCopyJump: true,
+    dragging: props.dragging
+  }
+
+  if (props.disableZoom) {
+    Object.assign(options, {
+      scrollWheelZoom: false,
+      zoomControl: false,
+      doubleClickZoom: false,
+      touchZoom: false,
+      boxZoom: false
+    })
+  }
+
   drawnItems = new L.FeatureGroup()
   geoJSONGroup = new L.FeatureGroup()
 
-  mapObject = L.map(leafletMap.value, {
-    center: props.center,
-    zoom: props.zoom,
-    worldCopyJump: true
-  })
+  mapObject = L.map(leafletMap.value, options)
 
   mapObject.pm.setGlobalOptions({
     layerGroup: drawnItems
@@ -127,6 +150,10 @@ onMounted(() => {
 
   mapObject.addLayer(drawnItems)
   mapObject.addLayer(geoJSONGroup)
+
+  if (props.geojson) {
+    setGeoJSON(props.geojson)
+  }
 
   if (props.controls) {
     mapObject.pm.addControls({
@@ -204,7 +231,7 @@ onUnmounted(() => {
   observeMap?.disconnect()
 })
 
-const setGeoJSON = (geojson) => {
+function setGeoJSON(geojson) {
   if (geojson) {
     L.geoJSON(geojson, {
       ...geojsonDefaultOptions,

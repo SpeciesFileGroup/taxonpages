@@ -14,6 +14,9 @@
         ref="mapRef"
         class="w-screen h-screen"
         controls
+        disable-zoom
+        :zoom-bounds="6"
+        :geojson="shapes"
         @draw:start="() => (geojson = {})"
         @add:layer="
           ($event) => {
@@ -50,6 +53,11 @@ const props = defineProps({
   otu: {
     type: Array,
     default: () => []
+  },
+
+  shapes: {
+    type: Object,
+    default: () => ({})
   }
 })
 
