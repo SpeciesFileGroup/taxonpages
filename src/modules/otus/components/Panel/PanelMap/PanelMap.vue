@@ -12,7 +12,7 @@
       />
 
       <VButton
-        class="h-6 text-sm absolute right-3 top-3 z-[3000]"
+        class="h-6 text-sm absolute right-3 top-3 z-[400]"
         primary
         @click="() => (isOtuSearchVisible = true)"
       >
@@ -26,7 +26,13 @@
       />
     </div>
     <div
-      class="text-xs flex flex-row p-2 gap-2"
+      v-if="errorMessage"
+      class="flex flex-row p-2 text-xs italic"
+    >
+      * {{ errorMessage }}
+    </div>
+    <div
+      class="flex flex-row p-2 gap-2 text-xs"
       v-if="currentShapeTypes.length"
     >
       <div
@@ -67,6 +73,7 @@ const geojson = ref(undefined)
 const isLoading = ref(true)
 const isOtuSearchVisible = ref(false)
 const currentShapeTypes = ref([])
+const errorMessage = ref(null)
 
 const LEGEND = {
   AssertedDistribution: {
@@ -94,14 +101,14 @@ watch(
     isLoading.value = true
 
     const { data } = await TaxonWorks.getOtuDistribution(props.otuId)
-    const features = removeDuplicateShapes(data)
 
     if (data.request_too_large) {
       geojson.value = null
+      errorMessage.value = data.message
     } else {
       geojson.value = {
         ...data,
-        features
+        features: removeDuplicateShapes(data)
       }
     }
   },
