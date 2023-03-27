@@ -26,22 +26,26 @@
       />
     </div>
     <div
-      v-if="false"
-      class="text-sm flex flex-row justify-around"
+      class="text-xs flex flex-row p-2 gap-2"
+      v-if="currentShapeTypes.length"
     >
-      <div class="flex flex-row items-center p-2">
-        <div class="w-3 h-3 bg-map-georeference m-1" />
-        <span>Georeference</span>
-      </div>
-      <div class="flex flex-row items-center p-2">
-        <div class="w-3 h-3 m-1 bg-map-asserted" />
-        <span>Asserted distribution</span>
+      <div
+        v-for="type in currentShapeTypes"
+        :key="type"
+        class="flex flex-row items-center"
+      >
+        <div
+          class="w-3 h-3 m-1 rounded-sm"
+          :class="LEGEND[type].background"
+        />
+        <span>{{ LEGEND[type].label }}</span>
       </div>
     </div>
   </VCard>
 </template>
 
 <script setup>
+import { Georeference } from '@/components/Map/icons'
 import { ref, watch } from 'vue'
 import TaxonWorks from '../../../services/TaxonWorks'
 import OtuSearch from '../../Search/OtuSearch.vue'
@@ -62,17 +66,82 @@ const zoom = 2
 const geojson = ref(undefined)
 const isLoading = ref(true)
 const isOtuSearchVisible = ref(false)
+const currentShapeTypes = ref([])
+
+const LEGEND = {
+  AssertedDistribution: {
+    label: 'Asserted disitrubtion',
+    background: 'bg-map-asserted'
+  },
+  Georeference: {
+    label: 'Georeference',
+    background: 'bg-map-georeference'
+  },
+  TypeMaterial: {
+    label: 'Type material',
+    background: 'bg-map-type-material'
+  },
+  CollectionObject: {
+    label: 'Collection object',
+    background: 'bg-map-collection-object'
+  }
+}
 
 watch(
   () => props.otuId,
-  (newId, oldId) => {
+  async (newId, oldId) => {
     if (newId === oldId) return
     isLoading.value = true
 
-    TaxonWorks.getOtuDistribution(props.otuId).then(({ data }) => {
-      geojson.value = data.request_too_large ? null : data
-    })
+    const { data } = await TaxonWorks.getOtuDistribution(props.otuId)
+    const features = removeDuplicateShapes(data)
+
+    if (data.request_too_large) {
+      geojson.value = null
+    } else {
+      geojson.value = {
+        ...data,
+        features
+      }
+    }
   },
   { immediate: true }
 )
+
+function removeDuplicateShapes(data) {
+  const features = []
+
+  data.features.forEach((feature) => {
+    const shapeId = feature.properties.shape.id
+    const shapeType = feature.properties.shape.type
+
+    if (!currentShapeTypes.value.includes(feature.properties.base.type)) {
+      currentShapeTypes.value.push(feature.properties.base.type)
+    }
+
+    const index = features.findIndex(
+      (item) =>
+        item.properties.shape.id === shapeId &&
+        item.properties.shape.type === shapeType
+    )
+
+    if (index > -1) {
+      const currentFeature = features[index]
+
+      currentFeature.properties.base.push(feature.properties.base)
+      currentFeature.properties.target.push(feature.properties.target)
+    } else {
+      const item = structuredClone(feature)
+
+      item.properties.base = [item.properties.base]
+      item.properties.target = [item.properties.target]
+
+      features.push(item)
+    }
+  })
+
+  currentShapeTypes.value.sort()
+
+  return features
+}
 </script>
