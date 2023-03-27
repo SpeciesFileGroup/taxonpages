@@ -18,12 +18,12 @@
 
     <ul
       v-if="list.length"
-      class="autocomplete__list list absolute z-[500] max-h-52 w-full overflow-y-auto border bg-base-foreground border-base-border !m-0"
+      class="autocomplete__list list absolute z-[500] max-h-52 w-full overflow-y-auto border bg-base-foreground border-base-border !m-0 shadow-md"
     >
       <li
         v-for="item in list"
         :key="item.id"
-        class="autocomplete__item p-2 border-b text-xs cursor-pointer hover:bg-secondary-color hover:bg-opacity-5 border-base-border"
+        class="autocomplete__item px-3 py-2 border-b text-xs cursor-pointer hover:bg-secondary-color hover:bg-opacity-5 border-base-border truncate"
         @click="selectItem(item)"
       >
         <span v-html="item[label]" />
