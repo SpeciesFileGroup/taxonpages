@@ -5,6 +5,7 @@
       <VMap
         ref="map"
         class="h-96 max-h-96"
+        dragging
         :zoom="zoom"
         :geojson="geojson"
         @geojson:ready="isLoading = false"
@@ -20,6 +21,7 @@
       <OtuSearch
         v-if="isOtuSearchVisible"
         :otu="otu"
+        :shapes="geojson"
         @close="() => (isOtuSearchVisible = false)"
       />
     </div>
