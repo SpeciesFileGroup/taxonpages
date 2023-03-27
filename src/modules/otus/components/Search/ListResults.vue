@@ -28,7 +28,10 @@
       </VTableBodyRow>
     </VTableBody>
   </VTable>
-  <div class="text-lg text-center text-base-lighter align-middle p-4">
+  <div
+    v-else
+    class="text-lg text-center text-base-lighter align-middle p-4"
+  >
     No OTUs found in this area
   </div>
 </template>
