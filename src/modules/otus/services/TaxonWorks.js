@@ -11,6 +11,12 @@ export default class TaxonWorks {
     })
   }
 
+  static getOtus(params) {
+    return makeAPIRequest.get(`/otus.json`, {
+      params
+    })
+  }
+
   static getTaxon(id) {
     return makeAPIRequest.get(`/taxon_names/${id}`)
   }

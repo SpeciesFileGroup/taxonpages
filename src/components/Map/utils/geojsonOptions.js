@@ -9,6 +9,14 @@ const TYPES = [
   'Georeference'
 ]
 
+const DEFAULT_OPTIONS = {
+  allowEditing: false,
+  allowRemoval: false,
+  allowCutting: false,
+  allowRotation: false,
+  draggable: false
+}
+
 function getRelevantType(base) {
   const types = base.map((b) => b.type)
 
@@ -37,13 +45,19 @@ export default {
       .join('')}
       </ul></div>`
 
+    layer.pm.setOptions(DEFAULT_OPTIONS)
+    layer.pm.disable()
+
     layer.bindPopup(label)
   },
 
   pointToLayer: (feature, latLng) => {
     const type = getRelevantType(feature.properties.base)
+    const marker = L.marker(latLng, { icon: Icons[type] || Icon.Georeference })
 
-    return L.marker(latLng, { icon: Icons[type] || Icon.Georeference })
+    marker.pm.setOptions(DEFAULT_OPTIONS)
+
+    return marker
   },
 
   style: (feature) => {
