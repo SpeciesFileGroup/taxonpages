@@ -18,12 +18,10 @@
         :disable-zoom="!!shapes"
         :zoom-bounds="6"
         :geojson="shapes"
+        @add:layer="setLayer"
+        @edit:layer="setLayer"
+        @drag:layer="setLayer"
         @draw:start="() => (geojson = {})"
-        @add:layer="
-          ($event) => {
-            geoJson = JSON.stringify($event.geometry)
-          }
-        "
         :zoom="4"
       />
       <div
@@ -46,7 +44,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { makeAPIRequest } from '@/utils/request'
+import TaxonWorks from '../../services/TaxonWorks'
 import SearchBar from './SearchBar.vue'
 import ListResults from './ListResults.vue'
 
@@ -88,6 +86,10 @@ const handleKeyboard = ({ key }) => {
   }
 }
 
+function setLayer(geojsonLayer) {
+  geoJson.value = JSON.stringify(geojsonLayer.geometry)
+}
+
 function loadOTUs() {
   const payload = {
     geo_json: geoJson.value,
@@ -97,8 +99,7 @@ function loadOTUs() {
 
   isLoading.value = true
 
-  makeAPIRequest
-    .get('/otus.json', { params: payload })
+  TaxonWorks.getOtus(payload)
     .then(({ data }) => {
       list.value = data
       isTableVisible.value = true

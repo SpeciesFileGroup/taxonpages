@@ -87,7 +87,9 @@ const emit = defineEmits([
   'geojson:ready',
   'geojson',
   'add:layer',
-  'draw:start'
+  'draw:start',
+  'edit:layer',
+  'drag:layer'
 ])
 
 let mapObject
@@ -167,19 +169,23 @@ onMounted(() => {
     })
 
     mapObject.on('pm:create', (e) => {
-      const fg = L.featureGroup()
-
-      drawnItems.eachLayer((layer) => {
-        if (
-          (layer instanceof L.Path || layer instanceof L.Marker) &&
-          layer.pm
-        ) {
-          fg.addLayer(layer)
-        }
-      })
-
-      emit('geojson', fg.toGeoJSON())
+      emit('geojson', getDrawItemsInGeoJson())
       emit('add:layer', convertGeoJSONWithPointRadius(e.layer))
+    })
+
+    /*     drawnItems.on('pm:change', (e) => {
+      emit('geojson', getDrawItemsInGeoJson())
+      emit('edit:layer', convertGeoJSONWithPointRadius(e.layer))
+    }) */
+
+    drawnItems.on('pm:edit', (e) => {
+      emit('geojson', getDrawItemsInGeoJson())
+      emit('edit:layer', convertGeoJSONWithPointRadius(e.layer))
+    })
+
+    drawnItems.on('pm:drag', (e) => {
+      emit('geojson', getDrawItemsInGeoJson())
+      emit('drag:layer', convertGeoJSONWithPointRadius(e.layer))
     })
 
     mapObject.on('pm:drawstart', (e) => {
@@ -191,6 +197,18 @@ onMounted(() => {
   tiles.osm.addTo(mapObject)
   initEvents()
 })
+
+function getDrawItemsInGeoJson() {
+  const fg = L.featureGroup()
+
+  drawnItems.eachLayer((layer) => {
+    if ((layer instanceof L.Path || layer instanceof L.Marker) && layer.pm) {
+      fg.addLayer(layer)
+    }
+  })
+
+  return fg.toGeoJSON()
+}
 
 function clearDrawLayers() {
   drawnItems.clearLayers()
@@ -235,8 +253,7 @@ function setGeoJSON(geojson) {
   if (geojson) {
     L.geoJSON(geojson, {
       ...geojsonDefaultOptions,
-      ...props.geojsonOptions,
-      pmIgnore: true
+      ...props.geojsonOptions
     }).addTo(geoJSONGroup)
 
     const bounds = geoJSONGroup.getBounds()
