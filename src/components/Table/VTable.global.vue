@@ -1,5 +1,5 @@
 <template>
-  <div class="shadow-md relative sm:rounded-lg">
+  <div class="relative sm:rounded-lg">
     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
       <slot />
     </table>

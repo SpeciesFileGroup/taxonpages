@@ -56,10 +56,6 @@
       </div>
     </div>
   </div>
-  <OtuSearch
-    v-if="isOtuSearchVisible"
-    @close="() => (isOtuSearchVisible = false)"
-  />
 </template>
 
 <script setup>
@@ -74,7 +70,6 @@ const route = useRoute()
 const router = useRouter()
 const routeParams = ref(route.params)
 const tabs = [] // useChildrenRoutes()
-const isOtuSearchVisible = ref(false)
 
 router.afterEach((route) => {
   routeParams.value = route.params

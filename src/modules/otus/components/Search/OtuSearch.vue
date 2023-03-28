@@ -14,7 +14,8 @@
         ref="mapRef"
         class="w-screen h-screen"
         controls
-        disable-zoom
+        :dragging="!shapes"
+        :disable-zoom="!!shapes"
         :zoom-bounds="6"
         :geojson="shapes"
         @draw:start="() => (geojson = {})"
@@ -44,7 +45,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { makeAPIRequest } from '@/utils/request'
 import SearchBar from './SearchBar.vue'
 import ListResults from './ListResults.vue'
@@ -57,7 +58,7 @@ const props = defineProps({
 
   shapes: {
     type: Object,
-    default: () => ({})
+    default: undefined
   }
 })
 
