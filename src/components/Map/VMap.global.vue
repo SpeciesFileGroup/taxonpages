@@ -173,19 +173,9 @@ onMounted(() => {
       emit('add:layer', convertGeoJSONWithPointRadius(e.layer))
     })
 
-    /*     drawnItems.on('pm:change', (e) => {
-      emit('geojson', getDrawItemsInGeoJson())
-      emit('edit:layer', convertGeoJSONWithPointRadius(e.layer))
-    }) */
-
     drawnItems.on('pm:edit', (e) => {
       emit('geojson', getDrawItemsInGeoJson())
       emit('edit:layer', convertGeoJSONWithPointRadius(e.layer))
-    })
-
-    drawnItems.on('pm:drag', (e) => {
-      emit('geojson', getDrawItemsInGeoJson())
-      emit('drag:layer', convertGeoJSONWithPointRadius(e.layer))
     })
 
     mapObject.on('pm:drawstart', (e) => {

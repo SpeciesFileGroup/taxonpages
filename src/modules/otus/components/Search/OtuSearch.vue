@@ -6,7 +6,6 @@
     <VSpinner v-if="isLoading" />
     <SearchBar
       :label="otu.object_tag"
-      @search="loadOTUs"
       @close="() => emit('close')"
     />
     <div class="relative">
@@ -18,10 +17,9 @@
         :disable-zoom="!!shapes"
         :zoom-bounds="6"
         :geojson="shapes"
-        @add:layer="setLayer"
-        @edit:layer="setLayer"
-        @drag:layer="setLayer"
-        @draw:start="() => (geojson = {})"
+        @add:layer="(layer) => loadOTUs(JSON.stringify(layer.geometry))"
+        @edit:layer="(layer) => loadOTUs(JSON.stringify(layer.geometry))"
+        @drag:layer="(layer) => loadOTUs(JSON.stringify(layer.geometry))"
         :zoom="4"
       />
       <div
@@ -62,7 +60,6 @@ const props = defineProps({
 
 const root = ref()
 const emit = defineEmits(['close'])
-const geoJson = ref({})
 const mapRef = ref(null)
 const list = ref([])
 const isTableVisible = ref(false)
@@ -86,13 +83,9 @@ const handleKeyboard = ({ key }) => {
   }
 }
 
-function setLayer(geojsonLayer) {
-  geoJson.value = JSON.stringify(geojsonLayer.geometry)
-}
-
-function loadOTUs() {
+function loadOTUs(geojson) {
   const payload = {
-    geo_json: geoJson.value,
+    geo_json: geojson,
     taxon_name_id: [props.otu.taxon_name_id],
     descendants: true
   }
