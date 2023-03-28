@@ -12,7 +12,6 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from 'vue'
-import VSpinnerGlobal from '../VSpinner.global.vue'
 
 const props = defineProps({
   image: {

@@ -8,7 +8,7 @@
         dragging
         :zoom="zoom"
         :geojson="geojson"
-        @geojson:ready="isLoading = false"
+        @geojson:ready="() => (isLoading = false)"
       />
 
       <VButton
@@ -51,7 +51,6 @@
 </template>
 
 <script setup>
-import { Georeference } from '@/components/Map/icons'
 import { ref, watch } from 'vue'
 import TaxonWorks from '../../../services/TaxonWorks'
 import OtuSearch from '../../Search/OtuSearch.vue'

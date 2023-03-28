@@ -1,13 +1,16 @@
 <template>
-  <VTable v-if="list.length">
+  <VTable
+    v-if="list.length"
+    class="shadow-md"
+  >
     <VTableHeader>
       <VTableHeaderRow>
         <VTableHeaderCell
           class="w-full flex justify-between box-border items-center"
         >
           <span>OTU</span>
-          <IconClose
-            class="opacity-30 cursor-pointer"
+          <IconArrowRight
+            class="opacity-50 cursor-pointer w-4 h-4"
             @click="emit('close:table')"
           />
         </VTableHeaderCell>

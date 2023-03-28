@@ -235,7 +235,8 @@ function setGeoJSON(geojson) {
   if (geojson) {
     L.geoJSON(geojson, {
       ...geojsonDefaultOptions,
-      ...props.geojsonOptions
+      ...props.geojsonOptions,
+      pmIgnore: true
     }).addTo(geoJSONGroup)
 
     const bounds = geoJSONGroup.getBounds()
