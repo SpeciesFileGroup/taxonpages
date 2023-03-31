@@ -11,10 +11,11 @@
             :current="taxon"
           />
           <Autocomplete
-            class="print:hidden min-w-full mb-2 md:min-w-fit md:ml-2 md:mb-0 w-1/4"
+            class="print:hidden min-w-full mb-2 md:min-w-fit md:ml-2 md:mb-0 w-96"
             url="/otus/autocomplete"
             query-param="term"
             label="label_html"
+            title-property="label"
             placeholder="Search name..."
             :params="{ having_taxon_name_only: true }"
             @select="loadOtu"
