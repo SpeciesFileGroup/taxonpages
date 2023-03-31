@@ -36,7 +36,7 @@ export default {
           `
           <li 
             class="py-2 last:border-0 truncate border-b"
-            title="item.label"
+            title="${item.label}"
           >
             ${item.label}
           </li>
