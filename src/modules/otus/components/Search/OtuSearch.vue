@@ -1,7 +1,7 @@
 <template>
   <div
     ref="root"
-    class="w-screen h-screen fixed top-0 left-0 z-[5000]"
+    class="w-screen h-screen fixed top-0 left-0 z-[5000] flex flex-col"
   >
     <VSpinner v-if="isLoading" />
     <SearchBar
@@ -9,12 +9,12 @@
       @close="() => emit('close')"
     />
     <div
-      class="relative"
+      class="w-full h-full"
       :class="{ 'disable-zoom-out': disableZoom }"
     >
       <VMap
         ref="mapRef"
-        class="w-screen h-screen"
+        class="w-full h-full"
         controls
         :dragging="!disableZoom"
         :zoom-bounds="maxZoom"
