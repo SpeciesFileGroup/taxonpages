@@ -9,7 +9,7 @@
       @close="() => emit('close')"
     />
     <div
-      class="w-full h-full"
+      class="w-full h-full relative"
       :class="{ 'disable-zoom-out': disableZoom }"
     >
       <VMap
