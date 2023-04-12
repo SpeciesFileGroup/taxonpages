@@ -8,18 +8,22 @@
       :label="otu.object_tag"
       @close="() => emit('close')"
     />
-    <div class="relative">
+    <div
+      class="relative"
+      :class="{ 'disable-zoom-out': disableZoom }"
+    >
       <VMap
         ref="mapRef"
         class="w-screen h-screen"
         controls
-        :dragging="!shapes"
-        :disable-zoom="!!shapes"
-        :zoom-bounds="6"
+        :dragging="!disableZoom"
+        :zoom-bounds="maxZoom"
         :geojson="shapes"
+        @geojson:ready="updateMaxZoom"
         @add:layer="(layer) => loadOTUs(JSON.stringify(layer.geometry))"
         @edit:layer="(layer) => loadOTUs(JSON.stringify(layer.geometry))"
         @drag:layer="(layer) => loadOTUs(JSON.stringify(layer.geometry))"
+        @zoom:change="handleZoom"
         :zoom="4"
       />
       <div
@@ -41,7 +45,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import TaxonWorks from '../../services/TaxonWorks'
 import SearchBar from './SearchBar.vue'
 import ListResults from './ListResults.vue'
@@ -64,6 +68,11 @@ const mapRef = ref(null)
 const list = ref([])
 const isTableVisible = ref(false)
 const isLoading = ref()
+const maxZoom = ref(6)
+const currentZoom = ref(6)
+const disableZoom = computed(
+  () => !!props.shapes && currentZoom.value <= maxZoom.value
+)
 
 onMounted(() => {
   document.addEventListener('keyup', handleKeyboard)
@@ -101,4 +110,26 @@ function loadOTUs(geojson) {
       isLoading.value = false
     })
 }
+
+function handleZoom(e) {
+  updateCurrentZoom()
+  if (disableZoom.value) {
+    mapRef.value.resizeMap()
+  }
+}
+
+function updateCurrentZoom() {
+  currentZoom.value = mapRef.value.getMapObject().getZoom()
+}
+
+function updateMaxZoom() {
+  maxZoom.value = mapRef.value.getMapObject().getZoom()
+  updateCurrentZoom()
+}
 </script>
+
+<style lang="scss" scoped>
+:deep(.disable-zoom-out .leaflet-control-zoom-out) {
+  display: none !important;
+}
+</style>

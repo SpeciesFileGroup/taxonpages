@@ -89,7 +89,9 @@ const emit = defineEmits([
   'add:layer',
   'draw:start',
   'edit:layer',
-  'drag:layer'
+  'drag:layer',
+  'zoom:change',
+  'zoom:start'
 ])
 
 let mapObject
@@ -119,6 +121,17 @@ watch(
     setGeoJSON(newVal)
   },
   { deep: true }
+)
+
+watch(
+  () => props.dragging,
+  (newVal) => {
+    if (newVal) {
+      mapObject.dragging.enable()
+    } else {
+      mapObject.dragging.disable()
+    }
+  }
 )
 
 onMounted(() => {
@@ -182,6 +195,9 @@ onMounted(() => {
       clearDrawLayers()
       emit('draw:start', e)
     })
+
+    mapObject.on('zoom', (e) => emit('zoom:change', e))
+    mapObject.on('zoomstart', (e) => emit('zoom:start', e))
   }
 
   tiles.osm.addTo(mapObject)
@@ -256,7 +272,13 @@ function setGeoJSON(geojson) {
   emit('geojson:ready', geoJSONGroup)
 }
 
+function getMapObject() {
+  return mapObject
+}
+
 defineExpose({
-  clearDrawLayers
+  clearDrawLayers,
+  getMapObject,
+  resizeMap
 })
 </script>
