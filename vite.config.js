@@ -13,23 +13,25 @@ export default () => {
   return defineConfig({
     base: configuration.base_url,
     define: {
-     __APP_ENV__: configuration
+      __APP_ENV__: configuration
     },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
         '#': path.resolve(__dirname)
-      },
+      }
     },
     plugins: [
       Vue({
         include: [/\.vue$/, /\.md$/]
       }),
       Markdown({
-        wrapperClasses: '!container mx-auto p-4 sm:pl-0 sm:pr-0 prose dark:prose-invert box-border'
+        wrapperClasses:
+          '!container mx-auto p-4 sm:pl-0 sm:pr-0 prose dark:prose-invert box-border'
       }),
       Pages({
         dirs: 'pages',
+        exclude: ['**/components/*.vue'],
         extensions: ['vue', 'md'],
         extendRoute(route) {
           if (route.path === '/home') {
@@ -41,6 +43,6 @@ export default () => {
         }
       }),
       htmlPlugin(configuration)
-    ],
+    ]
   })
 }
