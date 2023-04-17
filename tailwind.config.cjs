@@ -9,11 +9,11 @@ function withOpacity(variableName) {
 
 module.exports = {
   content: [
-    "./index.html",
-    "./vite.config.js",
-    "./src/**/*.{vue,js,ts,jsx,tsx,md}",
-    "./pages/*.{vue,md}",
-    "./config/*.yml",
+    './index.html',
+    './vite.config.js',
+    './src/**/*.{vue,js,ts,jsx,tsx,md}',
+    './pages/**/*.{vue,md}',
+    './config/*.yml'
   ],
 
   darkMode: 'class',
@@ -21,7 +21,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        main: ['Roboto','sans-serif']
+        main: ['Roboto', 'sans-serif']
       },
       colors: {
         base: {
@@ -31,7 +31,7 @@ module.exports = {
           foreground: withOpacity('--color-base-foreground'),
           lighter: withOpacity('--color-base-lighter'),
           muted: withOpacity('--color-base-muted'),
-          soft: withOpacity('--color-base-soft'),
+          soft: withOpacity('--color-base-soft')
         },
 
         map: {
@@ -54,22 +54,20 @@ module.exports = {
       typography: ({ theme }) => ({
         DEFAULT: {
           css: {
-            '--tw-prose-links': theme('colors.secondary.color'),
-          },
+            '--tw-prose-links': theme('colors.secondary.color')
+          }
         },
         invert: {
           css: {
-            '--tw-prose-links': theme('colors.secondary.color'),
+            '--tw-prose-links': theme('colors.secondary.color')
           }
         }
       }),
 
       screens: {
-        'print': { 'raw': 'print' }
+        print: { raw: 'print' }
       }
     }
   },
-  plugins: [
-    require('@tailwindcss/typography')
-  ],
+  plugins: [require('@tailwindcss/typography')]
 }
