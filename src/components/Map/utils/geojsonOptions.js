@@ -25,7 +25,7 @@ function getRelevantType(base) {
   return types[0]
 }
 
-export default {
+export default (L) => ({
   onEachFeature: (feature, layer) => {
     const label = `
     <div class="max-h-32 overflow-y-auto text-xs">
@@ -53,7 +53,10 @@ export default {
 
   pointToLayer: (feature, latLng) => {
     const type = getRelevantType(feature.properties.base)
-    const marker = L.marker(latLng, { icon: Icons[type] || Icon.Georeference })
+    const markerStyle = Icons[type] || Icon.Georeference
+    const marker = L.marker(latLng, {
+      icon: L.divIcon(markerStyle)
+    })
 
     marker.pm.setOptions(DEFAULT_OPTIONS)
 
@@ -67,4 +70,4 @@ export default {
       return Shape[type]
     }
   }
-}
+})

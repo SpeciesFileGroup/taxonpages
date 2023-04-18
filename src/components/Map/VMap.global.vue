@@ -258,7 +258,7 @@ onUnmounted(() => {
 function setGeoJSON(geojson) {
   if (geojson) {
     L.geoJSON(geojson, {
-      ...geojsonDefaultOptions,
+      ...geojsonDefaultOptions(L),
       ...props.geojsonOptions
     }).addTo(geoJSONGroup)
 

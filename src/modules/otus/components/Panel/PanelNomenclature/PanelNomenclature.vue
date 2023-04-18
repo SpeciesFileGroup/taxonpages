@@ -18,6 +18,16 @@ const props = defineProps({
   taxonId: {
     type: [Number, String],
     required: true
+  },
+
+  taxon: {
+    type: Object,
+    default: undefined
+  },
+
+  otu: {
+    type: Object,
+    default: undefined
   }
 })
 

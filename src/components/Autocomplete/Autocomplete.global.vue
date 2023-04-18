@@ -8,12 +8,14 @@
     <input
       v-model="typed"
       type="text"
+      autocomplete="none"
       class="autocomplete__input block box-border min-w-full p-1.5 pl-10 text-base-content rounded border sm:text-sm placeholder:text-sm dark:border-slate-700 border-gray-300 dark:placeholder:text-slate-400 focus:ring-primary-500 focus:border-primary-500"
       :placeholder="placeholder"
+      ref="inputElement"
     />
     <AutocompleteSpinner
       v-if="isSearching"
-      class="absolute top-2 right-2 h-5 w-5"
+      class="absolute top-1/2 -translate-y-1/2 right-2 h-5 w-5"
     />
 
     <ul
@@ -33,11 +35,16 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { makeAPIRequest } from '@/utils/request'
 import AutocompleteSpinner from './AutocompleteSpinner.vue'
 
 const props = defineProps({
+  autofocus: {
+    type: Boolean,
+    default: false
+  },
+
   placeholder: {
     type: String,
     default: 'Search...'
@@ -68,6 +75,7 @@ const emit = defineEmits(['select'])
 const typed = ref('')
 const list = ref([])
 const isSearching = ref(false)
+const inputElement = ref(null)
 
 const delay = 500
 let timeout
@@ -99,6 +107,12 @@ const selectItem = (item) => {
   emit('select', item)
   typed.value = ''
 }
+
+onMounted(() => {
+  if (props.autofocus) {
+    inputElement.value.focus()
+  }
+})
 </script>
 
 <style lang="scss" scoped>
