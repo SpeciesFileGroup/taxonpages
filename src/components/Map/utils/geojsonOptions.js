@@ -1,4 +1,3 @@
-import L, { Icon } from 'leaflet'
 import * as Icons from '../icons'
 import * as Shape from '../shapes'
 
@@ -53,7 +52,7 @@ export default (L) => ({
 
   pointToLayer: (feature, latLng) => {
     const type = getRelevantType(feature.properties.base)
-    const markerStyle = Icons[type] || Icon.Georeference
+    const markerStyle = Icons[type] || Icons.Georeference
     const marker = L.marker(latLng, {
       icon: L.divIcon(markerStyle)
     })

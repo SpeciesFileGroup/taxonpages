@@ -40,7 +40,9 @@
         </nav>
 
         <div class="flex items-center border-l ml-6 pl-6 border-base-muted">
-          <SwitchTheme class="text-primary-content" />
+          <ClientOnly>
+            <SwitchTheme class="text-primary-content" />
+          </ClientOnly>
         </div>
       </div>
     </div>
