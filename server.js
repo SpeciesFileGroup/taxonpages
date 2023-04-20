@@ -1,11 +1,12 @@
 // @ts-check
 import fs from 'node:fs'
 import path from 'node:path'
+import minimist from 'minimist'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
 import { generateConsoleMessage } from './src/ssr/utils/generateConsoleMessage.js'
 
-const isTest = process.env.VITEST
+const { port = 6173 } = minimist(process.argv.slice(2))
 
 export async function createServer(
   root = process.cwd(),
@@ -37,7 +38,7 @@ export async function createServer(
     ).createServer({
       base: '/',
       root,
-      logLevel: isTest ? 'error' : 'info',
+      logLevel: 'info',
       server: {
         middlewareMode: true,
         watch: {
@@ -98,14 +99,12 @@ export async function createServer(
   return { app, vite }
 }
 
-if (!isTest) {
-  createServer().then(({ app }) =>
-    app.listen(6173, () => {
-      generateConsoleMessage({ port: 6173, url: 'http://localhost' })
-    })
-  )
-}
-
 function makeAppContainer(app = '') {
   return `<div id="app">${app}</div>`
 }
+
+createServer().then(({ app }) =>
+  app.listen(port, () => {
+    generateConsoleMessage({ port, url: 'http://localhost' })
+  })
+)
