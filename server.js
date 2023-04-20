@@ -85,8 +85,8 @@ export async function createServer(
 
       const html = template
         .replace(`<!--preload-links-->`, preloadLinks)
-        .replace(`<!--app-html-->`, appHtml)
         .replace(`<!--app-state-->`, appState)
+        .replace(makeAppContainer(), makeAppContainer(appHtml))
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (e) {
@@ -105,4 +105,8 @@ if (!isTest) {
       generateConsoleMessage({ port: 6173, url: 'http://localhost' })
   })
  )
+}
+
+function makeAppContainer(app = '') {
+  return `<div id="app">${app}</div>`
 }

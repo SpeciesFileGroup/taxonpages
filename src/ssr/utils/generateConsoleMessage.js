@@ -10,6 +10,6 @@ export function generateConsoleMessage ({ url, port }) {
     
     console.log(taxonPagesMark)
     console.log('----------------------------------------------------------')
-    console.log('Server running at: ', `${url}:${port}`)
+    console.log('Server running at:', `${url}:${port}`)
 
 }
