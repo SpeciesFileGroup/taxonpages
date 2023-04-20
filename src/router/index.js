@@ -8,27 +8,36 @@ import {
 import dynamicRoutes from '~pages'
 
 const coreModuleRoutes = import.meta.glob('@/modules/**/router/*.js', {
-  import: 'default', eager: true
+  import: 'default',
+  eager: true
 })
 const userModuleRoutes = import.meta.glob('#/modules/**/router/*.js', {
-  import: 'default', eager: true
+  import: 'default',
+  eager: true
 })
+
+const { base_url, hash_mode } = __APP_ENV__
+
 const moduleRoutes = [].concat(
   ...Object.values(coreModuleRoutes),
   ...Object.values(userModuleRoutes)
 )
 
-const { base_url, hash_mode } = __APP_ENV__
-
 export const routes = [...dynamicRoutes, ...moduleRoutes]
 
+function getHistory() {
+  if (import.meta.env.SSR) {
+    return createMemoryHistory(base_url)
+  } else if (hash_mode) {
+    return createWebHashHistory(base_url)
+  } else {
+    return createWebHistory(base_url)
+  }
+}
 
 export function createRouter() {
   return _createRouter({
-    history: import.meta.env.SSR
-      ? createMemoryHistory('/')
-      : createWebHistory(base_url),
-
+    history: getHistory(),
     routes
   })
 }

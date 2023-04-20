@@ -5,7 +5,6 @@ import { fileURLToPath } from 'node:url'
 import express from 'express'
 import { generateConsoleMessage } from './src/ssr/utils/generateConsoleMessage.js'
 
-
 const isTest = process.env.VITEST
 
 export async function createServer(
@@ -103,8 +102,8 @@ if (!isTest) {
   createServer().then(({ app }) =>
     app.listen(6173, () => {
       generateConsoleMessage({ port: 6173, url: 'http://localhost' })
-  })
- )
+    })
+  )
 }
 
 function makeAppContainer(app = '') {
