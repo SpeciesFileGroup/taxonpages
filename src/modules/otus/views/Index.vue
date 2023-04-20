@@ -47,7 +47,7 @@
     <div class="pt-3 pb-4">
       <div class="container mx-auto box-border">
         <router-view
-        v-if="isReady"
+          v-if="isReady"
           :key="route.fullPath"
           :taxon-id="taxon.id"
           :taxon="taxon"
@@ -63,10 +63,9 @@
 <script setup>
 import { ref, watch, onServerPrefetch, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useOtuStore } from '../store/store'
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
 import TaxaInfo from '../components/TaxaInfo.vue'
-import TaxonWorks from '../services/TaxonWorks'
-import { useOtuStore } from '../store/store'
 //import useChildrenRoutes from '../composables/useChildrenRoutes'
 
 const route = useRoute()
@@ -75,16 +74,14 @@ const routeParams = ref(route.params)
 const tabs = [] // useChildrenRoutes()
 const store = useOtuStore()
 
- router.afterEach((route) => {
+router.afterEach((route) => {
   routeParams.value = route.params
-}) 
+})
 
-const otu = computed(() => store.otu )
-const taxon = computed(() => store.taxon )
+const otu = computed(() => store.otu)
+const taxon = computed(() => store.taxon)
 
 const isReady = computed(() => otu.value?.id && taxon.value?.id)
-
-
 
 onServerPrefetch(async () => {
   await store.loadInit(route.params.id)
@@ -92,19 +89,20 @@ onServerPrefetch(async () => {
 
 watch(
   () => route.fullPath,
-  async (newVal, oldVal) => {
+  async () => {
     store.$reset()
     store.loadInit(route.params.id)
-  },
-) 
+  }
+)
 
 onMounted(() => {
-  if (!store.otu) {
+  if (!otu.value || otu.value.id !== Number(route.params.id)) {
+    store.$reset()
     store.loadInit(route.params.id)
   }
 })
 
-function loadOtu ({ id }) {
+function loadOtu({ id }) {
   router.push({
     name: 'otus-id-overview',
     params: {

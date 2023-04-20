@@ -27,11 +27,8 @@ export async function createServer(
     : {}
 
   const app = express()
-
-  /**
-   * @type {import('vite').ViteDevServer}
-   */
   let vite
+
   if (!isProd) {
     vite = await (
       await import('vite')
@@ -42,8 +39,6 @@ export async function createServer(
       server: {
         middlewareMode: true,
         watch: {
-          // During tests we edit the files too fast and sometimes chokidar
-          // misses change events, so enforce polling for consistency
           usePolling: true,
           interval: 100
         },
@@ -77,7 +72,6 @@ export async function createServer(
         render = (await vite.ssrLoadModule('/src/entry-server.js')).render
       } else {
         template = indexProd
-        // @ts-ignore
         render = (await import('./dist/server/entry-server.js')).render
       }
 
