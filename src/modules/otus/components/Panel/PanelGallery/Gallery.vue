@@ -7,8 +7,8 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import TaxonWorks from '../../../services/TaxonWorks'
+import { computed, onServerPrefetch, onMounted } from 'vue'
+import { useOtuStore } from '@/modules/otus/store/store'
 
 const props = defineProps({
   otuId: {
@@ -17,18 +17,16 @@ const props = defineProps({
   }
 })
 
-const images = ref([])
+const store = useOtuStore()
+const images = computed(() => store.images || [])
 
-watch(
-  () => props.otuId,
-  async () => {
-    const params = {
-      extend: ['depictions', 'attribution', 'source', 'citations'],
-      otu_scope: ['all']
-    }
-  
-    images.value = (await TaxonWorks.getOtuImages(props.otuId, params)).data
-  },
-  { immediate: true }
-)
+onServerPrefetch(async () => {
+  await store.loadImages(props.otuId)
+})
+
+onMounted(() => {
+  if (!store.images) {
+    store.loadImages(props.otuId)
+  }
+})
 </script>

@@ -34,9 +34,11 @@
             </router-link>
           </li>
           <li>
-            <SwitchTheme
-              class="text-base-content w-full p-4 pt-3 pb-3 block box-border border-b border-b-base-border"
-            />
+            <ClientOnly>
+              <SwitchTheme
+                class="text-base-content w-full p-4 pt-3 pb-3 block box-border border-b border-b-base-border"
+              />
+            </ClientOnly>
           </li>
         </ul>
       </nav>

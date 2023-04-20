@@ -1,28 +1,43 @@
-import { 
-  createRouter, 
+import {
+  createRouter as _createRouter,
   createWebHistory,
-  createWebHashHistory
+  createWebHashHistory,
+  createMemoryHistory
 } from 'vue-router'
 
 import dynamicRoutes from '~pages'
 
-const coreModuleRoutes = import.meta.globEager('@/modules/**/router/*.js', { import: 'default' })
-const userModuleRoutes = import.meta.globEager('#/modules/**/router/*.js', { import: 'default' })
+const coreModuleRoutes = import.meta.glob('@/modules/**/router/*.js', {
+  import: 'default',
+  eager: true
+})
+const userModuleRoutes = import.meta.glob('#/modules/**/router/*.js', {
+  import: 'default',
+  eager: true
+})
+
+const { base_url, hash_mode } = __APP_ENV__
+
 const moduleRoutes = [].concat(
   ...Object.values(coreModuleRoutes),
   ...Object.values(userModuleRoutes)
 )
-const { base_url, hash_mode } = __APP_ENV__
 
-const router = createRouter({
-  history: hash_mode
-    ? createWebHashHistory(base_url)
-    : createWebHistory(base_url),
+export const routes = [...dynamicRoutes, ...moduleRoutes]
 
-  routes: [
-    ...dynamicRoutes,
-    ...moduleRoutes
-  ]
-})
+function getHistory() {
+  if (import.meta.env.SSR) {
+    return createMemoryHistory(base_url)
+  } else if (hash_mode) {
+    return createWebHashHistory(base_url)
+  } else {
+    return createWebHistory(base_url)
+  }
+}
 
-export default router
+export function createRouter() {
+  return _createRouter({
+    history: getHistory(),
+    routes
+  })
+}
