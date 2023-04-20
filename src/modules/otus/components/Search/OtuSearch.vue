@@ -26,6 +26,7 @@
         @zoom:change="handleZoom"
         :zoom="4"
       />
+
       <div
         class="h-screen md:w-96 absolute top-0 bg-base-background z-[2000] overflow-auto ease-in-out duration-300 w-full"
         :class="{

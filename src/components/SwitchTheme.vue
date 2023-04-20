@@ -46,24 +46,27 @@ const themeModes = {
 }
 const themeMode = ref(null)
 
-if (
-  localStorage.theme === 'dark' || 
-  (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+if (window !== undefined) {
+  if (
+    localStorage.theme === 'dark' ||
+    (!('theme' in localStorage) &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches)
   ) {
-  themeMode.value = 'dark'
-} else {
-  themeMode.value = 'light'
-}
+    themeMode.value = 'dark'
+  } else {
+    themeMode.value = 'light'
+  }
 
-watch(
-  themeMode,
-  (value, oldValue) => {
-    document.documentElement.classList.add(value)
-    document.documentElement.classList.remove(oldValue)
-    localStorage.setItem('theme', value)
-  },
-  { immediate: true }
-)
+  watch(
+    themeMode,
+    (value, oldValue) => {
+      document.documentElement.classList.add(value)
+      document.documentElement.classList.remove(oldValue)
+      localStorage.setItem('theme', value)
+    },
+    { immediate: true }
+  )
+}
 
 const toggleTheme = () => {
   if (themeMode.value === themeModes.dark) {
@@ -72,5 +75,4 @@ const toggleTheme = () => {
     themeMode.value = themeModes.dark
   }
 }
-
 </script>

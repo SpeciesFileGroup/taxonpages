@@ -1,16 +1,16 @@
 <template>
   <VCard>
-    <VSpinner v-if="isLoading" />
     <div class="relative">
-      <VMap
-        ref="map"
-        class="h-96 max-h-96"
-        dragging
-        :zoom="zoom"
-        :geojson="geojson"
-        @geojson:ready="() => (isLoading = false)"
-      />
-
+      <ClientOnly>
+        <VSpinner v-if="isLoading" />
+          <VMap
+            class="h-96 max-h-96"
+            dragging
+            :zoom="zoom"
+            :geojson="geojson"
+            @geojson:ready="() => (isLoading = false)"
+          />
+      </ClientOnly>
       <VButton
         class="h-6 text-sm absolute right-3 top-3 z-[400]"
         primary
@@ -18,12 +18,14 @@
       >
         Search
       </VButton>
-      <OtuSearch
-        v-if="isOtuSearchVisible"
-        :otu="otu"
-        :shapes="geojson"
-        @close="() => (isOtuSearchVisible = false)"
-      />
+      <ClientOnly>
+        <OtuSearch
+          v-if="isOtuSearchVisible"
+          :otu="otu"
+          :shapes="geojson"
+          @close="() => (isOtuSearchVisible = false)"
+        />
+      </ClientOnly>
     </div>
     <div
       v-if="errorMessage"

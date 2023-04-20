@@ -6,8 +6,9 @@
           class="flex flex-col-reverse md:flex-row justify-between items-start"
         >
           <Breadcrumb
+            v-if="isReady"
             class="w-4/4 md:w-3/4"
-            :list="otu.parents"
+            :list="otu?.parents || {}"
             :current="taxon"
           />
           <Autocomplete
@@ -23,6 +24,7 @@
 
         <div class="mt-8 flex justify-between middle">
           <TaxaInfo
+            v-if="isReady"
             :taxon="taxon"
             :otu-id="otu.id"
           />
@@ -45,7 +47,7 @@
     <div class="pt-3 pb-4">
       <div class="container mx-auto box-border">
         <router-view
-          v-if="taxon.id && otu.id"
+        v-if="isReady"
           :key="route.fullPath"
           :taxon-id="taxon.id"
           :taxon="taxon"
@@ -59,42 +61,50 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onServerPrefetch, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
 import TaxaInfo from '../components/TaxaInfo.vue'
 import TaxonWorks from '../services/TaxonWorks'
+import { useOtuStore } from '../store/store'
 //import useChildrenRoutes from '../composables/useChildrenRoutes'
 
 const route = useRoute()
 const router = useRouter()
 const routeParams = ref(route.params)
 const tabs = [] // useChildrenRoutes()
+const store = useOtuStore()
 
-router.afterEach((route) => {
+ router.afterEach((route) => {
   routeParams.value = route.params
+}) 
+
+const otu = computed(() => store.otu )
+const taxon = computed(() => store.taxon )
+
+const isReady = computed(() => otu.value?.id && taxon.value?.id)
+
+
+
+onServerPrefetch(async () => {
+  await store.loadInit(route.params.id)
 })
 
-const otu = ref({})
-const taxon = ref({})
-
 watch(
-  routeParams,
-  async (newParams, oldParams) => {
-    if (!newParams.id || newParams.id == oldParams?.id) {
-      return
-    }
-
-    otu.value = {}
-    taxon.value = {}
-
-    otu.value = (await TaxonWorks.getOtu(route.params.id)).data
-    taxon.value = (await TaxonWorks.summary(otu.value.taxon_name_id)).data
+  () => route.fullPath,
+  async (newVal, oldVal) => {
+    store.$reset()
+    store.loadInit(route.params.id)
   },
-  { immediate: true }
-)
+) 
 
-const loadOtu = ({ id }) => {
+onMounted(() => {
+  if (!store.otu) {
+    store.loadInit(route.params.id)
+  }
+})
+
+function loadOtu ({ id }) {
   router.push({
     name: 'otus-id-overview',
     params: {
