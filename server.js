@@ -36,7 +36,7 @@ export async function createServer(
     vite = await (
       await import('vite')
     ).createServer({
-      base: '/test/',
+      base: '/',
       root,
       logLevel: isTest ? 'error' : 'info',
       server: {
@@ -67,7 +67,7 @@ export async function createServer(
 
   app.use('*', async (req, res) => {
     try {
-      const url = req.originalUrl.replace('/test/', '/')
+      const url = req.originalUrl
 
       let template, render
       if (!isProd) {
@@ -81,11 +81,12 @@ export async function createServer(
         render = (await import('./dist/server/entry-server.js')).render
       }
 
-      const [appHtml, preloadLinks] = await render(url, manifest)
+      const [appHtml, appState, preloadLinks] = await render(url, manifest)
 
       const html = template
         .replace(`<!--preload-links-->`, preloadLinks)
         .replace(`<!--app-html-->`, appHtml)
+        .replace(`<!--app-state-->`, appState)
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (e) {

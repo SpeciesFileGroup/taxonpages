@@ -1,6 +1,8 @@
 <template>
   <div class="h-80 max-h-80 flex items-center justify-center">
-    <VSpinner v-if="isLoading" />
+    <ClientOnly>
+      <VSpinner v-if="isLoading" />
+    </ClientOnly>
     <img
       ref="imageElement"
       class="max-h-80 h-max w-100 cursor-zoom-in m-auto"
@@ -11,7 +13,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 
 const props = defineProps({
   image: {
@@ -30,9 +32,6 @@ watch(
     if (newVal.id) {
       isLoading.value = true
     }
-  },
-  {
-    immediate: true
   }
 )
 
@@ -40,5 +39,4 @@ onMounted(() => {
   imageElement.value.addEventListener('load', () => (isLoading.value = false))
 })
 
-onUnmounted(() => {})
 </script>

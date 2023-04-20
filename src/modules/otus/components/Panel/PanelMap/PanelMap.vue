@@ -3,8 +3,6 @@
     <div class="relative">
       <ClientOnly>
         <VSpinner v-if="isLoading" />
-
-        <Suspense>
           <VMap
             class="h-96 max-h-96"
             dragging
@@ -12,7 +10,6 @@
             :geojson="geojson"
             @geojson:ready="() => (isLoading = false)"
           />
-        </Suspense>
       </ClientOnly>
       <VButton
         class="h-6 text-sm absolute right-3 top-3 z-[400]"
@@ -22,14 +19,12 @@
         Search
       </VButton>
       <ClientOnly>
-        <Suspense>
-          <OtuSearch
-            v-if="isOtuSearchVisible"
-            :otu="otu"
-            :shapes="geojson"
-            @close="() => (isOtuSearchVisible = false)"
-          />
-        </Suspense>
+        <OtuSearch
+          v-if="isOtuSearchVisible"
+          :otu="otu"
+          :shapes="geojson"
+          @close="() => (isOtuSearchVisible = false)"
+        />
       </ClientOnly>
     </div>
     <div

@@ -23,18 +23,21 @@ const app = initTaxonPagesApp()
 app.mount('#app')
  */
 
-import.meta.globEager('@/assets/css/main.css')
-import.meta.globEager('../config/style/*.{scss,css}')
+import.meta.glob('@/assets/css/main.css', { eager: true })
+import.meta.glob('../config/style/*.{scss,css}', { eager: true })
 
-import { createSSRApp } from 'vue'
 import App from './App.vue'
+import { createPinia } from 'pinia'
+import { createSSRApp } from 'vue'
 import { createRouter } from './router'
 
 export function createApp() {
   const app = createSSRApp(App)
   const router = createRouter()
+  const store = createPinia()
 
   app.use(router)
+  app.use(store)
 
-  return { app, router }
+  return { app, router, store }
 }
