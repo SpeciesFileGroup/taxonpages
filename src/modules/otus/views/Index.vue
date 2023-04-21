@@ -66,6 +66,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { useOtuStore } from '../store/store'
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
 import TaxaInfo from '../components/TaxaInfo.vue'
+import { useHead, createHead } from 'unhead'
+
 //import useChildrenRoutes from '../composables/useChildrenRoutes'
 
 const route = useRoute()
@@ -84,23 +86,30 @@ const taxon = computed(() => store.taxon)
 const isReady = computed(() => otu.value?.id && taxon.value?.id)
 
 onServerPrefetch(async () => {
-  await store.loadInit(route.params.id)
+  await loadInitialData()
 })
 
 watch(
   () => route.fullPath,
   async () => {
-    store.$reset()
-    store.loadInit(route.params.id)
+    loadInitialData()
   }
 )
 
 onMounted(() => {
   if (!otu.value || otu.value.id !== Number(route.params.id)) {
-    store.$reset()
-    store.loadInit(route.params.id)
+    loadInitialData()
   }
 })
+
+async function loadInitialData() {
+  store.$reset()
+  await store.loadInit(route.params.id)
+
+  useHead({
+    title: `${__APP_ENV__.project_name} - ${taxon.value.full_name}`
+  })
+}
 
 function loadOtu({ id }) {
   router.push({

@@ -75,11 +75,17 @@ export async function createServer(
         render = (await import('./dist/server/entry-server.js')).render
       }
 
-      const [appHtml, appState, preloadLinks] = await render(url, manifest)
+      const [appHtml, appState, preloadLinks, tagMeta] = await render(
+        url,
+        manifest
+      )
 
       const html = template
         .replace(`<!--preload-links-->`, preloadLinks)
         .replace(`<!--app-state-->`, appState)
+        .replace(`<!--head-tags-->`, tagMeta.headTags)
+        .replace(`<!--body-tags-open-->`, tagMeta.bodyTagsOpen)
+        .replace(`<!--body-tags-->`, tagMeta.bodyTags)
         .replace(makeAppContainer(), makeAppContainer(appHtml))
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)

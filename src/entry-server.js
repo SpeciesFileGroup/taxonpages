@@ -2,6 +2,8 @@ import { basename } from 'node:path'
 import { renderToString } from 'vue/server-renderer'
 import { createApp } from './main'
 import { registerGlobalComponents } from '@/components/globalComponents'
+import { getActiveHead } from 'unhead'
+import { renderSSRHead } from '@unhead/ssr'
 import devalue from '@nuxt/devalue'
 
 export async function render(url, manifest) {
@@ -18,7 +20,7 @@ export async function render(url, manifest) {
   // components that have been instantiated during this render call.
   const ctx = {}
   const html = await renderToString(app, ctx)
-
+  const headPayload = await renderSSRHead(getActiveHead())
   const renderState = `
   <script>
     window.initialState = ${devalue(store.state.value)}
@@ -28,7 +30,7 @@ export async function render(url, manifest) {
   // which we can then use to determine what files need to be preloaded for this
   // request.
   const preloadLinks = renderPreloadLinks(ctx.modules, manifest)
-  return [html, renderState, preloadLinks]
+  return [html, renderState, preloadLinks, headPayload]
 }
 
 function renderPreloadLinks(modules, manifest) {

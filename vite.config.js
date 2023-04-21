@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite'
 import { loadConfiguration } from './src/utils/loadConfiguration.js'
 import path from 'path'
-import htmlPlugin from './src/plugins/htmlPlugin.js'
 import Vue from '@vitejs/plugin-vue'
 import Markdown from 'vite-plugin-md'
 import Pages from 'vite-plugin-pages'
@@ -41,8 +40,7 @@ export default () => {
             return route
           }
         }
-      }),
-      htmlPlugin(configuration)
+      })
     ]
   })
 }
