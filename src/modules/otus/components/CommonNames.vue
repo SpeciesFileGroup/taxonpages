@@ -14,13 +14,15 @@ const props = defineProps({
 })
 
 const commonNames = ref([])
-const commonNameLabel = computed(() => commonNames.value.map(item => item.name).join('; '))
+const commonNameLabel = computed(() =>
+  commonNames.value.map((item) => item.name).join('; ')
+)
 
 watch(
   () => props.otuId,
-  id => {
+  (id) => {
     if (id) {
-      TaxonWorks.getOtuDescendants(id, { 
+      TaxonWorks.getOtuDescendants(id, {
         max_descendants_depth: 0,
         extend: ['common_names']
       }).then(({ data }) => {
@@ -29,10 +31,9 @@ watch(
     } else {
       commonNames.value = []
     }
+  },
+  {
+    immediate: true
   }
 )
-
-
-
-
 </script>

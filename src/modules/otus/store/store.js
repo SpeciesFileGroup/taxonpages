@@ -37,5 +37,5 @@ export const useOtuStore = defineStore('otuStore', {
 
       this.images = (await TaxonWorks.getOtuImages(otuId, params)).data
     }
-  },
+  }
 })

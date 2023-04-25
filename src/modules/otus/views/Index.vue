@@ -66,7 +66,9 @@ import { useRoute, useRouter } from 'vue-router'
 import { useOtuStore } from '../store/store'
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
 import TaxaInfo from '../components/TaxaInfo.vue'
-import { useHead, createHead } from 'unhead'
+import { useHead } from 'unhead'
+import { defineWebPage, useSchemaOrg } from '@unhead/schema-org'
+import { defineTaxon } from '../helpers/schema.js'
 
 //import useChildrenRoutes from '../composables/useChildrenRoutes'
 
@@ -96,15 +98,27 @@ watch(
   }
 )
 
-onMounted(() => {
+onMounted(async () => {
   if (!otu.value || otu.value.id !== Number(route.params.id)) {
-    loadInitialData()
+    await loadInitialData()
   }
 })
 
 async function loadInitialData() {
   store.$reset()
   await store.loadInit(route.params.id)
+
+  useSchemaOrg([
+    defineTaxon({
+      id: route.fullPath,
+      name: taxon.value.full_name,
+      scientificName: {
+        name: taxon.value.full_name,
+        author: taxon.value.author,
+        taxonRank: taxon.value.rank
+      }
+    })
+  ])
 
   useHead({
     title: `${__APP_ENV__.project_name} - ${taxon.value.full_name}`
