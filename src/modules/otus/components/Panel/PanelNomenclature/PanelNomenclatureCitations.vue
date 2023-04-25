@@ -21,16 +21,20 @@
         :count="citationList.middle.length"
         @click="showAll = true"
       />
-      <AnimationOpacity>
-        <div v-show="showAll">
-          <CitationRow
-            v-for="citation in citationList.middle"
-            :key="citation.label"
-            :citation="citation"
-          />
-        </div>
-      </AnimationOpacity>
-
+    </ul>
+    <AnimationOpacity>
+      <ul
+        class="text-sm"
+        v-show="showAll"
+      >
+        <CitationRow
+          v-for="citation in citationList.middle"
+          :key="citation.label"
+          :citation="citation"
+        />
+      </ul>
+    </AnimationOpacity>
+    <ul class="text-sm">
       <CitationRow
         v-for="citation in citationList.last"
         :key="citation.label"

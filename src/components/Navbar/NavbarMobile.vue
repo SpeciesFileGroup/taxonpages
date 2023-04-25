@@ -2,8 +2,9 @@
   <button
     type="button"
     class="inline-flex items-center p-2 z-50 ml-3 text-sm text-primary-content rounded-lg md:hidden print:hidden"
+    title="Menu"
     aria-controls="mobile-menu"
-    aria-expanded="false"
+    :aria-expanded="isMenuVisible"
     @click="toggleMenu"
   >
     <span class="sr-only">Open main menu</span>
