@@ -4,12 +4,16 @@ import { createApp } from './main'
 import { registerGlobalComponents } from '@/components/globalComponents'
 import { getActiveHead } from 'unhead'
 import { renderSSRHead } from '@unhead/ssr'
+import { registerFakeClientComponents } from '@/ssr/utils/registerFakeClientComponents'
 import devalue from '@nuxt/devalue'
 
 export async function render(url, manifest) {
   const { app, router, store } = createApp()
 
+  // Register global components, create a fake server components for components that should only render on client side
   registerGlobalComponents(app)
+  registerFakeClientComponents(app)
+
   // set the router to the desired URL before rendering
   await router.push(url)
   await router.isReady()
