@@ -7,7 +7,8 @@ export function getMetaFromConfig(configObj) {
     const metaKey = key.slice(5)
 
     return {
-      [metaKey]: value
+      name: metaKey,
+      content: value
     }
   })
 }
