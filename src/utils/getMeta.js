@@ -1,5 +1,5 @@
 export function getMetaFromConfig(configObj) {
-  const metaObj = Object.entries(configObj).filter(([key, value]) =>
+  const metaObj = Object.entries(configObj).filter(([key]) =>
     key.startsWith('meta_')
   )
 
