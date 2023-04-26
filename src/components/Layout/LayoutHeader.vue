@@ -11,8 +11,6 @@
       >
         <img
           v-if="header_logo_url"
-          width="auto"
-          height="auto"
           class="mr-3 h-10"
           :src="header_logo_url"
           :alt="header_logo_text"
