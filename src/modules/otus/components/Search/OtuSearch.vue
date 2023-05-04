@@ -97,7 +97,8 @@ function loadOTUs(geojson) {
   const payload = {
     geo_json: geojson,
     taxon_name_id: [props.otu.taxon_name_id],
-    descendants: true
+    descendants: true,
+    per: 5000
   }
 
   isLoading.value = true
