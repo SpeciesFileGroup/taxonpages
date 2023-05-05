@@ -28,7 +28,7 @@
       />
 
       <div
-        class="h-screen md:w-96 absolute top-0 bg-base-background z-[2000] overflow-auto ease-in-out duration-300 w-full"
+        class="h-full md:w-96 absolute top-0 bg-base-background z-[2000] overflow-auto ease-in-out duration-300 w-full"
         :class="{
           'md:-right-96 -right-full': !isTableVisible,
           'right-0': isTableVisible

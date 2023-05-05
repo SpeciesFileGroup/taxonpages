@@ -8,7 +8,7 @@
         <VTableHeaderCell
           class="w-full flex justify-between box-border items-center"
         >
-          <span>OTU</span>
+          <span>OTU ({{ list.length }})</span>
           <IconArrowRight
             class="opacity-50 cursor-pointer w-4 h-4"
             @click="emit('close:table')"
