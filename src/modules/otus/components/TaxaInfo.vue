@@ -5,11 +5,11 @@
     </h2>
     <h1 class="text-xl dark:text-gray-100">
       <span>
-        <span 
+        <span
           :title="taxon.short_status"
-          v-html="taxon.full_name_tag" 
+          v-html="taxon.full_name_tag"
         />
-        <span 
+        <span
           v-if="!taxon.is_valid"
           class="ml-1"
           :class="statusStyle"
@@ -40,15 +40,8 @@ const props = defineProps({
   }
 })
 
-const status = computed(() => 
-  props.taxon.cached_is_valid
-    ? ''
-    : '&#10005;'
+const status = computed(() => (props.taxon.cached_is_valid ? '' : '&#10005;'))
+const statusStyle = computed(() =>
+  props.taxon.cached_is_valid ? '' : 'text-red-600'
 )
-const statusStyle = computed(() => 
-  props.taxon.cached_is_valid
-    ? ''
-    : 'text-red-600'
-)
-
 </script>
