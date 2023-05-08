@@ -71,10 +71,9 @@
 import { ref, watch, onServerPrefetch, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useOtuStore } from '../store/store'
+import { useHead } from 'unhead'
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
 import TaxaInfo from '../components/TaxaInfo.vue'
-import { useHead, createHead } from 'unhead'
-import VSkeletonGlobal from '@/components/VSkeleton.global.vue'
 
 //import useChildrenRoutes from '../composables/useChildrenRoutes'
 
