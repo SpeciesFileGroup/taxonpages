@@ -2,6 +2,7 @@
   <button
     type="button"
     @click="toggleTheme"
+    title="Toggle mode"
   >
     <svg
       v-if="themeMode === themeModes.dark"

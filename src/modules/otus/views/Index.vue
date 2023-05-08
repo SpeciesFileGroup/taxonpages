@@ -5,12 +5,14 @@
         <div
           class="flex flex-col-reverse md:flex-row justify-between items-start"
         >
-          <Breadcrumb
-            v-if="isReady"
-            class="w-4/4 md:w-3/4"
-            :list="otu?.parents || {}"
-            :current="taxon"
-          />
+          <VSkeleton class="w-4/4 md:w-3/4">
+            <Breadcrumb
+              v-if="isReady"
+              class="w-4/4 md:w-3/4"
+              :list="otu?.parents || {}"
+              :current="taxon"
+            />
+          </VSkeleton>
           <Autocomplete
             class="print:hidden min-w-full mb-2 md:min-w-fit md:ml-2 md:mb-0 md:w-96"
             url="/otus/autocomplete"
@@ -23,11 +25,16 @@
         </div>
 
         <div class="mt-8 flex justify-between middle">
-          <TaxaInfo
-            v-if="isReady"
-            :taxon="taxon"
-            :otu-id="otu.id"
-          />
+          <VSkeleton
+            :lines="2"
+            class="w-96"
+          >
+            <TaxaInfo
+              v-if="isReady"
+              :taxon="taxon"
+              :otu-id="otu.id"
+            />
+          </VSkeleton>
         </div>
 
         <TabMenu
@@ -64,11 +71,11 @@
 import { ref, watch, onServerPrefetch, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useOtuStore } from '../store/store'
+import { useHead } from 'unhead'
+import { useSchemaOrg } from '@unhead/schema-org'
+import { defineTaxon } from '../helpers/schema.js'
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
 import TaxaInfo from '../components/TaxaInfo.vue'
-import { useHead } from 'unhead'
-import { defineWebPage, useSchemaOrg } from '@unhead/schema-org'
-import { defineTaxon } from '../helpers/schema.js'
 
 //import useChildrenRoutes from '../composables/useChildrenRoutes'
 

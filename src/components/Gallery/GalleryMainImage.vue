@@ -7,6 +7,7 @@
       ref="imageElement"
       class="max-h-80 h-max w-100 cursor-zoom-in m-auto"
       :src="image.original"
+      :alt="image.depictions.map((d) => d.label).join(';')"
       @click="emit('open:viewer')"
     />
   </div>
@@ -38,5 +39,4 @@ watch(
 onMounted(() => {
   imageElement.value.addEventListener('load', () => (isLoading.value = false))
 })
-
 </script>

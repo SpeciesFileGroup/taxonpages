@@ -1,26 +1,14 @@
 <template>
   <div class="relative inline">
-    <button @click="toggleMenu">
+    <button
+      title="Menu"
+      @click="toggleMenu"
+    >
       <slot name="button" />
     </button>
     <ul
       v-if="isVisible"
-      class="
-        bg-base-foreground
-        absolute font-normal
-        text-sm
-        text-base-lighter
-        right-0
-        z-10
-        mt-2
-        w-56
-        origin-top-right
-        rounded-md
-        shadow-lg
-        ring-1
-        ring-black
-        ring-opacity-5
-        focus:outline-none"
+      class="bg-base-foreground absolute font-normal text-sm text-base-lighter right-0 z-10 mt-2 w-56 origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
     >
       <li
         v-for="item in items"
@@ -50,7 +38,7 @@ const toggleMenu = () => {
   isVisible.value = !isVisible.value
 }
 
-const itemClicked = item => {
+const itemClicked = (item) => {
   isVisible.value = false
 
   item.action()

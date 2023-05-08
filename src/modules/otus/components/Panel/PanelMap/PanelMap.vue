@@ -3,13 +3,13 @@
     <div class="relative">
       <ClientOnly>
         <VSpinner v-if="isLoading" />
-          <VMap
-            class="h-96 max-h-96"
-            dragging
-            :zoom="zoom"
-            :geojson="geojson"
-            @geojson:ready="() => (isLoading = false)"
-          />
+        <VMap
+          class="h-96 max-h-96"
+          dragging
+          :zoom="zoom"
+          :geojson="geojson"
+          @geojson:ready="() => (isLoading = false)"
+        />
       </ClientOnly>
       <VButton
         class="h-6 text-sm absolute right-3 top-3 z-[400]"
@@ -78,7 +78,7 @@ const errorMessage = ref(null)
 
 const LEGEND = {
   AssertedDistribution: {
-    label: 'Asserted disitrubtion',
+    label: 'Asserted distribution',
     background: 'bg-map-asserted'
   },
   Georeference: {

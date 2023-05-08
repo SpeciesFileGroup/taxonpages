@@ -10,6 +10,3 @@
     <slot />
   </transition>
 </template>
-
-<script setup>
-</script>
