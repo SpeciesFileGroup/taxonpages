@@ -24,7 +24,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: shadowUrl
 })
 
-const { map_server_tils } = __APP_ENV__
+const { map_tile_server, map_tile_attribution } = __APP_ENV__
 
 const props = defineProps({
   controls: {
@@ -101,9 +101,10 @@ let geoJSONGroup
 
 const leafletMap = ref(null)
 const tiles = {
-  osm: L.tileLayer(map_server_tils, {
+  osm: L.tileLayer(map_tile_server, {
     maxZoom: 18,
-    className: 'map-tiles'
+    className: 'map-tiles',
+    attribution: map_tile_attribution
   })
 }
 
