@@ -5,10 +5,10 @@
         <div
           class="flex flex-col-reverse md:flex-row justify-between items-start"
         >
-          <VSkeleton class="w-4/4 md:w-3/4">
+          <VSkeleton class="w-full md:w-3/4">
             <Breadcrumb
               v-if="isReady"
-              class="w-4/4 md:w-3/4"
+              class="w-full md:w-3/4"
               :list="otu?.parents || {}"
               :current="taxon"
             />
