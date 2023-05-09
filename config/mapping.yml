@@ -1,2 +1,3 @@
 ---
-  map_server_tils: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
+map_tile_server: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
+map_tile_attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
