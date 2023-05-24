@@ -12,7 +12,7 @@
         <img
           v-if="header_logo_url"
           class="mr-3 h-10"
-          :src="header_logo_url"
+          :src="logoUrl"
           :alt="header_logo_text"
         />
         <span>
@@ -52,6 +52,12 @@
 <script setup>
 import SwitchTheme from '../SwitchTheme.vue'
 import NavbarMobile from '../Navbar/NavbarMobile.vue'
+import { isValidUrl } from '@/utils/url'
 
-const { header_links, header_logo_text, header_logo_url } = __APP_ENV__
+const { header_links, header_logo_text, header_logo_url, base_url } =
+  __APP_ENV__
+
+const logoUrl = isValidUrl(header_logo_url)
+  ? header_logo_url
+  : base_url + header_logo_url
 </script>

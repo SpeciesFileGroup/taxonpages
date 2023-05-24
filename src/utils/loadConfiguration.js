@@ -1,10 +1,13 @@
 import fs from 'fs'
 import yaml from 'js-yaml'
 import glob from 'glob'
+import defaultConfig from '../constants/defaultConfig'
 
-export const loadConfiguration = appPath => {
+export const loadConfiguration = (appPath) => {
   const filePaths = glob.sync(appPath + '/config/*.yml', {})
-  const jsonConfig = filePaths.map(filepath => yaml.load(fs.readFileSync(filepath, 'utf8')))
+  const jsonConfig = filePaths.map((filepath) =>
+    yaml.load(fs.readFileSync(filepath, 'utf8'))
+  )
 
-  return Object.assign({}, ...jsonConfig)
+  return Object.assign({}, defaultConfig, ...jsonConfig)
 }
