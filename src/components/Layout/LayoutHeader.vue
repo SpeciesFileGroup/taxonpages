@@ -59,5 +59,5 @@ const { header_links, header_logo_text, header_logo_url, base_url } =
 
 const logoUrl = isValidUrl(header_logo_url)
   ? header_logo_url
-  : base_url + header_logo_url
+  : (base_url + header_logo_url).replace('//', '/')
 </script>
