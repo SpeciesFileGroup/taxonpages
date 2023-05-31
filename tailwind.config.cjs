@@ -36,6 +36,7 @@ module.exports = {
 
         map: {
           georeference: withOpacity('--color-map-georeference'),
+          aggregate: withOpacity('--color-map-aggregate'),
           asserted: withOpacity('--color-map-asserted'),
           'type-material': withOpacity('--color-map-type-material'),
           'collection-object': withOpacity('--color-map-collection-object')

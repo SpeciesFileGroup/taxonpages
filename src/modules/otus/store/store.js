@@ -1,12 +1,18 @@
 import { defineStore } from 'pinia'
 import TaxonWorks from '../services/TaxonWorks'
+import { actionLoadDistribution } from './actions'
 
 export const useOtuStore = defineStore('otuStore', {
   state: () => {
     return {
       otu: null,
       taxon: null,
-      images: null
+      images: null,
+      distribution: {
+        geojson: null,
+        errorMessage: null,
+        currentShapeTypes: []
+      }
     }
   },
   actions: {
@@ -36,6 +42,8 @@ export const useOtuStore = defineStore('otuStore', {
       }
 
       this.images = (await TaxonWorks.getOtuImages(otuId, params)).data
-    }
-  },
+    },
+
+    ...actionLoadDistribution
+  }
 })

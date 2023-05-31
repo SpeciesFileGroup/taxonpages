@@ -7,7 +7,7 @@
           class="h-96 max-h-96"
           dragging
           :zoom="zoom"
-          :geojson="geojson"
+          :geojson="store.distribution.geojson"
           @geojson:ready="() => (isLoading = false)"
         />
       </ClientOnly>
@@ -22,23 +22,23 @@
         <OtuSearch
           v-if="isOtuSearchVisible"
           :otu="otu"
-          :shapes="geojson"
+          :shapes="store.distribution.geojson"
           @close="() => (isOtuSearchVisible = false)"
         />
       </ClientOnly>
     </div>
     <div
-      v-if="errorMessage"
+      v-if="store.distribution.errorMessage"
       class="flex flex-row p-2 text-xs italic"
     >
-      * {{ errorMessage }}
+      * {{ store.distribution.errorMessage }}
     </div>
     <div
       class="flex flex-row p-2 gap-2 text-xs"
-      v-if="currentShapeTypes.length"
+      v-if="store.distribution.currentShapeTypes.length"
     >
       <div
-        v-for="type in currentShapeTypes"
+        v-for="type in store.distribution.currentShapeTypes"
         :key="type"
         class="flex flex-row items-center"
       >
@@ -54,7 +54,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import TaxonWorks from '../../../services/TaxonWorks'
+import { useOtuStore } from '@/modules/otus/store/store'
 import OtuSearch from '../../Search/OtuSearch.vue'
 
 const props = defineProps({
@@ -66,15 +66,18 @@ const props = defineProps({
   otu: {
     type: Object,
     required: true
+  },
+
+  taxon: {
+    type: Object,
+    required: true
   }
 })
 
 const zoom = 2
-const geojson = ref(undefined)
 const isLoading = ref(true)
 const isOtuSearchVisible = ref(false)
-const currentShapeTypes = ref([])
-const errorMessage = ref(null)
+const store = useOtuStore()
 
 const LEGEND = {
   AssertedDistribution: {
@@ -92,6 +95,10 @@ const LEGEND = {
   CollectionObject: {
     label: 'Collection object',
     background: 'bg-map-collection-object'
+  },
+  Aggregate: {
+    label: 'Aggregate (Asserted distribution & Georeference)',
+    background: 'bg-map-aggregate'
   }
 }
 
@@ -101,55 +108,11 @@ watch(
     if (newId === oldId) return
     isLoading.value = true
 
-    const { data } = await TaxonWorks.getOtuDistribution(props.otuId)
-
-    if (data.request_too_large) {
-      geojson.value = null
-      errorMessage.value = data.message
-    } else {
-      geojson.value = {
-        ...data,
-        features: removeDuplicateShapes(data)
-      }
-    }
+    store.loadDistribution({
+      otuId: props.otuId,
+      rankString: props.taxon.rank_string
+    })
   },
   { immediate: true }
 )
-
-function removeDuplicateShapes(data) {
-  const features = []
-
-  data.features.forEach((feature) => {
-    const shapeId = feature.properties.shape.id
-    const shapeType = feature.properties.shape.type
-
-    if (!currentShapeTypes.value.includes(feature.properties.base.type)) {
-      currentShapeTypes.value.push(feature.properties.base.type)
-    }
-
-    const index = features.findIndex(
-      (item) =>
-        item.properties.shape.id === shapeId &&
-        item.properties.shape.type === shapeType
-    )
-
-    if (index > -1) {
-      const currentFeature = features[index]
-
-      currentFeature.properties.base.push(feature.properties.base)
-      currentFeature.properties.target.push(feature.properties.target)
-    } else {
-      const item = structuredClone(feature)
-
-      item.properties.base = [item.properties.base]
-      item.properties.target = [item.properties.target]
-
-      features.push(item)
-    }
-  })
-
-  currentShapeTypes.value.sort()
-
-  return features
-}
 </script>

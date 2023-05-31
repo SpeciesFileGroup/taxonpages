@@ -48,7 +48,11 @@ export default class TaxonWorks {
   }
 
   static getOtuDistribution(otuId) {
-    return makeAPIRequest.get(`/otus/${otuId}/inventory/distribution`)
+    return makeAPIRequest.get(`/otus/${otuId}/inventory/distribution.json`)
+  }
+
+  static getOtuGeoJSONDistribution(otuId) {
+    return makeAPIRequest.get(`/otus/${otuId}/inventory/distribution.geojson`)
   }
 
   static getOtuContent(otuId) {
