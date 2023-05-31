@@ -8,10 +8,13 @@
   --color-base-foreground: 255, 255, 255;
   --color-base-background: 245, 247, 251;
   --color-base-muted: 226, 232, 240;
+  --color-base-soft: 156, 163, 175;
+  --color-base-lighter: 55, 65, 81;
   --color-base-border: 203, 213, 225;
   --color-base-content: 0, 0, 0;
 
   --color-map-georeference: 239, 68, 68;
+  --color-map-aggregate: 3, 115, 22;
   --color-map-asserted: 249, 115, 22;
   --color-map-type-material: 51, 136, 255;
   --color-map-collection-object: 239, 68, 68;
@@ -27,6 +30,8 @@
   --color-base-background: 23, 23, 23;
   --color-base-foreground: 38,38,38;
   --color-base-muted: 48, 48, 48;
+  --color-base-soft: 200, 200, 200;
+  --color-base-lighter: 220, 220, 220;
   --color-base-border: 38, 38, 38;
   --color-base-content: 255, 255, 255;
 }
