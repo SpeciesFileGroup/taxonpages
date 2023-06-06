@@ -55,6 +55,10 @@ export default class TaxonWorks {
     return makeAPIRequest.get(`/otus/${otuId}/inventory/distribution.geojson`)
   }
 
+  static getCachedMap(cachedId) {
+    return makeAPIRequest.get(`/cached_maps/${cachedId}`)
+  }
+
   static getOtuContent(otuId) {
     return makeAPIRequest.get(`/otus/${otuId}/inventory/content`, {
       extend: ['depiction']

@@ -6,6 +6,7 @@ import PanelNomenclature from '../components/Panel/PanelNomenclature/PanelNomenc
 import PanelMap from '../components/Panel/PanelMap/PanelMap.vue'
 import PanelDescendants from '../components/Panel/PanelDescendants/Descendants.vue'
 import PanelContent from '../components/Panel/PanelContent/PanelContent.vue'
+import PanelStats from '../components/Panel/PanelStats/PanelStats.vue'
 
 export const overviewLayout = {
   left: [
@@ -24,6 +25,7 @@ export const overviewLayout = {
   right: [
     { component: PanelMap },
     { component: PanelDescendants },
-    { component: PanelContent }
+    { component: PanelContent },
+    { component: PanelStats }
   ]
 }
