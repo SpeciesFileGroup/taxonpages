@@ -22,11 +22,11 @@ const props = defineProps({
   }
 })
 
-const loadOtu = ({ id }) => {
+const loadOtu = ({ id, otu_valid_id }) => {
   router.push({
     name: 'otus-id-overview',
     params: {
-      id
+      id: otu_valid_id || id
     }
   })
 }

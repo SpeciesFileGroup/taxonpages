@@ -118,11 +118,11 @@ async function loadInitialData() {
   })
 }
 
-function loadOtu({ id }) {
+function loadOtu({ id, otu_valid_id }) {
   router.push({
     name: 'otus-id-overview',
     params: {
-      id
+      id: otu_valid_id || id
     }
   })
 }
