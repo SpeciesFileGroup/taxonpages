@@ -78,6 +78,8 @@ import { ref, watch, onServerPrefetch, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useOtuStore } from '../store/store'
 import { useHead } from 'unhead'
+import { useSchemaOrg } from '@unhead/schema-org'
+import { defineTaxon } from '../helpers/schema.js'
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
 import TaxaInfo from '../components/TaxaInfo.vue'
 import DWCDownload from '../components/DWCDownload.vue'
@@ -110,15 +112,38 @@ watch(
   }
 )
 
-onMounted(() => {
+onMounted(async () => {
   if (!otu.value || otu.value.id !== Number(route.params.id)) {
-    loadInitialData()
+    await loadInitialData()
+  } else {
+    updateMetadata()
   }
 })
 
 async function loadInitialData() {
   store.$reset()
   await store.loadInit(route.params.id)
+  updateMetadata()
+}
+
+function updateMetadata() {
+  useSchemaOrg([
+    defineTaxon({
+      id: route.fullPath,
+      name: taxon.value.full_name,
+      scientificName: {
+        name: taxon.value.full_name,
+        author: taxon.value.author,
+        taxonRank: taxon.value.rank
+      },
+      parentTaxon: {
+        name: taxon.value.parent.full_name,
+        taxonRank: taxon.value.parent.rank
+      },
+      commonNames: store.taxonomy.commonNames,
+      alternateName: store.taxonomy.synonyms
+    })
+  ])
 
   useHead({
     title: `${__APP_ENV__.project_name} - ${taxon.value.full_name}`
