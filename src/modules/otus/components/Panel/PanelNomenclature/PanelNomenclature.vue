@@ -1,13 +1,13 @@
 <template>
-  <PanelNomenlcatureCitations :list="citations" />
-  <PanelNomenclatureReferences :list="sources" />
+  <PanelNomenlcatureCitations :list="store.catalog.timeline" />
+  <PanelNomenclatureReferences :list="store.catalog.sources" />
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
+import { useOtuStore } from '@/modules/otus/store/store'
 import PanelNomenlcatureCitations from './PanelNomenclatureCitations.vue'
 import PanelNomenclatureReferences from './PanelNomenclatureReferences.vue'
-import TaxonWorks from '../../../services/TaxonWorks'
 
 const props = defineProps({
   otuId: {
@@ -31,20 +31,5 @@ const props = defineProps({
   }
 })
 
-const citations = ref([])
-const sources = ref([])
-
-watch(
-  () => props.taxonId,
-  async () => {
-    if (!props.taxonId) {
-      return
-    }
-    const { data } = await TaxonWorks.getTaxonNameCitations(props.taxonId)
-
-    citations.value = data.timeline
-    sources.value = data.sources
-  },
-  { immediate: true }
-)
+const store = useOtuStore()
 </script>

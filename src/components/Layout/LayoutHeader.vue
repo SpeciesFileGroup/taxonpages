@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative bg-header border-base-muted px-2 sm:px-4 py-2.5 border-b pl-4 pr-4 h-9 align-middle flex items-center bg-primary-color"
+    class="relative bg-header px-2 sm:px-4 py-2.5 shadow-sm shadow-base-muted pl-4 pr-4 h-9 align-middle flex items-center bg-primary-color"
   >
     <div
       class="container flex flex-wrap justify-between items-center mx-auto font-medium text-secondary-content"
@@ -12,7 +12,7 @@
         <img
           v-if="header_logo_url"
           class="mr-3 h-10"
-          :src="header_logo_url"
+          :src="logoUrl"
           :alt="header_logo_text"
         />
         <span>
@@ -52,6 +52,12 @@
 <script setup>
 import SwitchTheme from '../SwitchTheme.vue'
 import NavbarMobile from '../Navbar/NavbarMobile.vue'
+import { isValidUrl } from '@/utils/url'
 
-const { header_links, header_logo_text, header_logo_url } = __APP_ENV__
+const { header_links, header_logo_text, header_logo_url, base_url } =
+  __APP_ENV__
+
+const logoUrl = isValidUrl(header_logo_url)
+  ? header_logo_url
+  : (base_url + header_logo_url).replace('//', '/')
 </script>

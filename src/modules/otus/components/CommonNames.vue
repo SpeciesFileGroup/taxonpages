@@ -22,7 +22,7 @@ watch(
   () => props.otuId,
   (id) => {
     if (id) {
-      TaxonWorks.getOtuDescendants(id, {
+      TaxonWorks.getTaxonomy(id, {
         max_descendants_depth: 0,
         extend: ['common_names']
       }).then(({ data }) => {

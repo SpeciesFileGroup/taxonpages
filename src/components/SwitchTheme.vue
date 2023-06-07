@@ -2,7 +2,11 @@
   <button
     type="button"
     @click="toggleTheme"
-    title="Toggle mode"
+    :title="
+      themeMode === themeModes.light
+        ? 'Change to dark mode'
+        : 'Change to light mode'
+    "
   >
     <svg
       v-if="themeMode === themeModes.dark"

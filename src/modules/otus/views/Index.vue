@@ -5,10 +5,10 @@
         <div
           class="flex flex-col-reverse md:flex-row justify-between items-start"
         >
-          <VSkeleton class="w-4/4 md:w-3/4">
+          <VSkeleton class="w-full md:w-3/4">
             <Breadcrumb
               v-if="isReady"
-              class="w-4/4 md:w-3/4"
+              class="w-full md:w-3/4"
               :list="otu?.parents || {}"
               :current="taxon"
             />
@@ -24,7 +24,7 @@
           />
         </div>
 
-        <div class="mt-8 flex justify-between middle">
+        <div class="mt-8 flex justify-between items-end">
           <VSkeleton
             :lines="2"
             class="w-96"
@@ -35,6 +35,12 @@
               :otu-id="otu.id"
             />
           </VSkeleton>
+          <div>
+            <DWCDownload
+              v-if="isReady"
+              :otu="otu"
+            />
+          </div>
         </div>
 
         <TabMenu
@@ -76,6 +82,7 @@ import { useSchemaOrg } from '@unhead/schema-org'
 import { defineTaxon } from '../helpers/schema.js'
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
 import TaxaInfo from '../components/TaxaInfo.vue'
+import DWCDownload from '../components/DWCDownload.vue'
 
 //import useChildrenRoutes from '../composables/useChildrenRoutes'
 
@@ -108,13 +115,18 @@ watch(
 onMounted(async () => {
   if (!otu.value || otu.value.id !== Number(route.params.id)) {
     await loadInitialData()
+  } else {
+    updateMetadata()
   }
 })
 
 async function loadInitialData() {
   store.$reset()
   await store.loadInit(route.params.id)
+  updateMetadata()
+}
 
+function updateMetadata() {
   useSchemaOrg([
     defineTaxon({
       id: route.fullPath,
@@ -123,7 +135,13 @@ async function loadInitialData() {
         name: taxon.value.full_name,
         author: taxon.value.author,
         taxonRank: taxon.value.rank
-      }
+      },
+      parentTaxon: {
+        name: taxon.value.parent.full_name,
+        taxonRank: taxon.value.parent.rank
+      },
+      commonNames: store.taxonomy.commonNames,
+      alternateName: store.taxonomy.synonyms
     })
   ])
 
@@ -132,11 +150,11 @@ async function loadInitialData() {
   })
 }
 
-function loadOtu({ id }) {
+function loadOtu({ id, otu_valid_id }) {
   router.push({
     name: 'otus-id-overview',
     params: {
-      id
+      id: otu_valid_id || id
     }
   })
 }

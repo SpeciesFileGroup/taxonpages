@@ -5,7 +5,8 @@ const TYPES = [
   'TypeMaterial',
   'CollectionObject',
   'AssertedDistribution',
-  'Georeference'
+  'Georeference',
+  'Aggregate'
 ]
 
 const DEFAULT_OPTIONS = {

@@ -1,13 +1,13 @@
 <template>
   <slot />
   <span
-    v-if="isEmpty"
+    v-if="isLoading"
     :class="class"
   >
     <span
       v-for="line in lines"
       :key="line"
-      class="inline-block w-full rounded-sm bg-gray-100 leading-5"
+      class="inline-block w-full rounded-sm bg-base-muted leading-5"
     >
       &zwnj;
     </span>
@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import { useAttrs, useSlots, computed } from 'vue'
+import { useSlots, computed } from 'vue'
 
 const props = defineProps({
   class: {
@@ -30,9 +30,8 @@ const props = defineProps({
 })
 
 const slots = useSlots()
-const attrs = useAttrs()
 
-const isEmpty = computed(() => {
+const isLoading = computed(() => {
   const children = slots.default?.()
 
   return isEmptyVNode(children)
@@ -44,6 +43,6 @@ function isEmptyVNode(children) {
   const [firstNode] = children
   let str = firstNode.children
 
-  return firstNode.el || str
+  return firstNode.el !== null || str !== null
 }
 </script>

@@ -37,7 +37,7 @@ export default class TaxonWorks {
     })
   }
 
-  static getOtuDescendants(otuId, params) {
+  static getTaxonomy(otuId, params) {
     return makeAPIRequest.get(`/otus/${otuId}/inventory/taxonomy.json`, {
       params
     })
@@ -48,12 +48,24 @@ export default class TaxonWorks {
   }
 
   static getOtuDistribution(otuId) {
-    return makeAPIRequest.get(`/otus/${otuId}/inventory/distribution`)
+    return makeAPIRequest.get(`/otus/${otuId}/inventory/distribution.json`)
+  }
+
+  static getOtuGeoJSONDistribution(otuId) {
+    return makeAPIRequest.get(`/otus/${otuId}/inventory/distribution.geojson`)
+  }
+
+  static getCachedMap(cachedId) {
+    return makeAPIRequest.get(`/cached_maps/${cachedId}`)
   }
 
   static getOtuContent(otuId) {
     return makeAPIRequest.get(`/otus/${otuId}/inventory/content`, {
       extend: ['depiction']
     })
+  }
+
+  static getDwC(otuId) {
+    return makeAPIRequest.get(`/otus/${otuId}/inventory/dwc`)
   }
 }

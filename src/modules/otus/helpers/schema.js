@@ -37,24 +37,28 @@ export function defineTaxon({
   taxonRank,
   name,
   scientificName,
-  identifier
+  identifier,
+  commonNames,
+  alternateName
 }) {
   return removeEmptyProperties({
     '@type': 'Taxon',
     '@id': makeUrlPath(id),
-    'dct:conformsTo': {
-      '@id': 'https://bioschemas.org/profiles/Taxon/0.8-DRAFT'
+    'http://purl.org/dc/terms/conformsTo': {
+      '@id': 'https://bioschemas.org/profiles/Taxon/1.0-RELEASE'
     },
     additionalType: [
       'dwc:Taxon',
       'http://rs.tdwg.org/ontology/voc/TaxonConcept#TaxonConcept'
     ],
+    'dwc:vernacularName': defineCommonNames(commonNames),
     name,
+    alternateName: alternateName.map((item) => item.replaceAll(/<\/?i>/g, '')),
     childTaxon,
-    parentTaxon,
     scientificName: defineTaxonName(scientificName),
     identifier,
-    taxonRank
+    taxonRank,
+    parentTaxon: defineTaxonEntity(parentTaxon)
   })
 }
 
@@ -65,4 +69,19 @@ function defineTaxonName({ name, author, taxonRank }) {
     name,
     taxonRank
   })
+}
+
+function defineTaxonEntity({ name, taxonRank }) {
+  return {
+    '@type': 'Taxon',
+    name,
+    taxonRank
+  }
+}
+
+function defineCommonNames(commonNames) {
+  return commonNames.map(({ name, language }) => ({
+    '@language': language,
+    '@value': name
+  }))
 }
