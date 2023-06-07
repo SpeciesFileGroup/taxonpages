@@ -7,7 +7,7 @@ import TaxonWorks from '../../services/TaxonWorks'
 
 export const actionLoadDistribution = {
   async loadDistribution({ otuId, rankString }) {
-    const isSpeciesGroup = isRankGrpup('SpeciesGroup', rankString)
+    const isSpeciesGroup = rankString && isRankGrpup('SpeciesGroup', rankString)
 
     const getAggregateShape = async (otuId) => {
       TaxonWorks.getOtuDistribution(otuId)

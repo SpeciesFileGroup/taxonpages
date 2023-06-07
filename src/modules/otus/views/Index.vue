@@ -29,11 +29,7 @@
             :lines="2"
             class="w-96"
           >
-            <TaxaInfo
-              v-if="isReady"
-              :taxon="taxon"
-              :otu-id="otu.id"
-            />
+            <TaxaInfo v-if="isReady" />
           </VSkeleton>
           <div>
             <DWCDownload
