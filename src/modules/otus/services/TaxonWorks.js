@@ -64,4 +64,8 @@ export default class TaxonWorks {
       extend: ['depiction']
     })
   }
+
+  static getDwC(otuId) {
+    return makeAPIRequest.get(`/otus/${otuId}/inventory/dwc`)
+  }
 }

@@ -24,7 +24,7 @@
           />
         </div>
 
-        <div class="mt-8 flex justify-between middle">
+        <div class="mt-8 flex justify-between items-end">
           <VSkeleton
             :lines="2"
             class="w-96"
@@ -35,6 +35,12 @@
               :otu-id="otu.id"
             />
           </VSkeleton>
+          <div>
+            <DWCDownload
+              v-if="isReady"
+              :otu="otu"
+            />
+          </div>
         </div>
 
         <TabMenu
@@ -74,6 +80,7 @@ import { useOtuStore } from '../store/store'
 import { useHead } from 'unhead'
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
 import TaxaInfo from '../components/TaxaInfo.vue'
+import DWCDownload from '../components/DWCDownload.vue'
 
 //import useChildrenRoutes from '../composables/useChildrenRoutes'
 
