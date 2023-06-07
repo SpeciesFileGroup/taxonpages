@@ -1,6 +1,10 @@
 import { defineStore } from 'pinia'
 import TaxonWorks from '../services/TaxonWorks'
-import { actionLoadDistribution, actionLoadCatalog } from './actions'
+import {
+  actionLoadDistribution,
+  actionLoadCatalog,
+  actionLoadTaxonomy
+} from './actions'
 
 export const useOtuStore = defineStore('otuStore', {
   state: () => {
@@ -17,6 +21,10 @@ export const useOtuStore = defineStore('otuStore', {
         sources: [],
         stats: {},
         timeline: []
+      },
+      taxonomy: {
+        commonNames: [],
+        synonyms: []
       }
     }
   },
@@ -36,6 +44,7 @@ export const useOtuStore = defineStore('otuStore', {
       await this.loadOtu(otuId)
       await this.loadTaxon(this.otu.taxon_name_id)
       await this.loadCatalog(this.otu.taxon_name_id)
+      await this.loadTaxonomy(otuId)
     },
 
     async loadImages(otuId) {
@@ -48,6 +57,7 @@ export const useOtuStore = defineStore('otuStore', {
     },
 
     ...actionLoadDistribution,
-    ...actionLoadCatalog
+    ...actionLoadCatalog,
+    ...actionLoadTaxonomy
   }
 })

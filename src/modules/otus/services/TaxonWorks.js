@@ -37,7 +37,7 @@ export default class TaxonWorks {
     })
   }
 
-  static getOtuDescendants(otuId, params) {
+  static getTaxonomy(otuId, params) {
     return makeAPIRequest.get(`/otus/${otuId}/inventory/taxonomy.json`, {
       params
     })

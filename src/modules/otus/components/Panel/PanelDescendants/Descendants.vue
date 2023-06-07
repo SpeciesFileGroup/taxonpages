@@ -1,16 +1,18 @@
 <template>
   <VCard>
     <VCardHeader>
-      <h1 class="text-md">
-        Descendants and synonyms
-      </h1>
+      <h1 class="text-md">Descendants and synonyms</h1>
     </VCardHeader>
     <VCardContent class="text-sm">
       <ul class="tree ml-2">
         <AnimationOpacity>
           <DescendantsTree
-            v-if="taxonomy && (taxonomy.nomenclatural_synonyms.length || taxonomy.descendants.length)"
-            :taxonomy="taxonomy" 
+            v-if="
+              taxonomy &&
+              (taxonomy.nomenclatural_synonyms.length ||
+                taxonomy.descendants.length)
+            "
+            :taxonomy="taxonomy"
           />
         </AnimationOpacity>
       </ul>
@@ -32,21 +34,28 @@ const props = defineProps({
 
 const taxonomy = ref(null)
 
-watch(() => props.otuId, async () => {
-  if (!props.otuId) { return }
+watch(
+  () => props.otuId,
+  async () => {
+    if (!props.otuId) {
+      return
+    }
 
-  TaxonWorks.getOtuDescendants(props.otuId, { max_descendants_depth: 1 }).then(({ data }) => {
-    taxonomy.value = data
-  })
-}, { immediate: true })
-
+    TaxonWorks.getTaxonomy(props.otuId, { max_descendants_depth: 1 }).then(
+      ({ data }) => {
+        taxonomy.value = data
+      }
+    )
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped>
-  .otu-synonyms {
-    list-style: none;
-    border-left:1px solid rgb(100,100,100);
-    padding-left:8px;
-    padding-bottom: 8px;
-  }
+.otu-synonyms {
+  list-style: none;
+  border-left: 1px solid rgb(100, 100, 100);
+  padding-left: 8px;
+  padding-bottom: 8px;
+}
 </style>
