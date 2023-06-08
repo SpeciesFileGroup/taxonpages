@@ -1,6 +1,8 @@
-# If you want to add any metadata not present here, you can do so by adding the prefix meta_
 ---
-meta_keywords: 'taxonpages, species, sfg'
-meta_description: 'My public pages'
-meta_robots: 'follow'
-meta_copyright: ''
+metadata:
+  - name: description
+    content: TaxonPages is a tool to serve taxon pages.
+  - name: keywords
+    content: taxonpages, species, sfg
+  - name: robots
+    content: follow
