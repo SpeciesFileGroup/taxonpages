@@ -1,17 +1,3 @@
-const { schema_host } = __APP_ENV__
-
-const TAXON_RANK = {
-  species: [
-    'http://rs.tdwg.org/ontology/voc/TaxonRank#Species',
-    'http://www.wikidata.org/entity/Q7432'
-  ],
-  genus: [
-    'genus',
-    'http://rs.tdwg.org/ontology/voc/TaxonRank#Genus',
-    'http://www.wikidata.org/entity/Q34740'
-  ]
-}
-
 function removeEmptyProperties(obj) {
   const copyObj = { ...obj }
 
@@ -26,24 +12,27 @@ function removeEmptyProperties(obj) {
   return copyObj
 }
 
-function makeUrlPath(path) {
-  return schema_host ? `${schema_host}${path}` : ''
+function makeUrlPath(host, path) {
+  return host && path ? `${host}${path}` : ''
 }
 
-export function defineTaxon({
-  id,
-  childTaxon,
-  parentTaxon,
-  taxonRank,
-  name,
-  scientificName,
-  identifier,
-  commonNames,
-  alternateName
-}) {
+export function taxonResolver(
+  {
+    id,
+    childTaxon,
+    parentTaxon,
+    taxonRank,
+    name,
+    scientificName,
+    identifier,
+    commonNames,
+    alternateName
+  },
+  { host }
+) {
   return removeEmptyProperties({
     '@type': 'Taxon',
-    '@id': makeUrlPath(id),
+    '@id': makeUrlPath(host, id),
     'http://purl.org/dc/terms/conformsTo': {
       '@id': 'https://bioschemas.org/profiles/Taxon/1.0-RELEASE'
     },

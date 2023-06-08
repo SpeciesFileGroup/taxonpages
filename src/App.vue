@@ -6,13 +6,10 @@
 
 <script setup>
 import { useHead } from 'unhead'
-import { getMetaFromConfig } from '@/utils'
 import ApplicationLayout from '@/layout/Application.vue'
-
-const meta = getMetaFromConfig(__APP_ENV__)
 
 useHead({
   title: __APP_ENV__.project_name,
-  meta
+  meta: __APP_ENV__.metadata
 })
 </script>

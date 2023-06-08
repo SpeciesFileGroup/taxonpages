@@ -2,8 +2,9 @@ import { createApp } from './main'
 import { registerOnlyClientComponents } from '@/components/clientComponents'
 import { registerGlobalComponents } from './components/globalComponents'
 
-const { app, router, store } = createApp()
+const originUrl = window.location.origin
 const storeInitialState = window.initialState
+const { app, router, store } = createApp({ originUrl })
 
 if (storeInitialState) {
   store.state.value = storeInitialState

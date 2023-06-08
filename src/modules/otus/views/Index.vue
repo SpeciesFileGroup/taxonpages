@@ -74,8 +74,7 @@ import { ref, watch, onServerPrefetch, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useOtuStore } from '../store/store'
 import { useHead } from 'unhead'
-import { useSchemaOrg } from '@unhead/schema-org'
-import { defineTaxon } from '../helpers/schema.js'
+import { useSchemaOrg, defineTaxon } from '@/plugins/schemaOrg/composables'
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
 import TaxaInfo from '../components/TaxaInfo.vue'
 import DWCDownload from '../components/DWCDownload.vue'
@@ -123,6 +122,10 @@ async function loadInitialData() {
 }
 
 function updateMetadata() {
+  useHead({
+    title: `${__APP_ENV__.project_name} - ${taxon.value.full_name}`
+  })
+
   useSchemaOrg([
     defineTaxon({
       id: route.fullPath,
@@ -140,10 +143,6 @@ function updateMetadata() {
       alternateName: store.taxonomy.synonyms
     })
   ])
-
-  useHead({
-    title: `${__APP_ENV__.project_name} - ${taxon.value.full_name}`
-  })
 }
 
 function loadOtu({ id, otu_valid_id }) {

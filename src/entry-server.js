@@ -7,8 +7,8 @@ import { renderSSRHead } from '@unhead/ssr'
 import { registerFakeClientComponents } from '@/ssr/utils/registerFakeClientComponents'
 import devalue from '@nuxt/devalue'
 
-export async function render(url, manifest) {
-  const { app, router, store } = createApp()
+export async function render(url, manifest, originUrl) {
+  const { app, router, store } = createApp({ originUrl })
 
   // Register global components, create a fake server components for components that should only render on client side
   registerGlobalComponents(app)
