@@ -13,9 +13,13 @@ function removeEmptyProperties(obj) {
 }
 
 function makeUrlPath(host, path) {
-  const { hash_mode } = __APP_ENV__
+  const { hash_mode, base_url = '' } = __APP_ENV__
+  const fullPath = (base_url + (hash_mode ? '/#' + path : path)).replaceAll(
+    '//',
+    '/'
+  )
 
-  return [host, path].join(hash_mode ? '/#' : '')
+  return [host, fullPath].join('')
 }
 
 export function taxonResolver(
