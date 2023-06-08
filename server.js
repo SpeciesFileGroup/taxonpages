@@ -63,6 +63,7 @@ export async function createServer(
   app.use('*', async (req, res) => {
     try {
       const url = req.originalUrl
+      const origin = req.protocol + '://' + req.get('host')
 
       let template, render
       if (!isProd) {
@@ -77,7 +78,8 @@ export async function createServer(
 
       const [appHtml, appState, preloadLinks, tagMeta] = await render(
         url,
-        manifest
+        manifest,
+        origin
       )
 
       const html = template
