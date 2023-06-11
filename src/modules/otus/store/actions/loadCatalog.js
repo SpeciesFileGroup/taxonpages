@@ -13,10 +13,6 @@ export const actionLoadCatalog = {
 
     this.catalog = {
       ...data,
-      stats: {
-        taxa: parseStats(data.stats.taxa),
-        names: parseStats(data.stats.names)
-      },
       sources: data.sources.map(({ cached, url }) =>
         cached.replace(url, `<a href="${url}">${url}</a>`)
       )
