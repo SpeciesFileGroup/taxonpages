@@ -1,9 +1,8 @@
 <template>
   <VCard v-if="typeMaterials.length">
-    <VCardHeader>
-      <h1 class="text-md">
-        Type specimen
-      </h1>
+    <VCardHeader class="flex justify-between">
+      <h2 class="text-md">Type specimen</h2>
+      <PanelDropdown panel-key="type-material" />
     </VCardHeader>
     <VCardContent class="text-sm">
       <p>
@@ -16,6 +15,8 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { SPECIMEN_TYPES } from '../../../constants'
+import { useOtuPageRequest } from '@/modules/otus/helpers/useOtuPageRequest'
+import PanelDropdown from '../PanelDropdown.vue'
 import TaxonWorks from '../../../services/TaxonWorks'
 
 const props = defineProps({
@@ -30,10 +31,20 @@ const typeMaterials = ref([])
 watch(
   () => props.otuId,
   () => {
-  if (!props.otuId) { return }
+    if (!props.otuId) {
+      return
+    }
 
-  TaxonWorks.getOtuTypeMaterial(props.otuId).then(({ data }) => {
-    typeMaterials.value = data.type_materials_catalog_labels.sort((a, b) => SPECIMEN_TYPES.indexOf(a.type_type) - SPECIMEN_TYPES.indexOf(b.type_type))
-  })
-}, { immediate: true })
+    useOtuPageRequest('type-material', () =>
+      TaxonWorks.getOtuTypeMaterial(props.otuId)
+    ).then(({ data }) => {
+      typeMaterials.value = data.type_materials_catalog_labels.sort(
+        (a, b) =>
+          SPECIMEN_TYPES.indexOf(a.type_type) -
+          SPECIMEN_TYPES.indexOf(b.type_type)
+      )
+    })
+  },
+  { immediate: true }
+)
 </script>

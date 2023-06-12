@@ -11,6 +11,7 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue'
+import { useOtuPageRequest } from '@/modules/otus/helpers/useOtuPageRequest'
 import TaxonWorks from '../../../services/TaxonWorks'
 import ContentTopic from './PanelContentTopic.vue'
 
@@ -39,7 +40,9 @@ watch(
   () => props.otuId,
   (id) => {
     if (id) {
-      TaxonWorks.getOtuContent(id).then(({ data }) => {
+      useOtuPageRequest('panel:content', () =>
+        TaxonWorks.getOtuContent(id)
+      ).then(({ data }) => {
         contents.value = data
       })
     } else {
