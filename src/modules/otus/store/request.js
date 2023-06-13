@@ -13,12 +13,11 @@ export const useOtuPageRequestStore = defineStore('otuPageRequest', {
     },
 
     sitemap: (state) => {
-      const entries = Object.entries(state.requests).map(([key, value]) => [
-        key,
-        value.url
-      ])
+      const keys = Object.keys(state.requests).sort()
 
-      return Object.fromEntries(entries)
+      return Object.fromEntries(
+        keys.map((key) => [key, state.requests[key].url])
+      )
     }
   },
 

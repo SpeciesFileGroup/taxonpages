@@ -2,7 +2,7 @@
   <VCard v-if="typeMaterials.length">
     <VCardHeader class="flex justify-between">
       <h2 class="text-md">Type specimen</h2>
-      <PanelDropdown panel-key="type-material" />
+      <PanelDropdown panel-key="panel:typeMaterial" />
     </VCardHeader>
     <VCardContent class="text-sm">
       <p>
@@ -35,7 +35,7 @@ watch(
       return
     }
 
-    useOtuPageRequest('type-material', () =>
+    useOtuPageRequest('panel:typeMaterial', () =>
       TaxonWorks.getOtuTypeMaterial(props.otuId)
     ).then(({ data }) => {
       typeMaterials.value = data.type_materials_catalog_labels.sort(
