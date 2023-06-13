@@ -32,7 +32,9 @@
             <TaxaInfo v-if="isReady" />
           </VSkeleton>
           <div class="flex flex-row gap-2">
-            <SiteMap />
+            <ClientOnly>
+              <SiteMap />
+            </ClientOnly>
             <DWCDownload
               v-if="isReady"
               :otu="otu"

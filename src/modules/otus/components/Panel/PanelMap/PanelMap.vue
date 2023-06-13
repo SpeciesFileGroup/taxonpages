@@ -10,15 +10,15 @@
           :geojson="store.distribution.geojson"
           @geojson:ready="() => (isLoading = false)"
         />
-      </ClientOnly>
-      <VButton
-        class="h-6 text-sm absolute right-3 top-3 z-[400]"
-        primary
-        @click="() => (isOtuSearchVisible = true)"
-      >
-        Search
-      </VButton>
-      <ClientOnly>
+
+        <VButton
+          class="h-6 text-sm absolute right-3 top-3 z-[400]"
+          primary
+          @click="() => (isOtuSearchVisible = true)"
+        >
+          Search
+        </VButton>
+
         <OtuSearch
           v-if="isOtuSearchVisible"
           :otu="otu"

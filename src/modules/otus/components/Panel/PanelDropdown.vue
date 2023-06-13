@@ -12,16 +12,22 @@
       <h3>JSON Data</h3>
     </template>
     <div
-      class="p-4 font-normal"
+      class="p-5 font-normal"
       v-if="request"
     >
       <h3 class="pb-2 text-sm">
         URL: <a :href="request.url">{{ request.url }}</a>
       </h3>
-      <p
-        class="bg-base-background p-2 text-sm font-normal whitespace-pre-wrap"
-        v-html="JSON.stringify(request.data, null, 4)"
-      />
+      <div class="relative">
+        <p
+          class="bg-base-background p-2 text-sm font-normal whitespace-pre-wrap"
+          v-html="JSON.stringify(request.data, null, 4)"
+        />
+        <VClipboard
+          class="absolute right-2 top-2 opacity-75"
+          :text="JSON.stringify(request.data, null, 2)"
+        />
+      </div>
     </div>
   </VModal>
 </template>

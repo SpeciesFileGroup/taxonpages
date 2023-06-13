@@ -23,10 +23,12 @@ export const useOtuPageRequestStore = defineStore('otuPageRequest', {
   },
 
   actions: {
-    setRequest(key, response) {
+    setRequest(key, { data, request }) {
+      const url = request.res?.responseUrl || request.responseURL
+
       this.requests[key] = {
-        url: response.request.responseURL,
-        data: response.data
+        url,
+        data
       }
     }
   }

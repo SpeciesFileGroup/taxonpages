@@ -1,10 +1,12 @@
-import { defineComponent } from 'vue'
+import { defineComponent, h } from 'vue'
 import glob from 'glob'
 
 export function registerFakeClientComponents(app) {
   const filePaths = glob.sync('src/components/**/*.client.vue')
   const vueComponent = defineComponent({
-    template: '<div></div>'
+    setup() {
+      return h('div')
+    }
   })
 
   filePaths.forEach((path) => {

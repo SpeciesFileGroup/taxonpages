@@ -6,6 +6,7 @@
   >
     <div
       class="h-full md:h-auto mx-auto md:max-h-[70vh] bg-base-foreground container"
+      @click.stop
     >
       <div
         class="w-full p-4 md:p-4 flex flex-row box-border justify-between items-center"

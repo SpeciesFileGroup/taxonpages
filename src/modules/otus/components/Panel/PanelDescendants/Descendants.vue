@@ -1,7 +1,8 @@
 <template>
   <VCard>
-    <VCardHeader>
-      <h1 class="text-md">Descendants and synonyms</h1>
+    <VCardHeader class="flex justify-between">
+      <h2 class="text-md">Descendants and synonyms</h2>
+      <PanelDropdown panel-key="panel:descendants" />
     </VCardHeader>
     <VCardContent class="text-sm">
       <ul class="tree ml-2">
@@ -24,6 +25,8 @@
 import { ref, watch } from 'vue'
 import DescendantsTree from './DescendantsTree.vue'
 import TaxonWorks from '../../../services/TaxonWorks'
+import PanelDropdown from '../PanelDropdown.vue'
+import { useOtuPageRequest } from '@/modules/otus/helpers/useOtuPageRequest'
 
 const props = defineProps({
   otuId: {
@@ -41,11 +44,11 @@ watch(
       return
     }
 
-    TaxonWorks.getTaxonomy(props.otuId, { max_descendants_depth: 1 }).then(
-      ({ data }) => {
-        taxonomy.value = data
-      }
-    )
+    useOtuPageRequest('panel:descendants', () =>
+      TaxonWorks.getTaxonomy(props.otuId, { max_descendants_depth: 1 })
+    ).then(({ data }) => {
+      taxonomy.value = data
+    })
   },
   { immediate: true }
 )
