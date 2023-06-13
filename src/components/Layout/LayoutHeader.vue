@@ -22,7 +22,7 @@
 
       <NavbarMobile />
 
-      <div class="relative hidden lg:flex items-center ml-auto">
+      <div class="relative hidden md:flex items-center ml-auto">
         <nav class="text-sm leading-6 font-normal">
           <ul class="flex space-x-8">
             <li

@@ -2,7 +2,7 @@
   <div>
     <VButton
       primary
-      class="text-sm flex items-center gap-1"
+      class="text-sm md:flex items-center gap-1 hidden"
       @click="isModalVisible = true"
     >
       <IconJson class="w-4 h-4" />
