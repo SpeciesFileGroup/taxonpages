@@ -4,7 +4,6 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
 import { useOtuStore } from '@/modules/otus/store/store'
 import PanelNomenlcatureCitations from './PanelNomenclatureCitations.vue'
 import PanelNomenclatureReferences from './PanelNomenclatureReferences.vue'

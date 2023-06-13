@@ -1,7 +1,7 @@
 <template>
   <VButton
     primary
-    class="text-sm flex"
+    class="text-sm flex items-center"
     @click="download"
   >
     <IconDownload class="w-4 h-4 mr-1" />

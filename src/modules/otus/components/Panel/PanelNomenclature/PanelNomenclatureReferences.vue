@@ -2,11 +2,10 @@
   <VCard>
     <VCardHeader class="flex justify-between">
       <h2 class="text-md">Nomenclature references ({{ list.length }})</h2>
-      <Dropdown :items="menuOptions">
-        <template #button>
-          <IconHamburger class="text-base-soft h-4" />
-        </template>
-      </Dropdown>
+      <PanelDropdown
+        :menu-options="menuOptions"
+        panel-key="taxonomy"
+      />
     </VCardHeader>
 
     <ul class="text-sm">
@@ -45,6 +44,7 @@ import { computed, ref } from 'vue'
 import { splitList } from './splitList'
 import PanelNomenclatureShowMore from './PanelNomenclatureShowMore.vue'
 import PanelReferenceRow from './PanelReferenceRow.vue'
+import PanelDropdown from '../PanelDropdown.vue'
 
 const MAX_REFERENCES = 2
 

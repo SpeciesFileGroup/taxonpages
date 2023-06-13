@@ -31,7 +31,10 @@
           >
             <TaxaInfo v-if="isReady" />
           </VSkeleton>
-          <div>
+          <div class="flex flex-row gap-2">
+            <ClientOnly>
+              <SiteMap />
+            </ClientOnly>
             <DWCDownload
               v-if="isReady"
               :otu="otu"
@@ -75,6 +78,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useOtuStore } from '../store/store'
 import { useHead } from 'unhead'
 import { useSchemaOrg, defineTaxon } from '@/plugins/schemaOrg/composables'
+import SiteMap from '../components/SiteMap.vue'
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
 import TaxaInfo from '../components/TaxaInfo.vue'
 import DWCDownload from '../components/DWCDownload.vue'

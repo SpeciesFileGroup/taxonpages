@@ -1,7 +1,8 @@
 <template>
   <VCard>
-    <VCardHeader>
-      <h1 class="text-md">Type</h1>
+    <VCardHeader class="flex justify-between">
+      <h2 class="text-md">Type</h2>
+      <PanelDropdown panel-key="panel:type" />
     </VCardHeader>
     <VCardContent class="text-sm">
       <p v-html="typeDesignationLabel" />
@@ -11,6 +12,8 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
+import { useOtuPageRequest } from '@/modules/otus/helpers/useOtuPageRequest'
+import PanelDropdown from '../PanelDropdown.vue'
 import TaxonWorks from '../../../services/TaxonWorks'
 
 const props = defineProps({
@@ -35,8 +38,9 @@ watch(
     if (!props.taxonId) {
       return
     }
-
-    TaxonWorks.getTaxonTypeDesignation(props.taxonId).then(({ data }) => {
+    useOtuPageRequest('panel:type', () =>
+      TaxonWorks.getTaxonTypeDesignation(props.taxonId)
+    ).then(({ data }) => {
       typeDesignation.value = data.type_taxon_name_relationship || {}
     })
   },

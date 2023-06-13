@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
 import TaxonWorks from '../services/TaxonWorks'
+import { useOtuPageRequest } from '../helpers/useOtuPageRequest'
+import { useOtuPageRequestStore } from './request'
 import {
   actionLoadDistribution,
   actionLoadCatalog,
@@ -30,7 +32,9 @@ export const useOtuStore = defineStore('otuStore', {
   },
   actions: {
     async loadTaxon(id) {
-      const taxon = await TaxonWorks.summary(id)
+      const taxon = await useOtuPageRequest('summary', () =>
+        TaxonWorks.summary(id)
+      )
 
       this.taxon = taxon.data
     },
@@ -41,6 +45,10 @@ export const useOtuStore = defineStore('otuStore', {
     },
 
     async loadInit(otuId) {
+      const requestStore = useOtuPageRequestStore()
+
+      requestStore.$reset()
+
       await this.loadOtu(otuId)
       await this.loadTaxon(this.otu.taxon_name_id)
       await this.loadCatalog(this.otu.taxon_name_id)
@@ -53,7 +61,11 @@ export const useOtuStore = defineStore('otuStore', {
         otu_scope: ['all']
       }
 
-      this.images = (await TaxonWorks.getOtuImages(otuId, params)).data
+      this.images = (
+        await useOtuPageRequest('panel:images', () =>
+          TaxonWorks.getOtuImages(otuId, params)
+        )
+      ).data
     },
 
     ...actionLoadDistribution,
