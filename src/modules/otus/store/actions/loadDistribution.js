@@ -4,13 +4,14 @@ import {
   makeGeoJSONFeature
 } from '../../utils'
 import TaxonWorks from '../../services/TaxonWorks'
+import { useOtuPageRequest } from '../../helpers/useOtuPageRequest'
 
 export const actionLoadDistribution = {
   async loadDistribution({ otuId, rankString }) {
     const isSpeciesGroup = rankString && isRankGrpup('SpeciesGroup', rankString)
 
     const getAggregateShape = async (otuId) => {
-      TaxonWorks.getOtuDistribution(otuId)
+      useOtuPageRequest('panel:map', () => TaxonWorks.getOtuDistribution(otuId))
         .then(({ data }) => {
           const geojson = JSON.parse(data.cached_map.geo_json)
 
@@ -27,7 +28,9 @@ export const actionLoadDistribution = {
     }
 
     if (isSpeciesGroup) {
-      TaxonWorks.getOtuGeoJSONDistribution(otuId)
+      useOtuPageRequest('panel:map', () =>
+        TaxonWorks.getOtuGeoJSONDistribution(otuId)
+      )
         .then(({ data }) => {
           if (data.request_too_large) {
             this.distribution.geojson = null
