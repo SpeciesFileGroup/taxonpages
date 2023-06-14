@@ -50,7 +50,11 @@ module.exports = {
         secondary: {
           color: withOpacity('--color-secondary'),
           content: withOpacity('--color-secondary-content')
-        }
+        },
+
+        danger: withOpacity('--color-danger'),
+        success: withOpacity('--color-success'),
+        warning: withOpacity('--color-warning')
       },
       typography: ({ theme }) => ({
         DEFAULT: {

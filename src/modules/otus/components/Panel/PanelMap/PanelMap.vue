@@ -25,6 +25,11 @@
           :shapes="store.distribution.geojson"
           @close="() => (isOtuSearchVisible = false)"
         />
+
+        <CachedMap
+          v-if="store.distribution.cachedMap"
+          :cached-map="store.distribution.cachedMap"
+        />
       </ClientOnly>
     </div>
     <div
@@ -55,6 +60,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useOtuStore } from '@/modules/otus/store/store'
+import CachedMap from './CachedMap.vue'
 import OtuSearch from '../../Search/OtuSearch.vue'
 
 const props = defineProps({

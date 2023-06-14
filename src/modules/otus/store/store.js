@@ -5,7 +5,8 @@ import { useOtuPageRequestStore } from './request'
 import {
   actionLoadDistribution,
   actionLoadCatalog,
-  actionLoadTaxonomy
+  actionLoadTaxonomy,
+  actionLoadCachedMap
 } from './actions'
 
 export const useOtuStore = defineStore('otuStore', {
@@ -17,7 +18,8 @@ export const useOtuStore = defineStore('otuStore', {
       distribution: {
         geojson: null,
         errorMessage: null,
-        currentShapeTypes: []
+        currentShapeTypes: [],
+        cachedMap: null
       },
       catalog: {
         sources: [],
@@ -70,6 +72,7 @@ export const useOtuStore = defineStore('otuStore', {
 
     ...actionLoadDistribution,
     ...actionLoadCatalog,
-    ...actionLoadTaxonomy
+    ...actionLoadTaxonomy,
+    ...actionLoadCachedMap
   }
 })

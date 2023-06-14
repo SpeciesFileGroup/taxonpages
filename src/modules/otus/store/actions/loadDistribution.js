@@ -19,6 +19,8 @@ export const actionLoadDistribution = {
           this.distribution.geojson = {
             features: [makeGeoJSONFeature(geojson, 'Aggregate')]
           }
+
+          this.loadCachedMap(data.cached_map.id)
         })
         .catch((e) => {
           this.distribution.errorMessage = e.response.data.error
