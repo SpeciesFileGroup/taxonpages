@@ -2,16 +2,15 @@
   <VButton
     class="left-2 bottom-2 !px-2 py-2 rounded-full absolute z-[1500]"
     primary
+    @click="isModalVisible = true"
   >
     <IconCheck
       v-if="cachedMap.synced"
       class="w-4 h-4"
-      @click="isModalVisible = true"
     />
     <IconWarning
       v-else
       class="w-4 h-4"
-      @click="isModalVisible = true"
     />
   </VButton>
   <VModal
