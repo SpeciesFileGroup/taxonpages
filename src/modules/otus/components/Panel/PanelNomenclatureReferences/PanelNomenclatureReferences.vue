@@ -1,7 +1,9 @@
 <template>
   <VCard>
     <VCardHeader class="flex justify-between">
-      <h2 class="text-md">Nomenclature references ({{ list.length }})</h2>
+      <h2 class="text-md">
+        Nomenclature references ({{ store.catalog.sources.length }})
+      </h2>
       <PanelDropdown
         :menu-options="menuOptions"
         panel-key="taxonomy"
@@ -41,22 +43,20 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { splitList } from './splitList'
-import PanelNomenclatureShowMore from './PanelNomenclatureShowMore.vue'
+import { splitList } from '../PanelNomenclature/splitList'
+import { useOtuStore } from '@/modules/otus/store/store'
+import PanelNomenclatureShowMore from '../PanelNomenclature/PanelNomenclatureShowMore.vue'
 import PanelReferenceRow from './PanelReferenceRow.vue'
 import PanelDropdown from '../PanelDropdown.vue'
 
 const MAX_REFERENCES = 2
 
-const props = defineProps({
-  list: {
-    type: Array,
-    default: () => []
-  }
-})
+const store = useOtuStore()
 
 const showAll = ref(false)
-const referenceList = computed(() => splitList(props.list, MAX_REFERENCES))
+const referenceList = computed(() =>
+  splitList(store.catalog.sources, MAX_REFERENCES)
+)
 
 const menuOptions = computed(() => [
   {

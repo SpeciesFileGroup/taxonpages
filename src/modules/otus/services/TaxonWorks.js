@@ -65,10 +65,6 @@ export default class TaxonWorks {
     })
   }
 
-  static getDwC(otuId) {
-    return makeAPIRequest.get(`/otus/${otuId}/inventory/dwc`)
-  }
-
   static getCachedMap(id) {
     return makeAPIRequest.get(`/cached_maps/${id}`)
   }
