@@ -2,7 +2,11 @@
   <VButton
     primary
     class="text-sm flex items-center"
-    @click="download"
+    @click="
+      () => {
+        downloadCSV()
+      }
+    "
   >
     <IconDownload class="w-4 h-4 mr-1" />
     DwC
@@ -10,8 +14,7 @@
 </template>
 
 <script setup>
-import TaxonWorks from '../services/TaxonWorks'
-import { downloadTextFile } from '../utils/files'
+const { url, project_token } = __APP_ENV__
 
 const props = defineProps({
   otu: {
@@ -20,11 +23,10 @@ const props = defineProps({
   }
 })
 
-function download() {
-  TaxonWorks.getDwC(props.otu.id).then(({ data }) => {
-    downloadTextFile(data, 'text/csv', 'dwc_records')
-  })
+function downloadCSV() {
+  window.open(
+    `${url}/otus/${props.otu.id}/inventory/dwc?project_token=${project_token}`,
+    '_self'
+  )
 }
-
-downloadTextFile
 </script>

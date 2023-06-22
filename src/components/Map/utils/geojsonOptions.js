@@ -27,23 +27,32 @@ function getRelevantType(base) {
 
 export default (L) => ({
   onEachFeature: (feature, layer) => {
+    const labels = (feature.properties.base || [])
+      .map((item) => item.label)
+      .filter(Boolean)
+
+    if (!labels.length) {
+      return
+    }
+
     const label = `
-    <div class="max-h-32 overflow-y-auto text-xs">
-    <ul>
-    ${feature.properties.base
-      .map(
-        (item) =>
-          `
-          <li 
-            class="py-2 last:border-0 truncate border-b"
-            title="${item.label}"
-          >
-            ${item.label}
-          </li>
-          `
-      )
-      .join('')}
-      </ul></div>`
+      <div class="max-h-32 overflow-y-auto text-xs">
+        <ul>
+        ${labels
+          .map(
+            (label) =>
+              `
+              <li 
+                class="py-2 last:border-0 truncate border-b"
+                title="${label}"
+              >
+                ${label}
+              </li>
+              `
+          )
+          .join('')}
+        </ul>
+      </div>`
 
     layer.pm.setOptions(DEFAULT_OPTIONS)
     layer.pm.disable()
