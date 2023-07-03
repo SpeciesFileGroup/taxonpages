@@ -13,6 +13,7 @@
         :style="logoSize"
         aria-hidden="true"
         class="text-base-lighter animate-spin fill-primary-color"
+        :class="logoClass"
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -29,7 +30,9 @@
       <span class="sr-only">Loading...</span>
 
       <div
-        class="text-base-content"
+        v-if="legend.length"
+        class="text-base-content text-center"
+        :class="legendClass"
         :style="legendStyle"
       >
         <span
@@ -76,10 +79,12 @@ const props = defineProps({
 
   legendStyle: {
     type: Object,
-    default: () => ({
-      marginTop: '30px',
-      textAlign: 'center'
-    })
+    default: () => ({})
+  },
+
+  legendClass: {
+    type: String,
+    default: 'mt-5'
   },
 
   showLegend: {
@@ -99,10 +104,12 @@ const props = defineProps({
 
   logoSize: {
     type: Object,
-    default: () => ({
-      width: '50px',
-      height: '50px'
-    })
+    default: () => ({})
+  },
+
+  logoClass: {
+    type: String,
+    default: 'w-12 h-12'
   }
 })
 
@@ -201,8 +208,6 @@ const checkResize = () => {
   svg {
     display: block;
     position: relative;
-    width: 30px;
-    height: 30px;
     margin: 0px auto;
   }
 

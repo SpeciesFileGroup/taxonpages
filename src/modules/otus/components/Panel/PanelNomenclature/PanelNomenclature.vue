@@ -1,5 +1,10 @@
 <template>
   <VCard>
+    <VSpinner
+      v-if="store.catalog.isLoading"
+      logo-class="w-8 h-8"
+      legend=""
+    />
     <VCardHeader class="flex justify-between">
       <h2 class="text-md">
         Nomenclature ({{ store.catalog.timeline.length }})
@@ -9,7 +14,6 @@
         panel-key="taxonomy"
       />
     </VCardHeader>
-
     <ul class="text-sm">
       <CitationRow
         v-for="citation in citationList.first"

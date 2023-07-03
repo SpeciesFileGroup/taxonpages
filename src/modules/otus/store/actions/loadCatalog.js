@@ -3,6 +3,8 @@ import { useOtuPageRequest } from '../../helpers/useOtuPageRequest'
 
 export const actionLoadCatalog = {
   async loadCatalog(taxonId) {
+    this.catalog.isLoading = true
+
     const response = await useOtuPageRequest('taxonomy', () =>
       TaxonWorks.getTaxonNameCitations(taxonId)
     )
@@ -11,7 +13,8 @@ export const actionLoadCatalog = {
       ...response.data,
       sources: response.data.sources.map(({ cached, url }) =>
         cached.replace(url, `<a href="${url}">${url}</a>`)
-      )
+      ),
+      isLoading: false
     }
   }
 }
