@@ -24,7 +24,8 @@ export const useOtuStore = defineStore('otuStore', {
       catalog: {
         sources: [],
         stats: {},
-        timeline: []
+        timeline: [],
+        isLoading: false
       },
       taxonomy: {
         commonNames: [],

@@ -2,6 +2,7 @@
   <VButton
     primary
     class="text-sm flex items-center"
+    title="Download DwC Occurrences"
     @click="
       () => {
         downloadCSV()

@@ -1,5 +1,10 @@
 <template>
   <VCard>
+    <VSpinner
+      v-if="store.catalog.isLoading"
+      logo-class="w-8 h-8"
+      legend=""
+    />
     <VCardHeader class="flex justify-between">
       <h2 class="text-md">Stats</h2>
       <PanelDropdown panel-key="taxonomy" />
