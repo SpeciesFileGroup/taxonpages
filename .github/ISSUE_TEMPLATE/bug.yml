@@ -47,22 +47,12 @@ body:
     description: If applicable, add screenshots to help explain your problem. Drag/drop your image/s here
   validations:
     required: false
-- type: dropdown
-  id: environment
-  validations:
-    required: true
-  attributes:
-    label: Environment
-    description: Please identify where you experience this bug. Please select all that apply.
-    multiple: true
-    options:
-      - TaxonPages
 - type: input
   id: taxonpages_site
   attributes:
     label: TaxonPages Site URL
-    description: Which website has this bug, please put the URL here
-    placeholder: https://orthoptera.speciesfile.org/
+    description: Which website has this bug, please put the URL here, use "local for development environments
+    placeholder: https://orthoptera.speciesfile.org/, local
 - type: input
   id: taxonpages_panel
   attributes:
