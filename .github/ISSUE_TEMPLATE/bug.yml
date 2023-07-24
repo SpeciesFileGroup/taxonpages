@@ -60,15 +60,15 @@ body:
 - type: input
   id: taxonpages_site
   attributes:
-    label: TaxonPages Site
-    description: Which website has this bug, please name it here
-    placeholder: Plecoptera, Orthoptera, Chrysididae, etc
+    label: TaxonPages Site URL
+    description: Which website has this bug, please put the URL here
+    placeholder: https://orthoptera.speciesfile.org/
 - type: input
-  id: version
+  id: taxonpages_panel
   attributes:
-    label: Version
-    description: What is the version the bug happened on
-    placeholder: build ff302f1bc or v0.21.3 
+    label: TaxonPages Panel
+    description: (optional) Provide which TaxonPages Panel has this bug
+    placeholder: Nomenclature, Map, Literature
 - type: input
   id: browser_used
   attributes:
