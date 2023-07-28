@@ -5,3 +5,4 @@ dist-ssr
 config
 *.local
 .env
+.vite
