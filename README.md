@@ -1,7 +1,9 @@
 # TaxonPages
+
 TaxonPages is a tool to serve taxon pages. At present it draws data from TaxonWorks' API, however we seek to keep the TaxonPages platform agnostic therefor facilitating the modular addition of functionality that may reference data from any biodiversity data-serving API.
 
 ## Status Warning
+
 TaxonPages software is in active development and changes are expected that will cause the early first-adopters' instances to require rebuilding by refreshing one's forked branch using `git pull`. A first _stable version_ is expected by Spring 2023.
 
 ## Usage
@@ -20,9 +22,10 @@ TaxonPages software is in active development and changes are expected that will 
 ```yaml
 # config/api.yml
 ---
-  url: https://<your.taxonworks.server>/api/v1
-  project_token: yourprojecttoken
+url: https://<your.taxonworks.server>/api/v1
+project_token: yourprojecttoken
 ```
+
 3. Push the changes after update the configuration files inside `setup` branch
 4. GitHub actions will build TaxonPages with the current configuration in `setup` branch and publish it to the `gh-pages` branch
 
@@ -36,20 +39,26 @@ Follow this steps to run TaxonPages in your local machine.
 ```
 git clone https://github.com/<your_username>/<your_repository_name>.git
 ```
+
 But if you don't want to fork it, you can clone directly from this
+
 ```
 git clone https://github.com/SpeciesFileGroup/taxonpages.git
 ```
+
 3. Go to `taxonpages` folder and switch to `main` branch
+
 ```
 cd taxonpages
 git checkout main
 ```
+
 4. [Download](https://github.com/SpeciesFileGroup/taxonpages/archive/refs/heads/setup.zip) configuration branch and paste `config` and `pages` folders inside taxonpages folder.
 
 5. Setup `config/api.yml` with the API server configuration
 
 6. Install node dependencies
+
 ```
 npm install
 ```
@@ -64,12 +73,118 @@ TaxonPages will be running at http://localhost:5173/
 
 # Customization
 
-### Pages
+## Pages
 
 TaxonPages out of the box support markdown and vue for content sites. Add your content pages inside `pages` folder. By default, TaxonPages use the file name to create the route.
 For example, if the filename is "contributors.md" the route to access it will be http://yourtaxonpagessite/contributors
 
+### Markdown pages
+
+This software use [vite-plugin-md](https://github.com/antfu/vite-plugin-md) to render pages in Markdown format, the engine of this plugin is [markdown-it](https://github.com/markdown-it/markdown-it). For plugins and other configuration you can refer to this section https://github.com/antfu/vite-plugin-md#configuration--options
+
+Example: `welcome.md` file
+
+```
+---
+name: 'Charles Darwin'
+---
+
+# Welcome, {{ name }}!
+```
+
+To use access TaxonPage internal variables that are provided in `config/*.yml` you can use the script tag in your markdown page and get them from the global object `__APP_ENV__`
+
+```javascript
+# Welcome to {{ project_name }}!
+
+<script setup>
+const { project_name } = __APP_ENV__
+</script>
+```
+
+#### Components
+
+TaxonPages global components are enable in your markdown pages, by default we provide a set of global components that you don't need to import them to use it. You can see the list of this global components [here](#global-components)
+
 ### Style
 
-If you want to change the color palette, you can edit  `/config/style/theme.css` file, colors must be in RGB format.
+If you want to change the color palette, you can edit `/config/style/theme.css` file, colors must be in RGB format.
 TaxonPages use [TailwindCSS](https://tailwindcss.com/docs/configuration) framework for the style. We already provide default settings for colors and markdown. If you want to make any change to your configuration, you must do so in the `config/vendor/tailwind.config.js` file. This file uses the TaxonPages configuration as a default. It is possible to overwrite it as long as you use it as a preset.
+
+# Deep dive into TaxonPages
+
+## Access internal configuration vars
+
+To access the configuration in \*.yml files, we provide a global object that contains all the configuration values. This variable can be used in either JavaScript, Vue, or Markdown files. To access these values you must use the `__APP_ENV__` variable:
+
+```javascript
+const { project_name } = __APP_ENV__
+// or
+const projectName = __APP_ENV__.project_name
+```
+
+## Defining global components
+
+TaxonPages provides an auto-import component from `src/components` folder using special extensions for it. Some objects and functions are only present in the browser and not in the NodeJs server environment. When you run code that is not supported by the server, it ends up crashing. Some JavaScript libraries like `Leaflet` use the `document` or `window` object, which do not exist in the node environment. To handle this problem, TaxonPages provides 2 ways to import the components.
+
+### Client Side only (CSR):
+
+This auto import method will only load the component on the client side, while on the server it will create a fake empty component, which will be used later on the client side to be replaced by the original one when the hydration process occurs. To define this type of import, the component name must contain the word `.client.` before `.vue` extension.
+
+Example: `MyAmazingComponent.client.vue`
+
+### Global (CSR & SSR)
+
+This auto-import method will load the component both client and server side. To define this type of import, the component must contain the word `.client.` before the `.vue` extension.
+
+Example: `MyAmazingComponent.global.vue`
+
+### Global components
+
+TaxonPages provides a set of global components that could be used to create your own panels or pages. Here is the complete list:
+
+| Component             | Description                                    | Props                                                                                                                    |
+| --------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `<AnimationOpacity/>` | Add an opacity animation for a child component |                                                                                                                          |
+| `<Autocomplete/>`     | Used to perform searches in TaxonWorks         | [Link](https://github.com/SpeciesFileGroup/taxonpages/blob/main/src/components/Autocomplete/Autocomplete.global.vue#L42) |
+| `<AutocompleteOtu/>`  | A specific autocomplete for OTU search         |                                                                                                                          |
+| `<ClientOnly/>`       | Render child components only from client side  |                                                                                                                          |
+| `<VButton/>`          | Button component                               |                                                                                                                          |
+| `<VCard/>`            | Card component style                           |                                                                                                                          |
+| `<VCardContent/>`     | Card content body                              |                                                                                                                          |
+| `<VCardHeader/>`      | Card Header                                    |                                                                                                                          |
+| `<VClipboard/>`       | Copy a text to clipboard                       |                                                                                                                          |
+| `<Dropdown/>`         | Dropdown menu                                  |                                                                                                                          |
+| `<GalleryImage/>`     |                                                | [Link](https://github.com/SpeciesFileGroup/taxonpages/blob/main/src/components/Gallery/GalleryImage.global.vue#L40)      |
+| `<ImageViewer/>`      |                                                |                                                                                                                          |
+| `<TabMenu/>`          |                                                |                                                                                                                          |
+| `<TabItem/>`          |                                                |                                                                                                                          |
+| `<VMap/>`             | Interactive map that use Leaflet library       |                                                                                                                          |
+| `<VModal/>`           | Create lightboxes                              |                                                                                                                          |
+| `VSkeleton`           | Content loading placeholder                    |                                                                                                                          |
+| `VSpinner`            | Loading spinner                                |                                                                                                                          |
+| VTable                |                                                |                                                                                                                          |
+| VTableBody            |                                                |                                                                                                                          |
+| VTableBodyCell        |                                                |                                                                                                                          |
+| VTableBodyRow         |                                                |                                                                                                                          |
+| VTableHeader          |                                                |                                                                                                                          |
+| VTableHeaderCell      |                                                |                                                                                                                          |
+| VTableHeaderRow       |                                                |                                                                                                                          |
+
+| Icons                |
+| -------------------- |
+| `<IconArrowDown/>`   |
+| `<IconArrowLeft/>`   |
+| `<IconArrowRight/>`  |
+| `<IconCheck/>`       |
+| `<IconClipboard/>`   |
+| `<IconClose/>`       |
+| `<IconDocument/>`    |
+| `<IconDownload/>`    |
+| `<IconHamburger/>`   |
+| `<IconJson/>`        |
+| `<IconMinusCircle/>` |
+| `<IconPlusCircle/>`  |
+| `<IconSearch/>`      |
+| `<IconTrash/>`       |
+| `<IconWarning/>`     |
