@@ -73,7 +73,14 @@
 </template>
 
 <script setup>
-import { ref, watch, onServerPrefetch, computed, onMounted } from 'vue'
+import {
+  ref,
+  watch,
+  onServerPrefetch,
+  computed,
+  onMounted,
+  onBeforeUnmount
+} from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useOtuStore } from '../store/store'
 import { useHead } from 'unhead'
@@ -117,6 +124,10 @@ onMounted(async () => {
   } else {
     updateMetadata()
   }
+})
+
+onBeforeUnmount(() => {
+  store.$reset()
 })
 
 async function loadInitialData() {
