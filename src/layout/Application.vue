@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen h-screen flex flex-col justify-between">
-    <div class="h-full">
+    <div class="flex flex-col flex-grow">
       <LayoutHeader />
       <slot />
     </div>
