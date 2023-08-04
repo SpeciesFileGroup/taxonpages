@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen flex flex-col justify-between">
-    <div>
+  <div class="min-h-screen h-screen flex flex-col justify-between">
+    <div class="h-full">
       <LayoutHeader />
       <slot />
     </div>
