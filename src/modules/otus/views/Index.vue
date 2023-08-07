@@ -132,8 +132,13 @@ onBeforeUnmount(() => {
 
 async function loadInitialData() {
   store.$reset()
-  await store.loadInit(route.params.id)
-  updateMetadata()
+  const success = await store.loadInit(route.params.id)
+
+  if (success) {
+    updateMetadata()
+  } else {
+    router.replace({ name: 'notFound' })
+  }
 }
 
 function updateMetadata() {

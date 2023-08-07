@@ -52,10 +52,17 @@ export const useOtuStore = defineStore('otuStore', {
 
       requestStore.$reset()
 
-      await this.loadOtu(otuId)
-      await this.loadTaxon(this.otu.taxon_name_id)
+      try {
+        await this.loadOtu(otuId)
+        await this.loadTaxon(this.otu.taxon_name_id)
+      } catch (error) {
+        return false
+      }
+
       await this.loadCatalog(this.otu.taxon_name_id)
       await this.loadTaxonomy(otuId)
+
+      return true
     },
 
     async loadImages(otuId) {
