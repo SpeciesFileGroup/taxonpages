@@ -58,7 +58,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useOtuStore } from '@/modules/otus/store/store'
 import CachedMap from './CachedMap.vue'
 import OtuSearch from '../../Search/OtuSearch.vue'
@@ -108,17 +108,12 @@ const LEGEND = {
   }
 }
 
-watch(
-  () => props.otuId,
-  async (newId, oldId) => {
-    if (newId === oldId) return
-    isLoading.value = true
+onMounted(() => {
+  isLoading.value = true
 
-    store.loadDistribution({
-      otuId: props.otuId,
-      rankString: props.taxon.rank_string
-    })
-  },
-  { immediate: true }
-)
+  store.loadDistribution({
+    otuId: props.otuId,
+    rankString: props.taxon.rank_string
+  })
+})
 </script>
