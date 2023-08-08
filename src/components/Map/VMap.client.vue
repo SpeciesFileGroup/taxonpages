@@ -57,6 +57,16 @@ const props = defineProps({
     default: 18
   },
 
+  maxZoom: {
+    type: Number,
+    default: 18
+  },
+
+  minZoom: {
+    type: Number,
+    default: 0
+  },
+
   disableZoom: {
     type: Boolean,
     default: false
@@ -102,7 +112,8 @@ let geoJSONGroup
 const leafletMap = ref(null)
 const tiles = {
   osm: L.tileLayer(map_tile_server, {
-    maxZoom: 18,
+    maxZoom: props.maxZoom,
+    minZoom: props.minZoom,
     className: 'map-tiles',
     attribution: map_tile_attribution
   })
