@@ -18,6 +18,12 @@
   --color-map-asserted: 249, 115, 22;
   --color-map-type-material: 51, 136, 255;
   --color-map-collection-object: 239, 68, 68;
+
+  --color-scrollbar-thumb: 156, 163, 175;
+  --color-scrollbar-track: 229, 231, 235;
+
+  --color-map-shape-opacity: 0.5;
+  --color-map-marker-opacity: 0.75;
 }
 
 .dark {
@@ -34,4 +40,7 @@
   --color-base-lighter: 220, 220, 220;
   --color-base-border: 38, 38, 38;
   --color-base-content: 255, 255, 255;
+
+  --color-scrollbar-thumb: 156, 163, 175;
+  --color-scrollbar-track: 55, 65, 81;
 }
