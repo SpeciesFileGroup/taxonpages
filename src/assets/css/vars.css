@@ -25,6 +25,9 @@
 
   --color-scrollbar-thumb: 156, 163, 175;
   --color-scrollbar-track: 229, 231, 235;
+
+  --color-map-shape-opacity: 0.5;
+  --color-map-marker-opacity: 0.75;
 }
 
 .dark {

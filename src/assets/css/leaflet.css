@@ -1,5 +1,6 @@
 :root {
-  --map-tiles-filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+  --map-tiles-filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg)
+    saturate(0.3) brightness(0.7);
 }
 
 /* @media (prefers-color-scheme: dark) {
@@ -8,10 +9,14 @@
   }
 } */
 
+.map-point-marker {
+  opacity: var(--color-map-marker-opacity);
+}
+
 .dark {
   color-scheme: dark;
 
   .map-tiles {
-    filter:var(--map-tiles-filter, none);
+    filter: var(--map-tiles-filter, none);
   }
 }
