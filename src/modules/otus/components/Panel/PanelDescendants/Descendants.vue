@@ -1,10 +1,12 @@
 <template>
   <VCard>
-    <VSpinner
-      v-if="isLoading"
-      logo-class="w-8 h-8"
-      legend=""
-    />
+    <ClientOnly>
+      <VSpinner
+        v-if="isLoading"
+        logo-class="w-8 h-8"
+        legend=""
+      />
+    </ClientOnly>
     <VCardHeader class="flex justify-between">
       <h2 class="text-md">Descendants and synonyms</h2>
       <PanelDropdown panel-key="panel:descendants" />
