@@ -21,6 +21,7 @@
     "axios": "^1.4.0",
     "js-yaml": "^4.1.0",
     "leaflet": "^1.9.4",
+    "markdown-it-anchor": "^8.6.7",
     "pinia": "^2.1.6",
     "unhead": "^1.2.2",
     "vue": "^3.3.4",
