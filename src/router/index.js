@@ -38,6 +38,11 @@ function getHistory() {
 export function createRouter() {
   return _createRouter({
     history: getHistory(),
-    routes
+    routes,
+    scrollBehavior(to, from, savedPosition) {
+      if (to.hash) {
+        return { el: to.hash }
+      }
+    }
   })
 }
