@@ -3,5 +3,7 @@ node_modules
 dist
 dist-ssr
 config
+pages
+public
 *.local
 .env
