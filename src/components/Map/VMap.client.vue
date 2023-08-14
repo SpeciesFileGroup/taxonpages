@@ -90,6 +90,11 @@ const props = defineProps({
   geojsonOptions: {
     type: Object,
     default: () => ({})
+  },
+
+  prefix: {
+    type: [String, Boolean],
+    default: false
   }
 })
 
@@ -168,6 +173,7 @@ onMounted(() => {
   geoJSONGroup = new L.FeatureGroup()
 
   mapObject = L.map(leafletMap.value, options)
+  mapObject.attributionControl.setPrefix(props.prefix)
 
   mapObject.pm.setGlobalOptions({
     layerGroup: drawnItems
