@@ -5,6 +5,7 @@ dist-ssr
 config
 pages
 public
+README.md
 *.local
 .env
 .vite
