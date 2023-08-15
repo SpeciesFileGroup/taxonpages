@@ -92,7 +92,15 @@ name: 'Charles Darwin'
 # Welcome, {{ name }}!
 ```
 
-To use access TaxonPage internal variables that are provided in `config/*.yml` you can use the script tag in your markdown page and get them from the global object `__APP_ENV__`
+To use TaxonPage internal variables in `config/*.yml`, you can either do so by adding the prefix {{ app:var_name }} or use the script tag in your markdown page and get them from the global object `__APP_ENV__`
+
+#### Prefix
+
+```markdown
+# Welcome to {{ app:project_name }}!
+```
+
+#### Script tag
 
 ```javascript
 # Welcome to {{ project_name }}!
