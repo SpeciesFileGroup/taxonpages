@@ -4,7 +4,10 @@ import path from 'path'
 import Vue from '@vitejs/plugin-vue'
 import Markdown from 'vite-plugin-md'
 import markdownAnchor from 'markdown-it-anchor'
-import markdownRelativeToRouter from './src/plugins/markdown/relativeToRouter.js'
+import {
+  relativeToRouterPlugin,
+  variableReplacementPlugin
+} from './src/plugins/markdown'
 import Pages from 'vite-plugin-pages'
 import './src/utils/globalVars'
 
@@ -31,8 +34,11 @@ export default () => {
           '!container mx-auto p-4 sm:pl-0 sm:pr-0 prose dark:prose-invert box-border',
         markdownItSetup(md) {
           md.use(markdownAnchor)
+          md.use(variableReplacementPlugin, {
+            variables: { ...configuration }
+          })
         },
-        markdownItUses: [markdownRelativeToRouter]
+        markdownItUses: [relativeToRouterPlugin]
       }),
       Pages({
         dirs: 'pages',

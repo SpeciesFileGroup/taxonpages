@@ -1,4 +1,4 @@
-export default (md) => {
+export function relativeToRouterPlugin(md) {
   const scan = (state) => {
     state.tokens.forEach((tokens) => {
       if (tokens.type !== 'inline') {
@@ -13,7 +13,11 @@ export default (md) => {
         } else if (inlineTokens[i].type === 'link_open') {
           const attrs = inlineTokens[i].attrs
           const href = attrs?.find((v) => v[0] === 'href')
-          if (href && !href[1].startsWith('http')) {
+          if (
+            href &&
+            !href[1].startsWith('http') &&
+            !href[1].startsWith('mailto')
+          ) {
             inlineTokens[i].tag = 'router-link'
             inlineTokens[i].attrs = [['to', href[1]]]
             isRT = true
