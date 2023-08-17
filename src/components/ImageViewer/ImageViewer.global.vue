@@ -83,7 +83,7 @@ import ImageViewerClose from './ImageViewerClose.vue'
 
 const props = defineProps({
   index: {
-    type: Object,
+    type: Number,
     required: true
   },
 
