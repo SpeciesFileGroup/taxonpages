@@ -18,7 +18,7 @@ import ContentTopic from './PanelContentTopic.vue'
 const props = defineProps({
   otuId: {
     type: Number,
-    default: undefined
+    required: true
   }
 })
 
