@@ -1,4 +1,4 @@
-import { FAMILY_GROUP, GENUS_GROUP, SPECIES_GROUP } from './index.js'
+import { FAMILY_GROUP, GENUS_GROUP, SPECIES_GROUP } from './rankGroups.js'
 import PanelGallery from '../components/Panel/PanelGallery/Gallery.vue'
 import PanelTypeSpecimen from '../components/Panel/PanelTypeSpecimen/PanelTypeSpecimen.vue'
 import PanelTypeDesignation from '../components/Panel/PanelTypeDesignation/PanelTypeDesignation.vue'

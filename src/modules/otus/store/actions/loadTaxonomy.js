@@ -1,10 +1,13 @@
 import TaxonWorks from '../../services/TaxonWorks'
 
 export const actionLoadTaxonomy = {
-  async loadTaxonomy(otuId) {
+  async loadTaxonomy(otuId, { signal }) {
     const { data } = await TaxonWorks.getTaxonomy(otuId, {
-      max_descendants_depth: 0,
-      extend: ['common_names']
+      params: {
+        max_descendants_depth: 0,
+        extend: ['common_names']
+      },
+      signal
     })
 
     this.taxonomy = {

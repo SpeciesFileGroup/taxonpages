@@ -71,7 +71,9 @@ const loadDescendants = () => {
     return
   }
   TaxonWorks.getTaxonomy(props.taxonomy.otu_id, {
-    max_descendants_depth: 1
+    params: {
+      max_descendants_depth: 1
+    }
   }).then(({ data }) => {
     descendants.value = data.descendants
   })

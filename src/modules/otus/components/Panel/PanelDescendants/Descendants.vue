@@ -54,7 +54,9 @@ watch(
 
     isLoading.value = true
     useOtuPageRequest('panel:descendants', () =>
-      TaxonWorks.getTaxonomy(props.otuId, { max_descendants_depth: 1 })
+      TaxonWorks.getTaxonomy(props.otuId, {
+        params: { max_descendants_depth: 1 }
+      })
     )
       .then(({ data }) => {
         taxonomy.value = data
