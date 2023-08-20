@@ -7,8 +7,8 @@
 </template>
 
 <script setup>
-import { computed, onServerPrefetch, onMounted } from 'vue'
-import { useOtuStore } from '@/modules/otus/store/store'
+import { computed, onServerPrefetch, onMounted, onBeforeUnmount } from 'vue'
+import { useImageStore } from '../../../store/useImageStore'
 
 const props = defineProps({
   otuId: {
@@ -17,7 +17,7 @@ const props = defineProps({
   }
 })
 
-const store = useOtuStore()
+const store = useImageStore()
 const images = computed(() => store.images || [])
 
 onServerPrefetch(async () => {
@@ -28,5 +28,10 @@ onMounted(() => {
   if (!store.images) {
     store.loadImages(props.otuId)
   }
+})
+
+onBeforeUnmount(() => {
+  store.resetRequest()
+  store.$reset()
 })
 </script>

@@ -58,8 +58,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useOtuStore } from '@/modules/otus/store/store'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useDistributionStore } from '@/modules/otus/store/useDistributionStore.js'
 import CachedMap from './CachedMap.vue'
 import OtuSearch from '../../Search/OtuSearch.vue'
 
@@ -83,7 +83,7 @@ const props = defineProps({
 const zoom = 2
 const isLoading = ref(true)
 const isOtuSearchVisible = ref(false)
-const store = useOtuStore()
+const store = useDistributionStore()
 
 const LEGEND = {
   AssertedDistribution: {
@@ -115,5 +115,10 @@ onMounted(() => {
     otuId: props.otuId,
     rankString: props.taxon.rank_string
   })
+})
+
+onBeforeUnmount(() => {
+  store.resetRequest()
+  store.$reset()
 })
 </script>

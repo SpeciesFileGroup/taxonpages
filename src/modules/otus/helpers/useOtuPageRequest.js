@@ -1,4 +1,5 @@
 import { useOtuPageRequestStore } from '../store/request'
+import { RESPONSE_ERROR } from '../constants'
 
 export function useOtuPageRequest(key, requestFunction) {
   const store = useOtuPageRequestStore()
@@ -9,7 +10,9 @@ export function useOtuPageRequest(key, requestFunction) {
       store.setRequest(key, response)
     })
     .catch((error) => {
-      store.setRequest(key, error.response)
+      if (error.name !== RESPONSE_ERROR.CanceledError) {
+        store.setRequest(key, error.response)
+      }
     })
 
   return request

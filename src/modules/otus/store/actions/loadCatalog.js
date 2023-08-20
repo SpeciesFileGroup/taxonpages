@@ -2,11 +2,11 @@ import TaxonWorks from '../../services/TaxonWorks'
 import { useOtuPageRequest } from '../../helpers/useOtuPageRequest'
 
 export const actionLoadCatalog = {
-  async loadCatalog(taxonId) {
+  async loadCatalog(taxonId, { signal }) {
     this.catalog.isLoading = true
 
     const response = await useOtuPageRequest('taxonomy', () =>
-      TaxonWorks.getTaxonNameCitations(taxonId)
+      TaxonWorks.getTaxonNameCitations(taxonId, { signal })
     )
 
     this.catalog = {

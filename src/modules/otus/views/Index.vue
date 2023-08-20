@@ -89,6 +89,7 @@ import SiteMap from '../components/SiteMap.vue'
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
 import TaxaInfo from '../components/TaxaInfo.vue'
 import DWCDownload from '../components/DWCDownload.vue'
+import { RESPONSE_ERROR } from '../constants'
 
 //import useChildrenRoutes from '../composables/useChildrenRoutes'
 
@@ -97,6 +98,7 @@ const router = useRouter()
 const routeParams = ref(route.params)
 const tabs = [] // useChildrenRoutes()
 const store = useOtuStore()
+let controller = new AbortController()
 
 router.afterEach((route) => {
   routeParams.value = route.params
@@ -104,7 +106,6 @@ router.afterEach((route) => {
 
 const otu = computed(() => store.otu)
 const taxon = computed(() => store.taxon)
-
 const isReady = computed(() => otu.value?.id && taxon.value?.id)
 
 onServerPrefetch(async () => {
@@ -114,12 +115,14 @@ onServerPrefetch(async () => {
 watch(
   () => route.fullPath,
   async () => {
+    controller.abort()
+    controller = new AbortController()
     loadInitialData()
   }
 )
 
 onMounted(async () => {
-  if (!otu.value || otu.value.id !== Number(route.params.id)) {
+  if (otu.value?.id !== Number(route.params.id) || !taxon.value?.id) {
     await loadInitialData()
   } else {
     updateMetadata()
@@ -132,12 +135,17 @@ onBeforeUnmount(() => {
 
 async function loadInitialData() {
   store.$reset()
-  const success = await store.loadInit(route.params.id)
 
-  if (success) {
+  try {
+    await store.loadInit({
+      otuId: route.params.id,
+      controller
+    })
     updateMetadata()
-  } else {
-    router.replace({ name: 'notFound' })
+  } catch (e) {
+    if (e.name !== RESPONSE_ERROR.CanceledError) {
+      router.replace({ name: 'notFound' })
+    }
   }
 }
 

@@ -1,8 +1,8 @@
 import { makeAPIRequest } from '@/utils/request'
 
 export default class TaxonWorks {
-  static getTaxonNameCitations(taxonId) {
-    return makeAPIRequest.get(`/taxon_names/${taxonId}/inventory/catalog`)
+  static getTaxonNameCitations(taxonId, opt) {
+    return makeAPIRequest.get(`/taxon_names/${taxonId}/inventory/catalog`, opt)
   }
 
   static getOtu(id) {
@@ -17,12 +17,12 @@ export default class TaxonWorks {
     })
   }
 
-  static getTaxon(id) {
-    return makeAPIRequest.get(`/taxon_names/${id}`)
+  static getTaxon(id, opt) {
+    return makeAPIRequest.get(`/taxon_names/${id}`, opt)
   }
 
-  static summary(id) {
-    return makeAPIRequest.get(`/taxon_names/${id}/inventory/summary`)
+  static summary(id, opt) {
+    return makeAPIRequest.get(`/taxon_names/${id}/inventory/summary`, opt)
   }
 
   static getTaxonTypeDesignation(id) {
@@ -31,38 +31,32 @@ export default class TaxonWorks {
     })
   }
 
-  static getOtuImages(otuId, params = {}) {
-    return makeAPIRequest.get(`/otus/${otuId}/inventory/images.json`, {
-      params
-    })
+  static getOtuImages(otuId, opt) {
+    return makeAPIRequest.get(`/otus/${otuId}/inventory/images.json`, opt)
   }
 
-  static getTaxonomy(otuId, params) {
-    return makeAPIRequest.get(`/otus/${otuId}/inventory/taxonomy.json`, {
-      params
-    })
+  static getTaxonomy(otuId, opt) {
+    return makeAPIRequest.get(`/otus/${otuId}/inventory/taxonomy.json`, opt)
   }
 
   static getOtuTypeMaterial(otuId) {
     return makeAPIRequest.get(`/otus/${otuId}/inventory/type_material.json`)
   }
 
-  static getOtuDistribution(otuId) {
-    return makeAPIRequest.get(`/otus/${otuId}/inventory/distribution.json`)
+  static getOtuDistribution(otuId, opt = {}) {
+    return makeAPIRequest.get(`/otus/${otuId}/inventory/distribution.json`, opt)
   }
 
   static getOtuGeoJSONDistribution(otuId) {
     return makeAPIRequest.get(`/otus/${otuId}/inventory/distribution.geojson`)
   }
 
-  static getCachedMap(cachedId) {
-    return makeAPIRequest.get(`/cached_maps/${cachedId}`)
+  static getCachedMap(cachedId, opt) {
+    return makeAPIRequest.get(`/cached_maps/${cachedId}`, opt)
   }
 
-  static getOtuContent(otuId) {
-    return makeAPIRequest.get(`/otus/${otuId}/inventory/content`, {
-      extend: ['depiction']
-    })
+  static getOtuContent(otuId, opt) {
+    return makeAPIRequest.get(`/otus/${otuId}/inventory/content`, opt)
   }
 
   static getCachedMap(id) {
