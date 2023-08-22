@@ -1,11 +1,11 @@
 <template>
-  <div
+  <header
     class="relative bg-header px-2 sm:px-4 py-2.5 shadow-sm shadow-base-muted pl-4 pr-4 h-9 align-middle flex items-center bg-primary-color"
   >
     <div
       class="container flex flex-wrap justify-between items-center mx-auto font-medium text-secondary-content"
     >
-      <router-link
+      <RouterLink
         to="/"
         class="flex items-center text-primary-content"
       >
@@ -18,7 +18,7 @@
         <span>
           {{ header_logo_text }}
         </span>
-      </router-link>
+      </RouterLink>
 
       <NavbarMobile />
 
@@ -46,7 +46,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </header>
 </template>
 
 <script setup>
