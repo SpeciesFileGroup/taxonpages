@@ -29,7 +29,7 @@
             class="mr-2"
           />
         </component>
-        <p>{{ copyright_text }}</p>
+        <span>{{ copyright_text }}</span>
       </div>
 
       <hr class="mt-3 mb-3 border-gray-500" />
