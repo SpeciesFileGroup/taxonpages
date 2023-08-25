@@ -2,7 +2,6 @@
   <VButton
     type="button"
     title="Report a problem"
-    href="http://www.google.com.ar"
     class="flex gap-2"
     :class="buttonClass"
     @click="openTracker"
@@ -30,8 +29,8 @@
             v-if="item.description"
             class="text-sm"
           >
-            - {{ item.description }}</span
-          >
+            - {{ item.description }}
+          </span>
         </li>
       </ul>
     </div>
