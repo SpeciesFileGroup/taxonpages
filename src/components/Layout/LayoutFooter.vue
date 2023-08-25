@@ -34,45 +34,52 @@
 
       <hr class="mt-3 mb-3 border-gray-500" />
 
-      <div class="flex items-center">
-        <span>
-          Data provided by
-          <a
-            class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 font-medium"
-            target="_blank"
-            href="https://taxonworks.org/"
-          >
-            TaxonWorks
-          </a>
-        </span>
+      <div class="flex justify-between">
+        <div class="flex items-center">
+          <span>
+            Data provided by
+            <a
+              class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 font-medium"
+              target="_blank"
+              href="https://taxonworks.org/"
+            >
+              TaxonWorks
+            </a>
+          </span>
 
-        <span class="ml-2 mr-2">|</span>
+          <span class="ml-2 mr-2">|</span>
 
-        <span>
-          Pages by
-          <a
-            class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 font-medium"
-            target="_blank"
-            href="https://github.com/SpeciesFileGroup/taxonpages"
-          >
-            TaxonPages
-          </a>
-        </span>
-        <span class="ml-2 mr-2">|</span>
-        <span>
-          Support (Services) by
-          <a
-            class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 font-medium"
-            target="_blank"
-            href="https://speciesfilegroup.org"
-          >
-            Species File Group
-          </a>
-        </span>
+          <span>
+            Pages by
+            <a
+              class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 font-medium"
+              target="_blank"
+              href="https://github.com/SpeciesFileGroup/taxonpages"
+            >
+              TaxonPages
+            </a>
+          </span>
+          <span class="ml-2 mr-2">|</span>
+          <span>
+            Support (Services) by
+            <a
+              class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 font-medium"
+              target="_blank"
+              href="https://speciesfilegroup.org"
+            >
+              Species File Group
+            </a>
+          </span>
+        </div>
+        <TrackerReport
+          icon
+          label="Report a problem"
+        />
       </div>
     </div>
   </footer>
 </template>
+
 <script setup>
 const {
   project_authors,

@@ -39,10 +39,15 @@
           </ul>
         </nav>
 
-        <div class="flex items-center border-l ml-6 pl-6 border-base-muted">
+        <div
+          class="flex items-center border-l ml-6 pl-6 border-base-muted border-opacity-50"
+        >
           <ClientOnly>
             <SwitchTheme class="text-primary-content" />
           </ClientOnly>
+        </div>
+        <div class="flex items-center ml-6 border-base-muted">
+          <TrackerReport icon />
         </div>
       </div>
     </div>
