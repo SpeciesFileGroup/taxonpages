@@ -41,6 +41,12 @@
               />
             </ClientOnly>
           </li>
+          <li>
+            <TrackerReport
+              icon
+              button-class="text-base-content w-full p-4 pt-3 pb-3 block box-border border-b border-b-base-border"
+            />
+          </li>
         </ul>
       </nav>
     </div>
