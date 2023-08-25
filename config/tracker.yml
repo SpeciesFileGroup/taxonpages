@@ -1,0 +1,8 @@
+#issue_trackers:
+#  - label: Data
+#    description: E.g. missing data that I'd like to add, misspellings, or invalid data
+#    url: http://www.github.com
+#
+#  - label: Website
+#    description: E.g. a link, panel, or other feature is not working as expected
+#    url: http://www.github.com
