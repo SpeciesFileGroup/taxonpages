@@ -2,7 +2,7 @@
   <VButton
     type="button"
     title="Report a problem"
-    class="flex gap-2"
+    class="flex gap-2 items-center"
     :class="buttonClass"
     @click="openTracker"
   >
