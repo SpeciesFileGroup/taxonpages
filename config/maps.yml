@@ -1,0 +1,7 @@
+map_tiles:
+  - label: OpenStreetMap
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    server: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
+#  - label: GBIF
+#    attribution: '&copy; <a href="https://tile.gbif.org/ui/">GBIF</a>'
+#    server: https://tile.gbif.org/3857/omt/{z}/{x}/{y}@1x.png?style=gbif-natural-en
