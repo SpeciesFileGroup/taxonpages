@@ -12,6 +12,7 @@ import iconRetina from 'leaflet/dist/images/marker-icon-2x.png'
 import iconUrl from 'leaflet/dist/images/marker-icon.png'
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png'
 import geojsonDefaultOptions from './utils/geojsonOptions'
+import { makeTileFromConfiguration } from './utils/makeTileFromConfiguration'
 
 import '@geoman-io/leaflet-geoman-free'
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
@@ -23,8 +24,6 @@ L.Icon.Default.mergeOptions({
   iconUrl: iconUrl,
   shadowUrl: shadowUrl
 })
-
-const { map_tile_server, map_tile_attribution } = __APP_ENV__
 
 const props = defineProps({
   controls: {
@@ -115,14 +114,6 @@ let drawnItems
 let geoJSONGroup
 
 const leafletMap = ref(null)
-const tiles = {
-  osm: L.tileLayer(map_tile_server, {
-    maxZoom: props.maxZoom,
-    minZoom: props.minZoom,
-    className: 'map-tiles',
-    attribution: map_tile_attribution
-  })
-}
 
 const fitBoundsOptions = computed(() => ({
   maxZoom: props.zoomBounds,
@@ -152,6 +143,14 @@ watch(
 )
 
 onMounted(() => {
+  const tiles = makeTileFromConfiguration(L, {
+    maxZoom: props.maxZoom,
+    minZoom: props.minZoom,
+    className: 'map-tiles'
+  })
+
+  const [currentTile] = Object.values(tiles)
+
   const options = {
     center: props.center,
     zoom: props.zoom,
@@ -218,7 +217,14 @@ onMounted(() => {
     mapObject.on('zoomstart', (e) => emit('zoom:start', e))
   }
 
-  tiles.osm.addTo(mapObject)
+  currentTile.addTo(mapObject)
+
+  if (Object.keys(tiles).length > 1) {
+    L.control
+      .layers(tiles, {}, { position: 'topleft', collapsed: false })
+      .addTo(mapObject)
+  }
+
   initEvents()
 })
 
