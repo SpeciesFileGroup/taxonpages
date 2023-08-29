@@ -21,6 +21,7 @@
         <component
           :is="copyright_image_link ? 'a' : 'span'"
           :href="copyright_image_link"
+          class="min-w-fit"
         >
           <img
             v-if="copyright_image"
