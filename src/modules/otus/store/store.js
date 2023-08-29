@@ -2,11 +2,6 @@ import { defineStore } from 'pinia'
 import TaxonWorks from '../services/TaxonWorks'
 import { useOtuPageRequest } from '../helpers/useOtuPageRequest'
 import { useOtuPageRequestStore } from './request'
-import {
-  actionLoadCatalog,
-  actionLoadTaxonomy,
-  actionLoadCachedMap
-} from './actions'
 
 export const useOtuStore = defineStore('otuStore', {
   state: () => {
@@ -40,28 +35,50 @@ export const useOtuStore = defineStore('otuStore', {
       this.otu = otu.data
     },
 
+    async loadTaxonomy(otuId, { signal }) {
+      const { data } = await TaxonWorks.getTaxonomy(otuId, {
+        params: {
+          max_descendants_depth: 0,
+          extend: ['common_names']
+        },
+        signal
+      })
+
+      this.taxonomy = {
+        commonNames: data.common_names,
+        synonyms: data.nomenclatural_synonyms
+      }
+    },
+
+    async loadCatalog(taxonId, { signal }) {
+      this.catalog.isLoading = true
+
+      const response = await useOtuPageRequest('taxonomy', () =>
+        TaxonWorks.getTaxonNameCitations(taxonId, { signal })
+      )
+
+      this.catalog = {
+        ...response.data,
+        sources: response.data.sources.map(({ cached, url }) =>
+          cached.replace(url, `<a href="${url}">${url}</a>`)
+        ),
+        isLoading: false
+      }
+    },
+
     async loadInit({ otuId, controller }) {
       const requestStore = useOtuPageRequestStore()
-      const { signal } = controller
 
       requestStore.$reset()
 
       try {
-        await this.loadOtu(otuId, { signal })
-        await this.loadTaxon(this.otu.taxon_name_id, {
-          signal
-        })
-        await this.loadCatalog(this.otu.taxon_name_id, {
-          signal
-        })
-        await this.loadTaxonomy(otuId, { signal })
+        await this.loadOtu(otuId, controller)
+        await this.loadTaxon(this.otu.taxon_name_id, controller)
+        await this.loadCatalog(this.otu.taxon_name_id, controller)
+        await this.loadTaxonomy(otuId, controller)
       } catch (error) {
         return Promise.reject(error)
       }
-    },
-
-    ...actionLoadCatalog,
-    ...actionLoadTaxonomy,
-    ...actionLoadCachedMap
+    }
   }
 })

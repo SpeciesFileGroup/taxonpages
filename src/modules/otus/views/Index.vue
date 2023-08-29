@@ -144,8 +144,19 @@ async function loadInitialData() {
     updateMetadata()
   } catch (e) {
     if (e.name !== RESPONSE_ERROR.CanceledError) {
-      router.replace({ name: 'notFound' })
+      redirectOnError(e)
     }
+  }
+}
+
+function redirectOnError(error) {
+  switch (error?.response?.status) {
+    case 404:
+      router.replace({ name: 'httpError400' })
+      break
+    case 500:
+      router.replace({ name: 'httpError500' })
+      break
   }
 }
 

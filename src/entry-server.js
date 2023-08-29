@@ -23,7 +23,10 @@ export async function render(url, manifest, originUrl) {
   // itself on ctx.modules. After the render, ctx.modules would contain all the
   // components that have been instantiated during this render call.
   const ctx = {}
+  const initialRoute = router.currentRoute.value.path
   const html = await renderToString(app, ctx)
+  const latestRoute = router.currentRoute.value.path
+  const redirectRoute = initialRoute !== latestRoute && latestRoute
   const headPayload = await renderSSRHead(getActiveHead())
   const renderState = `
   <script>
@@ -34,7 +37,7 @@ export async function render(url, manifest, originUrl) {
   // which we can then use to determine what files need to be preloaded for this
   // request.
   const preloadLinks = renderPreloadLinks(ctx.modules, manifest)
-  return [html, renderState, preloadLinks, headPayload]
+  return [html, renderState, preloadLinks, headPayload, redirectRoute]
 }
 
 function renderPreloadLinks(modules, manifest) {
