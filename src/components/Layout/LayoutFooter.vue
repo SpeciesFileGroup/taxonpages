@@ -17,7 +17,7 @@
           &gt;
         </span>
       </div>
-      <div class="flex items-center text-xs">
+      <div class="flex items-center text-xs gap-2">
         <component
           :is="copyright_image_link ? 'a' : 'span'"
           :href="copyright_image_link"
@@ -26,7 +26,6 @@
             v-if="copyright_image"
             :src="copyright_image"
             alt="copyright"
-            class="mr-2"
           />
         </component>
         <span>{{ copyright_text }}</span>
