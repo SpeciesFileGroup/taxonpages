@@ -165,6 +165,7 @@ TaxonPages provides a set of global components that could be used to create your
 | `<Dropdown/>`         | Dropdown menu                                  |                                                                                                                          |
 | `<GalleryImage/>`     |                                                | [Link](https://github.com/SpeciesFileGroup/taxonpages/blob/main/src/components/Gallery/GalleryImage.global.vue#L40)      |
 | `<ImageViewer/>`      |                                                |                                                                                                                          |
+| `<ProjectStats/>`     | TaxonWorks Project Statistics                  |                                                                                                                          |
 | `<TabMenu/>`          |                                                |                                                                                                                          |
 | `<TabItem/>`          |                                                |                                                                                                                          |
 | `<VMap/>`             | Interactive map that use Leaflet library       |                                                                                                                          |
