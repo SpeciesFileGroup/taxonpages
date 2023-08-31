@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import { loadConfiguration } from './src/utils/loadConfiguration.js'
+import { VitePluginRadar } from 'vite-plugin-radar'
 import path from 'path'
 import Vue from '@vitejs/plugin-vue'
 import Markdown from 'vite-plugin-md'
@@ -29,6 +30,7 @@ export default () => {
       Vue({
         include: [/\.vue$/, /\.md$/]
       }),
+
       Markdown({
         wrapperClasses:
           '!container mx-auto p-4 sm:pl-0 sm:pr-0 prose dark:prose-invert box-border',
@@ -40,6 +42,7 @@ export default () => {
         },
         markdownItUses: [relativeToRouterPlugin]
       }),
+
       Pages({
         dirs: 'pages',
         exclude: ['**/components/*.vue'],
@@ -52,6 +55,10 @@ export default () => {
             return route
           }
         }
+      }),
+
+      VitePluginRadar({
+        ...configuration?.analytics_services
       })
     ]
   })
