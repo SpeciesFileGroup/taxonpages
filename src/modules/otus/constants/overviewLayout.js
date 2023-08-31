@@ -1,33 +1,43 @@
-import { FAMILY_GROUP, GENUS_GROUP, SPECIES_GROUP } from './rankGroups.js'
-import PanelGallery from '../components/Panel/PanelGallery/Gallery.vue'
-import PanelTypeSpecimen from '../components/Panel/PanelTypeSpecimen/PanelTypeSpecimen.vue'
-import PanelTypeDesignation from '../components/Panel/PanelTypeDesignation/PanelTypeDesignation.vue'
-import PanelNomenclature from '../components/Panel/PanelNomenclature/PanelNomenclature.vue'
-import PanelNomenclatureReference from '../components/Panel/PanelNomenclatureReferences/PanelNomenclatureReferences.vue'
-import PanelMap from '../components/Panel/PanelMap/PanelMap.vue'
-import PanelDescendants from '../components/Panel/PanelDescendants/Descendants.vue'
-import PanelContent from '../components/Panel/PanelContent/PanelContent.vue'
-import PanelStats from '../components/Panel/PanelStats/PanelStats.vue'
+const panelEntries = Object.values(
+  import.meta.glob('../components/Panel/*/main.js', {
+    eager: true,
+    import: 'default'
+  })
+)
 
-export const overviewLayout = {
-  left: [
-    { component: PanelGallery },
-    {
-      component: PanelTypeSpecimen,
-      available: [SPECIES_GROUP]
-    },
-    {
-      component: PanelTypeDesignation,
-      available: [FAMILY_GROUP, GENUS_GROUP]
-    },
-    { component: PanelNomenclature },
-    { component: PanelNomenclatureReference }
-  ],
+const { taxa_page_overview } = __APP_ENV__
 
-  right: [
-    { component: PanelMap },
-    { component: PanelDescendants },
-    { component: PanelContent },
-    { component: PanelStats }
+const DEFAULT_LAYOUT = [
+  [
+    [
+      'panel:gallery',
+      'panel:type',
+      'panel:type',
+      'panel:type-specimen',
+      'panel:nomenclature',
+      'panel:nomenclature-references'
+    ],
+    ['panel:map', 'panel:descendants', 'panel:content', 'panel:statistics']
   ]
+]
+
+function parsePanelConfiguraion(panelLayout) {
+  return panelLayout.map((row) =>
+    row.map((col) =>
+      col.map((panel) => {
+        const isPanelKey = typeof panel === 'string'
+        const panelObj = isPanelKey ? { id: panel } : { ...panel }
+        const entry = panelEntries.find((item) => item.id === panelObj.id)
+
+        return {
+          ...entry,
+          ...panelObj
+        }
+      })
+    )
+  )
 }
+
+export const overviewLayout = parsePanelConfiguraion(
+  taxa_page_overview.panels || DEFAULT_LAYOUT
+)
