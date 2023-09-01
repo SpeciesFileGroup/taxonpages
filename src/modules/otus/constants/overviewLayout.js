@@ -39,5 +39,5 @@ function parsePanelConfiguraion(panelLayout) {
 }
 
 export const overviewLayout = parsePanelConfiguraion(
-  taxa_page_overview.panels || DEFAULT_LAYOUT
+  taxa_page_overview?.panels || DEFAULT_LAYOUT
 )
