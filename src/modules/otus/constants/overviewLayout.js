@@ -1,11 +1,8 @@
 const panelEntries = Object.values(
-  import.meta.glob(
-    ['../components/Panel/*/main.js', '#/taxa/overview/panels/*/main.js'],
-    {
-      eager: true,
-      import: 'default'
-    }
-  )
+  import.meta.glob(['../components/Panel/*/main.js', '#/panels/*/main.js'], {
+    eager: true,
+    import: 'default'
+  })
 )
 
 const { taxa_page_overview } = __APP_ENV__
