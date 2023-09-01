@@ -4,6 +4,7 @@ dist
 dist-ssr
 config
 pages
+components
 public
 README.md
 *.local

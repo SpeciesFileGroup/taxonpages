@@ -1,7 +1,11 @@
 export function registerGlobalComponents(app) {
-  const files = import.meta.glob(['@/components/**/*.global.vue'], {
-    eager: true
-  })
+  const files = import.meta.glob(
+    ['@/components/**/*.global.vue', '#/components/**/*.global.vue'],
+    {
+      eager: true,
+      import: 'default'
+    }
+  )
 
   setGlobalComponents(app, files)
 }
@@ -16,6 +20,6 @@ function setGlobalComponents(app, files) {
       .replace(/\.client.global.\w+$/, '')
       .replace(/\.global.\w+$/, '')
 
-    app.component(componentName, definition.default)
+    app.component(componentName, definition)
   })
 }
