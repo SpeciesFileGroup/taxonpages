@@ -5,6 +5,7 @@ dist-ssr
 config
 pages
 components
+taxa
 public
 README.md
 *.local
