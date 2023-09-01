@@ -1,7 +1,11 @@
 export function registerOnlyClientComponents(app) {
-  const files = import.meta.glob(['@/components/**/*.client.vue'], {
-    eager: true
-  })
+  const files = import.meta.glob(
+    ['@/components/**/*.client.vue', '#/components/**/*.client.vue'],
+    {
+      eager: true,
+      import: 'default'
+    }
+  )
 
   setGlobalComponents(app, files)
 }
@@ -15,6 +19,6 @@ function setGlobalComponents(app, files) {
       .pop()
       .replace(/\.client.\w+$/, '')
 
-    app.component(componentName, definition.default)
+    app.component(componentName, definition)
   })
 }
