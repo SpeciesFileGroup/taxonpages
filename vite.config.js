@@ -32,8 +32,7 @@ export default () => {
       }),
 
       Markdown({
-        wrapperClasses:
-          '!container mx-auto p-4 sm:pl-0 sm:pr-0 prose dark:prose-invert box-border',
+        wrapperComponent: 'markdown-layout',
         markdownItSetup(md) {
           md.use(markdownAnchor)
           md.use(variableReplacementPlugin, {
