@@ -10,7 +10,13 @@
         class="absolute rounded-t-lg w-auto max-h-full h-auto top-12 bottom-44 left-0 right-0 flex justify-center align-middle"
       >
         <VSpinner v-if="isLoading" />
+        <div
+          class="flex flex-col justify-center"
+          v-if="errorMessage"
+          v-text="errorMessage"
+        />
         <img
+          v-show="!errorMessage"
           ref="imageElement"
           class="mx-auto cursor-zoom-out w-auto max-w-full max-h-full h-auto my-auto"
           :alt="image.depictions.map((d) => d.label).join(';')"
@@ -125,12 +131,23 @@ const handleKeyboard = ({ key }) => {
 
 const imageElement = ref(null)
 const isLoading = ref(false)
+const errorMessage = ref(null)
 const image = computed(() => props.images[props.index])
 
 document.addEventListener('keyup', handleKeyboard)
 
+function handleError() {
+  isLoading.value = false
+  errorMessage.value = 'Image was not found or format is not supported'
+}
+
+function handleLoad() {
+  isLoading.value = false
+}
+
 onMounted(() => {
-  imageElement.value.addEventListener('load', () => (isLoading.value = false))
+  imageElement.value.addEventListener('load', handleLoad)
+  imageElement.value.addEventListener('error', handleError)
   document.body.classList.add('overflow-hidden')
 })
 
@@ -141,6 +158,9 @@ onUnmounted(() => {
 
 watch(
   () => props.index,
-  () => (isLoading.value = true)
+  () => {
+    errorMessage.value = null
+    isLoading.value = true
+  }
 )
 </script>
