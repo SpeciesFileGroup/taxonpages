@@ -5,7 +5,7 @@ export function registerFakeClientComponents(app) {
   const filePaths = glob.sync('src/components/**/*.client.vue')
   const vueComponent = defineComponent({
     setup() {
-      return h('div')
+      return () => h('div')
     }
   })
 

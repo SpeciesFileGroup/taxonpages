@@ -2,10 +2,10 @@ node_modules
 .DS_Store
 dist
 dist-ssr
-config
-pages
-components
-taxa
+/config
+/pages
+/components
+/panels
 public
 README.md
 *.local
