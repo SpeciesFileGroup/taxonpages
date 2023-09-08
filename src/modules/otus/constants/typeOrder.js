@@ -4,6 +4,7 @@ export const SPECIMEN_TYPES = [
   'neolectotype',
   'lectotype',
   'syntype',
+  'paralectotype',
   'paratype',
   'paratypes'
 ]
