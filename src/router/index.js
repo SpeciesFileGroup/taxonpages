@@ -40,9 +40,9 @@ export function createRouter() {
     history: getHistory(),
     routes,
     scrollBehavior(to, from, savedPosition) {
-      if (to.hash) {
-        return { el: to.hash }
-      }
+      return to.hash
+        ? { el: to.hash }
+        : { top: 0 }
     }
   })
 }
