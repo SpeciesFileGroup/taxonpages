@@ -5,16 +5,18 @@
     <div class="container mx-auto text-sm pt-2 pb-4">
       <div class="pt-4 pb-2">
         {{ project_authors }}
-        {{ project_citation }}
-        <span v-if="project_url">
-          &lt;
+        {{ project_citation }}.
+        <ClientOnly>
+          <span>Retrieved on {{ currentDate }}</span>
+        </ClientOnly>
+        <span v-if="currentUrl">
+          at
           <a
             class="text-secondary-color"
-            :href="project_url"
+            :href="currentUrl"
           >
-            {{ project_url }}
+            {{ currentUrl }}
           </a>
-          &gt;
         </span>
       </div>
       <div class="flex items-center text-xs gap-2">
@@ -81,12 +83,31 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+
 const {
   project_authors,
   project_citation,
   project_url,
   copyright_text,
   copyright_image,
-  copyright_image_link
+  copyright_image_link,
+  hash_mode
 } = __APP_ENV__
+
+const currentDate = new Date().toISOString().split('T')[0]
+const route = useRoute()
+
+const currentUrl = computed(() => {
+  const projectUrl = (project_url || '').replace(/\/$/, '')
+
+  if (!projectUrl.length) {
+    return ''
+  }
+
+  return hash_mode
+    ? projectUrl + '/#' + route.fullPath
+    : projectUrl + route.fullPath
+})
 </script>
