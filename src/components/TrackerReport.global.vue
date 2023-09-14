@@ -1,8 +1,8 @@
 <template>
-  <VButton
+  <component
+    :is="tag"
     type="button"
     title="Report a problem"
-    class="flex gap-2 items-center"
     :class="buttonClass"
     @click="openTracker"
   >
@@ -11,7 +11,7 @@
       class="w-5 h-5"
     />
     <span v-if="label">{{ label }}</span>
-  </VButton>
+  </component>
   <VModal
     v-if="isModalVisible"
     class="text-base-content"
@@ -47,7 +47,7 @@ const TAXONPAGES_ISSUE_TRACKER =
 defineProps({
   buttonClass: {
     type: String,
-    default: 'pl-0 pr-0 pt-0 pb-0'
+    default: undefined
   },
 
   label: {
@@ -58,6 +58,11 @@ defineProps({
   icon: {
     type: Boolean,
     default: false
+  },
+
+  tag: {
+    type: String,
+    default: 'VButton'
   }
 })
 
