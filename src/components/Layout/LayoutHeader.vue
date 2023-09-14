@@ -46,7 +46,7 @@
             <SwitchTheme class="text-primary-content" />
           </ClientOnly>
         </div>
-        <div class="flex items-center ml-6 border-base-muted">
+        <div class="flex items-center ml-2 border-base-muted">
           <TrackerReport icon />
         </div>
       </div>
