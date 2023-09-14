@@ -76,6 +76,7 @@
         <TrackerReport
           icon
           label="Report a problem"
+          button-class="flex gap-2 items-center pl-0 pr-0 pt-0 pb-0"
         />
       </div>
     </div>
