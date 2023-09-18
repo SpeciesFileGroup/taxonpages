@@ -36,8 +36,8 @@
 
       <hr class="mt-3 mb-3 border-gray-500" />
 
-      <div class="flex justify-between">
-        <div class="flex items-center">
+      <div class="flex flex-col sm:flex-row justify-between gap-4">
+        <div class="[&>*:not(:last-child)]:after:content-['|'] [&>*:not(:last-child)]:after:mx-1">
           <span>
             Data provided by
             <a
@@ -48,9 +48,6 @@
               TaxonWorks
             </a>
           </span>
-
-          <span class="ml-2 mr-2">|</span>
-
           <span>
             Pages by
             <a
@@ -61,7 +58,6 @@
               TaxonPages
             </a>
           </span>
-          <span class="ml-2 mr-2">|</span>
           <span>
             Support (Services) by
             <a
@@ -72,11 +68,12 @@
               Species File Group
             </a>
           </span>
+          <FooterAnalytics class="italic"/>
         </div>
         <TrackerReport
           icon
           label="Report a problem"
-          button-class="flex gap-2 items-center pl-0 pr-0 pt-0 pb-0"
+          button-class="flex gap-2 items-center pl-0 pr-0 pt-0 pb-0 self-end"
         />
       </div>
     </div>
@@ -86,6 +83,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import FooterAnalytics from '@/components/Footer/FooterAnalytics.vue'
 
 const {
   project_authors,
