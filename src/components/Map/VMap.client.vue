@@ -107,6 +107,11 @@ const props = defineProps({
   maxClusterRadius: {
     type: Number,
     default: 20
+  },
+
+  clusterIconCreateFunction: {
+    type: Function,
+    default: undefined
   }
 })
 
@@ -155,6 +160,22 @@ watch(
   }
 )
 
+function makeClusterOptions() {
+  const opt = {
+    maxClusterRadius: props.maxClusterRadius
+  }
+
+  if (props.clusterIconCreateFunction) {
+    Object.assign(opt, {
+      iconCreateFunction: (cluster) => {
+        return props.clusterIconCreateFunction({ L, cluster })
+      }
+    })
+  }
+
+  return opt
+}
+
 onMounted(() => {
   const tiles = makeTileFromConfiguration(L, {
     maxZoom: props.maxZoom,
@@ -184,7 +205,7 @@ onMounted(() => {
 
   drawnItems = new L.FeatureGroup()
   geoJSONGroup = props.cluster
-    ? new L.markerClusterGroup({ maxClusterRadius: props.maxClusterRadius })
+    ? new L.markerClusterGroup(makeClusterOptions())
     : new L.FeatureGroup()
 
   mapObject = L.map(leafletMap.value, options)
