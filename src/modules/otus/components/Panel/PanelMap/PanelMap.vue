@@ -6,6 +6,7 @@
         <VMap
           class="h-96 max-h-96"
           dragging
+          cluster
           :zoom="zoom"
           :geojson="store.distribution.geojson"
           @geojson:ready="() => (isLoading = false)"

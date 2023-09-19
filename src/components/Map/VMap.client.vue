@@ -101,7 +101,7 @@ const props = defineProps({
 
   cluster: {
     type: Boolean,
-    default: true
+    default: false
   },
 
   maxClusterRadius: {
