@@ -47,7 +47,7 @@
 
 <script setup>
 import { computed, ref, onMounted, onUnmounted } from 'vue'
-import TaxonWorks from '../../services/TaxonWorks'
+import TaxonWorks from '../../../../../services/TaxonWorks.js'
 import SearchBar from './SearchBar.vue'
 import ListResults from './ListResults.vue'
 

@@ -9,6 +9,7 @@
           cluster
           :zoom="zoom"
           :geojson="store.distribution.geojson"
+          :cluster-icon-create-function="makeClusterIconFor"
           @geojson:ready="() => (isLoading = false)"
         />
 
@@ -61,8 +62,9 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useDistributionStore } from '@/modules/otus/store/useDistributionStore.js'
-import CachedMap from './CachedMap.vue'
-import OtuSearch from '../../Search/OtuSearch.vue'
+import { makeClusterIconFor } from './clusters/makeClusterIconFor'
+import CachedMap from './components/CachedMap.vue'
+import OtuSearch from './components/Search/OtuSearch.vue'
 
 const props = defineProps({
   otuId: {
