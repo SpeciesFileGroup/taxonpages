@@ -16,6 +16,9 @@ import { makeTileFromConfiguration } from './utils/makeTileFromConfiguration'
 
 import '@geoman-io/leaflet-geoman-free'
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
+import 'leaflet.markercluster/dist/leaflet.markercluster'
+import 'leaflet.markercluster/dist/MarkerCluster.css'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 
 delete L.Icon.Default.prototype._getIconUrl
 
@@ -94,6 +97,16 @@ const props = defineProps({
   prefix: {
     type: [String, Boolean],
     default: false
+  },
+
+  cluster: {
+    type: Boolean,
+    default: false
+  },
+
+  maxClusterRadius: {
+    type: Number,
+    default: 20
   }
 })
 
@@ -155,7 +168,8 @@ onMounted(() => {
     center: props.center,
     zoom: props.zoom,
     worldCopyJump: true,
-    dragging: props.dragging
+    dragging: props.dragging,
+    maxZoom: props.maxZoom
   }
 
   if (props.disableZoom) {
@@ -169,7 +183,9 @@ onMounted(() => {
   }
 
   drawnItems = new L.FeatureGroup()
-  geoJSONGroup = new L.FeatureGroup()
+  geoJSONGroup = props.cluster
+    ? new L.markerClusterGroup({ maxClusterRadius: props.maxClusterRadius })
+    : new L.FeatureGroup()
 
   mapObject = L.map(leafletMap.value, options)
   mapObject.attributionControl.setPrefix(props.prefix)
