@@ -5,10 +5,10 @@
   >
     <Transition name="fade">
       <img
-        v-if="currentDepiction.image"
+        v-if="currentDepiction.imageOriginal"
         class="object-cover overflow-hidden h-full w-full absolute top-0 my-0"
-        :key="currentDepiction.image"
-        :src="currentDepiction.image"
+        :key="currentDepiction.imageOriginal"
+        :src="currentDepiction.imageOriginal"
         :alt="currentDepiction.label"
       />
     </Transition>
@@ -37,8 +37,8 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed, onBeforeUnmount } from 'vue'
-import { makeAPIRequest } from '@/utils'
+import { ref, computed, watch, onBeforeUnmount } from 'vue'
+import { useGallery } from '../useGallery.js'
 
 const props = defineProps({
   depictionId: {
@@ -57,18 +57,20 @@ const props = defineProps({
   }
 })
 
-const depictions = ref([])
+const { depictions } = useGallery({ props })
+
 const currentIndex = ref(0)
 
 const containerStyle = computed(() => ({ height: props.height }))
-const currentDepiction = computed(() => depictions.value[currentIndex.value] || {})
+const currentDepiction = computed(
+  () => depictions.value[currentIndex.value] || {}
+)
 const isOtu = computed(() => currentDepiction.value.objectType === 'Otu')
 
 const label = computed(() =>
-  [
-    currentDepiction.value.objectLabel,
-    currentDepiction.value.attribution
-  ].join(' ')
+  [currentDepiction.value.objectLabel, currentDepiction.value.attribution].join(
+    ' '
+  )
 )
 let timeout = null
 
@@ -76,32 +78,12 @@ function updateIndex() {
   currentIndex.value = (currentIndex.value + 1) % depictions.value.length
 }
 
-function makeGalleryImage(depiction) {
-  return {
-    objectId: depiction.depiction_object_id,
-    objectType: depiction.depiction_object_type,
-    objectLabel: depiction.depiction_object.label,
-    label: depiction.label,
-    image: depiction.image.original,
-    attribution: depiction.attribution?.label || ''
-  }
-}
-
-onMounted(() => {
-  if (props.depictionId.length) {
-    makeAPIRequest
-      .get('/depictions/gallery', {
-        params: { depiction_id: props.depictionId }
-      })
-      .then(({ data }) => {
-        depictions.value = data.map(makeGalleryImage)
-
-        if (props.interval) {
-          timeout = setInterval(updateIndex, props.interval)
-        } else {
-          currentIndex.value = Math.floor(Math.random() * data.length)
-        }
-      })
+watch(depictions, () => {
+  if (props.interval) {
+    clearInterval(timeout)
+    timeout = setInterval(updateIndex, props.interval)
+  } else {
+    currentIndex.value = Math.floor(Math.random() * data.length)
   }
 })
 
