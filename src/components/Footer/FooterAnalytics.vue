@@ -1,9 +1,8 @@
 <template>
-  <span v-if="analytics">This site use {{ analytics }}.</span>
+  <span v-if="analytics">This site uses {{ analytics }}.</span>
 </template>
 
 <script setup>
-
 const ANALYTICS_LOADERS = {
   analytics: 'Google Analytics',
   gtm: 'Google Tag Manager',
@@ -20,5 +19,8 @@ const ANALYTICS_LOADERS = {
 }
 
 const analyticKeys = Object.keys(__APP_ENV__.analytics_services || {})
-const analytics = analyticKeys.map(key => ANALYTICS_LOADERS[key]).filter(Boolean).join('; ')
+const analytics = analyticKeys
+  .map((key) => ANALYTICS_LOADERS[key])
+  .filter(Boolean)
+  .join('; ')
 </script>
