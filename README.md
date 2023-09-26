@@ -119,6 +119,37 @@ TaxonPages global components are enable in your markdown pages, by default we pr
 If you want to change the color palette, you can edit `/config/style/theme.css` file, colors must be in RGB format.
 TaxonPages use [TailwindCSS](https://tailwindcss.com/docs/configuration) framework for the style. We already provide default settings for colors and markdown. If you want to make any change to your configuration, you must do so in the `config/vendor/tailwind.config.js` file. This file uses the TaxonPages configuration as a default. It is possible to overwrite it as long as you use it as a preset.
 
+## Analytics
+
+TaxonPages has out-of-the-box support for the following list of analytics services:
+
+```yaml
+analytics_services:
+  enableDev: false # Set true to work in development mode
+  analytics:   # Google Analytics
+    - id: 'G-XXXXX'
+  gtm:         # Google Tag Manager
+    - id: 'GTM-XXXXX'
+  pixel:       # Facebook Pixel
+    - id: 'XXXXXXX'
+  retargeting: # VK Retargeting
+    - id: 'VK-RTRG-XXXXXX-XXXXX',
+  linkedin:    # Linkedin Insight
+    - id: 'XXXXXXX'
+  tongji:      # Baidu Tongji
+    - id: 'XXXXXXX',
+  metrica:     # Yendex Metrica
+    - id: 'XXXXXXX',
+  microsoft:   # Microsoft Analytics
+    id: 'XXXXXXX'
+  hotjar:      # Hotjar Analytics
+    id: 'XXXXXXX',
+  fullStory:   # Full story Analytics
+    org: 'X-XXXXXX-XXX'
+  tiktok:      # TikTok Pixel Analytics
+    id: 'XXXXXXX'
+```
+
 # Deep dive into TaxonPages
 
 ## Access internal configuration vars
@@ -131,9 +162,64 @@ const { project_name } = __APP_ENV__
 const projectName = __APP_ENV__.project_name
 ```
 
+## Panels
+
+### Panel layout
+
+To modify the position of the panels in the layout of the Taxa page, edit the `taxa_page.yml` file
+
+```yaml
+taxa_page_overview:
+  panels:
+    - - - panel:gallery
+        - panel:type
+        - panel:type-specimen
+        - panel:nomenclature
+        - panel:nomenclature-references
+
+      - - panel:map
+        - panel:descendants
+        - panel:content
+        - panel:statistics
+```
+
+### External panels
+
+To add panels in Taxa pages, create a folder called `panels` in your `setup` branch, and inside it create another folder for your panel. For example: `panels/PanelTest`
+
+In `PanelTest` folder, create a `main.js` file, with the following structure:
+
+```javascript
+import MyPanelComponent from './MyPanelComponent.vue'
+
+Export default {
+   id: 'panel:test', // ID to identify this panel
+   component: MyPanelComponent, // Vue component for your panel
+   available: ['HigherClassificationGroup', 'FamilyGroup', 'GenusGroup', 'SpeciesGroup'] // <-- OPTIONAL: This will define for which rank group will be available, remove it if your panel will be available for all.
+}
+```
+
+This file is used to load your panel component in taxa page. Use the `id` to include and define the position in the layout in `taxa_page.yml`
+
+```yaml
+taxa_page_overview:
+  panels:
+    - - - panel:gallery
+        - panel:test # <--- Your new panel
+        - panel:type
+        - panel:type-specimen
+        - panel:nomenclature
+        - panel:nomenclature-references
+
+      - - panel:map
+        - panel:descendants
+        - panel:content
+        - panel:statistics
+```
+
 ## Defining global components
 
-TaxonPages provides an auto-import component from `src/components` folder using special extensions for it. Some objects and functions are only present in the browser and not in the NodeJs server environment. When you run code that is not supported by the server, it ends up crashing. Some JavaScript libraries like `Leaflet` use the `document` or `window` object, which do not exist in the node environment. To handle this problem, TaxonPages provides 2 ways to import the components.
+TaxonPages provides an auto-import component from `src/components` and `/components` folders using special extensions for it. Some objects and functions are only present in the browser and not in the NodeJs server environment. When you run code that is not supported by the server, it ends up crashing. Some JavaScript libraries like `Leaflet` use the `document` or `window` object, which do not exist in the node environment. To handle this problem, TaxonPages provides 2 ways to import the components.
 
 ### Client Side only (CSR):
 
@@ -165,19 +251,20 @@ TaxonPages provides a set of global components that could be used to create your
 | `<Dropdown/>`         | Dropdown menu                                  |                                                                                                                          |
 | `<GalleryImage/>`     |                                                | [Link](https://github.com/SpeciesFileGroup/taxonpages/blob/main/src/components/Gallery/GalleryImage.global.vue#L40)      |
 | `<ImageViewer/>`      |                                                |                                                                                                                          |
+| `<TrackerReport/>`    | Show trackers to report issues                 | [Link](https://github.com/SpeciesFileGroup/taxonpages/blob/main/src/components/TrackerReport.global.vue#L47)             |
 | `<TabMenu/>`          |                                                |                                                                                                                          |
 | `<TabItem/>`          |                                                |                                                                                                                          |
 | `<VMap/>`             | Interactive map that use Leaflet library       |                                                                                                                          |
 | `<VModal/>`           | Create lightboxes                              |                                                                                                                          |
-| `VSkeleton`           | Content loading placeholder                    |                                                                                                                          |
-| `VSpinner`            | Loading spinner                                |                                                                                                                          |
-| VTable                |                                                |                                                                                                                          |
-| VTableBody            |                                                |                                                                                                                          |
-| VTableBodyCell        |                                                |                                                                                                                          |
-| VTableBodyRow         |                                                |                                                                                                                          |
-| VTableHeader          |                                                |                                                                                                                          |
-| VTableHeaderCell      |                                                |                                                                                                                          |
-| VTableHeaderRow       |                                                |                                                                                                                          |
+| `<VSkeleton/>`        | Content loading placeholder                    |                                                                                                                          |
+| `<VSpinner/>`         | Loading spinner                                |                                                                                                                          |
+| `<VTable/>`           |                                                |                                                                                                                          |
+| `<VTableBody/>`       |                                                |                                                                                                                          |
+| `<VTableBodyCell/>`   |                                                |                                                                                                                          |
+| `<VTableBodyRow/>`    |                                                |                                                                                                                          |
+| `<VTableHeader/>`     |                                                |                                                                                                                          |
+| `<VTableHeaderCell/>` |                                                |                                                                                                                          |
+| `<VTableHeaderRow/>`  |                                                |                                                                                                                          |
 
 | Icons                |
 | -------------------- |
