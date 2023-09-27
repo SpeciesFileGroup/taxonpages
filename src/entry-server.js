@@ -9,10 +9,19 @@ import devalue from '@nuxt/devalue'
 
 export async function render(url, manifest, originUrl) {
   const { app, router, store } = createApp({ originUrl })
+  let statusCode = 200
 
   // Register global components, create a fake server components for components that should only render on client side
   registerGlobalComponents(app)
   registerFakeClientComponents(app)
+
+  router.beforeEach((item) => {
+    const { meta } = item
+
+    if (meta?.statusCode) {
+      statusCode = meta.statusCode
+    }
+  })
 
   // set the router to the desired URL before rendering
   await router.push(url)
@@ -24,8 +33,8 @@ export async function render(url, manifest, originUrl) {
   // components that have been instantiated during this render call.
 
   const ctx = {}
+
   const html = await renderToString(app, ctx)
-  const statusCode = router.currentRoute.value.meta?.statusCode || 200
   const headPayload = await renderSSRHead(getActiveHead())
   const renderState = `
   <script>
