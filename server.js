@@ -60,6 +60,10 @@ export async function createServer(
     )
   }
 
+  app.use('/ping', async (req, res) => {
+    res.status(200).end('')
+  })
+
   app.use('*', async (req, res) => {
     try {
       const url = req.originalUrl
