@@ -152,7 +152,7 @@ async function loadInitialData() {
 function redirectOnError(error) {
   switch (error?.response?.status) {
     case 404:
-      router.replace({ name: 'httpError400' })
+      router.replace({ name: 'httpError404' })
       break
     case 500:
       router.replace({ name: 'httpError500' })

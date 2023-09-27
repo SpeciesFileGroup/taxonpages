@@ -76,22 +76,17 @@ export async function createServer(
         render = (await import('./dist/server/entry-server.js')).render
       }
 
-      const [appHtml, appState, preloadLinks, tagMeta, redirectRoute] =
+      const [appHtml, appState, preloadLinks, tagMeta, statusCode] =
         await render(url, manifest, origin)
+      const html = template
+        .replace(`<!--preload-links-->`, preloadLinks)
+        .replace(`<!--app-state-->`, appState)
+        .replace(`<!--head-tags-->`, tagMeta.headTags)
+        .replace(`<!--body-tags-open-->`, tagMeta.bodyTagsOpen)
+        .replace(`<!--body-tags-->`, tagMeta.bodyTags)
+        .replace(makeAppContainer(), makeAppContainer(appHtml))
 
-      if (redirectRoute) {
-        res.redirect(redirectRoute)
-      } else {
-        const html = template
-          .replace(`<!--preload-links-->`, preloadLinks)
-          .replace(`<!--app-state-->`, appState)
-          .replace(`<!--head-tags-->`, tagMeta.headTags)
-          .replace(`<!--body-tags-open-->`, tagMeta.bodyTagsOpen)
-          .replace(`<!--body-tags-->`, tagMeta.bodyTags)
-          .replace(makeAppContainer(), makeAppContainer(appHtml))
-
-        res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
-      }
+      res.status(statusCode).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (e) {
       vite && vite.ssrFixStacktrace(e)
       console.log(e.stack)
