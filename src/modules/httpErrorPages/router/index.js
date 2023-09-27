@@ -5,11 +5,17 @@ export default [
   {
     path: '/500',
     name: 'httpError500',
-    component: internalError
+    component: internalError,
+    meta: {
+      statusCode: 500
+    }
   },
   {
     path: '/:pathMatch(.*)*',
-    name: 'httpError400',
-    component: notFound
+    name: 'httpError404',
+    component: notFound,
+    meta: {
+      statusCode: 404
+    }
   }
 ]

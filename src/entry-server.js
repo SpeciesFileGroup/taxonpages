@@ -22,11 +22,10 @@ export async function render(url, manifest, originUrl) {
   // @vitejs/plugin-vue injects code into a component's setup() that registers
   // itself on ctx.modules. After the render, ctx.modules would contain all the
   // components that have been instantiated during this render call.
+
   const ctx = {}
-  const initialRoute = router.currentRoute.value.path
   const html = await renderToString(app, ctx)
-  const latestRoute = router.currentRoute.value.path
-  const redirectRoute = initialRoute !== latestRoute && latestRoute
+  const statusCode = router.currentRoute.value.meta?.statusCode || 200
   const headPayload = await renderSSRHead(getActiveHead())
   const renderState = `
   <script>
@@ -37,7 +36,7 @@ export async function render(url, manifest, originUrl) {
   // which we can then use to determine what files need to be preloaded for this
   // request.
   const preloadLinks = renderPreloadLinks(ctx.modules, manifest)
-  return [html, renderState, preloadLinks, headPayload, redirectRoute]
+  return [html, renderState, preloadLinks, headPayload, statusCode]
 }
 
 function renderPreloadLinks(modules, manifest) {
