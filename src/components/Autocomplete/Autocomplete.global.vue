@@ -25,7 +25,7 @@
       <li
         v-for="item in list"
         :key="item.id"
-        class="autocomplete__item px-3 py-2 border-b text-xs cursor-pointer hover:bg-secondary-color hover:bg-opacity-5 border-base-border truncate"
+        class="autocomplete__item px-3 py-2 border-b text-xs text-base-content cursor-pointer hover:bg-secondary-color hover:bg-opacity-5 border-base-border truncate"
         @click="selectItem(item)"
       >
         <span v-html="item[label]" />
