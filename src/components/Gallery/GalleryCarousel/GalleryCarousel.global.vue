@@ -1,6 +1,6 @@
 <template>
   <div
-    class="overflow-hidden w-full relative"
+    class="w-full relative"
     :style="containerStyle"
   >
     <Transition name="fade">
@@ -17,7 +17,7 @@
     </div>
     <span
       v-if="currentDepiction.objectId"
-      class="z-10 text-white text-sm drop-shadow absolute bottom-2 right-4"
+      class="z-10 text-white text-sm drop-shadow absolute bottom-2 right-0 px-4"
     >
       <RouterLink
         v-if="isOtu"
