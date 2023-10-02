@@ -1,7 +1,7 @@
 <template>
   <div class="grid gap-3">
     <div
-      v-for="(row, index) in overviewLayout"
+      v-for="row in pageLayout.panels"
       class="grid grid-cols-1 gap-3"
       :class="[columnClasses[row.length]]"
     >
@@ -16,7 +16,7 @@
         >
           <component
             :is="component"
-            v-if="!available || isComponentForRank(available, taxonRank)"
+            v-if="!available || isAvailableForRank(available, taxonRank)"
             :otu-id="otuId"
             :otu="otu"
             :taxon-id="taxonId"
@@ -29,10 +29,11 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { overviewLayout } from '../constants/overviewLayout'
+import { useRouter } from 'vue-router'
+import layouts from '../constants/layouts.js'
+import { isAvailableForRank } from '../utils'
 
-defineProps({
+const props = defineProps({
   taxonId: {
     type: [Number, String],
     required: true
@@ -59,13 +60,18 @@ defineProps({
   }
 })
 
+const router = useRouter()
+const pageLayout = layouts[router.currentRoute.value.meta.tab]
 const columnClasses = {
   1: ['md:grid-cols-1'],
   2: ['md:grid-cols-2'],
   3: ['md:grid-cols-3']
 }
 
-function isComponentForRank(available, rankString) {
-  return available.some((rankGroup) => rankString?.includes(rankGroup))
+if (
+  pageLayout.rankGroup?.length &&
+  !isAvailableForRank(pageLayout.rankGroup, props.taxonRank)
+) {
+  router.replace({ name: 'otus-id-overview' })
 }
 </script>

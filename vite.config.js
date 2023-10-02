@@ -38,8 +38,8 @@ export default () => {
           md.use(variableReplacementPlugin, {
             variables: { ...configuration }
           })
-        },
-        markdownItUses: [relativeToRouterPlugin]
+          md.use(relativeToRouterPlugin, configuration)
+        }
       }),
 
       Pages({

@@ -1,3 +1,5 @@
+import { DEFAULT_OVERVIEW_LAYOUT } from './layouts/index.js'
+
 const panelEntries = Object.values(
   import.meta.glob(['../components/Panel/*/main.js', '#/panels/*/main.js'], {
     eager: true,
@@ -5,21 +7,12 @@ const panelEntries = Object.values(
   })
 )
 
-const { taxa_page_overview } = __APP_ENV__
+const { taxa_page } = __APP_ENV__
 
-const DEFAULT_LAYOUT = [
-  [
-    [
-      'panel:gallery',
-      'panel:type',
-      'panel:type',
-      'panel:type-specimen',
-      'panel:nomenclature',
-      'panel:nomenclature-references'
-    ],
-    ['panel:map', 'panel:descendants', 'panel:content', 'panel:statistics']
-  ]
-]
+const tabsLayout = Object.assign({
+  ...DEFAULT_OVERVIEW_LAYOUT,
+  ...taxa_page
+})
 
 function parsePanelConfiguraion(panelLayout) {
   return panelLayout.map((row) =>
@@ -38,6 +31,13 @@ function parsePanelConfiguraion(panelLayout) {
   )
 }
 
-export const overviewLayout = parsePanelConfiguraion(
-  taxa_page_overview?.panels || DEFAULT_LAYOUT
-)
+const layouts = {}
+
+for (const key in tabsLayout) {
+  layouts[key] = {
+    panels: parsePanelConfiguraion(tabsLayout[key]?.panels || {}),
+    rankGroup: tabsLayout[key].rank_group || []
+  }
+}
+
+export default layouts
