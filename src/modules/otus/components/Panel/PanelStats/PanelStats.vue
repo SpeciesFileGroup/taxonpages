@@ -7,14 +7,20 @@
     />
     <VCardHeader class="flex justify-between">
       <h2 class="text-md">Stats</h2>
-      <PanelDropdown panel-key="taxonomy" />
+      <PanelDropdown
+        panel-key="taxonomy"
+        :menu-options="menuOptions"
+      />
     </VCardHeader>
     <VCardContent class="text-sm">
       <VTable>
         <VTableHeader>
           <VTableHeaderRow>
             <VTableHeaderCell class="bg-base-foreground" />
-            <VTableHeaderCell title="OTUs linked to valid protonyms">
+            <VTableHeaderCell
+              v-if="isAdvancedView"
+              title="OTUs linked to valid protonyms"
+            >
               Taxa
             </VTableHeaderCell>
             <VTableHeaderCell
@@ -30,7 +36,9 @@
           </VTableHeaderRow>
           <VTableHeaderRow>
             <VTableHeaderCell>Rank</VTableHeaderCell>
-            <VTableHeaderCell title="OTUs linked to valid protonyms"
+            <VTableHeaderCell
+              v-if="isAdvancedView"
+              title="OTUs linked to valid protonyms"
               >Total</VTableHeaderCell
             >
             <VTableHeaderCell
@@ -45,22 +53,16 @@
         </VTableHeader>
         <VTableBody>
           <VTableBodyRow
-            v-for="(value, rank) in store.catalog.stats.taxa"
+            v-for="{ rank, taxa, names } in store.catalog.stats"
             :key="rank"
           >
             <VTableBodyCell class="capitalize">{{ rank }}</VTableBodyCell>
-            <VTableBodyCell>{{ value }}</VTableBodyCell>
-
-            <VTableBodyCell class="border-l border-base-border">{{
-              store.catalog.stats.names[rank].invalid +
-              store.catalog.stats.names[rank].valid
-            }}</VTableBodyCell>
-            <VTableBodyCell>{{
-              store.catalog.stats.names[rank].valid
-            }}</VTableBodyCell>
-            <VTableBodyCell>{{
-              store.catalog.stats.names[rank].invalid
-            }}</VTableBodyCell>
+            <VTableBodyCell v-if="isAdvancedView">{{ taxa }}</VTableBodyCell>
+            <VTableBodyCell class="border-l border-base-border">
+              {{ names.invalid + names.valid }}
+            </VTableBodyCell>
+            <VTableBodyCell>{{ names.valid }}</VTableBodyCell>
+            <VTableBodyCell>{{ names.invalid }}</VTableBodyCell>
           </VTableBodyRow>
         </VTableBody>
       </VTable>
@@ -69,6 +71,7 @@
 </template>
 
 <script setup>
+import { computed, ref } from 'vue'
 import { useOtuStore } from '@/modules/otus/store/store'
 import PanelDropdown from '../PanelDropdown.vue'
 
@@ -95,4 +98,12 @@ const props = defineProps({
 })
 
 const store = useOtuStore()
+const isAdvancedView = ref(false)
+
+const menuOptions = computed(() => [
+  {
+    label: isAdvancedView.value ? 'Hide taxa' : 'Show taxa',
+    action: () => (isAdvancedView.value = !isAdvancedView.value)
+  }
+])
 </script>
