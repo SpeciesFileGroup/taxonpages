@@ -26,7 +26,7 @@ const props = defineProps({
 
 function downloadCSV() {
   window.open(
-    `${url}/otus/${props.otu.id}/inventory/dwc?project_token=${project_token}`,
+    `${url}/otus/${props.otu.id}/inventory/dwc.csv?project_token=${project_token}`,
     '_self'
   )
 }
