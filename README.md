@@ -46,14 +46,15 @@ But if you don't want to fork it, you can clone directly from this
 git clone https://github.com/SpeciesFileGroup/taxonpages.git
 ```
 
-3. Go to `taxonpages` folder and switch to `main` branch
+3. Go to `taxonpages` folder and enter the following commands to copy the software to your `setup` branch
 
 ```
-cd taxonpages
 git checkout main
+git checkout setup
+git checkout main .
+git reset
+git checkout .
 ```
-
-4. [Download](https://github.com/SpeciesFileGroup/taxonpages/archive/refs/heads/setup.zip) configuration branch and paste `config` and `pages` folders inside taxonpages folder.
 
 5. Setup `config/api.yml` with the API server configuration
 
@@ -162,25 +163,34 @@ const { project_name } = __APP_ENV__
 const projectName = __APP_ENV__.project_name
 ```
 
-## Panels
 
-### Panel layout
+## Taxa Page
 
-To modify the position of the panels in the layout of the Taxa page, edit the `taxa_page.yml` file
+### Layout
+
+To modify the position of the panels in the layout of the Taxa page, edit the `taxa_page.yml` file. There you can add/move/remove panels from the layout, also you can add new tabs and include new panels there. If you want to make some tabs visible or not depending the rank group, you can include `rankGroup`
 
 ```yaml
-taxa_page_overview:
-  panels:
-    - - - panel:gallery
-        - panel:type
-        - panel:type-specimen
-        - panel:nomenclature
-        - panel:nomenclature-references
+taxa_page:
+  overview:
+    panels:
+      - - - panel:gallery
+          - panel:type
+          - panel:type-specimen
+          - panel:nomenclature
+          - panel:nomenclature-references
 
-      - - panel:map
-        - panel:descendants
-        - panel:content
-        - panel:statistics
+        - - panel:map
+          - panel:descendants
+          - panel:content
+          - panel:statistics
+#
+# An example of a new tab:
+#
+# type_specimens:
+#   rank_group: ['SpeciesGroup']
+#   panels:
+#     - - - panel:specimen-records
 ```
 
 ### External panels
@@ -195,7 +205,7 @@ import MyPanelComponent from './MyPanelComponent.vue'
 Export default {
    id: 'panel:test', // ID to identify this panel
    component: MyPanelComponent, // Vue component for your panel
-   available: ['HigherClassificationGroup', 'FamilyGroup', 'GenusGroup', 'SpeciesGroup'] // <-- OPTIONAL: This will define for which rank group will be available, remove it if your panel will be available for all.
+   rankGroup: ['HigherClassificationGroup', 'FamilyGroup', 'GenusGroup', 'SpeciesGroup'] // <-- OPTIONAL: This will define for which rank group will be available, remove it if your panel will be available for all.
 }
 ```
 
