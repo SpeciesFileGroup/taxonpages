@@ -11,12 +11,12 @@
         :key="index"
       >
         <template
-          v-for="{ component, available, id } in column"
+          v-for="{ component, rankGroup, id } in column"
           :key="id"
         >
           <component
             :is="component"
-            v-if="!available || isAvailableForRank(available, taxonRank)"
+            v-if="!rankGroup || isAvailableForRank(rankGroup, taxonRank)"
             :otu-id="otuId"
             :otu="otu"
             :taxon-id="taxonId"

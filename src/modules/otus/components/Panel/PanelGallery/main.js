@@ -4,5 +4,5 @@ import PanelGallery from './PanelGallery.vue'
 export default {
   id: 'panel:gallery',
   component: PanelGallery,
-  available: [SPECIES_GROUP, SPECIES_AND_INFRASPECIES_GROUP]
+  rankGroup: [SPECIES_GROUP, SPECIES_AND_INFRASPECIES_GROUP]
 }
