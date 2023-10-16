@@ -24,7 +24,12 @@
       <span>My issue is with:</span>
       <ul class="mx-5 my-2">
         <li v-for="item in issue_trackers">
-          <a :href="item.url">{{ item.label }}</a>
+          <a
+            :href="item.url"
+            target="_blank"
+          >
+            {{ item.label }}
+          </a>
           <span
             v-if="item.description"
             class="text-sm"
@@ -72,7 +77,7 @@ function openTracker() {
   if (issue_trackers) {
     isModalVisible.value = true
   } else {
-    window.open(TAXONPAGES_ISSUE_TRACKER, '_self')
+    window.open(TAXONPAGES_ISSUE_TRACKER, '_blank')
   }
 }
 </script>
