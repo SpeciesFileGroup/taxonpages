@@ -3,10 +3,10 @@ title: World Ichneumonidae Database (WID)
 lead: Taxa from your imagination to the web
 project: Your project
 ---
-<p align="center">   
+
 # {{frontmatter.title}}
 _{{frontmatter.lead}}_
-</p>
+
 ## Overview
 Welcome to *{{ frontmatter.project }}*, a website of taxon pages generated from the {{ frontmatter.project }} Project, a comprehensive collaborative effort managed in [TaxonWorks](https://taxonworks.org). 
 
