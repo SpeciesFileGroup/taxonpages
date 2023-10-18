@@ -1,7 +1,7 @@
 ---
 title: World Ichneumonidae Database (WID)
 lead: Taxa from your imagination to the web
-project: Your project
+project: World Ichneumonidae Database (WID)
 ---
 
 # {{frontmatter.title}}
