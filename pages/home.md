@@ -1,5 +1,5 @@
 ---
-title: The title
+title: World Ichneumonidae Database (Wid)
 lead: Taxa from your imagination to the web
 project: Your project
 ---
