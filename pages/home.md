@@ -9,7 +9,8 @@ layout: blank
         <p class="text-sm sm:text-base"><em>Try searching any taxa from order <router-link to="/otus/890815">Plecoptera</router-link> to subspecies!</p>
       </em>
     </div>
-
+        
+ <div class="container mx-auto my-8 px-4 md:px-0 box-border">
 
 # {{frontmatter.title}}
 _{{frontmatter.lead}}_
