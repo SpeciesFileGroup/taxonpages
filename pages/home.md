@@ -1,7 +1,7 @@
 ---
 layout: blank
 ---
-<GalleryCarousel :depiction-id= "" height="470px">
+<GalleryCarousel :depiction-id= "blank" height="470px">
   <div class="flex flex-col justify-center items-center w-full h-full bg-black bg-opacity-25 text-white gap-4 px-4 box-border">
     <span class="text-4xl font-medium">{{ app:project_name }}</span>
     <p class="text-lg sm:text-xl">A comprehensive source of knowledge on the world’s stoneflies, curated by the Plecoptera Species File group</p>
