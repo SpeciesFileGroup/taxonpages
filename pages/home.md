@@ -20,7 +20,7 @@ _{{frontmatter.lead}}_
 Welcome to the WID (World Ichneumonidae Daatabase), a website of taxon pages generated from the World Ichneumonidae Database Project, a comprehensive collaborative effort managed in [TaxonWorks](https://taxonworks.org). 
 
 ## Get started!
-<autocomplete-otu class="w-2000"/>
+<autocomplete-Geographicarea class="w-80"/>
 
 ## Announcements
 * 5/1/2022 - We've grown!  
