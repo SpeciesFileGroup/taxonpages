@@ -1,9 +1,12 @@
 ---
   header_logo_url:
-  header_logo_text: My project
+  header_logo_text: WID
   header_links:
     - label: Home
       link: /
 
     - label: About
       link: /about
+
+      - label: Cazzi
+      link: /cazzi
