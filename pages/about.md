@@ -17,10 +17,10 @@ If you have a question, want to report new data relevant to the project, or have
 ## Meet the team
  _Please contact us if you would like to join this effort_
 ### Curators
-| Name                | Affiliation                                      | Role                              | Email              | Website      |
-|:--------------------| :----------------------------------------------- | :-------------------------------- | :----------------- |:------------ |
-| [Davide Dal Pos](https://www.researchgate.net/profile/Davide-Dal-Pos-2)      | University of Central Florida, Orlando, FL (USA) | Founder, Administrator & Curator  | daveliga@gmail.com | [ResearchGate](https://www.researchgate.net/profile/Davide-Dal-Pos-2) |
-| Filippo Di Giovanni | University of Siena, Siena (Italy)               | Curator & Administrator           |                    |  
+| Name                                                                        | Affiliation                                      | Role                              | Email          | 
+|:--------------------------------------------------------------------------- | :------------------------------------------------| :-------------------------------- | :------------- |
+| [Davide Dal Pos](https://www.researchgate.net/profile/Davide-Dal-Pos-2)     | University of Central Florida, Orlando, FL (USA) | Founder, Administrator & Curator  |                |
+| Filippo Di Giovanni                                                         | University of Siena, Siena (Italy)               | Curator & Administrator           |                |  
 
 ## Citing
 * This website - {{frontmatter.citation}}
