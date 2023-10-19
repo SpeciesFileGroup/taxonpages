@@ -25,4 +25,4 @@ Welcome to the WID, a comprehensive collaborative database for <router-link to="
 * 1/1/2022 - Our website is live!
 
 ## Find out more
-Learn how to collaborate with the {{ frontmatter.title }} project. Contact information, technical details, and more are available at [About](/about).
+Learn how to collaborate with the {{  header_logo_text }}. Contact information, technical details, and more are available at [About](/about).
