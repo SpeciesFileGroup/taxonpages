@@ -1,9 +1,11 @@
 ---
   header_logo_url:
-  header_logo_text: WID
+  header_logo_text: World Ichneumonidae Database
   header_links:
     - label: Home
       link: /
 
     - label: About
       link: /about
+      
+    - label: Ciao
