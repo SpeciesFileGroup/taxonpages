@@ -6,6 +6,7 @@ citation: Project collaborative. 2022. Website title. Available at https://examp
 ---
 
 # {{frontmatter.title}}
+The World Ichneumonidae Database (WID) is a collaborative effort, aimed to reduced the taxonomic impediment revolvind around the large family Ichneumonidae (Hyemnoptera). Without the efforts of the curators below, this website would have never been built.
 
 ## Dig deeper
 Please contact us if you need extended access to the data underlying here. The TaxonWorks interfaces used to curate these data include wide range of additional filtering, reporting, and curatorial functionality. With a little training from us we'd be happy to provide you access to this additional functionality. Over time we expect this site to gradually mirror that extended functionality.
@@ -13,14 +14,13 @@ Please contact us if you need extended access to the data underlying here. The T
 ## Contact
 If you have a question, want to report new data relevant to the project, or have error our preferred means of contact is to file an issue on our [project tracker](https://github.com/our/project/tracker). You can also [chat live with us](https://slackservername). We can also be reached via [email](mailto:{{frontmatter.contact_email}}).   
 
-## Team
- _Please contact us if you would like to join this effort._
+## Meet the team
+ _Please contact us if you would like to join this effort_
+### Curators
+| Name           | Affiliation                                      | Role              | Subfamily     | Email              |
+| :--------------| :----------------------------------------------- | :---------------- | :------------ | :----------------- |
+| Davide Dal Pos | University of Central Florida, Orlando, FL (USA) | Founder & Curator | Ichneumoninae | daveliga@gmail.com |
 
-Made possible by the wonderful:
-* Gandalf - Technical lead
-* Aragorn - Outside advisor 
-* Frodo - Lead curator
-* Samwise - Emotional support
 
 ## Citing
 * This website - {{frontmatter.citation}}
