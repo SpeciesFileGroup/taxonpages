@@ -18,7 +18,7 @@ layout: blank
 _{{frontmatter.lead}}_
 
 ## Overview
-Welcome to the WID, a comprehensive collaborative database for <router-link to="/otus/659407">Ichneumonidae</router-link> effort managed in [TaxonWorks](https://taxonworks.org). 
+Welcome to the WID, a comprehensive collaborative database for <router-link to="/otus/659407">Ichneumonidae</router-link> of the wolrd managed in [TaxonWorks](https://taxonworks.org). In this page you can find information about distribution, nomenclature, and biology of Darwin wasps.  
 
 ## Announcements
 * 5/1/2022 - We've grown!  
