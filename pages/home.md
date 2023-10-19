@@ -6,8 +6,9 @@ layout: blank
     <span class="text-4xl font-medium">{{ app:project_name }}</span>
     <p class="text-lg sm:text-xl">A comprehensive database for the Darwin Wasps of the world</p>
     <div class="mx-auto flex flex-col items-center mt-6 sm:mt-10 w-full ">
+      <p class="text-sm sm:text-base"><em>Get Started! Search any taxa of the family <router-link to="/otus/659407">Ichneumonidae</router-link> below</p>
       <autocomplete-otu class="w-full sm:w-96 text-base-content ml-2 sm:ml-0" placeholder="Search by taxon name" autofocus/>
-        <p class="text-sm sm:text-base"><em>Try searching any taxa of the family <router-link to="/otus/659407">Ichneumonidae</router-link>!</p>
+        
       </em>
     </div>
   
@@ -20,10 +21,10 @@ layout: blank
 _{{frontmatter.lead}}_
 
 ## Overview
-Welcome to *{{ frontmatter.project }}*, a website of taxon pages generated from the {{ frontmatter.project }} Project, a comprehensive collaborative effort managed in [TaxonWorks](https://taxonworks.org). 
+Welcome to the *WID* (World Ichneumonidae Daatabase), a website of taxon pages generated from the {{ World Ichneumonidae Database }} Project, a comprehensive collaborative effort managed in [TaxonWorks](https://taxonworks.org). 
 
 ## Get started!
-<autocomplete-otu class="w-80"/>
+<autocomplete-otu class="w-2000"/>
 
 ## Announcements
 * 5/1/2022 - We've grown!  
