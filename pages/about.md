@@ -26,6 +26,13 @@ If you have a question, want to report new data relevant to the project, or have
 * This website - {{frontmatter.citation}}
 * Individual taxon pages - See citation at the bottom of each page.  
 
+## The Species File Group (SFG)
+The WID is made possible by the technical and intellectual help from the [Species File Group (SFG)](https://speciesfilegroup.org/index.html), which is an endowment-funded collective of specialists whose broader goal is the advancement of biodiversity informatics. We are located at the University of Illinois, Illinois Natural History Survey. Our group supports the following software/activities:
+- [TaxonWorks](https://taxonworks.org) - a workbench for taxonomists and natural history museums.
+- [Global Names Architecture](https://globalnames.org/) - finding, parsing, and resolving taxon names from literature. Lead Developer: Dmitry Mozzherin.
+- [Catalogue of Life](https://catalogueoflife.org/) - editorial group, and data assembly hub. Executive Editor Yury Roskov and Database Manager Geoff Ower.
+- Taxonomic/Systematic Research supporting several insect groups.
+
 ## Data
 Data for these pages is collaboratively curated online in a [TaxonWorks](https://taxonworks) project. All data behind this site served as JSON through calls to a [TaxonWorks API](https://api.taxonworks.org). You can follow along by using the Console of your browser to explore the Network tab. 
 
