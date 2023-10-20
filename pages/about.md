@@ -21,7 +21,7 @@ If you have a question, want to report new data relevant to the project, or have
 |:---------------------------------------------------------------------------     | :------------------------------------------------| :-------------------------------- | :-----------------|
 |[Davide Dal Pos](https://www.researchgate.net/profile/Davide-Dal-Pos-2)          | University of Central Florida, Orlando, FL (USA) | Founder, Administrator & Curator  |daveliga@gmail.com |
 |[Filippo Di Giovanni](https://www.researchgate.net/profile/Filippo-Di-Giovanni-2)| University of Siena, Siena (Italy)               | Administrator & Curator           |                   |
-|[William Pénigot](https://www.researchgate.net/profile/William-Penigot)          | Private                                          | Curator                           |                   |
+|[William Pénigot](https://www.researchgate.net/profile/William-Penigot)          | Independent Researcher                           | Curator                           |                   |
 
 ## Citing
 * This website - {{frontmatter.citation}}
