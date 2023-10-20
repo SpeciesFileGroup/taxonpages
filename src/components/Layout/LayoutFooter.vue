@@ -3,7 +3,7 @@
     class="footer text-white bottom-0 border-gray-200 bg-zinc-800 pl-4 pr-4"
   >
     <div class="container mx-auto text-sm pt-2 pb-4">
-      <div class="pt-4 pb-2">
+      <div class="pt-4 pb-2 break-words">
         {{ project_authors }}
         {{ project_citation }}.
         <ClientOnly>
