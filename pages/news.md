@@ -1,7 +1,4 @@
 ---
-title: About
+title: CIAO
 ---
-
-# CIAONE
-## Sei proprio coglione eh?
-### e Alessandra? La troia!
+## DAVIDE
