@@ -19,19 +19,19 @@ If you have a question, want to report new data relevant to the project, or have
 ### Curators
 | Name                                                                             | Affiliation                                                   | Role                              | Email             | 
 |:---------------------------------------------------------------------------      | :----------------------------------------------------         | :-------------------------------- | :-----------------|
-|[Dal Pos, David](https://www.researchgate.net/profile/Davide-Dal-Pos-2)           | University of Central Florida, Orlando, FL (USA)              | Founder, Administrator & Curator  |daveliga@gmail.com |
-|[Di Giovanni, Filippo](https://www.researchgate.net/profile/Filippo-Di-Giovanni-2)| University of Siena, Siena (Italy)                            | Administrator & Curator           |                   |
-|[Araujo, Rodrigo](https://www.researchgate.net/profile/Rodrigo-Araujo-13)                  | Universidad Católica del Maule (Brazil)              | Curator                           |                   |
-|[Bendixen, Lennart]()                                                                      |                                                      | Curator                           |                   | 
-|[Broad, Gavin R.](https://www.researchgate.net/profile/Gavin-Broad)                        | Natural History Museum, London (UK)                  | Curator                           |                   |
-|[De Ketelaere, Augustijn](https://www.researchgate.net/profile/Augustijn-De-Ketelaere)     | Independent Researcher                               | Curator                           |                   |
-|[Herrera-Flórez, Andrés Fabián(https://www.researchgate.net/profile/Andres-Herrera-Florez) | Friedrich Schiller University, Jena (Germany)        | Curator                           |                   |
-|[Onody, Helena](https://www.researchgate.net/profile/Helena-Onody)                         | Universidade Estadual do Piauí (Brazil)              | Curator                           |                   | 
-|[Pénigot,William](https://www.researchgate.net/profile/William-Penigot)                    | Independent Researcher                               | Curator                           |                   |
-|[Reshchikov, Alexey](https://www.researchgate.net/profile/Alexey-Reshchikov)               |                                                      | Curator                           |                   |  
-|[Santos, Alvaro Doria dos](https://www.researchgate.net/profile/Alvaro-Santos-4)           |Museu de Zoologia, Universidade de São Paulo (Brazil) | Curator                           |                   |
-|[van Noort, Simon](https://www.researchgate.net/profile/Simon-Noort)                       | Iziko South African Museum, Cape Town (South Africa) | Curator                           |                   |
-|[Verheyde, Fons](https://www.researchgate.net/profile/Fons-Verheyde)                       | Vlaams Instituut Voor De Zee                         | Curator                           |                   |
+|[Davide Dal Pos](https://www.researchgate.net/profile/Davide-Dal-Pos-2)           | University of Central Florida, Orlando, FL (USA)              | Founder, Administrator & Curator  |daveliga@gmail.com |
+|[Filippo Di Giovanni](https://www.researchgate.net/profile/Filippo-Di-Giovanni-2)| University of Siena, Siena (Italy)                            | Administrator & Curator           |                   |
+|[Alexey Reshchikov](https://www.researchgate.net/profile/Alexey-Reshchikov)               |                                                      | Curator                           |                   |  
+|[Alvaro Doria dos Santos](https://www.researchgate.net/profile/Alvaro-Santos-4)           |Museu de Zoologia, Universidade de São Paulo (Brazil) | Curator                           |                   |
+|[Andrés Fabián Herrera-Flórez](https://www.researchgate.net/profile/Andres-Herrera-Florez) | Friedrich Schiller University, Jena (Germany)        | Curator                           |                   |
+|[Augustijn De Ketelaere](https://www.researchgate.net/profile/Augustijn-De-Ketelaere)     | Independent Researcher                               | Curator                           |                   |
+|[Fons Verheyde](https://www.researchgate.net/profile/Fons-Verheyde)                       | Vlaams Instituut Voor De Zee                         | Curator                           |                   |
+|[Gavin R. Broad](https://www.researchgate.net/profile/Gavin-Broad)                        | Natural History Museum, London (UK)                  | Curator                           |                   |
+|[Helena Onody](https://www.researchgate.net/profile/Helena-Onody)                         | Universidade Estadual do Piauí (Brazil)              | Curator                           |                   | 
+|[Lennart Bendixen]()                                                                      |                                                      | Curator                           |                   | 
+|[Rodrigo Araujo](https://www.researchgate.net/profile/Rodrigo-Araujo-13)                  | Universidad Católica del Maule (Brazil)              | Curator                           |                   |
+|[Simon van Noort](https://www.researchgate.net/profile/Simon-Noort)                       | Iziko South African Museum, Cape Town (South Africa) | Curator                           |                   |
+|[William Pénigot](https://www.researchgate.net/profile/William-Penigot)                    | Independent Researcher                               | Curator                           |                   |
 
 ## Citing
 * This website - {{frontmatter.citation}}
