@@ -28,7 +28,7 @@ If you have a question, want to report new data relevant to the project, or have
 |[Fons Verheyde](https://www.researchgate.net/profile/Fons-Verheyde)                       | Vlaams Instituut Voor De Zee                         | Curator                           |                   |
 |[Gavin R. Broad](https://www.researchgate.net/profile/Gavin-Broad)                        | Natural History Museum, London (UK)                  | Curator                           |                   |
 |[Helena Onody](https://www.researchgate.net/profile/Helena-Onody)                         | Universidade Estadual do Piauí (Brazil)              | Curator                           |                   | 
-|[Lennart Bendixen]()                                                                      |                                                      | Curator                           |                   | 
+|Lennart Bendixen                                                                      |                                                      | Curator                           |                   | 
 |[Rodrigo Araujo](https://www.researchgate.net/profile/Rodrigo-Araujo-13)                  | Universidad Católica del Maule (Brazil)              | Curator                           |                   |
 |[Simon van Noort](https://www.researchgate.net/profile/Simon-Noort)                       | Iziko South African Museum, Cape Town (South Africa) | Curator                           |                   |
 |[William Pénigot](https://www.researchgate.net/profile/William-Penigot)                    | Independent Researcher                               | Curator                           |                   |
