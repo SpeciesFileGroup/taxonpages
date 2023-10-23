@@ -6,32 +6,29 @@ citation: Project collaborative. 2022. Website title. Available at https://examp
 ---
 
 # {{frontmatter.title}}
-The World Ichneumonidae Database (WID) is a collaborative effort, aimed to reduced the taxonomic impediment revolvind around the large family Ichneumonidae (Hyemnoptera). Without the efforts of the curators below, this website would have never been built.
-
-## Dig deeper
-Please contact us if you need extended access to the data underlying here. The TaxonWorks interfaces used to curate these data include wide range of additional filtering, reporting, and curatorial functionality. With a little training from us we'd be happy to provide you access to this additional functionality. Over time we expect this site to gradually mirror that extended functionality.
-
-## Contact
-If you have a question, want to report new data relevant to the project, or have error our preferred means of contact is to file an issue on our [project tracker](https://github.com/our/project/tracker). You can also [chat live with us](https://slackservername). We can also be reached via [email](mailto:{{frontmatter.contact_email}}).   
+The World Ichneumonidae Database (WID) is a collaborative effort, aimed to reduced the taxonomic impediment revolving around the large family Ichneumonidae (Hymenoptera). Without the efforts of the curators below, this website would have never been built.
 
 ## Meet the team
  _Please contact us if you would like to join this effort_
 ### Curators
 | Name                                                                             | Affiliation                                                   | Role                              | Email             | 
-|:---------------------------------------------------------------------------      | :----------------------------------------------------         | :-------------------------------- | :-----------------|
-|[Davide Dal Pos](https://www.researchgate.net/profile/Davide-Dal-Pos-2)           | University of Central Florida, Orlando, FL (USA)              | Founder, Administrator & Curator  |daveliga@gmail.com |
-|[Filippo Di Giovanni](https://www.researchgate.net/profile/Filippo-Di-Giovanni-2)| University of Siena, Siena (Italy)                            | Administrator & Curator           |                   |
+|:---------------------------------------------------------------------------              | :----------------------------------------------------| :-------------------------------- | :-----------------|
+|[Davide Dal Pos](https://www.researchgate.net/profile/Davide-Dal-Pos-2)                   | University of Central Florida, Orlando, FL (USA)     | Founder, Administrator & Curator  |daveliga@gmail.com |
+|[Filippo Di Giovanni](https://www.researchgate.net/profile/Filippo-Di-Giovanni-2)         | University of Siena, Siena (Italy)                   | Administrator & Curator           |                   |
 |[Alexey Reshchikov](https://www.researchgate.net/profile/Alexey-Reshchikov)               |                                                      | Curator                           |                   |  
 |[Alvaro Doria dos Santos](https://www.researchgate.net/profile/Alvaro-Santos-4)           |Museu de Zoologia, Universidade de São Paulo (Brazil) | Curator                           |                   |
-|[Andrés Fabián Herrera-Flórez](https://www.researchgate.net/profile/Andres-Herrera-Florez) | Friedrich Schiller University, Jena (Germany)        | Curator                           |                   |
+|[Andrés Fabián Herrera-Flórez](https://www.researchgate.net/profile/Andres-Herrera-Florez)| Friedrich Schiller University, Jena (Germany)        | Curator                           |                   |
 |[Augustijn De Ketelaere](https://www.researchgate.net/profile/Augustijn-De-Ketelaere)     | Independent Researcher                               | Curator                           |                   |
 |[Fons Verheyde](https://www.researchgate.net/profile/Fons-Verheyde)                       | Vlaams Instituut Voor De Zee                         | Curator                           |                   |
 |[Gavin R. Broad](https://www.researchgate.net/profile/Gavin-Broad)                        | Natural History Museum, London (UK)                  | Curator                           |                   |
 |[Helena Onody](https://www.researchgate.net/profile/Helena-Onody)                         | Universidade Estadual do Piauí (Brazil)              | Curator                           |                   | 
-|Lennart Bendixen                                                                      |                                                      | Curator                           |                   | 
+|Lennart Bendixen                                                                          |                                                      | Curator                           |                   | 
 |[Rodrigo Araujo](https://www.researchgate.net/profile/Rodrigo-Araujo-13)                  | Universidad Católica del Maule (Brazil)              | Curator                           |                   |
 |[Simon van Noort](https://www.researchgate.net/profile/Simon-Noort)                       | Iziko South African Museum, Cape Town (South Africa) | Curator                           |                   |
-|[William Pénigot](https://www.researchgate.net/profile/William-Penigot)                    | Independent Researcher                               | Curator                           |                   |
+|[William Pénigot](https://www.researchgate.net/profile/William-Penigot)                   | Independent Researcher                               | Curator                           |                   |
+
+## Get in contact
+If you have questions, want to report an issue with the database, or have suggestions, feel free to contact any of the above curators.   
 
 ## Citing
 * This website - {{frontmatter.citation}}
