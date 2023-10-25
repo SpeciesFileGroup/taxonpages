@@ -12,7 +12,7 @@ taxa_page:
           - panel:content
           - panel:statistics
 
-sepcimen record:
+specimen record:
   rank_group: ['SpeciesGroup']
   panels:
   - - - panel:specimen-records
