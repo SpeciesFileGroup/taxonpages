@@ -1,5 +1,5 @@
 :root {
-  --color-primary: 127, 168, 250;
+  --color-primary: 255, 158, 30;
   --color-primary-content: 255, 255, 255;
 
   --color-secondary: 14, 165, 233;
@@ -14,7 +14,7 @@
   --color-base-content: 0, 0, 0;
 
   --color-map-georeference: 239, 68, 68;
-  --color-map-aggregate: 158, 150, 228;
+  --color-map-aggregate: 12, 19, 232;
   --color-map-asserted: 249, 115, 22;
   --color-map-type-material: 51, 136, 255;
   --color-map-collection-object: 239, 68, 68;
