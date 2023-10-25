@@ -22,7 +22,7 @@ The World Ichneumonidae Database (WID) is a collaborative effort, aimed to reduc
 |[Fons Verheyde](https://www.researchgate.net/profile/Fons-Verheyde)                       | Vlaams Instituut Voor De Zee                         | Curator                           |                   |
 |[Gavin R. Broad](https://www.researchgate.net/profile/Gavin-Broad)                        | Natural History Museum, London (UK)                  | Curator                           |                   |
 |[Helena Onody](https://www.researchgate.net/profile/Helena-Onody)                         | Universidade Estadual do Piauí (Brazil)              | Curator                           |                   | 
-|Lennart Bendixen                                                                          |                                                      | Curator                           |                   | 
+|[Lennart Bendixen](https://www.researchgate.net/profile/Lennart-Bendixen)                 | Independent Researcher                               | Curator                           |                   | 
 |[Rodrigo Araujo](https://www.researchgate.net/profile/Rodrigo-Araujo-13)                  | Universidad Católica del Maule (Brazil)              | Curator                           |                   |
 |[Simon van Noort](https://www.researchgate.net/profile/Simon-Noort)                       | Iziko South African Museum, Cape Town (South Africa) | Curator                           |                   |
 |[William Pénigot](https://www.researchgate.net/profile/William-Penigot)                   | Independent Researcher                               | Curator                           |                   |
