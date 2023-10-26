@@ -15,7 +15,7 @@ taxa_page:
     rank_group: ['SpeciesGroup']
     panels:
       - - - panel:specimen-records
-#  iNaturalist:
-#   rank_group: ['GenusGroup', 'SpeciesGroup']
-#  panels:
-#   - - - panel:inaturalist
+  iNaturalist:
+    rank_group: ['GenusGroup', 'SpeciesGroup']
+    panels:
+      - - - panel:inaturalist
