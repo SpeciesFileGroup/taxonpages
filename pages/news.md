@@ -11,5 +11,7 @@ title: Some news
 - _Darwin wasps in Kachin amber – expertise wanted!_ - **Lars Vilhelmsen** (5–10 min)  
 - _Darwin wasps of Zambia—a blank spot on the distribution map_ – **Noah Meier** (5–10min)
 ## Open discussion  
-_One Taxapad or more TaxapadS?_ - **Filipo Di Giovanni**
+_One Taxapad or more TaxapadS?_ - **Filip(p)o Di Giovanni**
 
+<script type='text/javascript' src='https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js'></script>  
+<div class='altmetric-embed' data-badge-type='donut' data-doi="10.7717/peerj.15874"></div>
