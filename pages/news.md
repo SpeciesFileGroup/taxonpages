@@ -10,5 +10,5 @@ title: Some news
 5. **Davide Dal Pos** - _An update on the WID: A year in the making_ (10–15 min)  
 6. **Lars Vilhelmsen** - _Darwin wasps in Kachin amber – expertise wanted!_ (5–10 min)  
 7. **Noah Meier** - _Darwin wasps of Zambia—a blank spot on the distribution map_ (5–10min)
-## Open discussion  
+### Open discussion  
 **Filippo Di Giovanni** - _One Taxapad or more TaxapadS?_ 
