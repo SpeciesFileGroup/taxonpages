@@ -17,5 +17,5 @@ title: Some news
     
     _Darwin wasps of Zambia—a blank spot on the distribution map_ – Noah Meier (5–10min)
 ## Open discussion
-_One Taxapad or more TaxapadS?_ - Filipo Di Giovanni
+    _One Taxapad or more TaxapadS?_ - Filipo Di Giovanni
 
