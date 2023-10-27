@@ -1,7 +1,7 @@
 ---
 layout: blank
 ---
-<img src="https://github.com/DavideDalPos/WID-manual/blob/main/img/logoWID.jpg">
+<<GalleryCarousel :depiction-id= "[870179]" height="500px">>
   <div class="flex flex-col justify-center items-center w-full h-full bg-black bg-opacity-25 text-white gap-4 px-4 box-border">
     <span class="text-4xl font-medium">{{ app:project_name }}</span>
     <p class="text-lg sm:text-xl">A comprehensive database for the world fauna of Darwin wasps</p>
@@ -10,7 +10,7 @@ layout: blank
     </em>
     </div>
   </div>
-</img>    
+</GalleryCarousel>    
 
 <div class="container mx-auto my-8 px-4 md:px-0 box-border">
 
