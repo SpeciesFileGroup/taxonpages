@@ -2,7 +2,7 @@
 title: Some news 
 ---
 ## 2023-10-27
-> Ichneumonid meeting October 27, 2023
+> # Ichneumonid meeting October 27, 2023
 > ## Program:
 > 1. **Pascal Rousse** - _Hymenokeys, a matrix interactive system to key Hymenoptera families and Ichneumonidae subfamilies_ (c. 30 min.)  
 > 2. **Ángela Meneses** - _Impact of vertebrate conservation measures on the species richness and abundance of Darwin Wasps_ (10–15 min)  
