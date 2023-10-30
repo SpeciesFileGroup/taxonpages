@@ -11,10 +11,9 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
-import { useOtuPageRequest } from '@/modules/otus/helpers/useOtuPageRequest'
+import { computed } from 'vue'
+import { useOtuStore } from '@/modules/otus/store/store'
 import PanelDropdown from '../PanelDropdown.vue'
-import TaxonWorks from '../../../services/TaxonWorks'
 
 const props = defineProps({
   taxonId: {
@@ -23,27 +22,16 @@ const props = defineProps({
   }
 })
 
-const typeDesignation = ref({})
+const store = useOtuStore()
+
+const typeDesignation = computed(
+  () => store.taxon?.type_taxon_name_relationship || {}
+)
 const typeDesignationLabel = computed(() =>
   [
     typeDesignation.value.subject_object_tag || '',
     typeDesignation.value.subject_status_tag || '',
     typeDesignation.value.object_object_tag || ''
   ].join(' ')
-)
-
-watch(
-  () => props.taxonId,
-  async () => {
-    if (!props.taxonId) {
-      return
-    }
-    useOtuPageRequest('panel:type', () =>
-      TaxonWorks.getTaxonTypeDesignation(props.taxonId)
-    ).then(({ data }) => {
-      typeDesignation.value = data.type_taxon_name_relationship || {}
-    })
-  },
-  { immediate: true }
 )
 </script>
