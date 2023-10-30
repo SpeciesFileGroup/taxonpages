@@ -23,11 +23,14 @@ export const useOtuStore = defineStore('otuStore', {
   },
   actions: {
     async loadTaxon(id, { signal }) {
-      const taxon = await useOtuPageRequest('summary', () =>
-        TaxonWorks.summary(id, { signal })
-      )
+      const responses = await Promise.all([
+        TaxonWorks.getTaxon(id, {
+          params: { extend: ['type_taxon_name_relationship'] }
+        }),
+        useOtuPageRequest('summary', () => TaxonWorks.summary(id, { signal }))
+      ])
 
-      this.taxon = taxon.data
+      this.taxon = Object.assign({}, ...responses.map((r) => r.data))
     },
     async loadOtu(id, { signal }) {
       const otu = await TaxonWorks.getOtu(id, { signal })
