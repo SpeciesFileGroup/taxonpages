@@ -8,6 +8,7 @@
           dragging
           cluster
           :zoom="zoom"
+          :zoom-bounds="8"
           :geojson="store.distribution.geojson"
           :cluster-icon-create-function="makeClusterIconFor"
           @geojson:ready="() => (isLoading = false)"
