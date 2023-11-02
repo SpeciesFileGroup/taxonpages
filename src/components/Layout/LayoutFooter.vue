@@ -5,6 +5,7 @@
     <div class="container mx-auto text-sm pt-2 pb-4">
       <div class="pt-4 pb-2 break-words">
         {{ project_authors }}
+        <span v-html="store.nextAuthor" />
         {{ project_citation }}.
         <ClientOnly>
           <span>Retrieved on {{ currentDate }}</span>
@@ -37,7 +38,9 @@
       <hr class="mt-3 mb-3 border-gray-500" />
 
       <div class="flex flex-col sm:flex-row justify-between gap-4">
-        <div class="[&>*:not(:last-child)]:after:content-['|'] [&>*:not(:last-child)]:after:mx-1">
+        <div
+          class="[&>*:not(:last-child)]:after:content-['|'] [&>*:not(:last-child)]:after:mx-1"
+        >
           <span>
             Data provided by
             <a
@@ -68,7 +71,7 @@
               Species File Group
             </a>
           </span>
-          <FooterAnalytics class="italic"/>
+          <FooterAnalytics class="italic" />
         </div>
         <TrackerReport
           icon
@@ -83,6 +86,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useFooterStore } from '@/store'
 import FooterAnalytics from '@/components/Footer/FooterAnalytics.vue'
 
 const {
@@ -95,6 +99,7 @@ const {
   hash_mode
 } = __APP_ENV__
 
+const store = useFooterStore()
 const currentDate = new Date().toISOString().split('T')[0]
 const route = useRoute()
 

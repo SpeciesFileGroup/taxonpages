@@ -6,7 +6,7 @@
         <VMap
           class="h-96 max-h-96"
           dragging
-          cluster
+          :cluster="cluster"
           :zoom="zoom"
           :zoom-bounds="8"
           :geojson="store.distribution.geojson"
@@ -81,6 +81,11 @@ const props = defineProps({
   taxon: {
     type: Object,
     required: true
+  },
+
+  cluster: {
+    type: Boolean,
+    default: true
   }
 })
 

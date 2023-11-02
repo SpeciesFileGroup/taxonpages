@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
-import TaxonWorks from '../services/TaxonWorks'
 import { useOtuPageRequest } from '../helpers/useOtuPageRequest'
 import { useOtuPageRequestStore } from './request'
+import { useFooterStore } from '@/store'
+import TaxonWorks from '../services/TaxonWorks'
 
 export const useOtuStore = defineStore('otuStore', {
   state: () => {
@@ -23,6 +24,7 @@ export const useOtuStore = defineStore('otuStore', {
   },
   actions: {
     async loadTaxon(id, { signal }) {
+      const footerStore = useFooterStore()
       const responses = await Promise.all([
         TaxonWorks.getTaxon(id, {
           params: { extend: ['type_taxon_name_relationship'] }
@@ -31,6 +33,7 @@ export const useOtuStore = defineStore('otuStore', {
       ])
 
       this.taxon = Object.assign({}, ...responses.map((r) => r.data))
+      footerStore.setNextAuthorText(this.taxon.full_name_tag + '.')
     },
     async loadOtu(id, { signal }) {
       const otu = await TaxonWorks.getOtu(id, { signal })

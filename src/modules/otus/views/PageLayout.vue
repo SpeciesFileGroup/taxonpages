@@ -11,7 +11,7 @@
         :key="index"
       >
         <template
-          v-for="{ component, rankGroup, id } in column"
+          v-for="{ component, rankGroup, id, bind } in column"
           :key="id"
         >
           <component
@@ -21,6 +21,8 @@
             :otu="otu"
             :taxon-id="taxonId"
             :taxon="taxon"
+            :panel-key="id"
+            v-bind="bind"
           />
         </template>
       </div>
