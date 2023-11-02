@@ -5,7 +5,10 @@
     <div class="container mx-auto text-sm pt-2 pb-4">
       <div class="pt-4 pb-2 break-words">
         {{ project_authors }}
-        <span v-html="store.nextAuthor" />
+        <span
+          v-if="store.nextAuthor"
+          v-html="store.nextAuthor"
+        />
         {{ project_citation }}.
         <ClientOnly>
           <span>Retrieved on {{ currentDate }}</span>
