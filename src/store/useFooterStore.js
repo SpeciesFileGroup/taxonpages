@@ -1,13 +1,12 @@
 import { defineStore } from 'pinia'
 
 export const useFooterStore = defineStore('footerStore', {
-  state: () => {
-    return {
-      nextAuthor: ''
-    }
-  },
+  state: () => ({
+    nextAuthor: ''
+  }),
+
   actions: {
-    setNextAuthorText(value) {
+    async setNextAuthorText(value) {
       this.nextAuthor = value
     }
   }

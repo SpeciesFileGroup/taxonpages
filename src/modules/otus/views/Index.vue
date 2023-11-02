@@ -84,6 +84,7 @@ import {
 } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useOtuStore } from '../store/store'
+import { useFooterStore } from '@/store'
 import { useHead } from 'unhead'
 import { useSchemaOrg, defineTaxon } from '@/plugins/schemaOrg/composables'
 import { RESPONSE_ERROR } from '../constants'
@@ -99,6 +100,7 @@ const router = useRouter()
 const routeParams = ref(route.params)
 const childrenRoutes = useChildrenRoutes()
 const store = useOtuStore()
+const footerStore = useFooterStore()
 let controller = new AbortController()
 
 router.afterEach((route) => {
@@ -137,10 +139,12 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   store.$reset()
+  footerStore.$reset()
 })
 
 async function loadInitialData() {
   store.$reset()
+  footerStore.$reset()
 
   try {
     await store.loadInit({
