@@ -31,24 +31,42 @@
     </li>
 
     <li
+      v-if="modelValue > props.rangePages"
+      class="border border-base-border px-2 py-1.5"
+    >
+      <span class="page gap"> ... </span>
+    </li>
+
+    <template
       v-for="n in pages"
-      class="page-item"
       :key="n"
     >
-      <button
-        type="button"
-        aria-label="Go to page 1"
-        class="border border-base-border px-2 py-1.5"
-        :disabled="currentPage === n"
-        :class="
-          currentPage === n
-            ? 'text-primary-content bg-primary-color'
-            : 'text-base-content'
-        "
-        @click="() => (currentPage = n)"
+      <li
+        v-if="n < rangeMax && rangeMin < n"
+        class="page-item"
       >
-        {{ n }}
-      </button>
+        <button
+          type="button"
+          aria-label="Go to page 1"
+          class="border border-base-border px-2 py-1.5"
+          :disabled="currentPage === n"
+          :class="
+            currentPage === n
+              ? 'text-primary-content bg-primary-color'
+              : 'text-base-content'
+          "
+          @click="() => (currentPage = n)"
+        >
+          {{ n }}
+        </button>
+      </li>
+    </template>
+
+    <li
+      v-if="pages - modelValue >= rangePages"
+      class="border border-base-border px-2 py-1.5"
+    >
+      <span class="page gap"> ... </span>
     </li>
 
     <li class="page-item">
@@ -93,6 +111,11 @@ const props = defineProps({
   per: {
     type: Number,
     required: true
+  },
+
+  rangePages: {
+    type: Number,
+    default: 5
   }
 })
 
@@ -105,4 +128,7 @@ const currentPage = computed({
     emit('update:modelValue', value)
   }
 })
+
+const rangeMax = computed(() => props.modelValue + props.rangePages)
+const rangeMin = computed(() => props.modelValue - props.rangePages)
 </script>
