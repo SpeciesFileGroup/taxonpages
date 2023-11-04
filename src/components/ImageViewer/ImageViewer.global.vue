@@ -19,7 +19,7 @@
           v-show="!errorMessage"
           ref="imageElement"
           class="mx-auto cursor-zoom-out w-auto max-w-full max-h-full h-auto my-auto"
-          :alt="image.depictions.map((d) => d.label).join(';')"
+          :alt="image?.depictions?.map((d) => d.label).join(';')"
           :src="image.original"
           @click="emit('close')"
         />
