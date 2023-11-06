@@ -12,7 +12,7 @@ function makeChildrenRoutes() {
     meta: {
       tab,
       rankGroup: layouts[tab].rankGroup,
-      uncapitalize: layouts[tab].uncapitalize
+      label: layouts[tab].label
     }
   }))
 }
