@@ -39,7 +39,7 @@ for (const key in tabsLayout) {
   layouts[key] = {
     panels: parsePanelConfiguraion(tabLayout?.panels || {}),
     rankGroup: tabLayout.rank_group || [],
-    uncapitalize: tabLayout.uncapitalize
+    label: tabLayout.label
   }
 }
 
