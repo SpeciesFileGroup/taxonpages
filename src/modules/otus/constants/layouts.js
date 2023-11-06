@@ -34,9 +34,12 @@ function parsePanelConfiguraion(panelLayout) {
 const layouts = {}
 
 for (const key in tabsLayout) {
+  const tabLayout = tabsLayout[key]
+
   layouts[key] = {
-    panels: parsePanelConfiguraion(tabsLayout[key]?.panels || {}),
-    rankGroup: tabsLayout[key].rank_group || []
+    panels: parsePanelConfiguraion(tabLayout?.panels || {}),
+    rankGroup: tabLayout.rank_group || [],
+    uncapitalize: tabLayout.uncapitalize
   }
 }
 
