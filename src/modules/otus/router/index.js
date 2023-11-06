@@ -11,7 +11,8 @@ function makeChildrenRoutes() {
     component: PageLayout,
     meta: {
       tab,
-      rankGroup: layouts[tab].rankGroup
+      rankGroup: layouts[tab].rankGroup,
+      uncapitalize: layouts[tab].uncapitalize
     }
   }))
 }
