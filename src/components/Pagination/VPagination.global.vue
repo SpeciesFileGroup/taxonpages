@@ -34,7 +34,7 @@
       v-if="modelValue > props.rangePages"
       class="border border-base-border px-2 py-1.5"
     >
-      <span class="page gap"> ... </span>
+      ...
     </li>
 
     <template
@@ -66,7 +66,7 @@
       v-if="pages - modelValue >= rangePages"
       class="border border-base-border px-2 py-1.5"
     >
-      <span class="page gap"> ... </span>
+      ...
     </li>
 
     <li class="page-item">
