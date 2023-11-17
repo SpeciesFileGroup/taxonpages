@@ -5,7 +5,7 @@
       :title="citation.label"
       v-html="citation.label"
     />
-    <span
+    <p
       v-if="citation.type_label"
       class="ml-4 text-base-soft"
       v-html="citation.type_label"
