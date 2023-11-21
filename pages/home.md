@@ -6,7 +6,7 @@ layout: blank
     <span class="text-4xl font-medium">{{ app:project_name }}</span>
     <p class="text-lg sm:text-xl">A comprehensive database for the world fauna of Darwin wasps</p>
     <div class="mx-auto flex flex-col items-center mt-6 sm:mt-10 w-full ">
-      <autocomplete-asserted_distribution class="w-full sm:w-96 text-base-content ml-2 sm:ml-0" placeholder="Search by taxon name" autofocus/>
+      <autocomplete-otu class="w-full sm:w-96 text-base-content ml-2 sm:ml-0" placeholder="Search by taxon name" autofocus/>
     </em>
     </div>
   </div>
