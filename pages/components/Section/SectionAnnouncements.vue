@@ -18,11 +18,11 @@
 
         <VCard>
           <VCardContent>
-            <h3 class="mt-2 mb-0">OSF Grants 2024</h3>
-            <span class="text-base-soft">2023-10-05</span>
+            <h3 class="mt-2 mb-0">We rencently had our online meeting</h3>
+            <span class="text-base-soft">2023-10-27</span>
             <p>
-              Information on call for grants' submissions can be found
-              <RouterLink to="grants">here</RouterLink>
+              If you are interested in taking a look at the schedule, click
+              <RouterLink to="meetings">here</RouterLink>
             </p>
           </VCardContent>
         </VCard>
