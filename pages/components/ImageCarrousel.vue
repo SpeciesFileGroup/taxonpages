@@ -25,7 +25,9 @@
 
 <script setup>
 import { onMounted, ref, computed } from 'vue'
-import logo from './images/logoWID.png'
+import logoWID from './images/logoWID.png'
+import logoWID from './images/logoWID.png'
+import lebinthusLuae from './images/lebinthusLuae.jpg'
 
 const props = defineProps({
   duration: {
