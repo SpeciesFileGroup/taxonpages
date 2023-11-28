@@ -28,7 +28,7 @@
       <h2>Find out more</h2>
       <p>
       Learn how to collaborate with the 
-      {{ app:header_logo_text }}. 
+      World Ichneumonidae Database. 
       Contact information, technical details, and more are available 
       <RouterLink to="about">here</RouterLink>.
       </p>
