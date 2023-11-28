@@ -26,11 +26,11 @@
 import { shallowRef, triggerRef } from 'vue'
 import { makeAPIRequest } from '@/utils/request'
 
-import IconAudio from '../Icon/IconAudio.vue'
 import IconBug from '../Icon/IconBug.vue'
 import IconImage from '../Icon/IconImage.vue'
 import IconMicroscope from '../Icon/IconMicroscope.vue'
 import IconReference from '../Icon/IconReference.vue'
+import IconOk from '../Icon/IconOk.vue'
 import IconCitation from '../Icon/iconCitation.vue'
 
 import DataType from './Data/DataType.vue'
