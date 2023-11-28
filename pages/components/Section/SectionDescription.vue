@@ -4,21 +4,20 @@
       <div class="prose !container dark:prose-invert">
         <div>
           <p>
-            The Orthoptera Species File (OSF) is a taxonomic database of the
-            world’s Orthoptera (grasshoppers, locusts, katydids, crickets, and
-            related insects) both living and fossil. It has full taxonomic and
-            synonymic information for all taxa, with complete taxonomic
-            references, images, sound recordings, and specimen records.
+            The World Ichneumonidae Database (WID) is a comprehensive and collaborative 
+            database for world fauna of Ichneumonidae managed in 
+            <a href="https://taxonworks.org"> TaxonWorks</a>. In this portal 
+            you can find information about distribution, nomenclature, 
+            and biology of the world Darwin wasps.
           </p>
           <p>
-            The core purpose of the OSF is to provide a resource that makes
-            research on Orthoptera more efficient as well as to cover the needs
-            of policy-makers, environmental managers and the wider public for a
-            consistent and up-to-date classification of the world’s Orthoptera
-            species.
+            The core purpose of the WID is 
+            the research on Ichneumonidae by providing a centralized resource for images, 
+            reference, and taxonomy/nomenclature. Moreover, being updateble and open access,
+            the portal is designed to include all the relevant information updated constantly.
           </p>
           <p>
-            It is open to contributions from anyone with specimen records and
+            WID is open to contributions from anyone with specimen records and
             images.
           </p>
         </div>
