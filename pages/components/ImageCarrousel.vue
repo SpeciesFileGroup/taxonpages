@@ -42,7 +42,7 @@ const images = [
     copyright: 'Ming Kai Tan',
     src: lebinthusLuae,
     otuId: 831633
-  }
+  },
   {
     label: 'logo',
     copyright: 'ciao',
