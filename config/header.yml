@@ -13,3 +13,6 @@
 
     - label: Home2
       link: /home2
+      
+    - label: News2
+      link: /news2
