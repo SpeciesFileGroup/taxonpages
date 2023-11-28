@@ -4,8 +4,8 @@
       <div class="prose !container dark:prose-invert">
         <div>
           <p>
-            The World Ichneumonidae Database (WID) is a comprehensive and collaborative 
-            database for world fauna of Ichneumonidae managed in 
+            The <b>World Ichneumonidae Database (WID)</b> is a comprehensive and 
+            collaborative database for world fauna of Ichneumonidae managed in 
             <a href="https://taxonworks.org"> TaxonWorks</a>. In this portal 
             you can find information about distribution, nomenclature, 
             and biology of the world Darwin wasps.
@@ -14,7 +14,8 @@
             The core purpose of the WID is 
             the research on Ichneumonidae by providing a centralized resource for images, 
             reference, and taxonomy/nomenclature. Moreover, being updateble and open access,
-            the portal is designed to include all the relevant information updated constantly.
+            the portal is designed to include all the relevant information updated 
+            constantly.
           </p>
           <p>
             WID is open to contributions from anyone with specimen records and
