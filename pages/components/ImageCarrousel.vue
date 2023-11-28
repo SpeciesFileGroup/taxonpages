@@ -37,8 +37,8 @@ const props = defineProps({
 const images = [
 
   {
-    label: 'logo',
-    copyright: 'ciao',
+    label: 'LogoWID',
+    copyright: 'Filippo Di Giovanni',
     src: logoWID,
     otuId: 3435
   }

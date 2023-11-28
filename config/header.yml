@@ -7,9 +7,6 @@
 
     - label: About
       link: /about
-      
-    #- label: News on Ichneumonidae
-    #  link: /news
 
     - label: Announcements
       link: /announcements
