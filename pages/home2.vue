@@ -12,7 +12,6 @@
     </div>
   </template>
   <script setup>
-  import SectionAuthor from './components/Section/SectionAuthor.vue'
   import SectionData from './components/Section/SectionData.vue'
   import SectionLandscape from './components/Section/SectionLandscape.vue'
   import SectionDescription from './components/Section/SectionDescription.vue'
