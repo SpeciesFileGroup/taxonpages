@@ -26,6 +26,7 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
 import lebinthusLuae from './images/lebinthusLuae.jpg'
+import logoWID from './images/logoWID.png'
 
 const props = defineProps({
   duration: {
@@ -41,6 +42,12 @@ const images = [
     copyright: 'Ming Kai Tan',
     src: lebinthusLuae,
     otuId: 831633
+  }
+  {
+    label: 'logo',
+    copyright: 'ciao',
+    src: logoWID,
+    otuId: 3435
   }
 ]
 
