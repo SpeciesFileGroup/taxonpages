@@ -31,7 +31,6 @@ import IconBug from '../Icon/IconBug.vue'
 import IconImage from '../Icon/IconImage.vue'
 import IconMicroscope from '../Icon/IconMicroscope.vue'
 import IconReference from '../Icon/IconReference.vue'
-import IconOk from '../Icon/IconOk.vue'
 import IconCitation from '../Icon/iconCitation.vue'
 
 import DataType from './Data/DataType.vue'
@@ -40,7 +39,6 @@ const TYPES = {
   validSpecies: 'Valid species',
   taxonNames: 'Taxon names',
   projectSources: 'Project sources',
-  mediaSounds: 'Media sounds',
   collectionObjects: 'Collection objects',
   citations: 'Citations',
   images: 'Images'
@@ -71,12 +69,7 @@ const dataTypes = shallowRef({
     icon: IconImage,
     label: 'Images',
     count: 107700
-  },
-  [TYPES.mediaSounds]: {
-    icon: IconAudio,
-    label: 'Sound recordings',
-    count: 2030
-  },
+  },  
   [TYPES.collectionObjects]: {
     icon: IconBug,
     label: 'Specimen records',
