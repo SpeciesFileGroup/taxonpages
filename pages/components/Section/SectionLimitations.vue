@@ -17,7 +17,8 @@
           </VCard>
           
           <VCard>
-          <h3 class="mt-2 mb-0">Taxa Completed</h3>
+            <VCardContent>
+              <h3 class="mt-2 mb-0">Taxa Completed</h3>
               <span class="text-base-soft">2023-10-09</span>
               <p>
                 Not all the subfamilies are completed, menaing that some names are missing.
