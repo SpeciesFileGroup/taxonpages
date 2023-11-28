@@ -1,6 +1,7 @@
 <template>
   <section class="bg-base-foreground">
     <div class="container mx-auto p-4 sm:pt-10 sm:pb-2 relative box-border">
+      <h2 class="px-4 sm:px-0">Introduction</h2>
       <div class="prose !container dark:prose-invert">
         <div>
           <p>
