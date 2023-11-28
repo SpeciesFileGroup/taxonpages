@@ -18,11 +18,12 @@
 
         <VCard>
           <VCardContent>
-            <h3 class="mt-2 mb-0">We rencently had our online meeting</h3>
+            <h3 class="mt-2 mb-0">Ichneumonid meetings online</h3>
             <span class="text-base-soft">2023-10-27</span>
             <p>
-              If you are interested in taking a look at the schedule, click
-              <RouterLink to="meetings">here</RouterLink>
+              If you are interested in taking a look at the recent schedule of our 
+              Ichneumonid meeting online, click
+              <RouterLink to="meetings">here</RouterLink>.
             </p>
           </VCardContent>
         </VCard>
