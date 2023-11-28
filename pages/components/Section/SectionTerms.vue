@@ -1,7 +1,7 @@
 <template>
   <section class="bg-base-foreground p-4 py-10">
     <div class="prose !container mx-auto dark:prose-invert">
-      <h2>Format for referencing this website</h2>
+      <h2>Referencing this website</h2>
       <p>
         When referencing this website, please use the following format:
         Dal Pos <i>et al</i>. The World Ichneumonidae Database
@@ -24,6 +24,15 @@
           >CC BY-NC-SA license</a
         >, unless stated otherwise
       </p>
+
+      <h2>Find out more</h2>
+      <p>
+      Learn how to collaborate with the 
+      {{ app:header_logo_text }}. 
+      Contact information, technical details, and more are available 
+      <RouterLink to="about">here</RouterLink>.
+      </p>
+
     </div>
   </section>
 </template>
