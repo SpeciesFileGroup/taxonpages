@@ -25,18 +25,7 @@
 
 <script setup>
 import { onMounted, ref, computed } from 'vue'
-import coryacrisAngustipennis from './images/coryacris_angustipennis.jpg'
-import stenopolaPuncticeps from './images/stenopola_puncticeps.jpg'
-import zoniopodaTarsata from './images/zoniopoda_tarsata.jpg'
-import chromacrisSpeciosa from './images/chromacrisSpeciosa.jpg'
-import chibchacrisFernandezi from './images/chibchacrisFernandezi.jpg'
-import chlorobaliusLeucoviridis from './images/chlorobaliusLeucoviridis.jpg'
-import aerotegminaVociferator from './images/aerotegminaVociferator.jpg'
-import liladownsiaFraile from './images/liladownsiaFraile.jpg'
-import lebinthusLuae from './images/lebinthusLuae.jpg'
-import typophyllumInflatum from './images/typophyllumInflatum.jpg'
-import xenicolaDohrni from './images/xenicolaDohrni.jpg'
-import acanthacrisRuficornisCitrina from './images/acanthacrisRuficornisCitrina.jpg'
+import logo from './images/logoWID.png'
 
 const props = defineProps({
   duration: {

@@ -9,8 +9,7 @@
             project_name
           }}</span>
           <span class="text-lg sm:text-xl text-white px-4"
-            >Taxonomic database of the world's grasshoppers, locusts, katydids,
-            crickets, and related insects</span
+            >A comprehensive database for the world fauna of Darwin wasps</span
           >
           <div class="p-4 bg-black bg-opacity-25 w-full max-w-lg box-border">
             <AutocompleteOtu
