@@ -6,7 +6,7 @@
       <SectionDescription />
       <SectionAuthor class="shadow-sm" />
       <hr class="border-base-muted" />
-  
+      <SectionLimitations />
       <SectionAnnouncements />
       <SectionTerms class="drop-shadow" />
     </div>
