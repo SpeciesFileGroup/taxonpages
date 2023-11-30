@@ -1,5 +1,5 @@
 <script setup>
-import DataTable from './components/Section/DataTable.vue';
+import DataTable from './components/Section/Data/DataTable.vue';
 
 const item = [
     {
