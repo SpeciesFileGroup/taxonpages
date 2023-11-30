@@ -23,7 +23,7 @@
               <p>
                 Not all the subfamilies are completed, menaing that some names are missing.
                 Therefore, before citing the contents, make sure to take a look at the
-                document <RouterLink to="subfamilies">here</RouterLink>.
+                document here
               </p>
             </VCardContent>
           </VCard>  
