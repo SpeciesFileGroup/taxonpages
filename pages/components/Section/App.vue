@@ -10,7 +10,7 @@ const items =[
     }
 
 ];
-const region = [
+const items = [
     {
         id: "Afrotropical"
     },
