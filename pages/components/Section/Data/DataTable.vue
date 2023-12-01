@@ -21,7 +21,7 @@ defineProps( {
     </thead>
     <tbody>
         <tr v-for="item in items" :key="item.id">
-          <td class="px-4 py-3 font-medium text-gray-900">{{ item.id }}</td>
+          <td class="px-4 py-3 font-medium text-gray-900">{{ AutomaticOTU }}</td>
           <td class="px-4 py-3 font-medium text-gray-900">{{ item.region }}</td>
         </tr>
     </tbody>
