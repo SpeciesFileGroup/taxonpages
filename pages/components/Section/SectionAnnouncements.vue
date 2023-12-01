@@ -7,7 +7,7 @@
         <VCard>
           <VCardContent>
             <h3 class="mt-2 mb-0">Ichneumonid meetings online</h3>
-            <span class="text-base-soft">2023-1-27</span>
+            <span class="text-base-soft">2023-10-27</span>
             <p>
               If you are interested in taking a look at the recent schedule of our 
               Ichneumonid meeting online, click
