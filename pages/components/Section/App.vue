@@ -10,6 +10,14 @@ const items =[
     }
 
 ];
+const region = [
+    {
+        id: "Afrotropical"
+    },
+    {
+        id: "Nearctic"
+    }
+];
 
 </script>
 
