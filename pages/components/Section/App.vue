@@ -1,9 +1,15 @@
 <script setup>
 import DataTable from './Data/DataTable.vue';
 
-onMounted(() => {
-   const response  = await fetch ( '' );
-});
+const items =[
+    {
+        id: Acaenitinae
+    },
+    {
+        id: Ichneumoninae
+    }
+
+];
 
 </script>
 
