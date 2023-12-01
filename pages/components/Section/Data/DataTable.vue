@@ -1,6 +1,6 @@
 <script setup>
 
-defineProps( props, {
+defineProps( {
     items: {
         type: Array,
         required: true
