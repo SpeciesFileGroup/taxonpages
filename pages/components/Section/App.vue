@@ -1,23 +1,12 @@
 <script setup>
 import DataTable from './Data/DataTable.vue';
 
-const items =[
-    {
-        id: "Acaenitinae"
-    },
-    {
-        id: "Ichneumoninae"
-    }
+const items = ref([]);
 
-];
-const items = [
-    {
-        id: "Afrotropical"
-    },
-    {
-        id: "Nearctic"
-    }
-];
+onMounted( async () => {
+    const response = await fetch('https://sfg.taxonworks.org/api/v1');
+    items.value = await response.json();
+});
 
 </script>
 
