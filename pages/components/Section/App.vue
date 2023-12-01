@@ -11,8 +11,6 @@ const items =[
 
 ];
 
-const items
-
 </script>
 
 
