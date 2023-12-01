@@ -1,15 +1,9 @@
 <script setup>
 import DataTable from './Data/DataTable.vue';
 
-
-const items = [
-    {
-        id: 2
-    },
-    {
-        id: 3
-    }
-];
+onMounted(() => {
+   const response  = await fetch ( '' );
+});
 
 </script>
 
