@@ -11,5 +11,5 @@
     - label: Announcements
       link: /announcements
     
-    -label: Subfamilies
-     link: /subfamilies
+    - label: Subfamilies
+      link: /subfamilies
