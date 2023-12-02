@@ -4,9 +4,12 @@ import DataTable from './Data/DataTable.vue';
 const items = [
     {
         id: "Acaenitinae"
+        distribution: "OK"
+
     },
     {
         id: "Ichneumoninae"
+        distribution: "OK"
     }
 ];
 
