@@ -2,19 +2,15 @@
 import FilterDropdown from './FilterDropdown.vue';
 import FilterRadios from './FilterRadios.vue';
 import SearchForm from './SearchForm.vue';
+import { filteredItems } from './filteredItems';
 
 
-const props = defineProps({
+export const props = defineProps({
     items: {
         type: Array,
         required: true
 
     }
-});
-
-const filteredItems = computed(() => {
-    return props.items
-
 });
 
 const handleSearch = (search) => {
