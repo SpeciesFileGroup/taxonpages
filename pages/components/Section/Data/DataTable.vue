@@ -33,7 +33,7 @@
              <td class="px-4 py-3">{{ item.citations }}</td>
              <td class="px-4 py-3">{{ item.biology }}</td>
              <td class="px-4 py-3 flex items-center justify-end">
-                <a href="#" class="text-indigo-500 hover:underline">{{ item.link}}</a>
+                <a v-bind:href="link" class="text-indigo-500 hover:underline">{{ item.anchor}}</a>
             </td>
             </tr> 
         </body>

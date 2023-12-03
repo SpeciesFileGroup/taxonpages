@@ -8,7 +8,8 @@ const items = [
         distribution: "OK",
         citations: "OK",
         biology: "Incomplete",
-        link: "Link"
+        anchor: "Link",
+        link: "https://davidedalpos.github.io/WID_Ichneumonidae/#/otus/659414/overview"
     },
     {
         id: "Ichneumoninae",
@@ -16,7 +17,8 @@ const items = [
         distribution: "OK",
         citations: "OK",
         biology: "Incomplete",
-        link: "Link"
+        anchor: "Link",
+        link: "https://davidedalpos.github.io/WID_Ichneumonidae/#/otus/659408/overview"
     }
 ];
 
