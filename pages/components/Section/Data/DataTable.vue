@@ -5,7 +5,7 @@ import SearchForm from './SearchForm.vue';
 
 const searchFilter = ref('');
 
- const props = defineProps({
+defineProps({
     items: {
         type: Array,
         required: true
