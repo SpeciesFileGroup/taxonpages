@@ -1,4 +1,8 @@
 <script setup>
+import FilterDropdown from './FilterDropdown.vue';
+import FilterRadios from './FilterRadios.vue';
+import SearchForm from './SearchForm.vue';
+
   defineProps({
     items: {
         type: Array,
@@ -13,8 +17,11 @@
 <template>
     <div class="bg-white relative border rounded-lg">
         <div class="flex items-center justify-between">
-            <SearchForm/>
-
+            <SearchForm />
+         <div class="flex items-center justify-end text-sm font-semibold">   
+            <FilterDropdown/>
+            <FilterRadios/>
+        </div>
         </div>
      <table class="w-full text-sm text-left text-gray-500">
         <thead class="text-xs text-gray-700 bg-gray-50">
