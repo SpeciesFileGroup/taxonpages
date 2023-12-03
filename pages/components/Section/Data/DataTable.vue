@@ -37,7 +37,6 @@
             </td>
             </tr> 
         </body>
-
      </table>
-</div>
+    </div>
 </template>
