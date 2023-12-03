@@ -15,8 +15,8 @@ const searchFilter = ref('');
 
   const filteredItems = computed(() => {
     if (searchFilter.value !='') {
-        return item.filter(item => item.title.includes(searchFilter.value) || 
-        item.user.name.includes(searchFilter.value));
+        return item.filter(item => item.subfamily.includes(searchFilter.value) || 
+        item.numberSpecies.includes(searchFilter.value));
     }
 
     return props.items;
