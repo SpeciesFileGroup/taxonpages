@@ -14,7 +14,7 @@ defineProps({
 
 
 const filteredItems = computed(() => {
-  return this.items.fitler(item => item.status = "Acaenitinae")
+  return items.fitler(item => item.status = "Acaenitinae")
 });
 
 const handleSearch = (search) => {
