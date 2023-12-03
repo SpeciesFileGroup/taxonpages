@@ -12,6 +12,10 @@
 
 <template>
     <div class="bg-white relative border rounded-lg">
+        <div class="flex items-center justify-between">
+            <SearchForm />
+
+        </div>
      <table class="w-full text-sm text-left text-gray-500">
         <thead class="text-xs text-gray-700 bg-gray-50">
             <tr>
