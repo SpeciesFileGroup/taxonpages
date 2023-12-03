@@ -1,6 +1,4 @@
 <script setup>
-  import SearchForm from './Data/SearchForm.vue';
-  
   defineProps({
     items: {
         type: Array,
