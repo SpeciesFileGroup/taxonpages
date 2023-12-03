@@ -3,6 +3,7 @@ import FilterDropdown from './FilterDropdown.vue';
 import FilterRadios from './FilterRadios.vue';
 import SearchForm from './SearchForm.vue';
 
+const searchFilter = ref('');
 
 const props = defineProps({
     items: {
@@ -13,11 +14,12 @@ const props = defineProps({
 });
 
 const filteredItems = computed(() => {
-return props.items.filter (item=>item.status="Ichneumoninae");
 
 });
 
 const handleSearch = (search) => {
+    searchFilter.value = search;
+
 
 };
 
