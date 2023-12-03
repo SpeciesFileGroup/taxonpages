@@ -16,9 +16,7 @@
         <thead class="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
                 <th class="px-4 py-3">Subfamily</th>
-                <th class="px-4 py-3">
-                    <span class="sr-only">Distribution</span>
-                </th>
+                <th class="px-4 py-3">Distribution</th>
             </tr>
         </thead> 
         <body>
