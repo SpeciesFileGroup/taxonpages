@@ -4,14 +4,18 @@ import FilterRadios from './FilterRadios.vue';
 import SearchForm from './SearchForm.vue';
 
 
-defineProps({
+const props = defineProps({
     items: {
         type: Array,
         required: true
 
     }
-  });
+});
 
+
+const filteredItems = computed(() => {
+  return props.items.fitler(item => item.status = "Acaenitinae");
+});
 
 const handleSearch = (search) => {
 
