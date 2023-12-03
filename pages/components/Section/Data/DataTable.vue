@@ -3,7 +3,9 @@ import FilterDropdown from './FilterDropdown.vue';
 import FilterRadios from './FilterRadios.vue';
 import SearchForm from './SearchForm.vue';
 
-  defineProps({
+const searchFilter = ref('');
+
+ const props = defineProps({
     items: {
         type: Array,
         required: true
@@ -11,13 +13,27 @@ import SearchForm from './SearchForm.vue';
     }
   });
 
+  const filteredItems = computed(() => {
+    if (searchFilter.value !='') {
+        return item.filter(item => item.title.includes(searchFilter.value) || 
+        item.user.name.includes(searchFilter.value));
+    }
+
+    return props.items;
+  });
+
+  const handleSearch = (search) => {
+
+    searchFilter.value = search;
+
+  };
 
 </script>
 
 <template>
     <div class="bg-white relative border rounded-lg">
         <div class="flex items-center justify-between">
-            <SearchForm />
+            <SearchForm @search="handleSearch" />
          <div class="flex items-center justify-end text-sm font-semibold">   
             <FilterDropdown/>
             <FilterRadios/>
