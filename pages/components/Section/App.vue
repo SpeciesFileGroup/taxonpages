@@ -3,7 +3,7 @@ import DataTable from './Data/DataTable.vue';
 
 const items = [
     {
-        id: 'Acanitinae',
+        id: 'Acaenitinae',
         numberSpecies: "Afr",
         distribution: "OK",
         citations: "OK",

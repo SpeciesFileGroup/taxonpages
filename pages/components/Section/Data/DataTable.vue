@@ -16,9 +16,9 @@
         <thead class="text-xs text-gray-700 bg-gray-50">
             <tr>
                 <th class="px-4 py-3">Subfamily</th>
-                <th class="px-4 py-3">Number of Species</th>
+                <th class="px-4 py-3">Species</th>
                 <th class="px-4 py-3">Distribution</th>
-                <th class="px-4 py-3">Citations History</th>
+                <th class="px-4 py-3">Citations & Synonymic History</th>
                 <th class="px-4 py-3">Biological Association</th>
                 <th class="px-4 py-3">    
                     <span class="sr-only">Link</span>
