@@ -25,7 +25,7 @@
                 </th>
             </tr>
         </thead> 
-        <body>
+        <tbody>
             <tr v-for="item in items" :key="item.id" class="border-b">
              <td class="px-4 py-3 font-medium text-gray-900">{{ item.id }}</td>
              <td class="px-4 py-3">{{ item.numberSpecies }}</td>
@@ -36,7 +36,7 @@
                 <a v-bind:href="item.link" class="text-indigo-500 hover:underline" target="_blank">{{ item.anchor}}</a>
             </td>
             </tr> 
-        </body>
+        </tbody>
      </table>
     </div>
 </template>
