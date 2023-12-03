@@ -9,7 +9,7 @@ const items = [
         citations: "OK",
         biology: "Incomplete",
         anchor: "Link",
-        link: "https://davidedalpos.github.io/WID_Ichneumonidae/#/otus/659414/overview"
+        link: "/otus/659414"
     },
     {
         id: "Adelognathinae",
@@ -28,7 +28,7 @@ const items = [
         citations: "OK",
         biology: "Incomplete",
         anchor: "Link",
-        link: "https://davidedalpos.github.io/WID_Ichneumonidae/#/otus/659408/overview"
+        link: "/otus/659408"
     }
 ];
 
