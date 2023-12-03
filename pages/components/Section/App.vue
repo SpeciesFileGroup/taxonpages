@@ -12,6 +12,16 @@ const items = [
         link: "https://davidedalpos.github.io/WID_Ichneumonidae/#/otus/659414/overview"
     },
     {
+        id: "Adelognathinae",
+        numberSpecies: "Nea",
+        distribution: "OK",
+        citations: "OK",
+        biology: "Incomplete",
+        anchor: "Link",
+        link: "/otus/659415"
+    },
+
+    {
         id: "Ichneumoninae",
         numberSpecies: "Afr",
         distribution: "OK",
