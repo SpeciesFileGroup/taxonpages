@@ -3,8 +3,6 @@ import FilterDropdown from './FilterDropdown.vue';
 import FilterRadios from './FilterRadios.vue';
 import SearchForm from './SearchForm.vue';
 
-const searchFilter = ref(items);
-
 const props = defineProps({
     items: {
         type: Array,
@@ -13,20 +11,6 @@ const props = defineProps({
     }
 });
 
-const filteredItems = computed(() => {
-    if (searchFilter.value != '') {
-        return props.items.filter(item => item.distribution.includes(searchFilter.value));
-        
-    }
-
-    return props.items;
-});
-
-const handleSearch = (search) => {
-    searchFilter.value = search;
-
-
-};
 
 </script>
 
@@ -54,7 +38,7 @@ const handleSearch = (search) => {
             </tr>
         </thead> 
         <tbody>
-            <tr v-for="item in filteredItems" :key="item.id" class="border-b">
+            <tr v-for="item in Items" :key="item.id" class="border-b">
              <td class="px-4 py-3 font-medium text-gray-900">{{ item.id }}</td>
              <td class="px-4 py-3">{{ item.numberSpecies }}</td>
              <td class="px-4 py-3" >{{ item.distribution }}</td>
