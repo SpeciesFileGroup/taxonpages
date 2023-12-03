@@ -1,7 +1,7 @@
 <script setup>
 import DataTable from './Data/DataTable.vue';
 
-const items = [
+const items = ref ([
     {
         id: 'Acaenitinae',
         numberSpecies: "Afr",
@@ -20,7 +20,7 @@ const items = [
         anchor: "Link",
         link: "https://davidedalpos.github.io/WID_Ichneumonidae/#/otus/659408/overview"
     }
-];
+]);
 
 </script>
 
