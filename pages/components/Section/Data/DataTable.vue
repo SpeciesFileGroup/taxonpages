@@ -3,7 +3,7 @@ import FilterDropdown from './FilterDropdown.vue';
 import FilterRadios from './FilterRadios.vue';
 import SearchForm from './SearchForm.vue';
 
-const searchFilter = ref('');
+const searchFilter = ref(items);
 
 const props = defineProps({
     items: {
