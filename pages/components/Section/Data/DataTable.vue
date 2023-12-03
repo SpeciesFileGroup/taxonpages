@@ -13,7 +13,7 @@ const props = defineProps({
 });
 
 const filteredItems = computed(() => {
-    return props.items(item=>item.id="Ichneumoninae");
+    return props.items
 
 });
 
