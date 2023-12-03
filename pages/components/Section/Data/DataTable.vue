@@ -45,7 +45,7 @@ const props = defineProps({
              <td class="px-4 py-3">{{ item.citations }}</td>
              <td class="px-4 py-3">{{ item.biology }}</td>
              <td class="px-4 py-3 flex items-center justify-end">
-                <router-link v-bind:to="link" class="text-indigo-500 hover:underline" target="_blank">{{ item.anchor}}</router-link>
+                <router-link v-bind:to="item.link" class="text-indigo-500 hover:underline" target="_blank">{{ item.anchor}}</router-link>
             </td>
             </tr> 
         </tbody>
