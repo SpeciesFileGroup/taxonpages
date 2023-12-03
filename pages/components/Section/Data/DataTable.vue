@@ -15,7 +15,7 @@ const props = defineProps({
 
 const filteredItems = computed(() => {
     if (searchFilter.value != '') {
-        return items.filter(item => item.distribution.includes(searchFilter.value));
+        return props.items.filter(item => item.distribution.includes(searchFilter.value));
         
     }
 
