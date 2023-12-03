@@ -12,6 +12,10 @@ const props = defineProps({
     }
 });
 
+const filterItems = computed(() => {
+
+});
+
 const handleSearch = (search) => {
 
 };
