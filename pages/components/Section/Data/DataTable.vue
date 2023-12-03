@@ -12,6 +12,9 @@ defineProps({
     }
 });
 
+const handleSearch = (search) => {
+
+};
 
 </script>
 
