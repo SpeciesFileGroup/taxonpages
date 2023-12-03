@@ -18,7 +18,7 @@ const items = [
         citations: "OK",
         biology: "Incomplete",
         anchor: "Link",
-        link: "https://davidedalpos.github.io/WID_Ichneumonidae/?#/otus/659415/overview"
+        link: "/otus/659415"
     },
 
     {
