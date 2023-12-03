@@ -13,7 +13,7 @@
 <template>
     <div>
      <table class="w-full text-sm text-left text-gray-500">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <thead class="text-xs text-gray-700 bg-gray-50">
             <tr>
                 <th class="px-4 py-3">Subfamily</th>
                 <th class="px-4 py-3">Number of Species</th>
