@@ -53,7 +53,7 @@ const searchFilter = ref('');
             </tr>
         </thead> 
         <tbody>
-            <tr v-for="item in items" :key="item.id" class="border-b">
+            <tr v-for="item in filteredItems" :key="item.id" class="border-b">
              <td class="px-4 py-3 font-medium text-gray-900">{{ item.id }}</td>
              <td class="px-4 py-3">{{ item.numberSpecies }}</td>
              <td class="px-4 py-3" >{{ item.distribution }}</td>
