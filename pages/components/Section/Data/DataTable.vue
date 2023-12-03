@@ -11,7 +11,7 @@
 </script>
 
 <template>
-    <div>
+    <div class="bg-white relative border rounded-lg">
      <table class="w-full text-sm text-left text-gray-500">
         <thead class="text-xs text-gray-700 bg-gray-50">
             <tr>
@@ -26,7 +26,7 @@
             </tr>
         </thead> 
         <body>
-            <tr v-for="item in items" :key="item.id">
+            <tr v-for="item in items" :key="item.id" class="border-b">
              <td class="px-4 py-3 font-medium text-gray-900">{{ item.id }}</td>
              <td class="px-4 py-3 font-medium text-gray-900">{{ item.numberSpecies }}</td>
              <td class="px-4 py-3" >{{ item.distribution }}</td>
