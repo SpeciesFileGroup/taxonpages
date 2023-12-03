@@ -14,19 +14,11 @@ const searchFilter = ref('');
   });
 
   const filteredItems = computed(() => {
-    if (searchFilter.value !='') {
-        return props.item.filter(item => 
-         item.id.includes(searchFilter.value) || 
-         item.numberSpecies.includes(searchFilter.value)
-        );
-    }
-
-    return props.items;
+    return props.items.filter(item => item.status = 'Afr');
   });
 
   const handleSearch = (search) => {
 
-    searchFilter.value = search;
 
   };
 
@@ -35,7 +27,8 @@ const searchFilter = ref('');
 <template>
     <div class="bg-white relative border rounded-lg">
         <div class="flex items-center justify-between">
-            <SearchForm @search="handleSearch" />
+            <SearchForm v-on:search="handleSearch" />
+
          <div class="flex items-center justify-end text-sm font-semibold">   
             <FilterDropdown/>
             <FilterRadios/>
