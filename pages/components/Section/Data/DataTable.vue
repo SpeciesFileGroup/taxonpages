@@ -12,6 +12,10 @@ defineProps({
     }
 });
 
+const filteredItems = computed(() => {
+   return this.items.filter(item => item.id = 'Ichneumoninae'); 
+})
+
 const handleSearch = (search) => {
 
 };
