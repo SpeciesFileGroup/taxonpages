@@ -4,7 +4,7 @@ import FilterRadios from './FilterRadios.vue';
 import SearchForm from './SearchForm.vue';
 
 
-defineProps({
+const props = defineProps({
     items: {
         type: Array,
         required: true
