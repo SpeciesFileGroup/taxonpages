@@ -21,7 +21,7 @@ import SearchForm from './SearchForm.vue';
          <div class="flex items-center justify-end text-sm font-semibold">   
             <FilterDropdown/>
             <FilterRadios/>
-        </div>
+         </div>
         </div>
      <table class="w-full text-sm text-left text-gray-500">
         <thead class="text-xs text-gray-700 bg-gray-50">
