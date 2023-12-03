@@ -4,7 +4,7 @@
 
 <template>
     <form>
-        <label>Search for subfamily...</label>
+        <label>Search</label>
         <div>
             <input type="text" placeholder="Search for subfamily...">
         </div>
