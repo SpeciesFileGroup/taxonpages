@@ -12,12 +12,18 @@ defineProps({
     }
   });
 
+
+const handleSearch = (search) => {
+
+};
+
+
 </script>
 
 <template>
     <div class="bg-white relative border rounded-lg">
         <div class="flex items-center justify-between">
-            <SearchForm />
+            <SearchForm @search="handleSearch" />
 
          <div class="flex items-center justify-end text-sm font-semibold">   
             <FilterDropdown/>
