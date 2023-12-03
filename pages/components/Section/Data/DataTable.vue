@@ -28,12 +28,12 @@
         <body>
             <tr v-for="item in items" :key="item.id" class="border-b">
              <td class="px-4 py-3 font-medium text-gray-900">{{ item.id }}</td>
-             <td class="px-4 py-3 font-medium text-gray-900">{{ item.numberSpecies }}</td>
+             <td class="px-4 py-3">{{ item.numberSpecies }}</td>
              <td class="px-4 py-3" >{{ item.distribution }}</td>
              <td class="px-4 py-3">{{ item.citations }}</td>
              <td class="px-4 py-3">{{ item.biology }}</td>
              <td class="px-4 py-3 flex items-center justify-end">
-                <a href="#" class="text-indigo-500 hover:underline"></a>{{ item.link}}
+                <a href="#" class="text-indigo-500 hover:underline">{{ item.link}}</a>
             </td>
             </tr> 
         </body>
