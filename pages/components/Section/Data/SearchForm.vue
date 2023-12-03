@@ -1,6 +1,9 @@
 <script setup>
+ 
+ const emit = defineEmits(['search']);
+ 
  const search = (e) => {
-    e.target.value;
+    emit('search', e.target.value);
  };
 
 </script>
