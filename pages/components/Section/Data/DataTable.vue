@@ -4,7 +4,7 @@ import FilterRadios from './FilterRadios.vue';
 import SearchForm from './SearchForm.vue';
 
 
-const props = defineProps({
+defineProps({
     items: {
         type: Array,
         required: true
@@ -14,7 +14,7 @@ const props = defineProps({
 
 
 const filteredItems = computed(() => {
-  return props.items.fitler(item => item.status = "Acaenitinae")
+  return this.items.fitler(item => item.status = "Acaenitinae")
 });
 
 const handleSearch = (search) => {
