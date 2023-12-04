@@ -25,12 +25,12 @@ const props = defineProps({
          </div>
         </div>
      <table class="w-full text-sm text-left text-gray-500">
-        <thead class="text-xs text-gray-700 bg-gray-50">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
                 <th class="px-4 py-3">Subfamily</th>
                 <th class="px-4 py-3">Species</th>
                 <th class="px-4 py-3">Distribution</th>
-                <th class="px-4 py-3">Citation & Synonymic History</th>
+                <th class="px-4 py-3">Taxonomic History</th>
                 <th class="px-4 py-3">Biological Association</th>
                 <th class="px-4 py-3">    
                     <span class="sr-only">Link</span>
