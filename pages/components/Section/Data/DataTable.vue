@@ -12,12 +12,21 @@ const props = defineProps({
 });
 
 
+const filteredItems = computed(() => {
+    return props.items.filter(item => item.distribution == "Afr");
+});
+
+
+const handleSearch = ({
+
+});
+
 </script>
 
 <template>
     <div class="bg-white relative border rounded-lg">
         <div class="flex items-center justify-between">
-            <SearchForm @search="" />
+            <SearchForm @search5="handleSearch" />
 
          <div class="flex items-center justify-end text-sm font-semibold">   
             <FilterDropdown/>
@@ -38,7 +47,7 @@ const props = defineProps({
             </tr>
         </thead> 
         <tbody>
-            <tr v-for="item in props.items" :key="item.id" class="border-b">
+            <tr v-for="item in filteredItems" :key="item.id" class="border-b">
              <td class="px-4 py-3 font-medium text-gray-900">{{ item.id }}</td>
              <td class="px-4 py-3">{{ item.numberSpecies }}</td>
              <td class="px-4 py-3" >{{ item.distribution }}</td>
