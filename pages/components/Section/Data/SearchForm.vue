@@ -14,7 +14,7 @@ const search = (e) => {
 <template>
     <form class="py-3 px-4 flex items-center">
         <label class="sr-only">Search</label>
-        <div class="relative w-full">
+        <div class="w-full">
             <input type="text" @input="search" placeholder="Search for subfamily..." 
             class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded">
         </div>
