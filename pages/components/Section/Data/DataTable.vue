@@ -11,9 +11,6 @@ const props = defineProps({
     }
 });
 
-const filteredItems = computed(() => {
-    return items.filter(item => item.numberSpecies=='Afr')
-});
 
 const handleSearch = (search5) => {
 
@@ -46,7 +43,7 @@ const handleSearch = (search5) => {
             </tr>
         </thead> 
         <tbody>
-            <tr v-for="item in filteredItems" :key="item.id" class="border-b">
+            <tr v-for="item in props.items" :key="item.id" class="border-b">
              <td class="px-4 py-3 font-medium text-gray-900">{{ item.id }}</td>
              <td class="px-4 py-3">{{ item.numberSpecies }}</td>
              <td class="px-4 py-3" >{{ item.distribution }}</td>
