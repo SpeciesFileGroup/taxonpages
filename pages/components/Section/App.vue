@@ -1,7 +1,7 @@
 <script setup>
 import DataTable from './Data/DataTable.vue';
 
-const items = [
+const items = ref ([
     {
         id: 'Acaenitinae',
         numberSpecies: "Afr",
@@ -30,7 +30,7 @@ const items = [
         anchor: "Link",
         link: "/otus/659408"
     }
-];
+]);
 
 </script>
 
