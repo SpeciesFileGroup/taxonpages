@@ -12,7 +12,7 @@ const props = defineProps({
 });
 
 const filterItems = computed(() => {
-    return props.item.filter(item => item.numberSpecies = 'Afr');
+    return props.items.filter(item => item.numberSpecies = 'Afr');
 });
 
 const handleSearch = (search5) => {
