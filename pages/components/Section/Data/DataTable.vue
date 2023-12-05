@@ -2,7 +2,6 @@
 import FilterDropdown from './FilterDropdown.vue';
 import FilterRadios from './FilterRadios.vue';
 import SearchForm from './SearchForm.vue';
-import computed from "vue";
 
 const props = defineProps({
     items: {
