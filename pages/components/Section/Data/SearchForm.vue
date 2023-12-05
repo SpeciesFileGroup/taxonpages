@@ -14,9 +14,9 @@ const search5 = (e) => {
 <template>
     <form class="py-3 px-4 flex items-center">
         <label class="sr-only">Search</label>
-        <div class=" relative w-full sm:w-85 hover:underline">
+        <div class=" relative w-full">
             <input type="text" @input="search5" placeholder="Search" 
-            class="bg-gray-50 border border-gray-300 text-gray-900 sm:w-85 rounded">
+            class="bg-gray-50 border border-gray-300 text-gray-900 sm:w-85 rounded hover:border-blue-300">
         </div>
     </form>
 </template>
