@@ -17,7 +17,7 @@ const filteredItems = computed(() => {
     // converts the query and value to lower case  index
        product.Name.toLowerCase().indexOf(searchQuery.value.toLowerCase()) != -1
        )
-       });
+       })});
 
 
 const handleSearch = (search5) => {
