@@ -15,7 +15,7 @@
 import Table from './components/Table.vue'
 
 //importing bootstrap 5
-import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/css/bootstrap.min.css"
 
 export default {
   name: 'App',
