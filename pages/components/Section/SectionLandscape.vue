@@ -16,6 +16,7 @@
               autofocus
               class="w-full"
               placeholder="Search by taxon name..."
+              target="_blank"
             />
           </div>
         </div>
