@@ -12,12 +12,12 @@ const props = defineProps({
 });
 
 const filteredItems = computed(() => {
-    return sortedList.value.filter((product) => {
+  return sortedList.value.filter((product) => {
     return (
     // converts the query and value to lower case  index
        product.Name.toLowerCase().indexOf(searchQuery.value.toLowerCase()) != -1
        )
-    });;
+       });
 
 
 const handleSearch = (search5) => {
