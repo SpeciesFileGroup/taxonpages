@@ -16,7 +16,7 @@ const search5 = (e) => {
         <label class="sr-only">Search</label>
         <div class=" relative w-full">
             <input type="text" @input="search5" placeholder="Search" 
-            class="bg-gray-50 border border-gray-300 text-gray-900 sm:w-85 rounded click:border-blue-200">
+            class="bg-gray-50 border border-gray-300 text-gray-900 sm:w-85 rounded">
         </div>
     </form>
 </template>
