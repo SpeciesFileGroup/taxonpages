@@ -11,12 +11,11 @@
           <span class="text-lg sm:text-xl text-white px-4"
             >A comprehensive database for the world fauna of Darwin wasps</span
           >
-          <div class="p-3 bg-black bg-opacity-20 w-full max-w-lg box-border rounded-lg">
+          <div class="p-3 bg-black bg-opacity-20 w-full max-w-lg box-border rounded-lg" target="_blank">
             <AutocompleteOtu
               autofocus
               class="w-full"
               placeholder="Search by taxon name..."
-              target="_blank"
             />
           </div>
         </div>
