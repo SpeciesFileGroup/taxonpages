@@ -11,7 +11,7 @@ const props = defineProps({
     }
 });
 
-const filteredItems = const  = computed(() => {
+const filteredItems = computed(() => {
     return props.items.filter(item => item.id == 'Acaenitinae');
 });
 
