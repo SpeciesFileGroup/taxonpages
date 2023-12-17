@@ -113,7 +113,7 @@ async function loadSpeciesCount() {
     params: {
       page: 1,
       per: 1,
-      taxon_name_id: [913531],
+      taxon_name_id: [],
       taxon_name_classification: ['TaxonNameClassification::Iczn::Fossil'],
       validity: true,
       descendants: true,
