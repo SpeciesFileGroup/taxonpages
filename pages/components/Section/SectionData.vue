@@ -37,6 +37,7 @@ import DataType from './Data/DataType.vue'
 
 const TYPES = {
   validSpecies: 'Valid species',
+  validExtantSpecies: 'Valid extant species',
   taxonNames: 'Taxon names',
   projectSources: 'Project sources',
   collectionObjects: 'Collection objects',
@@ -49,6 +50,11 @@ const dataTypes = shallowRef({
     icon: IconOk,
     label: 'Valid species',
     count: 29410
+  },
+  [TYPES.validExtantSpecies]: {
+    icon: IconOk,
+    label: 'Valid extant species',
+    count: 28955
   },
   [TYPES.taxonNames]: {
     icon: IconMicroscope,
@@ -89,17 +95,39 @@ makeAPIRequest('/stats').then((response) => {
   triggerRef(dataTypes)
 })
 
-makeAPIRequest('/taxon_names.json', {
-  params: {
-    per: 1,
-    validity: true,
-    rank: ['NomenclaturalRank::Iczn::SpeciesGroup::Species']
-  }
-}).then(({ headers }) => {
-  dataTypes.value[TYPES.validSpecies].count = Number(
-    headers['pagination-total']
-  )
+async function loadSpeciesCount() {
+  await makeAPIRequest('/taxon_names.json', {
+    params: {
+      page: 1,
+      per: 1,
+      validity: true,
+      rank: ['NomenclaturalRank::Iczn::SpeciesGroup::Species']
+    }
+  }).then(({ headers }) => {
+    dataTypes.value[TYPES.validSpecies].count = Number(
+      headers['pagination-total']
+    )
+  })
+
+  await makeAPIRequest('/taxon_names.json', {
+    params: {
+      page: 1,
+      per: 1,
+      taxon_name_id: [913531],
+      taxon_name_classification: ['TaxonNameClassification::Iczn::Fossil'],
+      validity: true,
+      descendants: true,
+      nomenclature_group: ['Species'],
+      rank: ['NomenclaturalRank::Iczn::SpeciesGroup::Species']
+    }
+  }).then(({ headers }) => {
+    dataTypes.value[TYPES.validExtantSpecies].count =
+      dataTypes.value[TYPES.validSpecies].count -
+      Number(headers['pagination-total'])
+  })
 
   triggerRef(dataTypes)
-})
+}
+
+loadSpeciesCount()
 </script>
