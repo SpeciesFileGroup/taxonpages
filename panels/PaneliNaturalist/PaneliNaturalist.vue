@@ -12,9 +12,10 @@
           :key="observation.id"
           class="flex flex-row flex-wrap gap-2"
         >
-          <a
-            :href="`https://www.inaturalist.org/observations/${observation.id}`" target="_blank" 
-            >
+        <a
+        v-if="observation?.observation_photos[0]"
+        :href="`https://www.inaturalist.org/observations/${observation.id}`" target="_blank" 
+          >
             <img
               :key="observation.observation_photos[0].photo.id"
               :src="observation.observation_photos[0].photo.url"
