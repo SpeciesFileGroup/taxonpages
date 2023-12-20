@@ -14,7 +14,7 @@
         >
           <a
             v-if="observation?.observation_photos[0]"
-            :href="`https://www.inaturalist.org/observations/${observation.id}`"
+            :href="`https://www.inaturalist.org/observations/${observation.id}`" target="_blank"
           >
             <img
               :key="observation.observation_photos[0].photo.id"
