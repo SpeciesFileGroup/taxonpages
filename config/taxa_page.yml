@@ -17,7 +17,7 @@ taxa_page:
     panels:
       - - - panel:specimen-records
   inaturalist:
-    label: 'iNaturalist'
+    label: "iNaturalist"
     rank_group: ['GenusGroup', 'SpeciesGroup']
     panels:
       - - - panel:inaturalist
