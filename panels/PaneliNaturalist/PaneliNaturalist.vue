@@ -1,5 +1,4 @@
 <template>
-  <template>
     <VCard>
       <VCardHeader>Observations</VCardHeader>
       <VCardContent>
