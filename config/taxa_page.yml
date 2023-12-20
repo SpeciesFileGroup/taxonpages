@@ -9,9 +9,10 @@ taxa_page:
 
         - - panel:map
           - panel:descendants
+          - panel:scrutiny
           - panel:content
           - panel:statistics
-  specimen_record:
+  specimen_records:
     rank_group: ['SpeciesGroup']
     panels:
       - - - panel:specimen-records
