@@ -1,20 +1,20 @@
 <template>
-    <VCard>
-      <VCardHeader>Observations</VCardHeader>
-      <VCardContent>
-        <VSpinner v-if="isLoading" />
+  <VCard>
+    <VCardHeader>Observations</VCardHeader>
+    <VCardContent>
+      <VSpinner v-if="isLoading" />
+      <div
+        class="flex flex-row flex-wrap gap-2 mb-4"
+        :class="isLoading && 'min-h-[3.5rem]'"
+      >
         <div
-          class="flex flex-row flex-wrap gap-2 mb-4"
-          :class="isLoading && 'min-h-[3.5rem]'"
-        >
-          <div
           v-for="observation in observations"
           :key="observation.id"
           class="flex flex-row flex-wrap gap-2"
         >
-        <a
-        v-if="observation?.observation_photos[0]"
-        :href="`https://www.inaturalist.org/observations/${observation.id}`" target="_blank" 
+          <a
+            v-if="observation?.observation_photos[0]"
+            :href="`https://www.inaturalist.org/observations/${observation.id}`"
           >
             <img
               :key="observation.observation_photos[0].photo.id"
