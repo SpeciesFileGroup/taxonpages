@@ -6,7 +6,7 @@ export default [
     citations: 'OK',
     biology: 'Incomplete',
     anchor: 'Link',
-    link: '/Description/Acaenitinae'
+    link: '/Acaenitinae'
   },
   {
     id: 'Adelognathinae',
