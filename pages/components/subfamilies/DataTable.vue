@@ -21,11 +21,13 @@ const list = computed(() =>
   )
 )
 </script>
-
 <template>
   <p>
-    THe following table is
+    The following table is
   </p>  
+</template>
+
+<template>  
   <div class="bg-base-foreground rounded-lg">
     <div class="flex items-center justify-between">
       <SearchForm v-model="filters.subfamily" />
