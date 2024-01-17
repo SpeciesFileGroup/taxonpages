@@ -7,7 +7,7 @@
           <VCard>
             <VCardContent>
               <h3 class="mt-2 mb-0">General</h3>
-              <span class="text-base-soft">2023-10-27</span>
+              <span class="text-base-soft">Broad, G. & Shaw, M.</span>
               <p>
                 General Information
               </p>
