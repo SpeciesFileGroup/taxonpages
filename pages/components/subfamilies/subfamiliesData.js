@@ -63,15 +63,6 @@ export default [
     link: '/otus/659408'
   },
   {
-    id: 'Banchinae',
-    numberSpecies: 'Afr',
-    distribution: 'OK',
-    citations: 'OK',
-    biology: 'Incomplete',
-    anchor: 'Link',
-    link: '/otus/659408'
-  },
-  {
     id: 'Brachycyrtinae',
     numberSpecies: 'Afr',
     distribution: 'OK',
