@@ -23,6 +23,9 @@ const list = computed(() =>
 </script>
 
 <template>
+  <p>
+    THe following table is
+  </p>  
   <div class="bg-base-foreground rounded-lg">
     <div class="flex items-center justify-between">
       <SearchForm v-model="filters.subfamily" />
