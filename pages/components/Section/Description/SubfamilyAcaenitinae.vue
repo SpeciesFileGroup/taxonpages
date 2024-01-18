@@ -6,7 +6,7 @@
         <div class="flex gap-4 flex-col">
           
           <VCard>
-            <VCardContent class=" text-justify">
+            <VCardContent>
               <p>
                 This relatively small subfamily comprises about 290 species in 30, 
                 mainly small, genera (updated from Yu et al., 2012) found in the 
