@@ -1,7 +1,7 @@
 <template>
     <section>
       <div class="mx-auto py-6 prose !container dark:prose-invert">
-        <h2 class="px-4 sm:px-0 justify-center">Acaenitinae</h2>
+        <h2 class="px-4 sm:px-0 text-align: center">Acaenitinae</h2>
         <span class="text-base-soft justify-center">Broad, G. & Shaw, M.</span>
         <div class="flex gap-4 flex-col">
           
