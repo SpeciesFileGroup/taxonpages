@@ -1,12 +1,12 @@
 <template>
     <section>
       <div class="mx-auto py-6 prose !container dark:prose-invert">
-        <h1 class="px-4 sm:px-0">Acaenitinae</h1>
-        <h3 class="text-base-soft justify-center">Broad, G. & Shaw, M.</h3>
+        <h1 class="px-4 sm:px-0 text--justify">Acaenitinae</h1>
+        < class="text-base-soft justify-center">Broad, G. & Shaw, M.</h3>
         <div class="flex gap-4 flex-col">
           
           <VCard>
-            <VCardContent>
+            <VCardContent class=" text-justify">
               <p>
                 This relatively small subfamily comprises about 290 species in 30, 
                 mainly small, genera (updated from Yu et al., 2012) found in the 
