@@ -2,7 +2,7 @@
     <section>
       <div class="mx-auto py-6 prose !container dark:prose-invert">
         <h1 class="px-4 sm:px-0">Acaenitinae</h1>
-        <span class="text-base-soft justify-center">Broad, G. & Shaw, M.</span>
+        <h3 class="text-base-soft justify-center">Broad, G. & Shaw, M.</h3>
         <div class="flex gap-4 flex-col">
           
           <VCard>
