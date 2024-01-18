@@ -18,7 +18,7 @@
           <VCard>
             <VCardContent>
               <h3 class="mt-2 mb-0">Recongnition</h3>
-              <p>
+              <p class="justify">
                 Acaenitinae females are easily recognised by the large, 
                 elongate hypopygium, although this is not so pronounced in
                  Leptacoenites and Procinetus Förster. Other useful characters to 
