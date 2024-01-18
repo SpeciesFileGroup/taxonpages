@@ -1,8 +1,8 @@
 <template>
     <section>
       <div class="mx-auto py-6 prose !container dark:prose-invert">
-        <h1 class="px-4 sm:px-0 text--justify">Acaenitinae</h1>
-        <span class="text-base-soft justify-center">Broad, G. & Shaw, M.</span>
+        <h1 class="px-4 sm:px-0 text--center">Acaenitinae</h1>
+        <span class="text-base-soft text-center">Broad, G. & Shaw, M.</span>
         <div class="flex gap-4 flex-col">
           
           <VCard>
