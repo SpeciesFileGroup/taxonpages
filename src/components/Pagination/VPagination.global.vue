@@ -48,13 +48,16 @@
         <button
           type="button"
           aria-label="Go to page 1"
-          class="border border-base-border px-2 py-1.5"
           :disabled="currentPage === n"
-          :class="
+          :class="[
+            'border',
+            'border-base-border',
+            'px-2',
+            'py-1.5',
             currentPage === n
               ? 'text-primary-content bg-primary-color'
               : 'text-base-content'
-          "
+          ]"
           @click="() => (currentPage = n)"
         >
           {{ n }}

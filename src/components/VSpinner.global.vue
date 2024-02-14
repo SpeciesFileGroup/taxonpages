@@ -4,16 +4,16 @@
     class="box-spinner mx-spinner absolute bg-base-foreground opacity-90 h-full flex items-center"
     :style="cssProperties"
   >
-    <div
-      class="tw-spinner"
-      :class="[`tw-spinner-${spinnerPosition}`]"
-    >
+    <div :class="['tw-spinner', `tw-spinner-${spinnerPosition}`]">
       <svg
         v-if="showSpinner"
         :style="logoSize"
         aria-hidden="true"
-        class="text-base-lighter animate-spin fill-primary-color"
-        :class="logoClass"
+        :class="[
+          'text-base-lighter',
+          'animate-spin fill-primary-color',
+          logoClass
+        ]"
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -31,8 +31,7 @@
 
       <div
         v-if="legend.length"
-        class="text-base-content text-center"
-        :class="legendClass"
+        :class="['text-base-content', 'text-center', legendClass]"
         :style="legendStyle"
       >
         <span

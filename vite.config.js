@@ -3,7 +3,7 @@ import { loadConfiguration } from './src/utils/loadConfiguration.js'
 import { VitePluginRadar } from 'vite-plugin-radar'
 import path from 'path'
 import Vue from '@vitejs/plugin-vue'
-import Markdown from 'vite-plugin-md'
+import Markdown from 'unplugin-vue-markdown/vite'
 import markdownAnchor from 'markdown-it-anchor'
 import {
   relativeToRouterPlugin,

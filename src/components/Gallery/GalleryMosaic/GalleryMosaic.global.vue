@@ -1,7 +1,6 @@
 <template>
   <div
-    class="grid gap-2"
-    :class="!props.wrap && 'grid-flow-col'"
+    :class="['grid', 'gap-2', { 'grid-flow-col': !props.wrap }]"
     :style="
       props.wrap &&
       `grid-template-columns: repeat(auto-fit, minmax(${props.imageWidth}, 1fr))`

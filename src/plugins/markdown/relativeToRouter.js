@@ -9,12 +9,6 @@ export function relativeToRouterPlugin(md, configuration) {
     const baseUrl = configuration.base_url || ''
 
     return (baseUrl + url).replaceAll('//', '/')
-
-    if (!url.startsWith('/')) {
-      return (baseUrl + url).replaceAll('//', '/')
-    } else {
-      return url
-    }
   }
 
   const scan = (state) => {
@@ -38,10 +32,7 @@ export function relativeToRouterPlugin(md, configuration) {
             !href[1].startsWith('mailto')
           ) {
             if (isStaticAsset(href[1])) {
-              inlineTokens[i].attrs.push([
-                'href',
-                makeUrlToStaticAsset(href[1])
-              ])
+              href[1] = makeUrlToStaticAsset(href[1])
               inlineTokens[i].attrs.push(['target', '_blank'])
             } else {
               inlineTokens[i].tag = 'router-link'
