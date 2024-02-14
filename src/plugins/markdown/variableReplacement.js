@@ -8,7 +8,7 @@ export function variableReplacementPlugin(md, options) {
         return variables[content]
       }
 
-      return match
+      return ''
     })
   })
 }

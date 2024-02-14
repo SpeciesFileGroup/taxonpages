@@ -9,8 +9,12 @@
       @close="() => emit('close')"
     />
     <div
-      class="w-full h-full relative"
-      :class="{ 'disable-zoom-out': disableZoom }"
+      :class="[
+        'w-full',
+        'h-full',
+        'relative',
+        { 'disable-zoom-out': disableZoom }
+      ]"
     >
       <VMap
         ref="mapRef"
@@ -28,11 +32,22 @@
       />
 
       <div
-        class="h-full md:w-96 absolute top-0 bg-base-background z-[2000] overflow-auto ease-in-out duration-300 w-full"
-        :class="{
-          'md:-right-96 -right-full': !isTableVisible,
-          'right-0': isTableVisible
-        }"
+        :class="[
+          'h-full',
+          'md:w-96',
+          'absolute',
+          'top-0',
+          'bg-base-background',
+          'z-[2000]',
+          'overflow-auto',
+          'ease-in-out',
+          'duration-300',
+          'w-full',
+          {
+            'md:-right-96 -right-full': !isTableVisible,
+            'right-0': isTableVisible
+          }
+        ]"
       >
         <ListResults
           v-if="isTableVisible"

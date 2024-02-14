@@ -51,8 +51,7 @@
         class="flex flex-row items-center"
       >
         <div
-          class="w-3 h-3 m-1 rounded-sm"
-          :class="LEGEND[type].background"
+          :class="['w-3', 'h-3', 'm-1', 'rounded-sm', LEGEND[type].background]"
         />
         <span>{{ LEGEND[type].label }}</span>
       </div>
