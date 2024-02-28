@@ -17,6 +17,7 @@ export const useImageStore = defineStore('imageStore', {
     },
 
     async loadImages(otuId) {
+      const UNSUPPORTED_FORMAT = ['image/tiff']
       const params = {
         extend: ['depictions', 'attribution', 'source', 'citations'],
         otu_scope: ['all']
@@ -32,7 +33,16 @@ export const useImageStore = defineStore('imageStore', {
           })
         )
 
-        this.images = response.data
+        this.images = response.data.map((item) => {
+          const image = { ...item }
+
+          if (UNSUPPORTED_FORMAT.includes(image.content_type)) {
+            image.original = item.original_png || item.original
+          }
+
+          return image
+        })
+
         this.controller = null
       } catch (e) {
         if (e.name !== RESPONSE_ERROR.CanceledError) {
