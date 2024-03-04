@@ -35,9 +35,12 @@ export const useImageStore = defineStore('imageStore', {
 
         this.images = response.data.map((item) => {
           const image = { ...item }
+          const { url, project_token } = __APP_ENV__
 
           if (UNSUPPORTED_FORMAT.includes(image.content_type)) {
-            image.original = item.original_png || item.original
+            if (item.original_png) {
+              image.original = `${url}/${item.original_png?.substring(8)}?project_token=${project_token}`
+            }
           }
 
           return image
