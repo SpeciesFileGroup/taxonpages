@@ -1,5 +1,5 @@
 ---
-  header_logo_url: /images/logo.jpg
+  header_logo_url: /public/images/logo.jpg
   header_logo_text: World Ichneumonidae Database (WID)
   header_links:
     - label: Home
