@@ -28,11 +28,11 @@ The World Ichneumonidae Database (WID) is a collaborative effort, aimed to reduc
 |[William Pénigot](https://www.researchgate.net/profile/William-Penigot)                   | Independent Researcher                               | Curator                           |                   |
 
 ## Get in contact
-If you have questions, want to report an issue with the database, or have suggestions, feel free to contact any of the above curators.   
+If you have questions, want to report an issue with the database, or have suggestions, feel free to contact any of the above curators.
 
 ## Citing
 * This website - {{frontmatter.citation}}
-* Individual taxon pages - See citation at the bottom of each page.  
+* Individual taxon pages - See citation at the bottom of each page.
 
 ## The Species File Group (SFG)
 The WID is made possible by the technical and intellectual help from the [Species File Group (SFG)](https://speciesfilegroup.org/index.html), which is an endowment-funded collective of specialists whose broader goal is the advancement of biodiversity informatics. We are located at the University of Illinois, Illinois Natural History Survey. Our group supports the following software/activities:
@@ -42,7 +42,7 @@ The WID is made possible by the technical and intellectual help from the [Specie
 - Taxonomic/Systematic Research supporting several insect groups.
 
 ## Data
-Data for these pages is collaboratively curated online in a [TaxonWorks](https://taxonworks) project. All data behind this site served as JSON through calls to a [TaxonWorks API](https://api.taxonworks.org). You can follow along by using the Console of your browser to explore the Network tab. 
+Data for these pages is collaboratively curated online in a [TaxonWorks](https://taxonworks) project. All data behind this site served as JSON through calls to a [TaxonWorks API](https://api.taxonworks.org). You can follow along by using the Console of your browser to explore the Network tab.
 
 ## Technical
 Want to create your own site? This website is built completely on open-source software. There is a [site template](https://github.com/SpeciesFileGroup/<something>) with more information. Data are curated in a [TaxonWorks](https://taxonworks.org) project then shared via a [TaxonWorks API](https://api.taxonworks.org). Come [chat](https://gitter.im/SpeciesFileGroup/taxonworks) with the TaxonWorks community at any time.
