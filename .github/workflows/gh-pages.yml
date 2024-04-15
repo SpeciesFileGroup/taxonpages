@@ -14,7 +14,7 @@ jobs:
         with:
           ref: 'main'
           fetch-depth: 0
-      
+
       - uses: actions/checkout@v2
         with:
           ref: 'setup'
@@ -48,9 +48,9 @@ jobs:
         with:
           target_branch: gh-pages
           build_dir: dist
+          fqdn: syrphidaeitaly.com
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 permissions:
   contents: write
-  
