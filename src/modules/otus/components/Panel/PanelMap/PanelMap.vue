@@ -11,9 +11,16 @@
           :zoom-bounds="8"
           :geojson="store.distribution.geojson"
           :cluster-icon-create-function="makeClusterIconFor"
+          :geojson-options="geojsonOptions"
           @geojson:ready="() => (isLoading = false)"
         />
-
+        <div ref="popupElement">
+          <MapPopup
+            v-if="popupItem"
+            :items="popupItem.base"
+            @selected="dwcTableRef.show"
+          />
+        </div>
         <VButton
           class="h-6 text-sm absolute right-3 top-3 z-[400]"
           primary
@@ -56,6 +63,7 @@
         <span>{{ LEGEND[type].label }}</span>
       </div>
     </div>
+    <DwcTable ref="dwcTableRef" />
   </VCard>
 </template>
 
@@ -63,8 +71,11 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useDistributionStore } from '@/modules/otus/store/useDistributionStore.js'
 import { makeClusterIconFor } from './clusters/makeClusterIconFor'
+import { useGeojsonOptions } from './composables/useGeojsonOptions.js'
+import MapPopup from './components/MapPopup.vue'
 import CachedMap from './components/CachedMap.vue'
 import OtuSearch from './components/Search/OtuSearch.vue'
+import DwcTable from './components/DwcTable.vue'
 
 const props = defineProps({
   otuId: {
@@ -91,7 +102,10 @@ const props = defineProps({
 const zoom = 2
 const isLoading = ref(true)
 const isOtuSearchVisible = ref(false)
+const dwcTableRef = ref(null)
 const store = useDistributionStore()
+const popupElement = ref(null)
+const { popupItem, geojsonOptions } = useGeojsonOptions({ popupElement })
 
 const LEGEND = {
   AssertedDistribution: {

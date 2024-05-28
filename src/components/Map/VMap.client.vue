@@ -7,12 +7,12 @@
 
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
+import { makeTileFromConfiguration } from './utils/makeTileFromConfiguration'
 import L from 'leaflet'
 import iconRetina from 'leaflet/dist/images/marker-icon-2x.png'
 import iconUrl from 'leaflet/dist/images/marker-icon.png'
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png'
 import geojsonDefaultOptions from './utils/geojsonOptions'
-import { makeTileFromConfiguration } from './utils/makeTileFromConfiguration'
 
 import '@geoman-io/leaflet-geoman-free'
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
@@ -90,7 +90,7 @@ const props = defineProps({
   },
 
   geojsonOptions: {
-    type: Object,
+    type: Function,
     default: () => ({})
   },
 
@@ -116,12 +116,12 @@ const props = defineProps({
 })
 
 const emit = defineEmits([
-  'geojson:ready',
-  'geojson',
   'add:layer',
+  'drag:layer',
   'draw:start',
   'edit:layer',
-  'drag:layer',
+  'geojson',
+  'geojson:ready',
   'zoom:change',
   'zoom:start'
 ])
@@ -318,9 +318,11 @@ onUnmounted(() => {
 
 function setGeoJSON(geojson) {
   if (geojson) {
+    const args = { L }
+
     L.geoJSON(geojson, {
-      ...geojsonDefaultOptions(L),
-      ...props.geojsonOptions
+      ...geojsonDefaultOptions(args),
+      ...props.geojsonOptions(args)
     }).addTo(geoJSONGroup)
 
     const bounds = geoJSONGroup.getBounds()
