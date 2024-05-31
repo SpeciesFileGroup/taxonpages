@@ -9,7 +9,7 @@ title: Some news
 > 3. **Bernardo Santos** - _A pipeline for high-throughput integrative taxonomy: the power of the reverse workflow_ (15–20 min)  
 > 4. **Filippo Di Giovanni** - _Italian recipe for a checklist: an updated list of Italian Darwin wasps_ (10–15 min)  
 > 5. **Davide Dal Pos** - _An update on the WID: A year in the making_ (10–15 min)  
-> 6. **Lars Vilhelmsen** - _Darwin wasps in Kachin amber – expertise wanted!_ (5–10 min)  
+> 6. **Lars Vilhelmsen** - _Darwin waps in Kachin amber – expertise wanted!_ (5–10 min)  
 > 7. **Noah Meier** - _Darwin wasps of Zambia—a blank spot on the distribution map_ (5–10min)
 > ### Open discussion  
 > **Filippo Di Giovanni** - _One Taxapad or more TaxapadS?_ 
