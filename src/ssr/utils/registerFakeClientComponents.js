@@ -1,5 +1,5 @@
 import { defineComponent, h } from 'vue'
-import glob from 'glob'
+import { glob } from 'glob'
 
 export function registerFakeClientComponents(app) {
   const filePaths = glob.sync('src/components/**/*.client.vue')
