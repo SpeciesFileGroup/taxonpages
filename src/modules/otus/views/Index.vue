@@ -89,11 +89,11 @@ import { useHead } from 'unhead'
 import { useSchemaOrg, defineTaxon } from '@/plugins/schemaOrg/composables'
 import { RESPONSE_ERROR } from '../constants'
 import { isAvailableForRank } from '../utils'
+import { useChildrenRoutes, useUserLifeCycles } from '../composables'
 import SiteMap from '../components/SiteMap.vue'
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
 import TaxaInfo from '../components/TaxaInfo.vue'
 import DWCDownload from '../components/DWCDownload.vue'
-import useChildrenRoutes from '../composables/useChildrenRoutes'
 
 const route = useRoute()
 const router = useRouter()
@@ -111,14 +111,19 @@ const otu = computed(() => store.otu)
 const taxon = computed(() => store.taxon)
 const isReady = computed(() => otu.value?.id && taxon.value?.id)
 const tabs = computed(() =>
-  childrenRoutes.filter((item) =>
+  childrenRoutes.value.filter((item) =>
     isAvailableForRank(item.meta.rankGroup, taxon.value.rank_string)
   )
 )
 
+const { onCreatePage, onSSRCreatePage } = useUserLifeCycles({ taxon, otu })
+
 onServerPrefetch(async () => {
   await loadInitialData()
+  await onSSRCreatePage()
 })
+
+onCreatePage()
 
 watch(
   () => route.params.id,
