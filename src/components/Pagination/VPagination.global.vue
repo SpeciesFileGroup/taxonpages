@@ -7,7 +7,7 @@
     <li>
       <button
         type="button"
-        :disabled="currentPage < 2"
+        :disabled="currentPage < 2 || !pages"
         aria-label="Go to first page"
         class="border border-base-border rounded-l-md px-2 py-1.5"
         @click="currentPage = 1"
@@ -21,7 +21,7 @@
     >
       <button
         type="button"
-        :disabled="currentPage < 2"
+        :disabled="currentPage < 2 || !pages"
         aria-label="Go to previous page"
         class="border border-base-border px-2 py-1.5"
         @click="currentPage--"
@@ -77,7 +77,7 @@
         type="button"
         aria-label="Go to next page"
         class="border border-base-border px-2 py-1.5"
-        :disabled="currentPage === pages"
+        :disabled="currentPage === pages || !pages"
         @click="() => currentPage++"
       >
         ›
@@ -86,7 +86,7 @@
     <li role="presentation">
       <button
         type="button"
-        :disabled="currentPage === pages"
+        :disabled="currentPage === pages || !pages"
         aria-label="Go to last page"
         class="border border-base-border rounded-r-md px-2 py-1.5"
         @click="() => (currentPage = pages)"
