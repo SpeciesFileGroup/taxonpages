@@ -20,12 +20,22 @@ export default () => {
     define: {
       __APP_ENV__: configuration
     },
+
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
         '#': path.resolve(__dirname, '.')
       }
     },
+
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: 'modern-compiler'
+        }
+      }
+    },
+
     plugins: [
       Vue({
         include: [/\.vue$/, /\.md$/]
