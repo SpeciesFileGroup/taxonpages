@@ -1,9 +1,9 @@
-import Index from '../views/Index.vue'
+import InteractiveKey from '../views/InteractiveKey.vue'
 
 export default [
   {
-    name: 'interactive-key-id',
-    path: '/interactive_key/:id',
-    component: Index
+    name: 'interactive-keys-id',
+    path: '/interactive_keys/:id',
+    component: InteractiveKey
   }
 ]
