@@ -7,14 +7,14 @@
       @click="isModalVisible = true"
     >
       <IconJson class="w-4 h-4" />
-      Sitemap
+      Datamap
     </VButton>
     <VModal
       v-if="isModalVisible"
       @close="isModalVisible = false"
     >
       <template #header>
-        <h3 class="font-medium">Sitemap</h3>
+        <h3 class="font-medium">Datamap</h3>
       </template>
       <div class="p-4 pt-0">
         <p class="text-sm mb-2">
@@ -31,7 +31,7 @@
           </VTableHeader>
           <VTableBody>
             <VTableBodyRow
-              v-for="(item, key) in store.sitemap"
+              v-for="(item, key) in store.datamap"
               :key="key"
             >
               <VTableBodyCell class="capitalize">{{

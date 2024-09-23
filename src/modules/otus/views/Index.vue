@@ -34,7 +34,7 @@
             </VSkeleton>
             <div class="flex flex-row gap-2">
               <ClientOnly>
-                <SiteMap />
+                <DataMap />
               </ClientOnly>
               <DWCDownload
                 v-if="isReady"
@@ -90,7 +90,7 @@ import { useSchemaOrg, defineTaxon } from '@/plugins/schemaOrg/composables'
 import { RESPONSE_ERROR } from '../constants'
 import { isAvailableForRank } from '../utils'
 import { useChildrenRoutes, useUserLifeCycles } from '../composables'
-import SiteMap from '../components/SiteMap.vue'
+import DataMap from '../components/DataMap.vue'
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
 import TaxaInfo from '../components/TaxaInfo.vue'
 import DWCDownload from '../components/DWCDownload.vue'
