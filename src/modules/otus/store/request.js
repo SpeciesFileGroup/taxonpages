@@ -12,7 +12,7 @@ export const useOtuPageRequestStore = defineStore('otuPageRequest', {
       return (key) => state.requests[key]
     },
 
-    sitemap: (state) => {
+    datamap: (state) => {
       const keys = Object.keys(state.requests).sort()
 
       return Object.fromEntries(
