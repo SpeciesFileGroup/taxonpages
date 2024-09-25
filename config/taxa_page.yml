@@ -23,8 +23,3 @@ taxa_page:
     rank_group: ['GenusGroup', 'SpeciesGroup']
     panels:
       - - - panel:inaturalist
-  GBIF:
-      label: 'gbif'
-      rank_group: ['GenusGroup', 'SpeciesGroup']
-      panels:
-        - - - panel:gbif
