@@ -11,6 +11,7 @@ taxa_page:
           - panel:descendants
           - panel:scrutiny
           - panel:content
+          - panel:keys
           - panel:statistics
   specimen_records:
     rank_group: ['SpeciesGroup']
