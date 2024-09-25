@@ -13,6 +13,7 @@ export const DEFAULT_OVERVIEW_LAYOUT = {
           'panel:map',
           'panel:descendants',
           'panel:content',
+          'panel:keys',
           'panel:statistics'
         ]
       ]
