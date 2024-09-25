@@ -193,6 +193,22 @@ taxa_page:
 #     - - - panel:specimen-records
 ```
 
+### Lifecycle hooks (Experimental feature)
+
+The `onCreatePage` and `onSSRPageCreate` functions allow you to execute code at the time the taxa page is created. `onSSRPageCreate` will be executed only on the server side in SSR mode. To make use of them it is necessary to include them in a file object called `pages/otus.config.js`. Both functions accept `otu`, `taxon`, `route` and `router` objects as parameters. Since `onCreatePage` runs on Taxa page component, it is possible to use hooks like `onMounted` or `onBeforeMount` inside it
+
+```javascript
+export default {
+  onSSRCreatePage: async ({ otu, taxon, route, router }) => {
+    // Your code here
+  },
+
+  onCreatePage: ({ otu, taxon, route, router }) => {
+    // Your code here
+  }
+}
+```
+
 ### External panels
 
 To add panels in Taxa pages, create a folder called `panels` in your `setup` branch, and inside it create another folder for your panel. For example: `panels/PanelTest`
