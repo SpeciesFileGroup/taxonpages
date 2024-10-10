@@ -101,4 +101,8 @@ const options = ref({
 .distinguish-title {
   @apply text-xl my-4;
 }
+
+.distinguish-row-filter-buttons {
+  @apply my-4;
+}
 </style>
