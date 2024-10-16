@@ -5,6 +5,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/Acaenitinae'
   },
@@ -14,6 +15,7 @@ export default [
     distribution: 'Complete',
     citations: 'Complete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659415'
   },
@@ -23,6 +25,7 @@ export default [
     distribution: 'Complete',
     citations: 'Complete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -32,6 +35,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -41,6 +45,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -50,6 +55,7 @@ export default [
     distribution: 'Complete',
     citations: 'Complete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -59,6 +65,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -68,6 +75,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -77,6 +85,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -86,6 +95,7 @@ export default [
     distribution: 'Complete',
     citations: 'Complete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -95,6 +105,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -104,6 +115,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -113,6 +125,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -122,6 +135,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -131,6 +145,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -140,6 +155,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -149,6 +165,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -158,6 +175,7 @@ export default [
     distribution: 'Complete',
     citations: 'Complete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -177,6 +195,7 @@ export default [
     distribution: 'Afrotropical',
     citations: 'Afrotropical',
     biology: 'Incomplete',
+    type: 'Afrotropical',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -186,6 +205,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -195,6 +215,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -204,6 +225,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -213,6 +235,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -222,6 +245,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -231,6 +255,7 @@ export default [
     distribution: 'Complete',
     citations: 'Complete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -240,6 +265,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -249,6 +275,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -258,6 +285,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -267,6 +295,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -276,6 +305,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -285,6 +315,7 @@ export default [
     distribution: 'Complete',
     citations: 'Complete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -294,6 +325,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -303,6 +335,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -312,6 +345,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -321,6 +355,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -330,6 +365,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -339,6 +375,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -348,6 +385,7 @@ export default [
     distribution: 'Complete',
     citations: 'Complete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -357,6 +395,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -366,6 +405,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
@@ -375,6 +415,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   }
