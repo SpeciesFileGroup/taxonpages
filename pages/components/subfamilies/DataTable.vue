@@ -62,7 +62,7 @@ const list = computed(() =>
           <th class="px-4 py-3">Taxonomic History</th>
           <th class="px-4 py-3">Biological Association</th>
           <!-- Right-align the Page title and content -->
-          <th class="px-4 py-3 text-right">Page
+          <th class="px-4 py-3 text-right">Taxa Page
             <span class="sr-only">Link</span>
           </th>
         </tr>
