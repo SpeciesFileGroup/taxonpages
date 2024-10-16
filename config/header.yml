@@ -8,8 +8,17 @@
     - label: About
       link: /about
 
-    - label: Announcements
-      link: /announcements
-    
     - label: Subfamilies
       link: /subfamilies
+    
+    - label: Meetings
+      link: /announcements
+    
+    - label: News & Updates
+      link: /news
+
+    - label: Collaborate
+      link: /collaboration
+    
+    - label: How to Cite
+      link: /cite
