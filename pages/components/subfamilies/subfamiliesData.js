@@ -172,7 +172,7 @@ export default [
   },
   {
     id: 'Ichneumoninae',
-    numberSpecies: 'Afrotropical; Nearctic; Palearctic',
+    numberSpecies: 'Afrotropical; Nearctic; Palearctic; Australian; Indian',
     distribution: 'Afrotropical',
     citations: 'Afrotropical',
     biology: 'Incomplete',
