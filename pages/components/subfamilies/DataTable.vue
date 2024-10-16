@@ -78,7 +78,7 @@ const list = computed(() =>
           <td class="px-4 py-3 wrap-content">{{ item.distribution }}</td>
           <td class="px-4 py-3 wrap-content">{{ item.citations }}</td>
           <td class="px-4 py-3 wrap-content">{{ item.biology }}</td>
-          <td class="px-4 py-3 flex items-right justify-end">
+          <td class="px-4 py-3 items-right">
             <router-link
               v-bind:to="item.link"
               class="text-indigo-500 hover:underline"
