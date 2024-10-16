@@ -62,7 +62,7 @@ const list = computed(() =>
           <th class="px-4 py-3">Distribution</th>
           <th class="px-4 py-3">Taxonomic History</th>
           <th class="px-4 py-3">Biological Association</th>
-          <th class="px-4 py-3 text-right">Page
+          <th class="px-4 py-3 text-center">Page
             <span class="sr-only">Link</span>
           </th>
         </tr>
