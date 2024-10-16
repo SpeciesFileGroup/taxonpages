@@ -60,6 +60,7 @@ const list = computed(() =>
           <th class="px-4 py-3">Species</th>
           <th class="px-4 py-3">Distribution</th>
           <th class="px-4 py-3">Taxonomic History</th>
+          <th class="px-4 py-3">Primary Type</th>
           <th class="px-4 py-3">Biological Association</th>
           <!-- Right-align the Page title and content -->
           <th class="px-4 py-3 text-right">Taxa Page
@@ -77,6 +78,7 @@ const list = computed(() =>
           <td class="px-4 py-3 wrap-content">{{ item.numberSpecies }}</td>
           <td class="px-4 py-3 wrap-content">{{ item.distribution }}</td>
           <td class="px-4 py-3 wrap-content">{{ item.citations }}</td>
+          <td class="px-4 py-3 wrap-content">{{ item.type }}</td>
           <td class="px-4 py-3 wrap-content">{{ item.biology }}</td>
           <!-- Ensure right alignment of the content in Page column -->
           <td class="px-4 py-3 text-right">

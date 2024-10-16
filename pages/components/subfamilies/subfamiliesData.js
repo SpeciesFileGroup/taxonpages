@@ -167,6 +167,7 @@ export default [
     distribution: 'Incomplete',
     citations: 'Incomplete',
     biology: 'Incomplete',
+    type: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
   },
