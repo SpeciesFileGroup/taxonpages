@@ -1,3 +1,27 @@
+<script setup>
+import { computed, ref } from 'vue';
+import FilterDropdown from './FilterDropdown.vue';
+import FilterRadios from './FilterRadios.vue';
+import SearchForm from './SearchForm.vue';
+
+const props = defineProps({
+  items: {
+    type: Array,
+    required: true
+  }
+})
+
+const filters = ref({
+  subfamily: ''
+})
+
+const list = computed(() =>
+  props.items.filter((item) =>
+    item.id.toLowerCase().includes(filters.value.subfamily.toLowerCase())
+  )
+)
+</script>
+
 <template>  
   <section class="bg-base-foreground">
     <div class="container mx-auto p-4 sm:pt-10 sm:pb-2 relative box-border">
@@ -9,7 +33,7 @@
             The following table gives you information about the current updates on WID according to subfamilies.
           </p>
           <p>
-            Here are the abbreviation used within the table:
+           Here are the abbreviation used within the table:
           </p>
           <p>
             WID is open to contributions from anyone with specimen records and
@@ -38,7 +62,6 @@
           <th class="px-4 py-3">Distribution</th>
           <th class="px-4 py-3">Taxonomic History</th>
           <th class="px-4 py-3">Biological Association</th>
-          <!-- Right-align the Page title -->
           <th class="px-4 py-3 text-right">Page
             <span class="sr-only">Link</span>
           </th>
@@ -55,13 +78,13 @@
           <td class="px-4 py-3 wrap-content">{{ item.distribution }}</td>
           <td class="px-4 py-3 wrap-content">{{ item.citations }}</td>
           <td class="px-4 py-3 wrap-content">{{ item.biology }}</td>
-          <!-- Ensure text alignment right for both header and content -->
-          <td class="px-4 py-3 text-right">
+          <td class="px-4 py-3 flex items-right justify-end">
             <router-link
               v-bind:to="item.link"
               class="text-indigo-500 hover:underline"
               target="_blank"
-              >{{ item.anchor }}</router-link>
+              >{{ item.anchor }}</router-link
+            >
           </td>
         </tr>
       </tbody>
