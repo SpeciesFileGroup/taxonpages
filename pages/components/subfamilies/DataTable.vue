@@ -55,31 +55,30 @@ const list = computed(() =>
       </div>
     </div>
     <table class="w-full text-sm text-left text-gray-500">
-  <thead class="text-xs text-base-content uppercase bg-base-background">
-    <tr>
-      <th class="px-4 py-3">Subfamily</th>
-      <th class="px-4 py-3">Species</th>
-      <th class="px-4 py-3">Distribution</th>
-      <th class="px-4 py-3">Taxonomic History</th>
-      <th class="px-4 py-3">Biological Association</th>
-      <th class="px-4 py-3"><span class="sr-only">Link</span></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr v-for="item in list" :key="item.id" class="border-b border-base-muted">
-      <td class="px-4 py-3 font-medium text-base-content break-words">{{ item.id }}</td>
-      <td class="px-4 py-3 break-words">{{ item.numberSpecies }}</td>
-      <td class="px-4 py-3 break-words">{{ item.distribution }}</td>
-      <td class="px-4 py-3 break-words">{{ item.citations }}</td>
-      <td class="px-4 py-3 break-words">{{ item.biology }}</td>
-      <td class="px-4 py-3 flex items-center justify-end">
-        <router-link v-bind:to="item.link" class="text-indigo-500 hover:underline" target="_blank">
-          {{ item.anchor }}
+      <thead class="text-xs text-base-content uppercase bg-base-background">
+          <tr>
+            <th class="px-4 py-3">Subfamily</th>
+            <th class="px-4 py-3">Species</th>
+            <th class="px-4 py-3">Distribution</th>
+            <th class="px-4 py-3">Taxonomic History</th>
+            <th class="px-4 py-3">Biological Association</th>
+            <th class="px-4 py-3"><span class="sr-only">Link</span></th>
+          </tr>
+        </thead>
+      <tbody>
+        <tr v-for="item in list" :key="item.id" class="border-b border-base-muted">
+          <td class="px-4 py-3 font-medium text-base-content break-words">{{ item.id }}</td>
+          <td class="px-4 py-3 break-words">{{ item.numberSpecies }}</td>
+          <td class="px-4 py-3 break-words">{{ item.distribution }}</td>
+          <td class="px-4 py-3 break-words">{{ item.citations }}</td>
+          <td class="px-4 py-3 break-words">{{ item.biology }}</td>
+          <td class="px-4 py-3 flex items-center justify-end">
+            <router-link v-bind:to="item.link" class="text-indigo-500 hover:underline" target="_blank">
+            {{ item.anchor }}
         </router-link>
       </td>
     </tr>
   </tbody>
 </table>
-
   </div>
 </template>
