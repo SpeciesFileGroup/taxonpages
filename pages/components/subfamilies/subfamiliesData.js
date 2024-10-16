@@ -172,7 +172,7 @@ export default [
   },
   {
     id: 'Ichneumoninae',
-    numberSpecies: 'Afrotropical',
+    numberSpecies: 'Afrotropical; Nearctic; Palearctic',
     distribution: 'Afrotropical',
     citations: 'Afrotropical',
     biology: 'Incomplete',
@@ -325,9 +325,9 @@ export default [
   },
   {
     id: 'Sisyrostolinae',
-    numberSpecies: 'Afr',
-    distribution: 'OK',
-    citations: 'OK',
+    numberSpecies: 'Incomplete',
+    distribution: 'Incomplete',
+    citations: 'Incomplete',
     biology: 'Incomplete',
     anchor: 'Link',
     link: '/otus/659408'
