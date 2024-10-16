@@ -9,17 +9,17 @@ const props = defineProps({
     type: Array,
     required: true
   }
-})
+});
 
 const filters = ref({
   subfamily: ''
-})
+});
 
 const list = computed(() =>
   props.items.filter((item) =>
     item.id.toLowerCase().includes(filters.value.subfamily.toLowerCase())
   )
-)
+);
 </script>
 
 <template>  
@@ -33,11 +33,10 @@ const list = computed(() =>
             The following table gives you information about the current updates on WID according to subfamilies.
           </p>
           <p>
-           Here are the abbreviation used within the table:
+            Here are the abbreviations used within the table:
           </p>
           <p>
-            WID is open to contributions from anyone with specimen records and
-            images.
+            WID is open to contributions from anyone with specimen records and images.
           </p>
         </div>
       </div>
@@ -62,6 +61,7 @@ const list = computed(() =>
           <th class="px-4 py-3">Distribution</th>
           <th class="px-4 py-3">Taxonomic History</th>
           <th class="px-4 py-3">Biological Association</th>
+          <!-- Right-align the Page title and content -->
           <th class="px-4 py-3 text-right">Page
             <span class="sr-only">Link</span>
           </th>
@@ -78,13 +78,15 @@ const list = computed(() =>
           <td class="px-4 py-3 wrap-content">{{ item.distribution }}</td>
           <td class="px-4 py-3 wrap-content">{{ item.citations }}</td>
           <td class="px-4 py-3 wrap-content">{{ item.biology }}</td>
-          <td class="px-4 py-3 items-right">
+          <!-- Ensure right alignment of the content in Page column -->
+          <td class="px-4 py-3 text-right">
             <router-link
               v-bind:to="item.link"
               class="text-indigo-500 hover:underline"
               target="_blank"
-              >{{ item.anchor }}</router-link
             >
+              {{ item.anchor }}
+            </router-link>
           </td>
         </tr>
       </tbody>
