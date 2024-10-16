@@ -30,11 +30,10 @@ const list = computed(() =>
           <p>
             Because Ichneumonidae is extremely diverse (>24,000 species described) and has a huge literature (>12,000 papers), 
             it can take many years to fully and precisely update a subfamily, especially the very diverse one. 
-            The following table giveyou information about the current updates on WID according to subfamilies.
+            The following table gives you information about the current updates on WID according to subfamilies.
           </p>
           <p>
            Here are the abbreviation used within the table:
-           
           </p>
           <p>
             WID is open to contributions from anyone with specimen records and
@@ -48,37 +47,66 @@ const list = computed(() =>
   <div class="bg-base-foreground rounded-lg">
     <div class="flex items-center justify-between">
       <SearchForm v-model="filters.subfamily" />
-
       <div class="flex items-center justify-end text-sm font-semibold">
         <FilterDropdown />
         <FilterRadios />
       </div>
     </div>
+
+    <!-- Table Content -->
     <table class="w-full text-sm text-left text-gray-500">
       <thead class="text-xs text-base-content uppercase bg-base-background">
-          <tr>
-            <th class="px-4 py-3">Subfamily</th>
-            <th class="px-4 py-3">Species</th>
-            <th class="px-4 py-3">Distribution</th>
-            <th class="px-4 py-3">Taxonomic History</th>
-            <th class="px-4 py-3">Biological Association</th>
-            <th class="px-4 py-3"><span class="sr-only">Link</span></th>
-          </tr>
-        </thead>
+        <tr>
+          <th class="px-4 py-3">Subfamily</th>
+          <th class="px-4 py-3">Species</th>
+          <th class="px-4 py-3">Distribution</th>
+          <th class="px-4 py-3">Taxonomic History</th>
+          <th class="px-4 py-3">Biological Association</th>
+          <th class="px-4 py-3">
+            <span class="sr-only">Link</span>
+          </th>
+        </tr>
+      </thead>
       <tbody>
-        <tr v-for="item in list" :key="item.id" class="border-b border-base-muted">
-          <td class="px-4 py-3 font-medium text-base-content break-words">{{ item.id }}</td>
-          <td class="px-4 py-3 break-words">{{ item.numberSpecies }}</td>
-          <td class="px-4 py-3 break-words">{{ item.distribution }}</td>
-          <td class="px-4 py-3 break-words">{{ item.citations }}</td>
-          <td class="px-4 py-3 break-words">{{ item.biology }}</td>
+        <tr
+          v-for="item in list"
+          :key="item.id"
+          class="border-b border-base-muted"
+        >
+          <td class="px-4 py-3 font-medium text-base-content wrap-content">{{ item.id }}</td>
+          <td class="px-4 py-3 wrap-content">{{ item.numberSpecies }}</td>
+          <td class="px-4 py-3 wrap-content">{{ item.distribution }}</td>
+          <td class="px-4 py-3 wrap-content">{{ item.citations }}</td>
+          <td class="px-4 py-3 wrap-content">{{ item.biology }}</td>
           <td class="px-4 py-3 flex items-center justify-end">
-            <router-link v-bind:to="item.link" class="text-indigo-500 hover:underline" target="_blank">
-            {{ item.anchor }}
-        </router-link>
-      </td>
-    </tr>
-  </tbody>
-</table>
+            <router-link
+              v-bind:to="item.link"
+              class="text-indigo-500 hover:underline"
+              target="_blank"
+              >{{ item.anchor }}</router-link
+            >
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
+
+<style scoped>
+/* Ensure text wraps inside table cells */
+.wrap-content {
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-word;
+  max-width: 150px; /* Adjust as needed to prevent column stretching */
+}
+
+table {
+  table-layout: fixed; /* Ensures columns don't stretch to fit content */
+}
+
+th, td {
+  max-width: 150px; /* Limits the width of each column */
+  overflow: hidden; /* Ensures overflow text wraps */
+}
+</style>
