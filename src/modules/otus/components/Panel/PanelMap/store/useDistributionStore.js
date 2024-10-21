@@ -1,12 +1,31 @@
-import TaxonWorks from '../services/TaxonWorks'
+import TaxonWorks from '../../../../services/TaxonWorks'
 import { defineStore } from 'pinia'
-import { useOtuPageRequest } from '../helpers/useOtuPageRequest'
-import { RESPONSE_ERROR } from '../constants'
+import { useOtuPageRequest } from '../../../../helpers/useOtuPageRequest'
+import { RESPONSE_ERROR } from '../../../../constants'
 import {
-  isRankGrpup,
+  isRankGroup,
   removeDuplicateShapes,
   makeGeoJSONFeature
 } from '../utils'
+import { LEGEND } from '../constants'
+
+function sortFeaturesByType(arr, reference) {
+  const referenceMap = new Map()
+
+  reference.forEach((item, index) => {
+    referenceMap.set(item, index)
+  })
+
+  return arr.toSorted((a, b) => {
+    const indexA = referenceMap.has(a.properties.base.type)
+      ? referenceMap.get(a.properties.base.type)
+      : Infinity
+    const indexB = referenceMap.has(b.properties.base.type)
+      ? referenceMap.get(b.properties.base.type)
+      : Infinity
+    return indexA - indexB
+  })
+}
 
 export const useDistributionStore = defineStore('distributionStore', {
   state: () => {
@@ -60,7 +79,7 @@ export const useDistributionStore = defineStore('distributionStore', {
 
     async loadDistribution({ otuId, rankString }) {
       const isSpeciesGroup =
-        rankString && isRankGrpup('SpeciesGroup', rankString)
+        rankString && isRankGroup('SpeciesGroup', rankString)
 
       this.controller = new AbortController()
 
@@ -75,7 +94,9 @@ export const useDistributionStore = defineStore('distributionStore', {
               this.distribution.geojson = null
               this.distribution.errorMessage = data.message
             } else {
-              const { features, shapeTypes } = removeDuplicateShapes(data)
+              const { features, shapeTypes } = removeDuplicateShapes(
+                sortFeaturesByType(data.features, Object.keys(LEGEND))
+              )
 
               this.distribution.currentShapeTypes = shapeTypes
               this.distribution.geojson = {

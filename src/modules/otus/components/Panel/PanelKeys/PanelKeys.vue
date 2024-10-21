@@ -39,7 +39,7 @@ import { onMounted, onBeforeUnmount, ref, computed } from 'vue'
 
 const props = defineProps({
   otuId: {
-    type: Object
+    type: Number
   }
 })
 
