@@ -8,3 +8,9 @@ export const SPECIMEN_TYPES = [
   'paratype',
   'paratypes'
 ]
+
+export const FEATURE_OBJECT_TYPES = [
+  'AssertedDistribution',
+  'CollectionObject',
+  'TypeMaterial'
+]

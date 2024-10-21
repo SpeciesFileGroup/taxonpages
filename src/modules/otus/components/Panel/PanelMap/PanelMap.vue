@@ -69,9 +69,10 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { useDistributionStore } from '@/modules/otus/store/useDistributionStore.js'
+import { useDistributionStore } from './store/useDistributionStore.js'
 import { makeClusterIconFor } from './clusters/makeClusterIconFor'
 import { useGeojsonOptions } from './composables/useGeojsonOptions.js'
+import { LEGEND } from './constants'
 import MapPopup from './components/MapPopup.vue'
 import CachedMap from './components/CachedMap.vue'
 import OtuSearch from './components/Search/OtuSearch.vue'
@@ -106,29 +107,6 @@ const dwcTableRef = ref(null)
 const store = useDistributionStore()
 const popupElement = ref(null)
 const { popupItem, geojsonOptions } = useGeojsonOptions({ popupElement })
-
-const LEGEND = {
-  AssertedDistribution: {
-    label: 'Asserted distribution',
-    background: 'bg-map-asserted'
-  },
-  Georeference: {
-    label: 'Georeference',
-    background: 'bg-map-georeference'
-  },
-  TypeMaterial: {
-    label: 'Type material',
-    background: 'bg-map-type-material'
-  },
-  CollectionObject: {
-    label: 'Collection object',
-    background: 'bg-map-collection-object'
-  },
-  Aggregate: {
-    label: 'Aggregate (Asserted distribution & Georeference)',
-    background: 'bg-map-aggregate'
-  }
-}
 
 onMounted(() => {
   isLoading.value = true
