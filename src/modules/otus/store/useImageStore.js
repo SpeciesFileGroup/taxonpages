@@ -20,7 +20,7 @@ export const useImageStore = defineStore('imageStore', {
       const UNSUPPORTED_FORMAT = ['image/tiff']
       const params = {
         extend: ['depictions', 'attribution', 'source', 'citations'],
-        otu_scope: ['all']
+        otu_scope: ['all', 'coordinate_otus']
       }
 
       this.controller = new AbortController()
