@@ -74,9 +74,11 @@ const loadDescendants = () => {
     params: {
       max_descendants_depth: 1
     }
-  }).then(({ data }) => {
-    descendants.value = data.descendants
   })
+    .then(({ data }) => {
+      descendants.value = data.descendants
+    })
+    .catch(() => {})
 }
 </script>
 
