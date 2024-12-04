@@ -1,6 +1,8 @@
 *
 !pages
 !pages/**
+!panels
+!panels/**
 !config
 !config/**
 !public
