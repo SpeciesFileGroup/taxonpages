@@ -14,6 +14,11 @@ const props = defineProps({
   otuId: {
     type: [String, Number],
     required: true
+  },
+
+  sort_order: {
+    type: [Array],
+    default: () => []
   }
 })
 
@@ -21,12 +26,12 @@ const store = useImageStore()
 const images = computed(() => store.images || [])
 
 onServerPrefetch(async () => {
-  await store.loadImages(props.otuId)
+  await store.loadImages(props.otuId, { sortOrder: props.sortOrder })
 })
 
 onMounted(() => {
   if (!store.images) {
-    store.loadImages(props.otuId)
+    store.loadImages(props.otuId, { sortOrder: props.sort_order })
   }
 })
 
