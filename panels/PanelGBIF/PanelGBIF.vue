@@ -4,6 +4,7 @@
     <VCardContent>
       <a
         class="text-sm"
+        target="_blank"
         :href="url"
         v-html="taxon.full_name_tag"
       />
@@ -12,9 +13,9 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
-import axios from 'axios'
-import GBIFLogo from './components/gbifLogo.vue'
+import axios from 'axios';
+import { computed, onMounted, ref } from 'vue';
+import GBIFLogo from './components/gbifLogo.vue';
 
 const props = defineProps({
   taxon: {
