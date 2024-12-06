@@ -4,7 +4,6 @@
     <VCardContent>
       <a
         class="text-sm"
-        target="_blank"
         :href="url"
         v-html="taxon.full_name_tag"
       />
