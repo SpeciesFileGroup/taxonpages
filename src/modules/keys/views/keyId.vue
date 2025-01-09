@@ -29,12 +29,11 @@
 
 <script setup>
 import { useRoute } from 'vue-router'
-import { ref, useTemplateRef, onMounted } from 'vue'
+import { ref } from 'vue'
 import { VuePinpoint } from '@sfgrp/pinpoint'
 import '@sfgrp/pinpoint/dist/pinpoint.css'
 import MetadataModal from '../components/MetadataModal.vue'
 
-const pinpointRef = useTemplateRef('pinpoint')
 const route = useRoute()
 
 const options = ref({
