@@ -136,7 +136,7 @@ pinpoint-button-up::before {
 }
 
 .pinpoint-couplet-node {
-  @apply w-1/2;
+  @apply min-w-96 flex justify-center;
 
   .pinpoint-node-target {
     @apply mx-5;
