@@ -3,10 +3,14 @@
     <VCardHeader>Keys ({{ count }})</VCardHeader>
     <VCardContent>
       <template
-        v-for="(group, key) in observationMatrices"
+        v-for="(group, key) in keys"
         :key="key"
       >
-        <div v-if="Object.keys(group).length">
+        <div
+          v-if="
+            [...Object.keys(group.matrices), ...Object.keys(group.leads)].length
+          "
+        >
           <VTable>
             <VTableHeader>
               <VTableHeaderRow>
@@ -16,10 +20,24 @@
               </VTableHeaderRow>
             </VTableHeader>
             <VTableBody>
-              <VTableBodyRow v-for="(label, id) in group">
+              <VTableBodyRow
+                v-for="(label, id) in group.matrices"
+                :key="id"
+              >
                 <VTableBodyCell>
                   <RouterLink
                     :to="{ name: 'interactive-keys-id', params: { id } }"
+                    v-text="label"
+                  />
+                </VTableBodyCell>
+              </VTableBodyRow>
+              <VTableBodyRow
+                v-for="(label, id) in group.leads"
+                :key="id"
+              >
+                <VTableBodyCell>
+                  <RouterLink
+                    :to="{ name: 'keys-id', params: { id } }"
                     v-text="label"
                   />
                 </VTableBodyCell>
@@ -44,7 +62,7 @@ const props = defineProps({
 })
 
 const controller = new AbortController()
-const observationMatrices = ref({
+const keys = ref({
   to: {},
   in: {}
 })
@@ -52,7 +70,7 @@ const observationMatrices = ref({
 const count = computed(
   () =>
     []
-      .concat(...Object.values(observationMatrices.value))
+      .concat(...Object.values(keys.value.to), ...Object.values(keys.value.in))
       .filter((item) => Object.keys(item).length).length
 )
 
@@ -65,9 +83,15 @@ onMounted(() => {
     TaxonWorks.getKeys(props.otuId, { signal: controller.signal, params })
   )
     .then(({ data }) => {
-      observationMatrices.value = {
-        to: data.observation_matrices.scoped,
-        in: data.observation_matrices.in
+      keys.value = {
+        to: {
+          matrices: data.observation_matrices.scoped,
+          leads: data.leads.scoped
+        },
+        in: {
+          matrices: data.observation_matrices.in,
+          leads: data.leads.in
+        }
       }
     })
     .catch(() => {})
