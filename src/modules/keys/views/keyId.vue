@@ -16,6 +16,11 @@
             <IconArrowUp class="h-3" /> Back <IconArrowUp class="h-3" />
           </div>
         </template>
+        <template #button-next-label>
+          <div class="flex gap-2 items-center">
+            <IconArrowDown class="h-3" /> Next <IconArrowDown class="h-3" />
+          </div>
+        </template>
         <template #target="{ id, label }">
           <RouterLink
             :to="{ name: 'otus-id', params: { id } }"
@@ -104,8 +109,13 @@ const options = ref({
 .pinpoint-button-go {
   display: none;
 }
-.pinpoint-button-up {
+.pinpoint-button-up,
+.pinpoint-node-next-button {
   @apply px-3 py-1 hover:bg-opacity-80 bg-primary-color text-primary-content text-sm items-center;
+}
+
+.pinpoint-node-next-container {
+  @apply flex justify-center mb-4;
 }
 
 pinpoint-button-up::before {
