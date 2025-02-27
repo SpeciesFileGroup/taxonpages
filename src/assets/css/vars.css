@@ -1,5 +1,3 @@
-@reference 'tailwindcss';
-
 :root {
   --color-map-shape-opacity: 0.5;
   --color-map-marker-opacity: 0.75;
