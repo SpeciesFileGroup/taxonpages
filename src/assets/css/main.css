@@ -1,22 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,400;0,500;0,900;1,100;1,400&display=swap');
-@import '@/assets/css/vars.css';
 @import '@/assets/css/tailwind.css';
+@import '@/assets/css/vars.css';
 @import 'leaflet/dist/leaflet.css';
 @import '@/assets/css/leaflet.css';
 @import '@/assets/css/webkit.css';
 
-* {
-  box-sizing: content-box;
-}
+@layer base {
+  * {
+    box-sizing: content-box;
+  }
 
-body {
-  @apply 
-    font-main
-    bg-base-background
-}
+  body {
+    background-color: var(--color-base-background);
+    font-family: var(--font-roboto);
+  }
 
-a {
-  @apply text-secondary-color;
+  a {
+    color: var(--color-secondary);
+  }
 }
 
 .dark {

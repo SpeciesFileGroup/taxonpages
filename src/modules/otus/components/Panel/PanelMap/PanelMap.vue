@@ -22,7 +22,7 @@
           />
         </div>
         <VButton
-          class="h-6 text-sm absolute right-3 top-3 z-[400]"
+          class="h-6 text-sm absolute right-3 top-3 z-400"
           primary
           @click="() => (isOtuSearchVisible = true)"
         >
@@ -58,7 +58,7 @@
         class="flex flex-row items-center"
       >
         <div
-          :class="['w-3', 'h-3', 'm-1', 'rounded-sm', LEGEND[type].background]"
+          :class="['w-3', 'h-3', 'm-1', 'rounded-xs', LEGEND[type].background]"
         />
         <span>{{ LEGEND[type].label }}</span>
       </div>

@@ -7,7 +7,7 @@
     <span
       v-for="line in lines"
       :key="line"
-      class="inline-block w-full rounded-sm bg-base-muted leading-5 animate-pulse"
+      class="inline-block w-full rounded-xs bg-base-muted leading-5 animate-pulse"
     >
       &zwnj;
     </span>

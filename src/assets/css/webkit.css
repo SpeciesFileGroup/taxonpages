@@ -10,10 +10,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply rounded;
-  background-color: rgb(var(--color-scrollbar-thumb));
+  @apply rounded-sm;
+  background-color: var(--color-scrollbar-thumb);
 }
 
 ::-webkit-scrollbar-track {
-  background-color: rgb(var(--color-scrollbar-track));
+  background-color: var(--color-scrollbar-track);
 }

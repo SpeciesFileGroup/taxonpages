@@ -49,8 +49,12 @@ const options = ref({
 </script>
 
 <style>
+@reference '@/assets/css/tailwind.css'
+
 .pinpoint-app {
-  @apply py-4 flex flex-col gap-4;
+  /* @apply py-4 flex flex-col gap-4; */
+  margin: var(--py-4);
+
   ul {
     @apply ml-4;
   }
@@ -60,18 +64,19 @@ const options = ref({
   @apply pb-1;
 
   li {
-    @apply text-secondary-color;
+    color: var(--color-secondary-content);
   }
 }
 
 .pinpoint-previous-list-item {
-  @apply text-secondary-color;
+  color: var(--color-secondary-content);
 }
 
 .pinpoint-previous-couplets {
   h2 {
     @apply px-5;
-    @apply p-4 pl-5 pr-5 border-b font-medium border-base-muted flex justify-between;
+    @apply p-4 pl-5 pr-5 border-b font-medium flex justify-between;
+    border-color: var(--color-base-muted);
   }
 }
 
@@ -90,7 +95,8 @@ const options = ref({
 .pinpoint-couplet-node {
   h1 {
     @apply px-5;
-    @apply p-4 pl-5 pr-5 border-b font-medium border-base-muted flex justify-between;
+    @apply p-4 pl-5 pr-5 border-b font-medium flex justify-between;
+    border-color: var(--color-base-muted);
   }
 
   div {
@@ -102,7 +108,9 @@ const options = ref({
   @apply px-5;
 
   h3 {
-    @apply text-lg text-center my-4;
+    @apply text-lg text-center;
+
+    margin: var(--my-4);
   }
 }
 
@@ -111,7 +119,8 @@ const options = ref({
 }
 .pinpoint-button-up,
 .pinpoint-node-next-button {
-  @apply px-3 py-1 hover:bg-opacity-80 bg-primary-color text-primary-content text-sm items-center;
+  @apply px-3 py-1 hover:bg-(--color-primary)/80 text-sm items-center;
+  color: var(--color-primary-content);
 }
 
 .pinpoint-node-next-container {
@@ -134,7 +143,8 @@ pinpoint-button-up::before {
 .pinpoint-previous-couplets,
 .pinpoint-node,
 .pinpoint-node-container {
-  @apply border-base-muted bg-base-foreground print:shadow-none print:border-0 rounded;
+  @apply print:shadow-none print:border-0 rounded-sm;
+  background-color: var(--color-base-foreground);
   box-shadow: rgba(30, 41, 59, 0.04) 0 2px 4px 0;
   border: 1px solid rgba(98, 105, 118, 0.16);
   transition: transform 0.3s ease-out, opacity 0.3s ease-out,

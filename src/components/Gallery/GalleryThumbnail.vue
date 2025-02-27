@@ -4,7 +4,7 @@
     :title="title"
   >
     <img
-      class="max-h-20 max-w-24 h-20 w-24 object-contain rounded"
+      class="max-h-20 max-w-24 h-20 w-24 object-contain rounded-sm"
       :alt="title"
       :src="image.thumb"
     />

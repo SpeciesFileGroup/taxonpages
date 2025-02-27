@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed top-0 left-0 w-full h-screen max-h-screen flex flex-col justify-center bg-black bg-opacity-50 z-[2000]"
+    class="fixed top-0 left-0 w-full h-screen max-h-screen flex flex-col justify-center bg-black bg-opacity-50 z-2000"
     @click="emit('close')"
     @key.esc.stop="emit('close')"
   >

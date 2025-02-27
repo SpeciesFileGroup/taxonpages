@@ -6,8 +6,8 @@
       'py-1',
       'hover:bg-opacity-80',
       {
-        'bg-primary-color': primary,
-        'bg-secondary-color': secondary,
+        'bg-primary': primary,
+        'bg-secondary': secondary,
         'text-primary-content': primary,
         'text-secondary-content': secondary
       }

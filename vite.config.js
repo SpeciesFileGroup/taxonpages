@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import { loadConfiguration } from './src/utils/loadConfiguration.js'
 import { VitePluginRadar } from 'vite-plugin-radar'
+import fs from 'fs'
 import path from 'path'
 import Vue from '@vitejs/plugin-vue'
 import Markdown from 'unplugin-vue-markdown/vite'
@@ -10,6 +11,7 @@ import {
   variableReplacementPlugin
 } from './src/plugins/markdown'
 import Pages from 'vite-plugin-pages'
+import tailwindcss from '@tailwindcss/vite'
 import './src/utils/globalVars'
 
 export default () => {
@@ -40,6 +42,8 @@ export default () => {
       Vue({
         include: [/\.vue$/, /\.md$/]
       }),
+
+      tailwindcss(),
 
       Markdown({
         wrapperComponent: 'markdown-layout',

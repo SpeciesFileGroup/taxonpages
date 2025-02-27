@@ -1,5 +1,5 @@
 <template>
-  <div class="w-screen h-screen fixed top-0 left-0 z-[5000] flex flex-col">
+  <div class="w-screen h-screen fixed top-0 left-0 z-5000 flex flex-col">
     <VSpinner v-if="isLoading" />
     <SearchBar
       :label="otu.object_tag"
@@ -44,7 +44,7 @@
           'absolute',
           'top-0',
           'bg-base-background',
-          'z-[2000]',
+          'z-2000',
           'overflow-auto',
           'ease-in-out',
           'duration-300',

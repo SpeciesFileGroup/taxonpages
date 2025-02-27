@@ -1,6 +1,6 @@
 <template>
   <span
-    class="text-secondary-color cursor-pointer whitespace-nowrap"
+    class="text-secondary cursor-pointer whitespace-nowrap"
     @click="openClient"
   >
     <span v-html="data.username" />

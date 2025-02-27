@@ -55,7 +55,7 @@
             'px-2',
             'py-1.5',
             currentPage === n
-              ? 'text-primary-content bg-primary-color'
+              ? 'text-primary-content bg-primary'
               : 'text-base-content'
           ]"
           @click="() => (currentPage = n)"

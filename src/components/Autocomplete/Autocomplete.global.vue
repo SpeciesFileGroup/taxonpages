@@ -9,7 +9,7 @@
       v-model="typed"
       type="text"
       autocomplete="none"
-      class="autocomplete__input block box-border min-w-full p-1.5 pl-10 text-base-content rounded border sm:text-sm placeholder:text-sm dark:border-slate-700 border-gray-300 dark:placeholder:text-slate-400 focus:ring-primary-500 focus:border-primary-500"
+      class="autocomplete__input block box-border min-w-full p-1.5 pl-10 bg-base-background text-base-content rounded-sm border sm:text-sm placeholder:text-sm dark:border-slate-700 border-gray-300 dark:placeholder:text-slate-400 focus:ring-primary-500 focus:border-primary"
       :placeholder="placeholder"
       ref="inputElement"
     />
@@ -20,12 +20,12 @@
 
     <ul
       v-if="list.length"
-      class="autocomplete__list list absolute z-[500] max-h-52 w-full overflow-y-auto border bg-base-foreground border-base-border !m-0 shadow-md"
+      class="autocomplete__list list absolute z-500 max-h-52 w-full overflow-y-auto border bg-base-foreground border-base-border m-0! shadow-md"
     >
       <li
         v-for="item in list"
         :key="item.id"
-        class="autocomplete__item px-3 py-2 border-b text-xs text-base-content cursor-pointer hover:bg-secondary-color hover:bg-opacity-5 border-base-border truncate"
+        class="autocomplete__item px-3 py-2 border-b text-xs text-base-content cursor-pointer hover:bg-secondary-color/5 border-base-border truncate"
         @click="selectItem(item)"
       >
         <span v-html="item[label]" />

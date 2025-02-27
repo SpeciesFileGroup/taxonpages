@@ -9,7 +9,7 @@
     <ul
       v-if="isVisible"
       ref="element"
-      class="bg-base-foreground absolute font-normal text-sm text-base-lighter right-0 z-10 mt-2 w-56 origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+      class="bg-base-foreground absolute font-normal text-sm text-base-lighter right-0 z-10 mt-2 w-56 origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-hidden"
     >
       <li
         v-for="item in items"

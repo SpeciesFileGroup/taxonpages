@@ -28,7 +28,7 @@ const LAYOUT_CLASSES = {
 }
 
 const DEFAULT_LAYOUT =
-  '!container mx-auto p-4 sm:px-0 prose dark:prose-invert box-border'
+  'container! mx-auto p-4 sm:px-0 prose dark:prose-invert box-border'
 
 const layoutClasses = computed(
   () => LAYOUT_CLASSES[props.frontmatter.layout] || DEFAULT_LAYOUT

@@ -1,5 +1,5 @@
 export const Aggregate = {
-  color: 'rgb(var(--color-map-aggregate))',
+  color: 'var(--color-map-aggregate)',
   weight: 1,
   dashArray: '3',
   dashOffset: '3',

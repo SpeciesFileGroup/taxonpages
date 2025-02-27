@@ -8,7 +8,7 @@
       >
         <span
           v-if="item.type === COLLECTION_OBJECT"
-          class="cursor-pointer text-secondary-color"
+          class="cursor-pointer text-secondary"
           v-text="item.label"
           @click="() => emit('selected', item)"
         />

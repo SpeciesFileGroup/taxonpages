@@ -1,9 +1,9 @@
 <template>
   <div
-    class="fixed z-[10000] h-full overflow-y-hidden overflow-x-hidden w-full top-0 left-0 flex flex-col items-center justify-center backdrop-blur-md bg-base-foreground"
+    class="fixed z-10000 h-full overflow-y-hidden overflow-x-hidden w-full top-0 left-0 flex flex-col items-center justify-center backdrop-blur-md bg-base-foreground"
   >
     <div
-      class="min-w-96 dark:bg-slate-900 rounded-lg shadow-sm mb-24"
+      class="min-w-96 dark:bg-slate-900 rounded-lg shadow-xs mb-24"
       @click.stop
     >
       <div

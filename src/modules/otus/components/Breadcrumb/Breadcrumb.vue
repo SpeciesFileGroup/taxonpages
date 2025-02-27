@@ -11,7 +11,7 @@
       />
       <router-link
         v-if="item.length === 1"
-        class="inline-flex items-center text-sm text-accent-100 hover:text-gray-900 dark:hover:text-gray-500 text-secondary-color"
+        class="inline-flex items-center text-sm text-accent-100 hover:text-gray-900 dark:hover:text-gray-500 text-secondary"
         :to="{ name: 'otus-id', params: { id: item[0].id } }"
       >
         {{ key }}

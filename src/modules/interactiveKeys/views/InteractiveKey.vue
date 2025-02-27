@@ -50,17 +50,19 @@ const options = ref({
 </script>
 
 <style>
+@reference '@/assets/css/tailwind.css'
+
 :root {
-  --distinguish-primary-content-color: rgb(var(--color-primary-content));
-  --distinguish-bg-color: rgb(var(--color-base-foreground));
-  --distinguish-bg-panel-color: rgb(var(--color-base-foreground));
-  --distinguish-bg-modal-color: rgb(var(--color-base-foreground));
+  --distinguish-primary-content-color: var(--color-primary-content);
+  --distinguish-bg-color: var(--color-base-foreground);
+  --distinguish-bg-panel-color: var(--color-base-foreground);
+  --distinguish-bg-modal-color: var(--color-base-foreground);
   --distinguish-bg-disabled-color: #e5e5e5;
   --distinguish-disabled-color: #999;
-  --distinguish-error-color: rgb(var(--color-danger));
-  --distinguish-primary-color: rgb(var(--color-primary));
+  --distinguish-error-color: var(--color-danger);
+  --distinguish-primary-color: var(--color-primary);
   --distinguish-border-color: #cccccc;
-  --distinguish-link-color: rgb(var(--color-secondary));
+  --distinguish-link-color: var(--color-secondary);
   --distinguish-btn-medium-size: 20px;
 }
 
@@ -68,12 +70,13 @@ const options = ref({
   max-height: calc(100vh - 12rem);
 
   hr {
-    @apply my-4;
+    margin: var(--my-4);
   }
 }
 
 .distinguish-grid {
-  @apply shadow-md rounded border-base-muted;
+  @apply shadow-md rounded-sm;
+  border-color: var(--color-base-muted);
 }
 
 .distinguish-header-bar {
@@ -87,7 +90,7 @@ const options = ref({
 }
 
 .distinguish-app-container {
-  color: rgb(var(--color-base-content));
+  color: var(--color-base-content);
 }
 
 .distinguish-modal-header h3 {
