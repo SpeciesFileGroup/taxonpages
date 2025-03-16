@@ -6,6 +6,7 @@ dist-ssr
 /pages
 /components
 /panels
+/layouts
 public
 README.md
 *.local

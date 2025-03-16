@@ -54,7 +54,7 @@ export default () => {
 
       Pages({
         dirs: 'pages',
-        exclude: ['**/components/*.vue'],
+        exclude: ['**/components/*.vue', 'components/**/*.vue'],
         extensions: ['vue', 'md'],
         extendRoute(route) {
           if (route.path === '/home') {

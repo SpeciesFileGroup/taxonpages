@@ -12,6 +12,7 @@ module.exports = {
     './index.html',
     './vite.config.js',
     './src/**/*.{vue,js,ts,jsx,tsx,md}',
+    './layouts/**/*.{vue,js}',
     './pages/**/*.{vue,md}',
     './panels/**/*.{vue,md}',
     './components/**/*.{vue,md}',
