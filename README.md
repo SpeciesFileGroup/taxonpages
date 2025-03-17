@@ -220,7 +220,7 @@ Steps to replace the default layout
 2. Inside this folder, create a file named default.vue.
 3. Define your custom layout structure inside this file as needed.
 
-Example of layout/default.vue
+Example of layouts/default.vue
 
 ```vuejs
 <template>
