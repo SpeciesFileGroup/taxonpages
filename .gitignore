@@ -1,4 +1,6 @@
 *
+!components
+!components/**
 !pages
 !pages/**
 !panels
