@@ -11,11 +11,9 @@ import { useHead } from 'unhead'
 import { loadUserLayouts } from './utils'
 import ApplicationLayout from '@/layout/Application.vue'
 
-const DEFAULT_LAYOUT = 'defaultLayout'
-
+const DEFAULT_LAYOUT = 'default'
 const route = useRoute()
 const userLayouts = loadUserLayouts()
-const routeLayout = route.meta?.layout
 
 const currentLayout = computed(() => {
   const layouts = {
