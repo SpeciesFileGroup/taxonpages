@@ -4,7 +4,7 @@
     class="box-spinner mx-spinner absolute bg-base-foreground opacity-90 h-full flex items-center"
     :style="cssProperties"
   >
-    <div :class="['tw-spinner', `tw-spinner-${spinnerPosition}`]">
+    <div :class="['tp-spinner', `tp-spinner-${spinnerPosition}`]">
       <svg
         v-if="showSpinner"
         :style="logoSize"
@@ -165,7 +165,7 @@ const checkResize = () => {
 }
 </script>
 <style lang="scss" scoped>
-.tw-spinner {
+.tp-spinner {
   display: flex;
   margin: 0 auto;
   height: auto;
@@ -181,16 +181,16 @@ const checkResize = () => {
 .fade-leave-to {
   opacity: 0;
 }
-.tw-spinner-left {
+.tp-spinner-left {
   flex-direction: row;
 }
-.tw-spinner-right {
+.tp-spinner-right {
   flex-direction: row-reverse;
 }
-.tw-spinner-top {
+.tp-spinner-top {
   flex-direction: column;
 }
-.tw-spinner-bottom {
+.tp-spinner-bottom {
   flex-direction: column-reverse;
 }
 
@@ -198,7 +198,7 @@ const checkResize = () => {
   z-index: 4000;
 }
 
-.tw-spinner {
+.tp-spinner {
   font-size: 20px;
   overflow: hidden;
   width: 100%;

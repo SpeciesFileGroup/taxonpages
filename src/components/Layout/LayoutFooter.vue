@@ -3,39 +3,8 @@
     class="footer text-white bottom-0 border-gray-200 bg-zinc-800 pl-4 pr-4"
   >
     <div class="container mx-auto text-sm pt-2 pb-4">
-      <div class="pt-4 pb-2 break-words">
-        {{ project_authors }}
-        <ClientOnly>
-          <span v-html="store.nextAuthor" />
-        </ClientOnly>
-        {{ project_citation }}.
-        <ClientOnly>
-          <span>Retrieved on {{ currentDate }}</span>
-        </ClientOnly>
-        <span v-if="currentUrl">
-          at
-          <a
-            class="text-secondary-color"
-            :href="currentUrl"
-          >
-            {{ currentUrl }}
-          </a>
-        </span>
-      </div>
-      <div class="flex items-center text-xs gap-2">
-        <component
-          :is="copyright_image_link ? 'a' : 'span'"
-          :href="copyright_image_link"
-          class="min-w-fit"
-        >
-          <img
-            v-if="copyright_image"
-            :src="copyright_image"
-            alt="copyright"
-          />
-        </component>
-        <span>{{ copyright_text }}</span>
-      </div>
+      <FooterCitation />
+      <FooterCopyright />
 
       <hr class="mt-3 mb-3 border-gray-500" />
 
@@ -86,34 +55,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { useFooterStore } from '@/store'
+import FooterCitation from '@/components/Footer/FooterCitation.vue'
+import FooterCopyright from '@/components/Footer/FooterCopyright.vue'
 import FooterAnalytics from '@/components/Footer/FooterAnalytics.vue'
-
-const {
-  project_authors,
-  project_citation,
-  project_url,
-  copyright_text,
-  copyright_image,
-  copyright_image_link,
-  hash_mode
-} = __APP_ENV__
-
-const store = useFooterStore()
-const currentDate = new Date().toISOString().split('T')[0]
-const route = useRoute()
-
-const currentUrl = computed(() => {
-  const projectUrl = (project_url || '').replace(/\/$/, '')
-
-  if (!projectUrl.length) {
-    return ''
-  }
-
-  return hash_mode
-    ? projectUrl + '/#' + route.fullPath
-    : projectUrl + route.fullPath
-})
 </script>

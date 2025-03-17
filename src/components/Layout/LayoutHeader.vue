@@ -1,6 +1,6 @@
 <template>
   <header
-    class="relative bg-header px-2 sm:px-4 py-2.5 shadow-sm shadow-base-muted pl-4 pr-4 h-9 align-middle flex items-center bg-primary-color"
+    class="tp-header relative bg-header px-2 sm:px-4 py-2.5 shadow-sm shadow-base-muted pl-4 pr-4 h-9 align-middle flex items-center bg-primary-color"
   >
     <div
       class="container flex flex-wrap justify-between items-center mx-auto font-medium text-secondary-content"
@@ -23,18 +23,18 @@
       <NavbarMobile />
 
       <div class="relative hidden md:flex items-center ml-auto">
-        <nav class="text-sm leading-6 font-normal">
+        <nav class="tp-header-nav text-sm leading-6 font-normal">
           <ul class="flex space-x-8">
             <li
               v-for="(item, index) in header_links"
               :key="index"
             >
-              <router-link
+              <RouterLink
                 :to="item.link"
                 class="hover:text-primary-content text-primary-content"
               >
                 {{ item.label }}
-              </router-link>
+              </RouterLink>
             </li>
           </ul>
         </nav>

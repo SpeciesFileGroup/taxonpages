@@ -18,5 +18,9 @@ export const LEGEND = {
   TypeMaterial: {
     label: 'Type material',
     background: 'bg-map-type-material'
+  },
+  FieldOccurrence: {
+    label: 'Field occurrence',
+    background: 'bg-map-field-occurrence'
   }
 }
