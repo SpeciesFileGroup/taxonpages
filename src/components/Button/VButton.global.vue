@@ -2,6 +2,7 @@
   <button
     type="button"
     :class="[
+      'tp-button',
       'px-3',
       'py-1',
       'hover:bg-opacity-80',

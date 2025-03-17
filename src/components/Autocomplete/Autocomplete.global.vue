@@ -1,5 +1,5 @@
 <template>
-  <div class="autocomplete md:block md:mr-0 mr-3 relative w-fit">
+  <div class="tp-autocomplete md:block md:mr-0 mr-3 relative w-fit">
     <div
       class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none"
     >
@@ -9,7 +9,7 @@
       v-model="typed"
       type="text"
       autocomplete="none"
-      class="autocomplete__input block box-border min-w-full p-1.5 pl-10 text-base-content rounded border sm:text-sm placeholder:text-sm dark:border-slate-700 border-gray-300 dark:placeholder:text-slate-400 focus:ring-primary-500 focus:border-primary-500"
+      class="tp-autocomplete__input block box-border min-w-full p-1.5 pl-10 text-base-content rounded border sm:text-sm placeholder:text-sm dark:border-slate-700 border-gray-300 dark:placeholder:text-slate-400 focus:ring-primary-500 focus:border-primary-500"
       :placeholder="placeholder"
       ref="inputElement"
     />
@@ -20,12 +20,12 @@
 
     <ul
       v-if="list.length"
-      class="autocomplete__list list absolute z-[500] max-h-52 w-full overflow-y-auto border bg-base-foreground border-base-border !m-0 shadow-md"
+      class="tp-autocomplete__list list absolute z-[500] max-h-52 w-full overflow-y-auto border bg-base-foreground border-base-border !m-0 shadow-md"
     >
       <li
         v-for="item in list"
         :key="item.id"
-        class="autocomplete__item px-3 py-2 border-b text-xs text-base-content cursor-pointer hover:bg-secondary-color hover:bg-opacity-5 border-base-border truncate"
+        class="tp-autocomplete__item px-3 py-2 border-b text-xs text-base-content cursor-pointer hover:bg-secondary-color hover:bg-opacity-5 border-base-border truncate"
         @click="selectItem(item)"
       >
         <span v-html="item[label]" />
@@ -116,7 +116,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.autocomplete {
+.tp-autocomplete {
   &__list {
     display: none;
     padding: 0px;

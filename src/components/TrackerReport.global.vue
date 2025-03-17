@@ -14,7 +14,7 @@
   </component>
   <VModal
     v-if="isModalVisible"
-    class="text-base-content"
+    class="tp-tracker-report-modal text-base-content"
     @close="isModalVisible = false"
   >
     <template #header>

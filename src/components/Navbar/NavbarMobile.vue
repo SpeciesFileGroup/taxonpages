@@ -1,7 +1,7 @@
 <template>
   <button
     type="button"
-    class="inline-flex items-center p-2 z-50 ml-3 text-sm text-primary-content rounded-lg md:hidden print:hidden"
+    class="tp-mobile-navbar-button inline-flex items-center p-2 z-50 ml-3 text-sm text-primary-content rounded-lg md:hidden print:hidden"
     title="Menu"
     aria-controls="mobile-menu"
     :aria-expanded="isMenuVisible"
@@ -18,7 +18,7 @@
   <AnimationOpacity>
     <div
       v-if="isMenuVisible"
-      class="absolute top-full left-0 w-full z-50 bg-base-foreground text-base-content block shadow-md md:hidden print:hidden"
+      class="tp-mobile-navbar absolute top-full left-0 w-full z-50 bg-base-foreground text-base-content block shadow-md md:hidden print:hidden"
     >
       <nav class="font-normal container mx-auto">
         <ul class="flex flex-col m-0 p-0 border-t border-base-border">

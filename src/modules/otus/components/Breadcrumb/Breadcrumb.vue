@@ -1,5 +1,5 @@
 <template>
-  <ul class="inline-flex items-center flex-wrap">
+  <ul class="breadcrumb inline-flex items-center flex-wrap">
     <li
       v-for="(item, key, index) in list"
       :key="item.id"
