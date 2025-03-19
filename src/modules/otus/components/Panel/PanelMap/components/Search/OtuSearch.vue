@@ -136,6 +136,7 @@ function loadOTUs(geojson) {
       list.value = data
       isTableVisible.value = true
     })
+    .catch(() => {})
     .finally((_) => {
       isLoading.value = false
     })

@@ -54,13 +54,16 @@ function filterStats(currentStats) {
 }
 
 onMounted(() => {
-  makeAPIRequest.get('/stats').then((response) => {
-    const data = Object.entries(response.data.data).map(([key, value]) => [
-      key.toLowerCase(),
-      value.toLocaleString()
-    ])
+  makeAPIRequest
+    .get('/stats')
+    .then((response) => {
+      const data = Object.entries(response.data.data).map(([key, value]) => [
+        key.toLowerCase(),
+        value.toLocaleString()
+      ])
 
-    stats.value.data = data
-  })
+      stats.value.data = data
+    })
+    .catch(() => {})
 })
 </script>

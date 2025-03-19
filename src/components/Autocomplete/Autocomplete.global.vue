@@ -97,6 +97,7 @@ watch(typed, (newVal) => {
           isSearching.value = false
           list.value = data
         })
+        .catch(() => {})
     }, delay)
   } else {
     list.value = []

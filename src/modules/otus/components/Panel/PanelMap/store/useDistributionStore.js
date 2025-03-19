@@ -45,11 +45,11 @@ export const useDistributionStore = defineStore('distributionStore', {
     },
 
     loadCachedMap(mapId) {
-      TaxonWorks.getCachedMap(mapId, { signal: this.controller.signal }).then(
-        (response) => {
+      TaxonWorks.getCachedMap(mapId, { signal: this.controller.signal })
+        .then((response) => {
           this.distribution.cachedMap = response.data
-        }
-      )
+        })
+        .catch(() => {})
     },
 
     async getAggregateShape(otuId) {
