@@ -5,9 +5,6 @@ export function makeSegmentedCircle({ segments, attributes = {} }) {
   svg.setAttribute('viewBox', `-1 -1 2 2`)
   svg.setAttribute('style', 'transform: rotate(-90deg)')
 
-  console.log(segments)
-  console.log(attributes)
-
   for (let key in attributes) {
     svg.setAttribute(key, attributes[key])
   }
