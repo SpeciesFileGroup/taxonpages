@@ -47,7 +47,10 @@
           </ClientOnly>
         </div>
         <div class="flex items-center ml-2 border-base-muted">
-          <TrackerReport icon />
+          <TrackerReport
+            icon
+            button-class="text-primary-content"
+          />
         </div>
       </div>
     </div>
