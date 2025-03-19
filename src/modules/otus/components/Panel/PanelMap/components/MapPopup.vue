@@ -7,7 +7,7 @@
         title="label"
       >
         <span
-          v-if="item.type === COLLECTION_OBJECT"
+          v-if="CLICKEABLE_TYPES.includes(item.type)"
           class="cursor-pointer text-secondary-color"
           v-text="item.label"
           @click="() => emit('selected', item)"
@@ -19,7 +19,9 @@
 </template>
 
 <script setup>
-import { COLLECTION_OBJECT } from '@/constants/objectTypes.js'
+import { COLLECTION_OBJECT, FIELD_OCCURRENCE } from '@/constants/objectTypes.js'
+
+const CLICKEABLE_TYPES = [COLLECTION_OBJECT, FIELD_OCCURRENCE]
 
 defineProps({
   items: {

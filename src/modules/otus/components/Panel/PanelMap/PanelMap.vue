@@ -70,7 +70,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useDistributionStore } from './store/useDistributionStore.js'
-import { makeClusterIconFor } from './clusters/makeClusterIconFor'
+import { makeClusterIconFor } from './clusters'
 import { useGeojsonOptions } from './composables/useGeojsonOptions.js'
 import { LEGEND } from './constants'
 import MapPopup from './components/MapPopup.vue'
