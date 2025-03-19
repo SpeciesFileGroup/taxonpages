@@ -1,3 +1,2 @@
-export * from './CollectionObject'
 export * from './Mixed'
-export * from './TypeMaterial'
+export * from './makeClusterIconFor'

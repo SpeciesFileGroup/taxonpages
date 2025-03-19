@@ -30,19 +30,25 @@
 <script setup>
 import { ref } from 'vue'
 import { makeAPIRequest } from '@/utils'
+import { FIELD_OCCURRENCE, COLLECTION_OBJECT } from '@/constants/objectTypes'
 
 const isLoading = ref(false)
 const isModalVisible = ref(false)
 const dwcData = ref({})
 const title = ref()
 
-function show({ label, id }) {
+const TYPES = {
+  [COLLECTION_OBJECT]: (id) => `/collection_objects/${id}/dwc`,
+  [FIELD_OCCURRENCE]: (id) => `/field_occurrences/${id}/dwc`
+}
+
+function show({ label, id, type }) {
   isModalVisible.value = true
   isLoading.value = true
   dwcData.value = {}
   title.value = label
 
-  makeAPIRequest(`/collection_objects/${id}/dwc`)
+  makeAPIRequest(TYPES[type](id))
     .then(({ data }) => {
       dwcData.value = data
     })
