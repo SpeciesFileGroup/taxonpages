@@ -37,13 +37,15 @@ watch(
 
     useOtuPageRequest('panel:typeMaterial', () =>
       TaxonWorks.getOtuTypeMaterial(props.otuId)
-    ).then(({ data }) => {
-      typeMaterials.value = data.type_materials_catalog_labels.sort(
-        (a, b) =>
-          SPECIMEN_TYPES.indexOf(a.type_type) -
-          SPECIMEN_TYPES.indexOf(b.type_type)
-      )
-    })
+    )
+      .then(({ data }) => {
+        typeMaterials.value = data.type_materials_catalog_labels.sort(
+          (a, b) =>
+            SPECIMEN_TYPES.indexOf(a.type_type) -
+            SPECIMEN_TYPES.indexOf(b.type_type)
+        )
+      })
+      .catch(() => {})
   },
   { immediate: true }
 )
