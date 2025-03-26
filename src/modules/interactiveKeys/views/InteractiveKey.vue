@@ -36,7 +36,7 @@ import { useRoute } from 'vue-router'
 import { ref } from 'vue'
 import { OTU } from '@/constants/objectTypes.js'
 import { VueInteractiveKey } from '@sfgrp/distinguish'
-import '@sfgrp/distinguish/dist/style.css'
+import '@sfgrp/distinguish/dist/distinguish.css'
 
 const route = useRoute()
 

@@ -17,10 +17,10 @@
   "dependencies": {
     "@geoman-io/leaflet-geoman-free": "^2.18.3",
     "@nuxt/devalue": "^2.0.2",
-    "@sfgrp/distinguish": "^0.4.0",
+    "@sfgrp/distinguish": "^0.4.2",
     "@sfgrp/pinpoint": "^0.0.12",
     "@unhead/ssr": "^1.11.20",
-    "axios": "^1.8.3",
+    "axios": "^1.8.4",
     "glob": "^11.0.1",
     "js-yaml": "^4.1.0",
     "leaflet": "^1.9.4",
@@ -34,18 +34,17 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
-    "@unhead/ssr": "^1.11.20",
     "@vitejs/plugin-vue": "^5.2.3",
     "autoprefixer": "^10.4.21",
     "compression": "^1.8.0",
-    "eslint": "^9.22.0",
+    "eslint": "^9.23.0",
     "eslint-plugin-vue": "^9.32.0",
     "express": "^4.21.2",
     "minimist": "^1.2.8",
     "postcss": "^8.5.3",
     "sass": "^1.86.0",
     "tailwindcss": "^3.4.17",
-    "vite": "^6.2.2",
+    "vite": "^6.2.3",
     "vite-plugin-pages": "^0.32.5",
     "vite-plugin-radar": "^0.10.0"
   }
