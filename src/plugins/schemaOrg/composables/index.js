@@ -1,4 +1,4 @@
-import { useHead } from 'unhead'
+import { useHead } from '@unhead/vue'
 
 function provideResolver(input, resolver) {
   if (!input) input = {}
@@ -12,14 +12,17 @@ export function defineTaxon(input) {
   return provideResolver(input, 'taxon')
 }
 
-export function useSchemaOrg(nodes) {
-  return useHead({
-    script: [
-      {
-        type: 'application/ld+json',
-        key: 'schema-org-graph',
-        nodes
-      }
-    ]
-  })
+export function useSchemaOrg(nodes, head) {
+  return useHead(
+    {
+      script: [
+        {
+          type: 'application/ld+json',
+          key: 'schema-org-graph',
+          nodes
+        }
+      ]
+    },
+    { head }
+  )
 }

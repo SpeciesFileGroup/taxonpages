@@ -85,7 +85,7 @@ import {
 import { useRoute, useRouter } from 'vue-router'
 import { useOtuStore } from '../store/store'
 import { useFooterStore } from '@/store'
-import { useHead } from 'unhead'
+import { useHead, injectHead } from '@unhead/vue'
 import { useSchemaOrg, defineTaxon } from '@/plugins/schemaOrg/composables'
 import { RESPONSE_ERROR } from '../constants'
 import { isAvailableForRank } from '../utils'
@@ -95,6 +95,7 @@ import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
 import TaxaInfo from '../components/TaxaInfo.vue'
 import DWCDownload from '../components/DWCDownload.vue'
 
+const head = injectHead()
 const route = useRoute()
 const router = useRouter()
 const routeParams = ref(route.params)
@@ -176,27 +177,33 @@ function redirectOnError(error) {
 }
 
 function updateMetadata() {
-  useHead({
-    title: `${__APP_ENV__.project_name} - ${taxon.value.full_name}`
-  })
+  useHead(
+    {
+      title: `${__APP_ENV__.project_name} - ${taxon.value.full_name}`
+    },
+    { head }
+  )
 
-  useSchemaOrg([
-    defineTaxon({
-      id: route.fullPath,
-      name: taxon.value.full_name,
-      scientificName: {
+  useSchemaOrg(
+    [
+      defineTaxon({
+        id: route.fullPath,
         name: taxon.value.full_name,
-        author: taxon.value.author,
-        taxonRank: taxon.value.rank
-      },
-      parentTaxon: {
-        name: taxon.value.parent.full_name,
-        taxonRank: taxon.value.parent.rank
-      },
-      commonNames: store.taxonomy.commonNames,
-      alternateName: store.taxonomy.synonyms
-    })
-  ])
+        scientificName: {
+          name: taxon.value.full_name,
+          author: taxon.value.author,
+          taxonRank: taxon.value.rank
+        },
+        parentTaxon: {
+          name: taxon.value.parent.full_name,
+          taxonRank: taxon.value.parent.rank
+        },
+        commonNames: store.taxonomy.commonNames,
+        alternateName: store.taxonomy.synonyms
+      })
+    ],
+    head
+  )
 }
 
 function loadOtu({ id, otu_valid_id }) {
