@@ -2,14 +2,34 @@ import { basename } from 'node:path'
 import { renderToString } from 'vue/server-renderer'
 import { createApp } from './main'
 import { registerGlobalComponents } from '@/components/globalComponents'
-import { getActiveHead } from 'unhead'
+import { createHead } from '@unhead/vue/server'
 import { renderSSRHead } from '@unhead/ssr'
 import { registerFakeClientComponents } from '@/ssr/utils/registerFakeClientComponents'
+import { schemaOrgPlugin } from '@/plugins/schemaOrg'
 import devalue from '@nuxt/devalue'
 
 export async function render(url, manifest, originUrl) {
   const { app, router, store } = createApp({ originUrl })
+  const head = createHead({
+    plugins: [
+      schemaOrgPlugin(
+        {
+          host: originUrl
+        },
+        () => {
+          const route = router.currentRoute.value
+          return {
+            path: route.path,
+            ...route.meta
+          }
+        }
+      )
+    ]
+  })
+
   let statusCode = 200
+
+  app.use(head)
 
   // Register global components, create a fake server components for components that should only render on client side
   registerGlobalComponents(app)
@@ -35,7 +55,7 @@ export async function render(url, manifest, originUrl) {
   const ctx = {}
 
   const html = await renderToString(app, ctx)
-  const headPayload = await renderSSRHead(getActiveHead())
+  const headPayload = await renderSSRHead(head)
   const renderState = `
   <script>
     window.initialState = ${devalue(store.state.value)}

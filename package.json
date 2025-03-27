@@ -19,7 +19,8 @@
     "@nuxt/devalue": "^2.0.2",
     "@sfgrp/distinguish": "^0.4.2",
     "@sfgrp/pinpoint": "^0.0.12",
-    "@unhead/ssr": "^1.11.20",
+    "@unhead/ssr": "^2.0.2",
+    "@unhead/vue": "^2.0.2",
     "axios": "^1.8.4",
     "glob": "^11.0.1",
     "js-yaml": "^4.1.0",
@@ -27,7 +28,6 @@
     "leaflet.markercluster": "^1.5.3",
     "markdown-it-anchor": "^9.2.0",
     "pinia": "^3.0.1",
-    "unhead": "^1.11.20",
     "unplugin-vue-markdown": "^28.3.1",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
