@@ -5,6 +5,7 @@ import path from 'path'
 import Vue from '@vitejs/plugin-vue'
 import Markdown from 'unplugin-vue-markdown/vite'
 import markdownAnchor from 'markdown-it-anchor'
+import ViteRestart from './src/plugins/vite/restart.js'
 import {
   relativeToRouterPlugin,
   variableReplacementPlugin
@@ -37,6 +38,7 @@ export default () => {
     },
 
     plugins: [
+      ViteRestart({ dir: ['config/**/*.yml'] }),
       Vue({
         include: [/\.vue$/, /\.md$/]
       }),
