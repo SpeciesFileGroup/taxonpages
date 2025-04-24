@@ -66,4 +66,8 @@ export default class TaxonWorks {
   static getKeys(otuId) {
     return makeAPIRequest.get(`/otus/${otuId}/inventory/keys`)
   }
+
+  static getSounds(params) {
+    return makeAPIRequest.get('/sounds', { params })
+  }
 }
