@@ -64,7 +64,7 @@ export async function createServer(
     res.status(200).end('')
   })
 
-  app.use('*', async (req, res) => {
+  app.use(/(.*)/, async (req, res) => {
     try {
       const url = req.originalUrl
       const origin = req.protocol + '://' + req.get('host')
