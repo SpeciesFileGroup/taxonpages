@@ -13,7 +13,16 @@
         </div>
       </div>
 
-      <div class="flex items-center space-x-2">
+      <div class="flex items-center gap-2">
+        <a
+          class="h-8 w-8 flex items-center justify-center rounded-full text-primary-content bg-primary-color"
+          aria-label="Download"
+          title="Download"
+          :href="src"
+          download
+        >
+          <IconDownload class="size-4"/>
+        </a>
         <button
           class="h-8 w-8 flex items-center justify-center rounded-full text-primary-content bg-primary-color"
           @click="togglePlay"
@@ -29,7 +38,7 @@
           />
         </button>
 
-        <div class="flex-1 mx-2">
+        <div class="flex-1">
           <input
             type="range"
             :value="currentTime"
