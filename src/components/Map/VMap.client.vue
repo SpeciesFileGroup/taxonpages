@@ -7,6 +7,7 @@
 
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
+import { latLngBoundsIntersection } from './utils/latLngBoundsIntersection'
 import { makeTileFromConfiguration } from './utils/makeTileFromConfiguration'
 import L from 'leaflet'
 import iconRetina from 'leaflet/dist/images/marker-icon-2x.png'
@@ -325,7 +326,13 @@ function setGeoJSON(geojson) {
       ...props.geojsonOptions(args)
     }).addTo(geoJSONGroup)
 
-    const bounds = geoJSONGroup.getBounds()
+    let bounds = geoJSONGroup.getBounds()
+
+    const projectBounds = L.latLngBounds(__APP_ENV__.project_bounds)
+
+    if (projectBounds?.isValid()) {
+      bounds = latLngBoundsIntersection(bounds, projectBounds)
+    }
 
     if (bounds.isValid()) {
       mapObject.fitBounds(bounds, fitBoundsOptions.value)
