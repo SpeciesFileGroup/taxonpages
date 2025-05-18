@@ -71,7 +71,9 @@ const count = computed(
   () =>
     []
       .concat(...Object.values(keys.value.to), ...Object.values(keys.value.in))
-      .filter((item) => Object.keys(item).length).length
+      .map((h) => Object.keys(h))
+      .flat()
+      .length
 )
 
 onMounted(() => {
