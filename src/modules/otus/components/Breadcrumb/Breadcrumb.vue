@@ -1,7 +1,7 @@
 <template>
   <ul class="breadcrumb inline-flex items-center flex-wrap">
     <li
-      v-for="(item, key, index) in list"
+      v-for="([item], key, index) in list"
       :key="item.id"
       class="inline-flex items-center"
     >
@@ -9,21 +9,13 @@
         v-if="index"
         class="w-3 h-3 mr-0.5 ml-0.5 opacity-50"
       />
-      <router-link
-        v-if="item.length === 1"
+      <RouterLink
         class="inline-flex items-center text-sm text-accent-100 hover:text-gray-900 dark:hover:text-gray-500 text-secondary-color"
-        :to="{ name: 'otus-id', params: { id: item[0].id } }"
+        :to="{ name: 'otus-id', params: { id: item.id } }"
       >
         {{ key }}
-      </router-link>
-      <BreadcrumbDropdown
-        v-else
-        :list="item.map((o) => ({ ...o, name: o.name || key }))"
-      >
-        {{ key }}
-      </BreadcrumbDropdown>
+      </RouterLink>
     </li>
-
     <li class="inline-flex items-center ml-0 text-sm">
       <IconArrowRight class="w-3 h-3 mr-0.5 ml-0.5 opacity-50" />
       <span v-html="current.full_name_tag" />
