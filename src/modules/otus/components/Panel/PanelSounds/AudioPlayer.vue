@@ -21,8 +21,9 @@
           :href="src"
           download
         >
-          <IconDownload class="size-4"/>
+          <IconDownload class="size-4" />
         </a>
+        <SoundMetadata :sound-id="soundId" />
         <button
           class="h-8 w-8 flex items-center justify-center rounded-full text-primary-content bg-primary-color"
           @click="togglePlay"
@@ -100,17 +101,25 @@
 </template>
 
 <script setup>
+import SoundMetadata from './components/SoundMetadata.vue'
 import { computed, ref, onMounted } from 'vue'
 
 const props = defineProps({
+  soundId: {
+    type: Number,
+    required: true
+  },
+
   title: {
     type: String,
     default: 'Audio Track'
   },
+
   src: {
     type: String,
     required: true
   },
+
   copyright: {
     type: String,
     default: '© All rights reserved.'
