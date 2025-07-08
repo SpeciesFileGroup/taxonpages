@@ -5,7 +5,10 @@
     @key.esc.stop="emit('close')"
   >
     <div
-      class="h-full md:h-auto mx-auto md:max-h-[70vh] bg-base-foreground container"
+      :class="[
+        'h-full md:h-auto mx-auto md:max-h-[70vh] bg-base-foreground container overflow-y-auto rounded',
+        containerClass
+      ]"
       @click.stop
     >
       <div
@@ -33,6 +36,13 @@
 
 <script setup>
 import { onMounted, onUnmounted } from 'vue'
+
+defineProps({
+  containerClass: {
+    type: String,
+    default: ''
+  }
+})
 
 const emit = defineEmits(['close'])
 

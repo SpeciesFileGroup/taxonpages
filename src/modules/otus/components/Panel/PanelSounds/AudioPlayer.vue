@@ -1,14 +1,14 @@
 <template>
   <div class="bg-base-foreground rounded shadow p-4">
     <div class="flex flex-col space-y-3">
-      <div class="flex justify-between items-center gap-4">
+      <div class="flex justify-between items-center gap-4 text-sm">
         <div>
           <h3
             class="font-medium first-letter:uppercase"
             v-html="title"
           />
         </div>
-        <div class="text-sm text-base-lighter whitespace-nowrap">
+        <div class="text-base-lighter whitespace-nowrap">
           {{ formatTime(currentTime) }} / {{ formatTime(duration) }}
         </div>
       </div>
@@ -23,7 +23,7 @@
         >
           <IconDownload class="size-4" />
         </a>
-        <SoundMetadata :sound-id="soundId" />
+        <SoundObservations :sound-id="soundId" />
         <button
           class="h-8 w-8 flex items-center justify-center rounded-full text-primary-content bg-primary-color"
           @click="togglePlay"
@@ -101,8 +101,8 @@
 </template>
 
 <script setup>
-import SoundMetadata from './components/SoundMetadata.vue'
 import { computed, ref, onMounted } from 'vue'
+import SoundObservations from './components/SoundObservations.vue'
 
 const props = defineProps({
   soundId: {
