@@ -3,7 +3,7 @@
     <VCardHeader class="flex justify-between">
       <h2 class="text-md">Sounds ({{ sounds.length }})</h2>
     </VCardHeader>
-    <ul class="text-sm">
+    <ul>
       <PanelSoundRow
         v-for="sound in sounds"
         :key="sound.id"

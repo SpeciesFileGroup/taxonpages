@@ -17,16 +17,17 @@
         ref="mapRef"
         class="w-full h-full"
         controls
+        :zoom="4"
         :dragging="!disableZoom"
         :zoom-bounds="maxZoom"
         :geojson="shapes"
         :geojsonOptions="geojsonOptions"
         @geojson:ready="updateMaxZoom"
+        @draw:start="() => mapRef.clearDrawLayers()"
         @add:layer="(layer) => loadOTUs(JSON.stringify(layer.geometry))"
-        @edit:layer="(layer) => loadOTUs(JSON.stringify(layer.geometry))"
+        @layer:update="(layer) => loadOTUs(JSON.stringify(layer.geometry))"
         @drag:layer="(layer) => loadOTUs(JSON.stringify(layer.geometry))"
         @zoom:change="handleZoom"
-        :zoom="4"
       />
 
       <div ref="popupElement">
@@ -68,7 +69,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted, useTemplateRef } from 'vue'
 import { useGeojsonOptions } from '../../composables/useGeojsonOptions.js'
 import TaxonWorks from '../../../../../services/TaxonWorks.js'
 import SearchBar from './SearchBar.vue'
@@ -92,7 +93,7 @@ const emit = defineEmits(['close'])
 
 const popupElement = ref(null)
 const dwcTableRef = ref(null)
-const mapRef = ref(null)
+const mapRef = useTemplateRef('mapRef')
 const list = ref([])
 const isTableVisible = ref(false)
 const isLoading = ref()
