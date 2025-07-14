@@ -117,13 +117,14 @@ const props = defineProps({
 
 const emit = defineEmits([
   'add:layer',
-  'drag:layer',
+  'layer:drag',
   'draw:start',
   'edit:layer',
   'geojson',
   'geojson:ready',
   'zoom:change',
-  'zoom:start'
+  'zoom:start',
+  'layer:update'
 ])
 
 let mapObject
@@ -236,6 +237,7 @@ onMounted(() => {
     })
 
     mapObject.on('pm:create', (e) => {
+      addLayerEvents(e.layer)
       emit('geojson', getDrawItemsInGeoJson())
       emit('add:layer', convertGeoJSONWithPointRadius(e.layer))
     })
@@ -246,7 +248,6 @@ onMounted(() => {
     })
 
     mapObject.on('pm:drawstart', (e) => {
-      clearDrawLayers()
       emit('draw:start', e)
     })
 
@@ -333,6 +334,20 @@ function setGeoJSON(geojson) {
   }
 
   emit('geojson:ready', geoJSONGroup)
+}
+
+function addLayerEvents(layer) {
+  layer.on('pm:update', (e) => {
+    if (!mapObject.pm.globalEditModeEnabled()) {
+      emit('geojson', getDrawItemsInGeoJson())
+      emit('layer:update', convertGeoJSONWithPointRadius(e.layer))
+    }
+  })
+
+  layer.on('pm:drag', (e) => {
+    emit('geojson', getDrawItemsInGeoJson())
+    emit('layer:drag', convertGeoJSONWithPointRadius(e.layer))
+  })
 }
 
 function getMapObject() {
