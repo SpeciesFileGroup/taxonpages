@@ -43,9 +43,10 @@
             </div>
           </div>
         </div>
+
         <TabMenu
           v-if="isReady && childrenRoutes.length > 1"
-          class="m-[-1px] print:hidden"
+          class="print:hidden"
         >
           <TabItem
             v-for="{ name, label } in tabs"
