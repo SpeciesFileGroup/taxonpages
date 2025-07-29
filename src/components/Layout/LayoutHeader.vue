@@ -23,22 +23,7 @@
       <NavbarMobile />
 
       <div class="relative hidden md:flex items-center ml-auto">
-        <nav class="tp-header-nav text-sm leading-6 font-normal">
-          <ul class="flex space-x-8">
-            <li
-              v-for="(item, index) in header_links"
-              :key="index"
-            >
-              <RouterLink
-                :to="item.link"
-                class="hover:text-primary-content text-primary-content"
-              >
-                {{ item.label }}
-              </RouterLink>
-            </li>
-          </ul>
-        </nav>
-
+        <NavbarMenu :menu="header_links" />
         <div
           class="flex items-center border-l ml-6 pl-6 border-base-muted border-opacity-50"
         >
@@ -59,6 +44,7 @@
 
 <script setup>
 import SwitchTheme from '../SwitchTheme.vue'
+import NavbarMenu from '../Navbar/NavbarMenu.vue'
 import NavbarMobile from '../Navbar/NavbarMobile.vue'
 import { isValidUrl } from '@/utils/url'
 

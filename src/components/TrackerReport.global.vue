@@ -8,7 +8,7 @@
   >
     <IconGithub
       v-if="icon"
-      class="w-5 h-5"
+      :class="iconClass"
     />
     <span v-if="label">{{ label }}</span>
   </component>
@@ -63,6 +63,11 @@ defineProps({
   icon: {
     type: Boolean,
     default: false
+  },
+
+  iconClass: {
+    type: Array,
+    default: () => ['w-5 h-5']
   },
 
   tag: {
