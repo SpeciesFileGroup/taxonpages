@@ -34,17 +34,17 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
-    "@vitejs/plugin-vue": "^6.0.0",
+    "@vitejs/plugin-vue": "^6.0.1",
     "autoprefixer": "^10.4.21",
     "compression": "^1.8.1",
-    "eslint": "^9.25.1",
-    "eslint-plugin-vue": "^9.32.0",
+    "eslint": "^9.32.0",
+    "eslint-plugin-vue": "^10.3.0",
     "express": "^5.1.0",
     "minimist": "^1.2.8",
     "postcss": "^8.5.6",
     "sass": "^1.89.2",
     "tailwindcss": "^3.4.17",
-    "vite": "^7.0.5",
+    "vite": "^7.0.6",
     "vite-plugin-pages": "^0.33.1",
     "vite-plugin-radar": "^0.10.1"
   }
