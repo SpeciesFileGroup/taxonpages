@@ -4,7 +4,7 @@
     class="relative cursor-pointer select-none group"
   >
     <button
-      class="flex items-center gap-2"
+      class="flex items-center gap-2 text-primary-content"
       @click="() => (isOpen = !isOpen)"
     >
       {{ label }}
