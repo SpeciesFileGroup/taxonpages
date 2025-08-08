@@ -8,6 +8,14 @@ import {
   makeGeoJSONFeature
 } from '../utils'
 import { LEGEND } from '../constants'
+import { ASSERTED_DISTRIBUTION } from '@/constants/objectTypes.js'
+
+function removeIsAbsentAssertedDistributions(data) {
+  return data.filter((feature) => {
+    return feature.properties.base.type != ASSERTED_DISTRIBUTION ||
+      feature.properties.is_absent !== true
+  })
+}
 
 function sortFeaturesByType(arr, reference) {
   const referenceMap = new Map()
@@ -95,8 +103,10 @@ export const useDistributionStore = defineStore('distributionStore', {
               this.distribution.errorMessage = data.message
             } else {
               const { features, shapeTypes } = removeDuplicateShapes(
-                sortFeaturesByType(data.features, Object.keys(LEGEND))
-              )
+                sortFeaturesByType(
+                  removeIsAbsentAssertedDistributions(data.features),
+                  Object.keys(LEGEND))
+                )
 
               this.distribution.currentShapeTypes = shapeTypes
               this.distribution.geojson = {
