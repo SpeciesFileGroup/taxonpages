@@ -3,6 +3,10 @@ export const LEGEND = {
     label: 'Aggregate (Asserted distribution & Georeference)',
     background: 'bg-map-aggregate'
   },
+  AssertedAbsent: {
+    label: 'Asserted absent',
+    background: 'bg-map-asserted-absent'
+  },
   AssertedDistribution: {
     label: 'Asserted distribution',
     background: 'bg-map-asserted'

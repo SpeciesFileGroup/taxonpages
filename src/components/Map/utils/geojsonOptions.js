@@ -45,9 +45,8 @@ export default ({ L }) => ({
 
   style: (feature) => {
     const type = getRelevantType(feature.properties?.base)
+    const shapeStyle = Shape[type]
 
-    if (Shape[type]) {
-      return Shape[type]
-    }
+    return shapeStyle
   }
 })

@@ -41,6 +41,7 @@ module.exports = {
           georeference: withOpacity('--color-map-georeference'),
           aggregate: withOpacity('--color-map-aggregate'),
           asserted: withOpacity('--color-map-asserted'),
+          'asserted-absent': withOpacity('--color-map-asserted-absent'),
           'type-material': withOpacity('--color-map-type-material'),
           'collection-object': withOpacity('--color-map-collection-object'),
           'field-occurrence': withOpacity('--color-map-field-occurrence')

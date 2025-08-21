@@ -11,6 +11,10 @@
   opacity: var(--color-map-marker-opacity);
 }
 
+.leaflet-hatch-pattern {
+  fill: url(#hatch-pattern);
+}
+
 .dark {
   color-scheme: dark;
 

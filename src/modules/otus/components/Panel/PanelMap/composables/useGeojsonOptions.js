@@ -1,5 +1,4 @@
 import { DISABLE_LAYER_OPTIONS } from '@/components/Map/constants'
-import { AGGREGATE } from '@/constants/objectTypes'
 import { computed, ref } from 'vue'
 
 export function makeGeojsonOptions({ popupElement, popupItem }) {

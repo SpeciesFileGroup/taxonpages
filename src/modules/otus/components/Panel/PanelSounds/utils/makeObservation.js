@@ -29,7 +29,6 @@ function makeObservationValue(obs) {
 }
 
 export function makeObservation(obs) {
-  console.log(obs)
   const descriptorName = obs.descriptor.name
 
   return {
