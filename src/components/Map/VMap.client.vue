@@ -8,6 +8,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
 import { makeTileFromConfiguration } from './utils/makeTileFromConfiguration'
+import { addPatternToMap } from './utils/addPatternToMap'
 import L from 'leaflet'
 import iconRetina from 'leaflet/dist/images/marker-icon-2x.png'
 import iconUrl from 'leaflet/dist/images/marker-icon.png'
@@ -221,6 +222,8 @@ onMounted(() => {
   mapObject.addLayer(drawnItems)
   mapObject.addLayer(geoJSONGroup)
 
+  addPatternToMap(mapObject.getContainer())
+
   if (props.geojson) {
     setGeoJSON(props.geojson)
   }
@@ -319,7 +322,7 @@ onUnmounted(() => {
 
 function setGeoJSON(geojson) {
   if (geojson) {
-    const args = { L }
+    const args = { L, mapObject }
 
     L.geoJSON(geojson, {
       ...geojsonDefaultOptions(args),
