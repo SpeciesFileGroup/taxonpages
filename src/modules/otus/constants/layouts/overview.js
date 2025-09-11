@@ -19,5 +19,8 @@ export const DEFAULT_OVERVIEW_LAYOUT = {
         ]
       ]
     ]
+  },
+  biological_relationships: {
+    panels: [[['panel:biological-associations']]]
   }
 }
