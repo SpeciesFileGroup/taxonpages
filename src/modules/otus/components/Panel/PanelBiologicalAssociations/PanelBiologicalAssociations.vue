@@ -4,7 +4,7 @@
       <VSpinner v-if="isLoading" />
     </ClientOnly>
     <VCardHeader> Biological associations </VCardHeader>
-    <VCardContent class="min-h-[6rem]">
+    <VCardContent class="min-h-[6rem] overflow-x-auto">
       <VPagination
         v-if="biologicalAssociations.length"
         class="mb-4"
