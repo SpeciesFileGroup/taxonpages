@@ -5,6 +5,18 @@
     </ClientOnly>
     <VCardHeader> Biological associations </VCardHeader>
     <VCardContent class="min-h-[6rem]">
+      <VPagination
+        v-if="biologicalAssociations.length"
+        class="mb-4"
+        v-model="pagination.page"
+        :total="pagination.total"
+        :per="pagination.per"
+        @select="
+          (value) => {
+            loadBiologicalAssociations(value)
+          }
+        "
+      />
       <VTable v-if="biologicalAssociations.length">
         <VTableHeader class="normal-case">
           <VTableHeaderRow>
@@ -63,6 +75,18 @@
           </VTableBodyRow>
         </VTableBody>
       </VTable>
+      <VPagination
+        v-if="biologicalAssociations.length"
+        class="mt-4"
+        v-model="pagination.page"
+        :total="pagination.total"
+        :per="pagination.per"
+        @select="
+          (value) => {
+            loadBiologicalAssociations({ page: value, per_page: perPage })
+          }
+        "
+      />
       <div
         v-if="!isLoading && !biologicalAssociations.length"
         class="text-xl text-center my-8 w-full"
@@ -87,28 +111,44 @@ const extend = [
   'biological_relationship_types'
 ]
 
-const biologicalAssociations = ref([])
-const isLoading = ref(false)
-
 const props = defineProps({
   otuId: {
     type: Number,
     required: true
+  },
+
+  per: {
+    type: Number,
+    default: 50
   }
 })
 
+const biologicalAssociations = ref([])
+const isLoading = ref(false)
+const pagination = ref({
+  page: 1,
+  per: props.per,
+  total: 0
+})
+
 onMounted(() => {
+  loadBiologicalAssociations()
+})
+
+function loadBiologicalAssociations(page = 1) {
   isLoading.value = true
 
   useOtuPageRequest('panel:biological-associations', () =>
     makeAPIRequest.get('/biological_associations', {
       params: {
         otu_id: [props.otuId],
+        per: pagination.value.per,
+        page,
         extend
       }
     })
   )
-    .then(async ({ data }) => {
+    .then(async ({ data, headers }) => {
       const items = data.map(makeBiologicalAssociation)
 
       if (data.length) {
@@ -128,11 +168,17 @@ onMounted(() => {
         })
       }
 
+      pagination.value = {
+        page: Number(headers['pagination-page']),
+        per: Number(headers['pagination-per-page']),
+        total: Number(headers['pagination-total'])
+      }
+
       isLoading.value = false
       biologicalAssociations.value = items
     })
     .catch(() => {
       isLoading.value = false
     })
-})
+}
 </script>
