@@ -20,36 +20,28 @@
       <VTable v-if="biologicalAssociations.length">
         <VTableHeader class="normal-case">
           <VTableHeaderRow>
-            <VTableHeaderCell
-              class="border-r"
-              colspan="4"
-              >Subject</VTableHeaderCell
-            >
-            <VTableHeaderCell> </VTableHeaderCell>
-            <VTableHeaderCell
-              class="border-r"
-              colspan="2"
-            >
+            <VTableHeaderCell colspan="5">Subject</VTableHeaderCell>
+            <VTableHeaderCell class="border-l border-r">
               Biological
             </VTableHeaderCell>
-            <VTableHeaderCell
-              class="border-r"
-              colspan="4"
-              >Object</VTableHeaderCell
-            >
+            <VTableHeaderCell colspan="5">Object</VTableHeaderCell>
+            <VTableHeaderCell class="border-l" />
           </VTableHeaderRow>
           <VTableHeaderRow>
             <VTableHeaderCell>Order</VTableHeaderCell>
             <VTableHeaderCell>Family</VTableHeaderCell>
             <VTableHeaderCell>Genus</VTableHeaderCell>
             <VTableHeaderCell>Label</VTableHeaderCell>
-            <VTableHeaderCell class="border-l">Properties</VTableHeaderCell>
-            <VTableHeaderCell>Relationship</VTableHeaderCell>
-            <VTableHeaderCell class="border-r">Properties</VTableHeaderCell>
+            <VTableHeaderCell>Properties</VTableHeaderCell>
+            <VTableHeaderCell class="border-l border-r"
+              >Relationship</VTableHeaderCell
+            >
+            <VTableHeaderCell>Properties</VTableHeaderCell>
             <VTableHeaderCell>Order</VTableHeaderCell>
             <VTableHeaderCell>Family</VTableHeaderCell>
             <VTableHeaderCell>Genus</VTableHeaderCell>
             <VTableHeaderCell>Label</VTableHeaderCell>
+            <VTableHeaderCell class="border-l">Citations</VTableHeaderCell>
           </VTableHeaderRow>
         </VTableHeader>
         <VTableBody>
@@ -60,18 +52,46 @@
             <VTableBodyCell> {{ ba.subjectOrder }}</VTableBodyCell>
             <VTableBodyCell> {{ ba.subjectFamily }}</VTableBodyCell>
             <VTableBodyCell> {{ ba.subjectGenus }}</VTableBodyCell>
-            <VTableBodyCell class="border-r">
-              {{ ba.subjectLabel }}</VTableBodyCell
-            >
+            <VTableBodyCell>
+              <template v-if="ba.subjectType === 'Otu'">
+                <RouterLink
+                  :to="{ name: 'otus-id', params: { id: ba.subjectId } }"
+                  v-html="ba.subjectLabel"
+                />
+              </template>
+              <template v-else>
+                {{ ba.subjectLabel }}
+              </template>
+            </VTableBodyCell>
             <VTableBodyCell> {{ ba.biologicalPropertySubject }}</VTableBodyCell>
-            <VTableBodyCell> {{ ba.biologicalRelationship }}</VTableBodyCell>
-            <VTableBodyCell class="border-r">
-              {{ ba.biologicalPropertyObject }}</VTableBodyCell
-            >
+            <VTableBodyCell class="border-l border-r">
+              {{ ba.biologicalRelationship }}
+            </VTableBodyCell>
+            <VTableBodyCell> {{ ba.biologicalPropertyObject }}</VTableBodyCell>
             <VTableBodyCell> {{ ba.objectOrder }}</VTableBodyCell>
             <VTableBodyCell> {{ ba.objectFamily }}</VTableBodyCell>
             <VTableBodyCell> {{ ba.objectGenus }}</VTableBodyCell>
-            <VTableBodyCell> {{ ba.objectLabel }}</VTableBodyCell>
+            <VTableBodyCell>
+              <template v-if="ba.objectType === 'Otu'">
+                <RouterLink
+                  :to="{ name: 'otus-id', params: { id: ba.objectId } }"
+                  v-html="ba.objectLabel"
+                />
+              </template>
+              <template v-else>
+                {{ ba.objectLabel }}
+              </template>
+            </VTableBodyCell>
+            <VTableBodyCell class="border-l">
+              <ul>
+                <li
+                  v-for="c in ba.citations"
+                  :key="c.id"
+                >
+                  {{ c.citation_source_body }}
+                </li>
+              </ul>
+            </VTableBodyCell>
           </VTableBodyRow>
         </VTableBody>
       </VTable>
@@ -119,7 +139,7 @@ const props = defineProps({
 
   per: {
     type: Number,
-    default: 50
+    default: 10
   }
 })
 

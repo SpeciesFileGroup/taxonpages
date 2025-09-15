@@ -10,6 +10,8 @@ function parseRank(rank) {
 export function makeBiologicalAssociation(data) {
   return {
     id: data.id,
+    subjectId: data.biological_association_subject_id,
+    subjectType: data.biological_association_subject_type,
     subjectOrder: parseRank(data.subject?.taxonomy?.order),
     subjectFamily: parseRank(data.subject?.taxonomy?.family),
     subjectGenus: parseRank(data.subject?.taxonomy?.genus),
@@ -23,6 +25,8 @@ export function makeBiologicalAssociation(data) {
       data.biological_relationship_types,
       'object'
     ),
+    objectId: data.biological_association_object_id,
+    objectType: data.biological_association_object_type,
     objectOrder: parseRank(data.object?.taxonomy?.order),
     objectFamily: parseRank(data.object?.taxonomy?.family),
     objectGenus: parseRank(data.object?.taxonomy?.genus),
