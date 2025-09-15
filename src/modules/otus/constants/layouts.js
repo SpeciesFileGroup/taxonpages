@@ -9,10 +9,7 @@ const panelEntries = Object.values(
 
 const { taxa_page } = __APP_ENV__
 
-const tabsLayout = Object.assign({
-  ...DEFAULT_OVERVIEW_LAYOUT,
-  ...taxa_page
-})
+const tabsLayout = taxa_page || DEFAULT_OVERVIEW_LAYOUT
 
 function parsePanelConfiguraion(panelLayout) {
   return panelLayout.map((row) =>

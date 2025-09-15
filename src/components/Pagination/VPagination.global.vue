@@ -122,12 +122,13 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'select'])
 
 const pages = computed(() => Math.ceil(props.total / props.per))
 const currentPage = computed({
   get: () => props.modelValue,
   set: (value) => {
+    emit('select', value)
     emit('update:modelValue', value)
   }
 })
