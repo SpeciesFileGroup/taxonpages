@@ -3,7 +3,9 @@
     <ClientOnly>
       <VSpinner v-if="isLoading" />
     </ClientOnly>
-    <VCardHeader> Biological associations </VCardHeader>
+    <VCardHeader>
+      Biological associations ({{ pagination.total }})
+    </VCardHeader>
     <VCardContent class="min-h-[6rem] overflow-x-auto">
       <VPagination
         v-if="biologicalAssociations.length"
@@ -139,7 +141,7 @@ const props = defineProps({
 
   per: {
     type: Number,
-    default: 10
+    default: 50
   }
 })
 
