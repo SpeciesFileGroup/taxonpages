@@ -1,5 +1,5 @@
 <template>
-  <div class="year-slider-container w-64 text-base-content">
+  <div class="year-slider-container text-base-content">
     <div class="slider-wrapper">
       <div class="slider-track bg-base-muted">
         <div
@@ -83,7 +83,7 @@ onMounted(() => {
   position: relative;
   height: 6px;
   border-radius: 3px;
-  margin: 1rem 0;
+  margin: 0.8rem 0;
 }
 
 .slider-range {
