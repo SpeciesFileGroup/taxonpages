@@ -2,14 +2,17 @@
   <div class="container mx-auto box-border">
     <h1 class="text-4xl px-4 md:px-0 mt-4 mb-6 font-bold">Bibliography</h1>
     <ClientOnly>
-      <VSpinner v-if="isLoading" />
+      <VSpinner
+        v-if="isLoading"
+        full-screen
+      />
     </ClientOnly>
     <VCard class="mb-4">
       <VCardContent>
         <div
           class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-2 text-sm"
         >
-          <div class="flex flex-col w-full md:w-fit">
+          <div class="flex flex-col w-full md:w-64">
             <label>Author</label>
             <InputText
               class="w-full"
@@ -67,6 +70,7 @@
         <VTable>
           <VTableHeader>
             <VTableHeaderRow>
+              <VTableHeaderCell class="w-2" />
               <VTableHeaderCell>Source</VTableHeaderCell>
             </VTableHeaderRow>
           </VTableHeader>
@@ -75,6 +79,15 @@
               v-for="item in list"
               :key="item.id"
             >
+              <VTableBodyCell
+                class="pr-1"
+                title="Show OTUs"
+              >
+                <OtuModal
+                  :source-id="item.id"
+                  :label="item.cached"
+                />
+              </VTableBodyCell>
               <VTableBodyCell
                 class="break-all"
                 v-html="item.cached"
@@ -101,8 +114,10 @@
 <script setup>
 import { ref, onBeforeMount, reactive } from 'vue'
 import { makeAPIRequest } from '@/utils'
+import { getPagination } from '../utils/getPagination'
 import YearPicker from '../components/YearPicker.vue'
 import VSlider from '../components/VSlider.vue'
+import OtuModal from '../components/OtuModal.vue'
 
 const PER = 50
 const MIN_YEAR = 1650
@@ -137,14 +152,6 @@ async function loadList(page = 1) {
     .finally(() => {
       isLoading.value = false
     })
-}
-
-function getPagination(headers) {
-  return {
-    page: Number(headers['pagination-page']),
-    per: Number(headers['pagination-per-page']),
-    total: Number(headers['pagination-total'])
-  }
 }
 
 onBeforeMount(loadList)

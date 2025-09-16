@@ -9,8 +9,8 @@
 
 <script setup>
 const props = defineProps({
-  modelValue: String,
-  value: String
+  modelValue: [String, Number],
+  value: [String, Number]
 })
 
 const emit = defineEmits(['update:modelValue'])
