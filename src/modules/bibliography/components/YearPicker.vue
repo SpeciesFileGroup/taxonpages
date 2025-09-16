@@ -1,8 +1,7 @@
 <template>
-  <div class="flex flex-row gap-2">
-    <input
-      class="w-14 p-1.5 text-base-content rounded border sm:text-sm placeholder:text-sm border-base-border focus:ring-primary-500 focus:border-primary-500"
-      type="number"
+  <div>
+    <InputText
+      class="w-14 max-w-14 text-sm"
       :value="inputValue"
       @change="setValue"
     />

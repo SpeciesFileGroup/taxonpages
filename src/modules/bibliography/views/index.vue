@@ -1,32 +1,51 @@
 <template>
-  <div class="container mx-auto px-4 md:px-0 box-border">
-    <h1 class="text-4xl mt-4 mb-6 font-bold">Bibliography</h1>
+  <div class="container mx-auto box-border">
+    <h1 class="text-4xl px-4 md:px-0 mt-4 mb-6 font-bold">Bibliography</h1>
     <ClientOnly>
-      <VSpinner v-if="isLoading" />
+      <VSpinner
+        v-if="isLoading"
+        full-screen
+      />
     </ClientOnly>
     <VCard class="mb-4">
       <VCardContent>
         <div
-          class="flex flex-col md:flex-row justify-center items-center gap-2"
+          class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-2 text-sm"
         >
-          <span>Published between:</span>
-          <YearPicker
-            v-model="parameters.year_start"
-            :min="MIN_YEAR"
-            :max="MAX_YEAR"
-          />
-          <VSlider
-            :min="MIN_YEAR"
-            :max="MAX_YEAR"
-            v-model:start="parameters.year_start"
-            v-model:end="parameters.year_end"
-          />
-          <YearPicker
-            v-model="parameters.year_end"
-            :min="MIN_YEAR"
-            :max="MAX_YEAR"
-          />
+          <div class="flex flex-col w-full md:w-64">
+            <label>Author</label>
+            <InputText
+              class="w-full"
+              type="text"
+              placeholder="Type..."
+              v-model="parameters.author"
+              @keypress.enter="() => loadList()"
+            />
+          </div>
+          <div class="w-full md:w-auto">
+            <span>Published between:</span>
+            <div class="flex flex-row gap-2">
+              <YearPicker
+                v-model="parameters.year_start"
+                :min="MIN_YEAR"
+                :max="MAX_YEAR"
+              />
+              <VSlider
+                class="w-full md:w-64"
+                :min="MIN_YEAR"
+                :max="MAX_YEAR"
+                v-model:start="parameters.year_start"
+                v-model:end="parameters.year_end"
+              />
+              <YearPicker
+                v-model="parameters.year_end"
+                :min="MIN_YEAR"
+                :max="MAX_YEAR"
+              />
+            </div>
+          </div>
           <VButton
+            class="text-sm py-1.5 md:self-end border border-primary-color"
             primary
             @click="() => loadList()"
             >Search</VButton
@@ -51,6 +70,7 @@
         <VTable>
           <VTableHeader>
             <VTableHeaderRow>
+              <VTableHeaderCell class="w-2" />
               <VTableHeaderCell>Source</VTableHeaderCell>
             </VTableHeaderRow>
           </VTableHeader>
@@ -59,6 +79,15 @@
               v-for="item in list"
               :key="item.id"
             >
+              <VTableBodyCell
+                class="pr-1"
+                title="Show OTUs"
+              >
+                <OtuModal
+                  :source-id="item.id"
+                  :label="item.cached"
+                />
+              </VTableBodyCell>
               <VTableBodyCell
                 class="break-all"
                 v-html="item.cached"
@@ -85,8 +114,10 @@
 <script setup>
 import { ref, onBeforeMount, reactive } from 'vue'
 import { makeAPIRequest } from '@/utils'
+import { getPagination } from '../utils/getPagination'
 import YearPicker from '../components/YearPicker.vue'
 import VSlider from '../components/VSlider.vue'
+import OtuModal from '../components/OtuModal.vue'
 
 const PER = 50
 const MIN_YEAR = 1650
@@ -94,7 +125,8 @@ const MAX_YEAR = new Date().getFullYear()
 
 const parameters = reactive({
   year_start: 1650,
-  year_end: 2025
+  year_end: 2025,
+  author: undefined
 })
 
 const list = ref([])
@@ -120,14 +152,6 @@ async function loadList(page = 1) {
     .finally(() => {
       isLoading.value = false
     })
-}
-
-function getPagination(headers) {
-  return {
-    page: Number(headers['pagination-page']),
-    per: Number(headers['pagination-per-page']),
-    total: Number(headers['pagination-total'])
-  }
 }
 
 onBeforeMount(loadList)
