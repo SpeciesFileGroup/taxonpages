@@ -12,7 +12,7 @@
         <div class="text-sm">Bibliography - <span v-html="label" /></div>
       </template>
 
-      <div class="md:max-h-[64vh] min-h-36 px-4 overflow-y-auto pb-4">
+      <div class="md:max-h-[64vh] min-h-28 px-4 overflow-y-auto pb-4">
         <ClientOnly>
           <VSpinner v-if="isLoading" />
         </ClientOnly>

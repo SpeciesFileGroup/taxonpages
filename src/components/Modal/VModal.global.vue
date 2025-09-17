@@ -12,7 +12,7 @@
       @click.stop
     >
       <div
-        class="w-full p-4 md:p-4 flex flex-row box-border justify-between items-center"
+        class="w-full p-4 md:p-4 flex flex-row box-border justify-between items-center gap-2"
       >
         <slot name="header">
           <span />
