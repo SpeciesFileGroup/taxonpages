@@ -54,19 +54,21 @@
               />
             </div>
           </div>
-          <VButton
-            class="text-sm py-1.5 md:self-end border border-primary-color"
-            primary
-            @click="() => loadList()"
-            >Search</VButton
-          >
-          <VButton
-            class="text-sm py-1.5 md:self-end border border-primary-color"
-            primary
-            @click="() => reset()"
-          >
-            Reset
-          </VButton>
+          <div class="flex flex-row gap-2 md:self-end">
+            <VButton
+              class="text-sm py-1.5 border border-primary-color"
+              primary
+              @click="() => loadList()"
+              >Search</VButton
+            >
+            <VButton
+              class="text-sm py-1.5 border border-primary-color"
+              primary
+              @click="() => reset()"
+            >
+              Reset
+            </VButton>
+          </div>
         </div>
       </VCardContent>
     </VCard>
@@ -74,25 +76,26 @@
     <VCard>
       <VCardContent>
         <div class="flex flex-row justify-between items-center mb-4">
-          <VPagination
-            v-model="pagination.page"
-            :total="pagination.total"
-            :per="pagination.per"
-            @update:modelValue="
-              (page) => {
-                loadList(page)
-              }
-            "
-          />
+          <div class="flex flex-col md:flex-row gap-3 md:items-center">
+            <VPagination
+              v-model="pagination.page"
+              :total="pagination.total"
+              :per="pagination.per"
+              @update:modelValue="
+                (page) => {
+                  loadList(page)
+                }
+              "
+            />
+            <VPaginationInfo :pagination="pagination" />
+          </div>
           <DropdownMenu :request="requestData" />
         </div>
         <VTable>
           <VTableHeader>
             <VTableHeaderRow>
               <VTableHeaderCell class="w-2" />
-              <VTableHeaderCell
-                >Sources ({{ pagination.total }})</VTableHeaderCell
-              >
+              <VTableHeaderCell> Sources </VTableHeaderCell>
             </VTableHeaderRow>
           </VTableHeader>
           <VTableBody>
@@ -116,17 +119,19 @@
             </VTableBodyRow>
           </VTableBody>
         </VTable>
-        <VPagination
-          class="mt-4"
-          v-model="pagination.page"
-          :total="pagination.total"
-          :per="pagination.per"
-          @update:modelValue="
-            (page) => {
-              loadList(page)
-            }
-          "
-        />
+        <div class="flex flex-col md:flex-row gap-3 md:items-center mt-4">
+          <VPagination
+            v-model="pagination.page"
+            :total="pagination.total"
+            :per="pagination.per"
+            @update:modelValue="
+              (page) => {
+                loadList(page)
+              }
+            "
+          />
+          <VPaginationInfo :pagination="pagination" />
+        </div>
       </VCardContent>
     </VCard>
   </div>
@@ -163,7 +168,7 @@ async function loadList(page = 1) {
       params: {
         in_project: true,
         page,
-        per: PER,
+        per: pagination.value.per,
         ...parameters.value
       }
     })

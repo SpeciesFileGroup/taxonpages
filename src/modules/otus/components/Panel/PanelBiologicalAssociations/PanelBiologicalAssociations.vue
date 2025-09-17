@@ -23,11 +23,11 @@
         <VTableHeader class="normal-case">
           <VTableHeaderRow>
             <VTableHeaderCell colspan="5">Subject</VTableHeaderCell>
-            <VTableHeaderCell class="border-l border-r">
+            <VTableHeaderCell class="border-l-2 border-r-2">
               Biological
             </VTableHeaderCell>
             <VTableHeaderCell colspan="5">Object</VTableHeaderCell>
-            <VTableHeaderCell class="border-l" />
+            <VTableHeaderCell class="border-l-2" />
           </VTableHeaderRow>
           <VTableHeaderRow>
             <VTableHeaderCell>Order</VTableHeaderCell>
@@ -35,7 +35,7 @@
             <VTableHeaderCell>Genus</VTableHeaderCell>
             <VTableHeaderCell>Label</VTableHeaderCell>
             <VTableHeaderCell>Properties</VTableHeaderCell>
-            <VTableHeaderCell class="border-l border-r"
+            <VTableHeaderCell class="border-l-2 border-r-2"
               >Relationship</VTableHeaderCell
             >
             <VTableHeaderCell>Properties</VTableHeaderCell>
@@ -43,7 +43,7 @@
             <VTableHeaderCell>Family</VTableHeaderCell>
             <VTableHeaderCell>Genus</VTableHeaderCell>
             <VTableHeaderCell>Label</VTableHeaderCell>
-            <VTableHeaderCell class="border-l">Citations</VTableHeaderCell>
+            <VTableHeaderCell class="border-l-2">Citations</VTableHeaderCell>
           </VTableHeaderRow>
         </VTableHeader>
         <VTableBody>
@@ -66,7 +66,7 @@
               </template>
             </VTableBodyCell>
             <VTableBodyCell> {{ ba.biologicalPropertySubject }}</VTableBodyCell>
-            <VTableBodyCell class="border-l border-r">
+            <VTableBodyCell class="border-l-2 border-r-2">
               {{ ba.biologicalRelationship }}
             </VTableBodyCell>
             <VTableBodyCell> {{ ba.biologicalPropertyObject }}</VTableBodyCell>
@@ -84,7 +84,7 @@
                 {{ ba.objectLabel }}
               </template>
             </VTableBodyCell>
-            <VTableBodyCell class="border-l">
+            <VTableBodyCell class="border-l-2">
               <ul>
                 <li
                   v-for="c in ba.citations"
