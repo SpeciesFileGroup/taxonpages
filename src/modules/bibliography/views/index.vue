@@ -12,8 +12,18 @@
         <div
           class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-2 text-sm"
         >
-          <div class="flex flex-col w-full md:w-64">
-            <label>Author</label>
+          <div class="flex flex-col w-full">
+            <label>In citation</label>
+            <InputText
+              class="w-full"
+              type="text"
+              placeholder='Search anywhere in the citation... for example: "Charles Darwin Archives"'
+              v-model="parameters.query_term"
+              @keypress.enter="() => loadList()"
+            />
+          </div>
+          <div class="flex flex-col w-full md:w-96">
+            <label>Author(s)</label>
             <InputText
               class="w-full"
               type="text"
@@ -50,28 +60,39 @@
             @click="() => loadList()"
             >Search</VButton
           >
+          <VButton
+            class="text-sm py-1.5 md:self-end border border-primary-color"
+            primary
+            @click="() => reset()"
+          >
+            Reset
+          </VButton>
         </div>
       </VCardContent>
     </VCard>
 
     <VCard>
       <VCardContent>
-        <VPagination
-          class="mb-4"
-          v-model="pagination.page"
-          :total="pagination.total"
-          :per="pagination.per"
-          @update:modelValue="
-            (page) => {
-              loadList(page)
-            }
-          "
-        />
+        <div class="flex flex-row justify-between items-center mb-4">
+          <VPagination
+            v-model="pagination.page"
+            :total="pagination.total"
+            :per="pagination.per"
+            @update:modelValue="
+              (page) => {
+                loadList(page)
+              }
+            "
+          />
+          <DropdownMenu :request="requestData" />
+        </div>
         <VTable>
           <VTableHeader>
             <VTableHeaderRow>
               <VTableHeaderCell class="w-2" />
-              <VTableHeaderCell>Source</VTableHeaderCell>
+              <VTableHeaderCell
+                >Sources ({{ pagination.total }})</VTableHeaderCell
+              >
             </VTableHeaderRow>
           </VTableHeader>
           <VTableBody>
@@ -112,9 +133,11 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount, reactive } from 'vue'
+import { ref, onBeforeMount } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { makeAPIRequest } from '@/utils'
 import { getPagination } from '../utils/getPagination'
+import DropdownMenu from '../components/DropdownMenu.vue'
 import YearPicker from '../components/YearPicker.vue'
 import VSlider from '../components/VSlider.vue'
 import OtuModal from '../components/OtuModal.vue'
@@ -123,15 +146,14 @@ const PER = 50
 const MIN_YEAR = 1650
 const MAX_YEAR = new Date().getFullYear()
 
-const parameters = reactive({
-  year_start: 1650,
-  year_end: 2025,
-  author: undefined
-})
+const route = useRoute()
+const router = useRouter()
 
+const parameters = ref({})
 const list = ref([])
 const isLoading = ref(false)
 const pagination = ref({ page: 1, total: 0, per: PER })
+const requestData = ref()
 
 async function loadList(page = 1) {
   isLoading.value = true
@@ -142,17 +164,57 @@ async function loadList(page = 1) {
         in_project: true,
         page,
         per: PER,
-        ...parameters
+        ...parameters.value
       }
     })
-    .then(({ data, headers }) => {
+    .then(({ data, headers, request }) => {
       pagination.value = getPagination(headers)
       list.value = data
+
+      requestData.value = {
+        data,
+        url: request.responseURL
+      }
+
+      setQuery()
     })
     .finally(() => {
       isLoading.value = false
     })
 }
 
-onBeforeMount(loadList)
+function setParameters(data = {}) {
+  parameters.value = {
+    year_start: Number(data.year_start || 1650),
+    year_end: Number(data.year_end || 2025),
+    author: data.author,
+    query_term: data.query_term
+  }
+}
+
+function setPagination(data = {}) {
+  pagination.value = {
+    page: Number(data.page) || 1,
+    total: 0,
+    per: PER
+  }
+}
+
+function reset() {
+  setParameters()
+  setPagination()
+  loadList()
+}
+
+function setQuery() {
+  router.push({
+    query: { ...parameters.value, page: pagination.value.page }
+  })
+}
+
+onBeforeMount(() => {
+  setParameters(route.query)
+  setPagination(route.query)
+  loadList(pagination.value.page)
+})
 </script>
