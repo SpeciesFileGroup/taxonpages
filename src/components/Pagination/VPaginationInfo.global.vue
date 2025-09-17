@@ -21,11 +21,6 @@ const props = defineProps({
   }
 })
 
-const per = defineModel({
-  type: [String, Number],
-  required: true
-})
-
 const recordsAtCurrentPage = computed(
   () => (props.pagination.page - 1) * props.pagination.per || 1
 )
