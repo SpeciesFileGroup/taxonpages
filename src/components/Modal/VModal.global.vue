@@ -6,24 +6,24 @@
   >
     <div
       :class="[
-        'h-full md:h-auto mx-auto md:max-h-[70vh] bg-base-foreground container overflow-y-auto rounded',
+        'h-full md:h-auto mx-auto  bg-base-foreground container overflow-y-auto rounded',
         containerClass
       ]"
       @click.stop
     >
       <div
-        class="w-full p-4 md:p-4 flex flex-row box-border justify-between items-center"
+        class="w-full p-4 md:p-4 flex flex-row box-border justify-between items-center gap-2"
       >
         <slot name="header">
           <span />
         </slot>
         <IconClose
-          class="w-6 h-6 cursor-pointer opacity-50"
+          class="w-6 h-6 min-w-6 min-h-6 cursor-pointer opacity-50"
           @click="() => emit('close')"
         />
       </div>
       <div
-        class="bg-base-foreground overflow-x-auto h-full md:h-auto max-h-full"
+        class="bg-base-foreground overflow-x-auto h-full md:h-auto max-h-full md:max-h-[70vh]"
       >
         <slot />
       </div>
