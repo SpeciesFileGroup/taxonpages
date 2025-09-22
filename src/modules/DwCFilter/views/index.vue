@@ -20,18 +20,21 @@
 
     <VCard>
       <VCardContent>
-        <div class="flex flex-col md:flex-row gap-3 md:items-center mb-4">
-          <VPagination
-            v-model="pagination.page"
-            :total="pagination.total"
-            :per="pagination.per"
-            @select="
-              (page) => {
-                loadList(page)
-              }
-            "
-          />
-          <VPaginationInfo :pagination="pagination" />
+        <div class="flex flex-row justify-between items-center mb-4">
+          <div class="flex flex-col md:flex-row gap-3 md:items-center">
+            <VPagination
+              v-model="pagination.page"
+              :total="pagination.total"
+              :per="pagination.per"
+              @update:modelValue="
+                (page) => {
+                  loadList(page)
+                }
+              "
+            />
+            <VPaginationInfo :pagination="pagination" />
+          </div>
+          <DropdownMenu :request="requestData" />
         </div>
 
         <VTable>
@@ -78,6 +81,7 @@ import { makeAPIRequest } from '@/utils'
 import { useRoute, useRouter } from 'vue-router'
 import { flattenParameters } from '../utils/flattenParameters'
 import FilterBar from '../components/FilterBar.vue'
+import DropdownMenu from '../components/DropdownMenu.vue'
 
 const PER = 50
 
@@ -88,6 +92,7 @@ const list = ref([])
 const isLoading = ref(false)
 const pagination = ref({ page: 1, total: 0, per: PER })
 const parameters = ref({})
+const requestData = ref()
 
 function getPagination(headers) {
   return {
@@ -131,9 +136,14 @@ function loadList(page = 1) {
         per: PER
       }
     })
-    .then(({ data, headers }) => {
+    .then(({ data, headers, request }) => {
       list.value = data
       pagination.value = getPagination(headers)
+
+      requestData.value = {
+        data,
+        url: request.responseURL
+      }
 
       setQuery()
     })
