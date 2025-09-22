@@ -1,42 +1,45 @@
 <template>
-  <div class="tp-autocomplete md:block md:mr-0 mr-3 relative w-fit">
+  <div class="tp-autocomplete md:block relative w-fit">
     <div
       class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none"
     >
       <IconSearch class="w-4 h-4 text-gray-500" />
     </div>
-    <input
+    <InputText
+      ref="inputElement"
       v-model="typed"
       type="text"
       :autofocus="autofocus"
       autocomplete="none"
-      class="tp-autocomplete__input block box-border min-w-full p-1.5 pl-10 text-base-content rounded border sm:text-sm placeholder:text-sm dark:border-slate-700 border-gray-300 dark:placeholder:text-slate-400 focus:ring-primary-500 focus:border-primary-500"
+      class="tp-autocomplete__input block box-border w-full p-1.5 pl-10"
       :placeholder="placeholder"
-      ref="inputElement"
+      @input="trigger"
     />
     <AutocompleteSpinner
       v-if="isSearching"
-      class="absolute top-1/2 -translate-y-1/2 right-2 h-5 w-5"
+      class="tp-autocomplete__spinner hidden absolute top-1/2 -translate-y-1/2 right-2 h-5 w-5"
     />
 
     <ul
       v-if="list.length"
       class="tp-autocomplete__list list absolute z-[500] max-h-52 w-full overflow-y-auto border bg-base-foreground border-base-border !m-0 shadow-md"
+      role="listbox"
     >
       <li
         v-for="item in list"
         :key="item.id"
         class="tp-autocomplete__item px-3 py-2 border-b text-xs text-base-content cursor-pointer hover:bg-secondary-color hover:bg-opacity-5 border-base-border truncate"
-        @click="selectItem(item)"
+        role="option"
+        @mousedown.prevent="selectItem(item)"
       >
-        <span v-html="item[label]" />
+        <span v-html="label ? item[label] : item" />
       </li>
     </ul>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { makeAPIRequest } from '@/utils/request'
 import AutocompleteSpinner from './AutocompleteSpinner.vue'
 
@@ -68,12 +71,21 @@ const props = defineProps({
 
   label: {
     type: String,
-    default: 'label'
+    default: undefined
+  },
+
+  retainInput: {
+    type: Boolean,
+    default: false
   }
 })
 
+const typed = defineModel('input', {
+  type: String,
+  default: ''
+})
+
 const emit = defineEmits(['select'])
-const typed = ref('')
 const list = ref([])
 const isSearching = ref(false)
 const inputElement = ref(null)
@@ -81,10 +93,10 @@ const inputElement = ref(null)
 const delay = 500
 let timeout
 
-watch(typed, (newVal) => {
+function trigger(e) {
   clearTimeout(timeout)
 
-  if (newVal.length) {
+  if (e.target.value.length) {
     timeout = setTimeout(() => {
       isSearching.value = true
       makeAPIRequest
@@ -103,15 +115,22 @@ watch(typed, (newVal) => {
   } else {
     list.value = []
   }
-})
+}
 
 const selectItem = (item) => {
   emit('select', item)
-  typed.value = ''
+
+  if (props.retainInput) {
+    typed.value = props.label ? item[props.label] : item
+  } else {
+    typed.value = ''
+  }
+
+  inputElement.value.inputRef.blur()
 }
 
 function setFocus() {
-  inputElement.value.focus()
+  inputElement.value.inputRef.focus()
 }
 
 defineExpose({
@@ -134,7 +153,7 @@ defineExpose({
     display: block;
   }
 
-  &__list:hover {
+  &__input:focus ~ &__spinner {
     display: block;
   }
 }

@@ -1,53 +1,82 @@
 <template>
   <VCard class="mb-4">
     <VCardContent>
-      <div class="flex flex-col md:flex-row justify-center items-center gap-2">
-        <div class="text-sm">
+      <div
+        class="flex flex-col lg:flex-row justify-center items-center gap-4 lg:gap-2 text-sm"
+      >
+        <div class="text-sm w-full">
           <label>Scientific name</label>
-          <input
-            class="block box-border min-w-full p-1.5 pl-4 text-base-content rounded border sm:text-sm placeholder:text-sm dark:border-slate-700 border-gray-300 dark:placeholder:text-slate-400 focus:ring-primary-500 focus:border-primary-500"
+          <InputText
+            class="block w-full"
             type="text"
             placeholder="Type name..."
             v-model="parameters.scientificName"
+            @keypress.enter="() => emit('search')"
           />
         </div>
-        <div class="text-sm">
-          <label>Scientific name author</label>
-          <input
-            class="block box-border min-w-full p-1.5 pl-4 text-base-content rounded border sm:text-sm placeholder:text-sm dark:border-slate-700 border-gray-300 dark:placeholder:text-slate-400 focus:ring-primary-500 focus:border-primary-500"
+        <div class="w-full lg:w-96">
+          <label>Author</label>
+          <InputText
+            class="block w-full"
             type="text"
             placeholder="Type author..."
             v-model="parameters.scientificNameAuthorship"
+            @keypress.enter="() => emit('search')"
           />
         </div>
-        <div class="text-sm">
+        <div class="w-full">
           <label>Distribution</label>
-          <div class="flex flex-col md:flex-row gap-2">
+          <div class="flex flex-col md:flex-row gap-2 w-full">
             <Autocomplete
-              url="/dwc_occurrences"
-              param="country"
-              label="country"
+              class="w-full"
+              url="/dwc_occurrences/area_autocomplete"
+              query-param="term"
+              v-model:input="parameters.country"
+              retain-input
+              :params="{
+                target: 'country'
+              }"
               placeholder="Country..."
             />
             <Autocomplete
-              url="/dwc_occurrences"
-              param="stateProvince"
+              class="w-full"
+              url="/dwc_occurrences/area_autocomplete"
+              query-param="term"
+              retain-input
+              v-model:input="parameters.stateProvince"
+              :params="{
+                target: 'stateProvince'
+              }"
               placeholder="State/Province..."
-              label="stateProvince"
             />
             <Autocomplete
-              url="/dwc_occurrences"
-              param="county"
+              class="w-full"
+              url="/dwc_occurrences/area_autocomplete"
+              query-param="term"
+              retain-input
+              v-model:input="parameters.county"
+              :params="{
+                target: 'county'
+              }"
               placeholder="County..."
-              label="county"
             />
-            <VButton
-              primary
-              @click="() => emit('search')"
-            >
-              Search
-            </VButton>
           </div>
+        </div>
+        <div class="flex flex-row gap-2 justify-center md:self-end text-sm">
+          <VButton
+            class="py-1.5 border border-primary-color"
+            primary
+            @click="() => emit('search')"
+          >
+            Search
+          </VButton>
+          <VButton
+            class="py-1.5 border border-primary-color"
+            primary
+            @click="() => emit('reset')"
+          >
+            Reset
+          </VButton>
         </div>
       </div>
     </VCardContent>

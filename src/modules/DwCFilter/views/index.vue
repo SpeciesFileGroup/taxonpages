@@ -1,6 +1,11 @@
 <template>
-  <div class="container mx-auto px-4 md:px-0 box-border">
-    <h1 class="text-4xl mt-4 mb-6 font-bold">DwC</h1>
+  <div class="container mx-auto box-border">
+    <div class="px-4 md:px-0 mt-4 mb-6">
+      <h1 class="text-4xl font-bold">OTU Search</h1>
+      <h2>
+        Filter OTUs by scientific name, author, and distribution (Darwin Core)
+      </h2>
+    </div>
     <ClientOnly>
       <VSpinner
         v-if="isLoading"
@@ -9,22 +14,26 @@
     </ClientOnly>
     <FilterBar
       v-model="parameters"
-      @search="search()"
+      @search="() => loadList()"
+      @reset="reset"
     />
 
     <VCard>
       <VCardContent>
-        <VPagination
-          class="mb-4"
-          v-model="pagination.page"
-          :total="pagination.total"
-          :per="pagination.per"
-          @update:modelValue="
-            (page) => {
-              loadList(page)
-            }
-          "
-        />
+        <div class="flex flex-col md:flex-row gap-3 md:items-center mb-4">
+          <VPagination
+            v-model="pagination.page"
+            :total="pagination.total"
+            :per="pagination.per"
+            @select="
+              (page) => {
+                loadList(page)
+              }
+            "
+          />
+          <VPaginationInfo :pagination="pagination" />
+        </div>
+
         <VTable>
           <VTableHeader>
             <VTableHeaderRow>
@@ -45,28 +54,35 @@
             </VTableBodyRow>
           </VTableBody>
         </VTable>
-        <VPagination
-          class="mt-4"
-          v-model="pagination.page"
-          :total="pagination.total"
-          :per="pagination.per"
-          @update:modelValue="
-            (page) => {
-              loadList(page)
-            }
-          "
-        />
+        <div class="flex flex-col md:flex-row gap-3 md:items-center mt-4">
+          <VPagination
+            v-model="pagination.page"
+            :total="pagination.total"
+            :per="pagination.per"
+            @select="
+              (page) => {
+                loadList(page)
+              }
+            "
+          />
+          <VPaginationInfo :pagination="pagination" />
+        </div>
       </VCardContent>
     </VCard>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { makeAPIRequest } from '@/utils'
+import { useRoute, useRouter } from 'vue-router'
+import { flattenParameters } from '../utils/flattenParameters'
 import FilterBar from '../components/FilterBar.vue'
 
 const PER = 50
+
+const route = useRoute()
+const router = useRouter()
 
 const list = ref([])
 const isLoading = ref(false)
@@ -81,15 +97,36 @@ function getPagination(headers) {
   }
 }
 
-function search(page = 1) {
+function setParameters(data = {}) {
+  parameters.value = data
+}
+
+function setPagination(data = {}) {
+  pagination.value = {
+    page: Number(data.page) || 1,
+    total: 0,
+    per: PER
+  }
+}
+
+function setQuery() {
+  router.push({
+    query: { ...parameters.value, page: pagination.value.page }
+  })
+}
+
+function loadList(page = 1) {
   isLoading.value = true
 
   makeAPIRequest
     .get('/otus', {
       params: {
-        dwc_occurrence_query: {
-          ...parameters.value
-        },
+        ...flattenParameters({
+          dwc_occurrence_query: {
+            ...parameters.value,
+            wildcard_attribute: Object.keys(parameters.value)
+          }
+        }),
         page,
         per: PER
       }
@@ -97,9 +134,26 @@ function search(page = 1) {
     .then(({ data, headers }) => {
       list.value = data
       pagination.value = getPagination(headers)
+
+      setQuery()
     })
     .finally(() => {
       isLoading.value = false
     })
 }
+
+function reset() {
+  setParameters()
+  setPagination()
+  setQuery()
+  list.value = []
+}
+
+onMounted(() => {
+  const { page, ...params } = route.query
+
+  setParameters(params)
+  setPagination({ page })
+  loadList()
+})
 </script>
