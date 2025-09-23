@@ -34,7 +34,10 @@
             />
             <VPaginationInfo :pagination="pagination" />
           </div>
-          <DropdownMenu :request="requestData" />
+          <DropdownMenu
+            :parameters="parameters"
+            :request="requestData"
+          />
         </div>
 
         <VTable>

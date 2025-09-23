@@ -34,11 +34,18 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { makeAPIRequest } from '@/utils'
+import { downloadFile } from '@/utils'
 
 const props = defineProps({
   request: {
     type: Object,
     default: () => ({})
+  },
+
+  parameters: {
+    type: Object,
+    required: true
   }
 })
 
@@ -48,6 +55,25 @@ const menuOptions = computed(() => [
   {
     label: 'JSON Data',
     action: () => (isModalVisible.value = true)
+  },
+  {
+    label: 'Download DwC',
+    action: downloadDwcOccurrencesCSV
   }
 ])
+
+async function downloadDwcOccurrencesCSV() {
+  const response = await makeAPIRequest.get('/dwc_occurrences.csv', {
+    params: {
+      ...props.parameters
+    },
+    responseType: 'blob',
+    headers: {
+      Accept: 'text/csv'
+    }
+  })
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+
+  downloadFile(response.data, `dwc_occurrences_${timestamp}.csv`, 'text/csv')
+}
 </script>
