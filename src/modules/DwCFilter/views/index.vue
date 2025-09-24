@@ -35,7 +35,7 @@
             <VPaginationInfo :pagination="pagination" />
           </div>
           <DropdownMenu
-            :parameters="parameters"
+            :parameters="{ ...parameters, ...wildcardParam }"
             :request="requestData"
           />
         </div>
@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { makeAPIRequest } from '@/utils'
 import { useRoute, useRouter } from 'vue-router'
 import { flattenParameters } from '../utils/flattenParameters'
@@ -96,6 +96,9 @@ const isLoading = ref(false)
 const pagination = ref({ page: 1, total: 0, per: PER })
 const parameters = ref({})
 const requestData = ref()
+const wildcardParam = computed(() => ({
+  wildcard_attribute: Object.keys(parameters.value)
+}))
 
 function getPagination(headers) {
   return {
@@ -132,7 +135,7 @@ function loadList(page = 1) {
         ...flattenParameters({
           dwc_occurrence_query: {
             ...parameters.value,
-            wildcard_attribute: Object.keys(parameters.value)
+            ...wildcardParam.value
           }
         }),
         page,

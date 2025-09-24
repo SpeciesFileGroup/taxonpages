@@ -69,11 +69,11 @@ async function downloadDwcOccurrencesCSV() {
     },
     responseType: 'blob',
     headers: {
-      Accept: 'text/csv'
+      Accept: 'text/tsv'
     }
   })
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
 
-  downloadFile(response.data, `dwc_occurrences_${timestamp}.csv`, 'text/csv')
+  downloadFile(response.data, `dwc_occurrences_${timestamp}.tsv`, 'text/tsv')
 }
 </script>
