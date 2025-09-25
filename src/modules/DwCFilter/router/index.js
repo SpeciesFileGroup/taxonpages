@@ -1,7 +1,7 @@
 export default [
   {
-    name: 'dwc-filter',
-    path: '/dwc/filter',
+    name: 'resources-tw-filter-dwc-otus',
+    path: '/resources/tw/filter/dwc_otus',
     component: () => import('../views/index.vue')
   }
 ]
