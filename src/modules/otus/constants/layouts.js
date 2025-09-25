@@ -1,7 +1,7 @@
 import { DEFAULT_OVERVIEW_LAYOUT } from './layouts/index.js'
 
 const panelEntries = Object.values(
-  import.meta.glob(['../components/Panel/*/main.js', '#/panels/*/main.js'], {
+  import.meta.glob(['../components/Panel/*/main.js', '~/panels/*/main.js'], {
     eager: true,
     import: 'default'
   })

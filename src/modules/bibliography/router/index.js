@@ -1,9 +1,7 @@
-import bibliography from '../views/index.vue'
-
 export default [
   {
-    name: 'bibliography',
-    path: '/bibliography',
-    component: bibliography
+    name: 'resources-tw-filter-bibliography',
+    path: '/resources/tw/filter/bibliography',
+    component: () => import('../views/index.vue')
   }
 ]
