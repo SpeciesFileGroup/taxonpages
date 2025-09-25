@@ -1,7 +1,5 @@
 export function stripHTML(html) {
-  const temp = document.createElement('div')
+  if (!html) return ''
 
-  temp.innerHTML = html
-
-  return temp.textContent || temp.innerText || ''
+  return html.replace(/<[^>]+>/g, '')
 }
