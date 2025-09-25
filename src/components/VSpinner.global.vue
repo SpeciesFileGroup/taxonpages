@@ -114,16 +114,26 @@ const props = defineProps({
 
 const spinnerElement = ref(null)
 const cssProperties = ref({})
-const resizeInterval = ref(undefined)
+let resizeObserver
 
 onMounted(() => {
   init()
+
   if (props.resize && !props.fullScreen) {
-    checkResize()
+    const parent = props.target
+      ? document.querySelector(props.target)
+      : spinnerElement.value.parentNode
+
+    resizeObserver = new ResizeObserver(() => {
+      init()
+    })
+    resizeObserver.observe(parent)
   }
 })
 
-onUnmounted(() => clearInterval(resizeInterval.value))
+onUnmounted(() => {
+  if (resizeObserver) resizeObserver.disconnect()
+})
 
 const init = () => {
   const domElement = props.target
@@ -158,10 +168,6 @@ const calculateSpinnerStyle = (element) => {
     width: size.width - paddingLeft - paddingRight + 'px',
     height: size.height - paddingTop - paddingBottom + 'px'
   }
-}
-
-const checkResize = () => {
-  resizeInterval.value = setInterval(init(), 500)
 }
 </script>
 <style lang="scss" scoped>
@@ -208,69 +214,6 @@ const checkResize = () => {
     display: block;
     position: relative;
     margin: 0px auto;
-  }
-
-  #Tail {
-    opacity: 0;
-    animation: tail 2s ease infinite;
-    fill: #41ba8d;
-  }
-  #LeftBottom {
-    fill: #00845d;
-    opacity: 0;
-    animation: spinner 1s ease alternate infinite;
-    animation-delay: 0s;
-  }
-  #LeftMid {
-    fill: #28221b;
-    opacity: 0;
-    animation: spinner 1s ease alternate infinite;
-    animation-delay: 0.2s;
-  }
-  #LeftTop {
-    fill: #342d25;
-    opacity: 0;
-    animation: spinner 1s ease alternate infinite;
-    animation-delay: 0.4s;
-  }
-  #Head {
-    fill: #342d25;
-    opacity: 0;
-    animation: spinner 1s ease alternate infinite;
-    animation-delay: 0.6s;
-  }
-
-  @keyframes spinner {
-    0% {
-      opacity: 0;
-    }
-    30% {
-      opacity: 0;
-    }
-    90% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
-  @keyframes tail {
-    0% {
-      opacity: 0;
-    }
-    30% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 1;
-    }
-    90% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 0;
-    }
   }
 }
 </style>

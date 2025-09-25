@@ -1,5 +1,3 @@
-import OtuIndex from '@/modules/otus/views/Index.vue'
-import PageLayout from '@/modules/otus/views/PageLayout.vue'
 import layouts from '../constants/layouts'
 
 function makeChildrenRoutes() {
@@ -8,7 +6,7 @@ function makeChildrenRoutes() {
   return tabKeys.map((tab) => ({
     path: tab,
     name: `otus-id-${tab}`,
-    component: PageLayout,
+    component: () => import('@/modules/otus/views/PageLayout.vue'),
     meta: {
       tab,
       rankGroup: layouts[tab].rankGroup,
@@ -21,7 +19,7 @@ export default [
   {
     name: 'otus-id',
     path: '/otus/:id',
-    component: OtuIndex,
+    component: () => import('@/modules/otus/views/Index.vue'),
     redirect: {
       name: 'otus-id-overview'
     },

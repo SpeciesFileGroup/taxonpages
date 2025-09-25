@@ -11,7 +11,7 @@ const coreModuleRoutes = import.meta.glob('@/modules/**/router/*.js', {
   import: 'default',
   eager: true
 })
-const userModuleRoutes = import.meta.glob('#/modules/**/router/*.js', {
+const userModuleRoutes = import.meta.glob('~/modules/**/router/*.js', {
   import: 'default',
   eager: true
 })
@@ -40,9 +40,7 @@ export function createRouter() {
     history: getHistory(),
     routes,
     scrollBehavior(to, from, savedPosition) {
-      return to.hash
-        ? { el: to.hash }
-        : { top: 0 }
+      return to.hash ? { el: to.hash } : { top: 0 }
     }
   })
 }
