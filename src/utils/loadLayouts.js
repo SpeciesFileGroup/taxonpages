@@ -1,5 +1,5 @@
 export function loadUserLayouts() {
-  const files = import.meta.glob('#/layouts/*.vue', {
+  const files = import.meta.glob('~/layouts/*.vue', {
     eager: true,
     import: 'default'
   })

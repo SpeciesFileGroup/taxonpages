@@ -1,8 +1,9 @@
+import { defineAsyncComponent } from 'vue'
+
 export function registerGlobalComponents(app) {
   const files = import.meta.glob(
-    ['@/components/**/*.global.vue', '#/components/**/*.global.vue'],
+    ['@/components/**/*.global.vue', '~/components/**/*.global.vue'],
     {
-      eager: true,
       import: 'default'
     }
   )
@@ -11,15 +12,13 @@ export function registerGlobalComponents(app) {
 }
 
 function setGlobalComponents(app, files) {
-  const components = Object.entries(files)
-
-  components.forEach(([path, definition]) => {
+  Object.entries(files).forEach(([path, loader]) => {
     const componentName = path
       .split('/')
       .pop()
-      .replace(/\.client.global.\w+$/, '')
-      .replace(/\.global.\w+$/, '')
+      .replace(/\.client\.global\.\w+$/, '')
+      .replace(/\.global\.\w+$/, '')
 
-    app.component(componentName, definition)
+    app.component(componentName, defineAsyncComponent(loader))
   })
 }
