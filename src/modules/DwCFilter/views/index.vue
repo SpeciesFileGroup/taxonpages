@@ -43,6 +43,7 @@
         <VTable>
           <VTableHeader>
             <VTableHeaderRow>
+              <VTableHeaderCell class="w-2" />
               <VTableHeaderCell>OTU</VTableHeaderCell>
             </VTableHeaderRow>
           </VTableHeader>
@@ -51,6 +52,12 @@
               v-for="item in list"
               :key="item.id"
             >
+              <VTableBodyCell class="pr-1">
+                <OtuModal
+                  :otu="item"
+                  :parameters="{ ...parameters, ...wildcardParam }"
+                />
+              </VTableBodyCell>
               <VTableBodyCell class="break-all">
                 <RouterLink
                   :to="{ name: 'otus-id', params: { id: item.id } }"
@@ -85,6 +92,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { flattenParameters } from '../utils/flattenParameters'
 import FilterBar from '../components/FilterBar.vue'
 import DropdownMenu from '../components/DropdownMenu.vue'
+import OtuModal from '../components/OtuModal/OtuModal.vue'
 
 const PER = 50
 
