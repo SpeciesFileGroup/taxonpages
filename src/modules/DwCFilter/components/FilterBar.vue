@@ -66,15 +66,20 @@
                 v-else
                 class="w-5 h-5"
               />
-              <span> More filters</span>
+              <span>More filters</span>
             </div>
           </div>
         </div>
         <div
           v-if="showMoreFilters"
-          class="text-sm pt-4"
+          class="text-sm pt-4 flex gap-4"
         >
           <FacetOrder v-model="parameters" />
+          <div class="flex flex-col gap-2">
+            <h3 class="text-base font-medium">Specimen records</h3>
+            <FacetInstitutionCode v-model="parameters" />
+            <FacetTypeStatus v-model="parameters" />
+          </div>
         </div>
 
         <div
@@ -104,6 +109,8 @@
 import { ref } from 'vue'
 import FacetOrder from './Facet/FacetOrder.vue'
 import FacetDistribution from './Facet/FacetDistribution.vue'
+import FacetTypeStatus from './Facet/FacetTypeStatus.vue'
+import FacetInstitutionCode from './Facet/FacetInstitutionCode.vue'
 
 const parameters = defineModel({
   type: Object,

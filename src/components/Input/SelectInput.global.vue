@@ -21,6 +21,10 @@ const emit = defineEmits(['update:modelValue'])
 
 const inputRef = useTemplateRef('input')
 
+function onInput(e) {
+  emit('update:modelValue', e.target.value)
+}
+
 defineExpose({
   inputRef
 })
