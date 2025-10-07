@@ -163,7 +163,8 @@ function loadBiologicalAssociations(page = 1) {
   useOtuPageRequest('panel:biological-associations', () =>
     makeAPIRequest.get('/biological_associations', {
       params: {
-        otu_id: [props.otuId],
+        'otu_query[coordinatify]': true,
+        'otu_query[otu_id][]': props.otuId,
         per: pagination.value.per,
         page,
         extend
