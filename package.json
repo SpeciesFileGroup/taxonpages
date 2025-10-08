@@ -19,8 +19,8 @@
     "@nuxt/devalue": "^2.0.2",
     "@sfgrp/distinguish": "^0.4.2",
     "@sfgrp/pinpoint": "^0.0.12",
-    "@unhead/ssr": "^2.0.17",
-    "@unhead/vue": "^2.0.17",
+    "@unhead/ssr": "^2.0.19",
+    "@unhead/vue": "^2.0.19",
     "axios": "^1.12.2",
     "glob": "^11.0.3",
     "js-yaml": "^4.1.0",
@@ -33,18 +33,18 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.16",
+    "@tailwindcss/typography": "^0.5.19",
     "@vitejs/plugin-vue": "^6.0.1",
     "autoprefixer": "^10.4.21",
     "compression": "^1.8.1",
-    "eslint": "^9.36.0",
+    "eslint": "^9.37.0",
     "eslint-plugin-vue": "^10.5.0",
     "express": "^5.1.0",
     "minimist": "^1.2.8",
     "postcss": "^8.5.6",
     "sass": "^1.93.2",
     "tailwindcss": "^3.4.17",
-    "vite": "^7.1.7",
+    "vite": "^7.1.9",
     "vite-plugin-pages": "^0.33.1",
     "vite-plugin-radar": "^0.10.1"
   }
