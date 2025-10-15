@@ -5,6 +5,9 @@
     - label: Home
       link: /
 
+    - label: Search DwC
+      link: /resources/tw/filter/dwc_otus
+
     - label: Bibliography
       link: /resources/tw/filter/bibliography
 
