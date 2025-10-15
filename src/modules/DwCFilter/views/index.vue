@@ -138,7 +138,7 @@ function loadList(page = 1) {
   isLoading.value = true
 
   makeAPIRequest
-    .get('/otus', {
+    .get('/otus/inventory/alphabetical', {
       params: {
         ...flattenParameters({
           dwc_occurrence_query: {
