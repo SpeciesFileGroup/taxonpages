@@ -20,7 +20,7 @@ export const LEGEND = {
     background: 'bg-map-collection-object'
   },
   TypeMaterial: {
-    label: 'Type material',
+    label: 'Primary type',
     background: 'bg-map-type-material'
   },
   FieldOccurrence: {
