@@ -7,3 +7,4 @@ map_tiles:
 #    server: https://tile.gbif.org/3857/omt/{z}/{x}/{y}{r}.png?style=gbif-natural-en
 #    zoomOffset: -1
 #    tileSize: 512
+#    minZoom: 1
