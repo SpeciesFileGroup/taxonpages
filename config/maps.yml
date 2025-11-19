@@ -4,4 +4,6 @@ map_tiles:
     server: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
 #  - label: GBIF
 #    attribution: '&copy; <a href="https://gbif.org">GBIF.org</a>'
-#    server: https://tile.gbif.org/3857/omt/{z}/{x}/{y}@1x.png?style=gbif-natural-en
+#    server: https://tile.gbif.org/3857/omt/{z}/{x}/{y}{r}.png?style=gbif-natural-en
+#    zoomOffset: -1
+#    tileSize: 512
