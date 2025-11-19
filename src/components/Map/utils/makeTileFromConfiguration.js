@@ -10,9 +10,9 @@ export function makeTileFromConfiguration(L, opts) {
   ]
 
   return Object.fromEntries(
-    tiles.map(({ server, attribution, label }) => [
+    tiles.map(({ server, label, ...userOpts }) => [
       label,
-      L.tileLayer(server, { ...opts, attribution })
+      L.tileLayer(server, { ...opts, ...userOpts })
     ])
   )
 }
