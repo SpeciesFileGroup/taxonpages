@@ -8,3 +8,4 @@ map_tiles:
 #    zoomOffset: -1
 #    tileSize: 512
 #    minZoom: 1
+#    maxZoom: 18
