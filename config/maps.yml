@@ -9,3 +9,5 @@ map_tiles:
 #    tileSize: 512
 #    minZoom: 1
 #    maxZoom: 18
+#    dpr:
+#      1: '@1x'
