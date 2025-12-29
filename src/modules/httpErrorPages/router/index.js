@@ -1,11 +1,8 @@
-import internalError from '../view/500.vue'
-import notFound from '../view/404.vue'
-
 export default [
   {
     path: '/500',
     name: 'httpError500',
-    component: internalError,
+    component: () => import('../view/500.vue'),
     meta: {
       statusCode: 500
     }
@@ -13,7 +10,7 @@ export default [
   {
     path: '/:pathMatch(.*)*',
     name: 'httpError404',
-    component: notFound,
+    component: () => import('../view/404.vue'),
     meta: {
       statusCode: 404
     }

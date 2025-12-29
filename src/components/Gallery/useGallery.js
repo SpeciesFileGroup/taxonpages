@@ -38,6 +38,7 @@ export function useGallery({ props }) {
                   props.depictionId.indexOf(b.id)
               )
           })
+          .catch(() => {})
       }
     },
     { immediate: true }

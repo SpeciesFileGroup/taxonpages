@@ -7,12 +7,13 @@
 
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
+import { makeTileFromConfiguration } from './utils/makeTileFromConfiguration'
+import { addPatternToMap } from './utils/addPatternToMap'
 import L from 'leaflet'
 import iconRetina from 'leaflet/dist/images/marker-icon-2x.png'
 import iconUrl from 'leaflet/dist/images/marker-icon.png'
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png'
 import geojsonDefaultOptions from './utils/geojsonOptions'
-import { makeTileFromConfiguration } from './utils/makeTileFromConfiguration'
 
 import '@geoman-io/leaflet-geoman-free'
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
@@ -90,7 +91,7 @@ const props = defineProps({
   },
 
   geojsonOptions: {
-    type: Object,
+    type: Function,
     default: () => ({})
   },
 
@@ -116,14 +117,15 @@ const props = defineProps({
 })
 
 const emit = defineEmits([
-  'geojson:ready',
-  'geojson',
   'add:layer',
+  'layer:drag',
   'draw:start',
   'edit:layer',
-  'drag:layer',
+  'geojson',
+  'geojson:ready',
   'zoom:change',
-  'zoom:start'
+  'zoom:start',
+  'layer:update'
 ])
 
 let mapObject
@@ -220,6 +222,8 @@ onMounted(() => {
   mapObject.addLayer(drawnItems)
   mapObject.addLayer(geoJSONGroup)
 
+  addPatternToMap(mapObject.getContainer())
+
   if (props.geojson) {
     setGeoJSON(props.geojson)
   }
@@ -236,6 +240,7 @@ onMounted(() => {
     })
 
     mapObject.on('pm:create', (e) => {
+      addLayerEvents(e.layer)
       emit('geojson', getDrawItemsInGeoJson())
       emit('add:layer', convertGeoJSONWithPointRadius(e.layer))
     })
@@ -246,7 +251,6 @@ onMounted(() => {
     })
 
     mapObject.on('pm:drawstart', (e) => {
-      clearDrawLayers()
       emit('draw:start', e)
     })
 
@@ -318,9 +322,11 @@ onUnmounted(() => {
 
 function setGeoJSON(geojson) {
   if (geojson) {
+    const args = { L, mapObject }
+
     L.geoJSON(geojson, {
-      ...geojsonDefaultOptions(L),
-      ...props.geojsonOptions
+      ...geojsonDefaultOptions(args),
+      ...props.geojsonOptions(args)
     }).addTo(geoJSONGroup)
 
     const bounds = geoJSONGroup.getBounds()
@@ -331,6 +337,20 @@ function setGeoJSON(geojson) {
   }
 
   emit('geojson:ready', geoJSONGroup)
+}
+
+function addLayerEvents(layer) {
+  layer.on('pm:update', (e) => {
+    if (!mapObject.pm.globalEditModeEnabled()) {
+      emit('geojson', getDrawItemsInGeoJson())
+      emit('layer:update', convertGeoJSONWithPointRadius(e.layer))
+    }
+  })
+
+  layer.on('pm:drag', (e) => {
+    emit('geojson', getDrawItemsInGeoJson())
+    emit('layer:drag', convertGeoJSONWithPointRadius(e.layer))
+  })
 }
 
 function getMapObject() {

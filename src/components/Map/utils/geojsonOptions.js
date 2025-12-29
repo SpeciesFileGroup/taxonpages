@@ -1,21 +1,23 @@
 import * as Icons from '../icons'
 import * as Shape from '../shapes'
+import { DISABLE_LAYER_OPTIONS } from '../constants'
+import {
+  TYPE_MATERIAL,
+  COLLECTION_OBJECT,
+  ASSERTED_ABSENT,
+  ASSERTED_DISTRIBUTION,
+  GEOREFERENCE,
+  AGGREGATE
+} from '@/constants/objectTypes.js'
 
 const TYPES = [
-  'TypeMaterial',
-  'CollectionObject',
-  'AssertedDistribution',
-  'Georeference',
-  'Aggregate'
+  TYPE_MATERIAL,
+  COLLECTION_OBJECT,
+  ASSERTED_ABSENT,
+  ASSERTED_DISTRIBUTION,
+  GEOREFERENCE,
+  AGGREGATE
 ]
-
-const DEFAULT_OPTIONS = {
-  allowEditing: false,
-  allowRemoval: false,
-  allowCutting: false,
-  allowRotation: false,
-  draggable: false
-}
 
 function getRelevantType(base) {
   const types = base.map((b) => b.type)
@@ -25,39 +27,10 @@ function getRelevantType(base) {
   return types[0]
 }
 
-export default (L) => ({
+export default ({ L }) => ({
   onEachFeature: (feature, layer) => {
-    const labels = (feature.properties.base || [])
-      .map((item) => item.label)
-      .filter(Boolean)
-
-    if (!labels.length) {
-      return
-    }
-
-    const label = `
-      <div class="max-h-32 overflow-y-auto text-xs">
-        <ul>
-        ${labels
-          .map(
-            (label) =>
-              `
-              <li 
-                class="py-2 last:border-0 truncate border-b"
-                title="${label}"
-              >
-                ${label}
-              </li>
-              `
-          )
-          .join('')}
-        </ul>
-      </div>`
-
-    layer.pm.setOptions(DEFAULT_OPTIONS)
+    layer.pm.setOptions(DISABLE_LAYER_OPTIONS)
     layer.pm.disable()
-
-    layer.bindPopup(label)
   },
 
   pointToLayer: (feature, latLng) => {
@@ -67,16 +40,15 @@ export default (L) => ({
       icon: L.divIcon(markerStyle)
     })
 
-    marker.pm.setOptions(DEFAULT_OPTIONS)
+    marker.pm.setOptions(DISABLE_LAYER_OPTIONS)
 
     return marker
   },
 
   style: (feature) => {
     const type = getRelevantType(feature.properties?.base)
+    const shapeStyle = Shape[type]
 
-    if (Shape[type]) {
-      return Shape[type]
-    }
+    return shapeStyle
   }
 })

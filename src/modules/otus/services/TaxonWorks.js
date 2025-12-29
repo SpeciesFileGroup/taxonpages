@@ -31,6 +31,10 @@ export default class TaxonWorks {
     })
   }
 
+  static getObservations(params) {
+    return makeAPIRequest.get('/observations', { params })
+  }
+
   static getOtuImages(otuId, opt) {
     return makeAPIRequest.get(`/otus/${otuId}/inventory/images.json`, opt)
   }
@@ -61,5 +65,13 @@ export default class TaxonWorks {
 
   static getCachedMap(id) {
     return makeAPIRequest.get(`/cached_maps/${id}`)
+  }
+
+  static getKeys(otuId) {
+    return makeAPIRequest.get(`/otus/${otuId}/inventory/keys`)
+  }
+
+  static getSounds(params) {
+    return makeAPIRequest.get('/sounds', { params })
   }
 }

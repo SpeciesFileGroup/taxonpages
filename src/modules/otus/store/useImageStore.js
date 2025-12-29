@@ -16,10 +16,11 @@ export const useImageStore = defineStore('imageStore', {
       this.controller?.abort()
     },
 
-    async loadImages(otuId) {
+    async loadImages(otuId, { sortOrder }) {
       const params = {
         extend: ['depictions', 'attribution', 'source', 'citations'],
-        otu_scope: ['all']
+        otu_scope: ['all', 'coordinate_otus'],
+        sort_order: sortOrder
       }
 
       this.controller = new AbortController()
@@ -32,7 +33,19 @@ export const useImageStore = defineStore('imageStore', {
           })
         )
 
-        this.images = response.data
+        this.images = response.data.image_order.filter(Boolean).map((id) => {
+          const image = { ...response.data.images[id] }
+          const { url, project_token } = __APP_ENV__
+
+          if (image.original_png) {
+            image.original = `${url}/${image.original_png?.substring(
+              8
+            )}?project_token=${project_token}`
+          }
+
+          return image
+        })
+
         this.controller = null
       } catch (e) {
         if (e.name !== RESPONSE_ERROR.CanceledError) {

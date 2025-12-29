@@ -2,7 +2,7 @@ export function removeDuplicateShapes(data) {
   const features = []
   const shapeTypes = []
 
-  data.features.forEach((feature) => {
+  data.forEach((feature) => {
     const shapeId = feature.properties.shape.id
     const shapeType = feature.properties.shape.type
 

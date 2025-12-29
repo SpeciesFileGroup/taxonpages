@@ -8,13 +8,13 @@
   >
     <IconGithub
       v-if="icon"
-      class="w-5 h-5"
+      :class="iconClass"
     />
     <span v-if="label">{{ label }}</span>
   </component>
   <VModal
     v-if="isModalVisible"
-    class="text-base-content"
+    class="tp-tracker-report-modal text-base-content"
     @close="isModalVisible = false"
   >
     <template #header>
@@ -63,6 +63,11 @@ defineProps({
   icon: {
     type: Boolean,
     default: false
+  },
+
+  iconClass: {
+    type: Array,
+    default: () => ['w-5 h-5']
   },
 
   tag: {

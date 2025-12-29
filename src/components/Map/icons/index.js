@@ -1,4 +1,5 @@
 export * from './AssertedDistribution'
 export * from './CollectionObject'
+export * from './FieldOccurrence'
 export * from './Georeference'
 export * from './TypeMaterial'

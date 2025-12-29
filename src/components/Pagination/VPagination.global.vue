@@ -7,7 +7,7 @@
     <li>
       <button
         type="button"
-        :disabled="currentPage < 2"
+        :disabled="currentPage < 2 || !pages"
         aria-label="Go to first page"
         class="border border-base-border rounded-l-md px-2 py-1.5"
         @click="currentPage = 1"
@@ -21,7 +21,7 @@
     >
       <button
         type="button"
-        :disabled="currentPage < 2"
+        :disabled="currentPage < 2 || !pages"
         aria-label="Go to previous page"
         class="border border-base-border px-2 py-1.5"
         @click="currentPage--"
@@ -48,13 +48,16 @@
         <button
           type="button"
           aria-label="Go to page 1"
-          class="border border-base-border px-2 py-1.5"
           :disabled="currentPage === n"
-          :class="
+          :class="[
+            'border',
+            'border-base-border',
+            'px-2',
+            'py-1.5',
             currentPage === n
               ? 'text-primary-content bg-primary-color'
               : 'text-base-content'
-          "
+          ]"
           @click="() => (currentPage = n)"
         >
           {{ n }}
@@ -74,7 +77,7 @@
         type="button"
         aria-label="Go to next page"
         class="border border-base-border px-2 py-1.5"
-        :disabled="currentPage === pages"
+        :disabled="currentPage === pages || !pages"
         @click="() => currentPage++"
       >
         ›
@@ -83,7 +86,7 @@
     <li role="presentation">
       <button
         type="button"
-        :disabled="currentPage === pages"
+        :disabled="currentPage === pages || !pages"
         aria-label="Go to last page"
         class="border border-base-border rounded-r-md px-2 py-1.5"
         @click="() => (currentPage = pages)"
@@ -119,12 +122,13 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'select'])
 
 const pages = computed(() => Math.ceil(props.total / props.per))
 const currentPage = computed({
   get: () => props.modelValue,
   set: (value) => {
+    emit('select', value)
     emit('update:modelValue', value)
   }
 })

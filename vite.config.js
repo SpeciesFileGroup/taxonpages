@@ -3,8 +3,9 @@ import { loadConfiguration } from './src/utils/loadConfiguration.js'
 import { VitePluginRadar } from 'vite-plugin-radar'
 import path from 'path'
 import Vue from '@vitejs/plugin-vue'
-import Markdown from 'vite-plugin-md'
+import Markdown from 'unplugin-vue-markdown/vite'
 import markdownAnchor from 'markdown-it-anchor'
+import ViteRestart from './src/plugins/vite/restart.js'
 import {
   relativeToRouterPlugin,
   variableReplacementPlugin
@@ -20,13 +21,24 @@ export default () => {
     define: {
       __APP_ENV__: configuration
     },
+
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
-        '#': path.resolve(__dirname, '/')
+        '~': path.resolve(process.cwd())
       }
     },
+
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: 'modern-compiler'
+        }
+      }
+    },
+
     plugins: [
+      ViteRestart({ dir: ['config/**/*.yml'] }),
       Vue({
         include: [/\.vue$/, /\.md$/]
       }),
@@ -44,7 +56,7 @@ export default () => {
 
       Pages({
         dirs: 'pages',
-        exclude: ['**/components/*.vue'],
+        exclude: ['**/components/*.vue', 'components/**/*.vue'],
         extensions: ['vue', 'md'],
         extendRoute(route) {
           if (route.path === '/home') {

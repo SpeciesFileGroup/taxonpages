@@ -11,9 +11,16 @@
           :zoom-bounds="8"
           :geojson="store.distribution.geojson"
           :cluster-icon-create-function="makeClusterIconFor"
+          :geojson-options="geojsonOptions"
           @geojson:ready="() => (isLoading = false)"
         />
-
+        <div ref="popupElement">
+          <MapPopup
+            v-if="popupItem"
+            :items="popupItem.base"
+            @selected="dwcTableRef.show"
+          />
+        </div>
         <VButton
           class="h-6 text-sm absolute right-3 top-3 z-[400]"
           primary
@@ -51,21 +58,25 @@
         class="flex flex-row items-center"
       >
         <div
-          class="w-3 h-3 m-1 rounded-sm"
-          :class="LEGEND[type].background"
+          :class="['w-3', 'h-3', 'm-1', 'rounded-sm', LEGEND[type].background]"
         />
         <span>{{ LEGEND[type].label }}</span>
       </div>
     </div>
+    <DwcTable ref="dwcTableRef" />
   </VCard>
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { useDistributionStore } from '@/modules/otus/store/useDistributionStore.js'
-import { makeClusterIconFor } from './clusters/makeClusterIconFor'
+import { useDistributionStore } from './store/useDistributionStore.js'
+import { makeClusterIconFor } from './clusters'
+import { useGeojsonOptions } from './composables/useGeojsonOptions.js'
+import { LEGEND } from './constants'
+import MapPopup from './components/MapPopup.vue'
 import CachedMap from './components/CachedMap.vue'
 import OtuSearch from './components/Search/OtuSearch.vue'
+import DwcTable from './components/DwcTable.vue'
 
 const props = defineProps({
   otuId: {
@@ -92,30 +103,10 @@ const props = defineProps({
 const zoom = 2
 const isLoading = ref(true)
 const isOtuSearchVisible = ref(false)
+const dwcTableRef = ref(null)
 const store = useDistributionStore()
-
-const LEGEND = {
-  AssertedDistribution: {
-    label: 'Asserted distribution',
-    background: 'bg-map-asserted'
-  },
-  Georeference: {
-    label: 'Georeference',
-    background: 'bg-map-georeference'
-  },
-  TypeMaterial: {
-    label: 'Type material',
-    background: 'bg-map-type-material'
-  },
-  CollectionObject: {
-    label: 'Collection object',
-    background: 'bg-map-collection-object'
-  },
-  Aggregate: {
-    label: 'Aggregate (Asserted distribution & Georeference)',
-    background: 'bg-map-aggregate'
-  }
-}
+const popupElement = ref(null)
+const { popupItem, geojsonOptions } = useGeojsonOptions({ popupElement })
 
 onMounted(() => {
   isLoading.value = true

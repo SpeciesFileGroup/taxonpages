@@ -1,6 +1,6 @@
+import { glob } from 'glob'
 import fs from 'fs'
 import yaml from 'js-yaml'
-import glob from 'glob'
 import defaultConfig from '../constants/defaultConfig'
 
 export const loadConfiguration = (appPath) => {

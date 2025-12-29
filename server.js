@@ -16,13 +16,13 @@ export async function createServer(
   const __dirname = path.dirname(fileURLToPath(import.meta.url))
   const resolve = (p) => path.resolve(__dirname, p)
 
-  const indexProd = isProd
+  const templateHtml = isProd
     ? fs.readFileSync(resolve('dist/client/index.html'), 'utf-8')
     : ''
 
   const manifest = isProd
     ? JSON.parse(
-        fs.readFileSync(resolve('dist/client/ssr-manifest.json'), 'utf-8')
+        fs.readFileSync(resolve('dist/client/.vite/ssr-manifest.json'), 'utf-8')
       )
     : {}
 
@@ -64,7 +64,7 @@ export async function createServer(
     res.status(200).end('')
   })
 
-  app.use('*', async (req, res) => {
+  app.use(/(.*)/, async (req, res) => {
     try {
       const url = req.originalUrl
       const origin = req.protocol + '://' + req.get('host')
@@ -76,7 +76,7 @@ export async function createServer(
         template = await vite.transformIndexHtml(url, template)
         render = (await vite.ssrLoadModule('/src/entry-server.js')).render
       } else {
-        template = indexProd
+        template = templateHtml
         render = (await import('./dist/server/entry-server.js')).render
       }
 

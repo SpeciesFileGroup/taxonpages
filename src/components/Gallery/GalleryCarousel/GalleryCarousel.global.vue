@@ -6,8 +6,8 @@
     <Transition name="fade">
       <img
         v-if="currentDepiction.imageOriginal"
-        class="object-cover overflow-hidden h-full w-full absolute top-0 my-0"
         :key="currentDepiction.imageOriginal"
+        class="object-cover overflow-hidden h-full w-full absolute top-0 my-0"
         :src="currentDepiction.imageOriginal"
         :alt="currentDepiction.label"
       />
@@ -83,7 +83,7 @@ watch(depictions, () => {
     clearInterval(timeout)
     timeout = setInterval(updateIndex, props.interval)
   } else {
-    currentIndex.value = Math.floor(Math.random() * data.length)
+    currentIndex.value = Math.floor(Math.random() * depictions.value.length)
   }
 })
 

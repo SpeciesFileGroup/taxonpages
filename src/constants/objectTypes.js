@@ -1,0 +1,8 @@
+export const AGGREGATE = 'Aggregate'
+export const ASSERTED_ABSENT = 'AssertedAbsent'
+export const ASSERTED_DISTRIBUTION = 'AssertedDistribution'
+export const COLLECTION_OBJECT = 'CollectionObject'
+export const FIELD_OCCURRENCE = 'FieldOccurrence'
+export const GEOREFERENCE = 'Georeference'
+export const OTU = 'Otu'
+export const TYPE_MATERIAL = 'TypeMaterial'

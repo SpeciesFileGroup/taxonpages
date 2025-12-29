@@ -16,6 +16,12 @@
         >
           &#10005;
         </span>
+        <span
+          v-if="store.taxon.descorator_status.length"
+          class="text-base-soft text-base"
+        >
+          ({{ store.taxon.descorator_status.join('; ') }})
+        </span>
       </span>
     </h1>
     <h2 class="text-1xl">

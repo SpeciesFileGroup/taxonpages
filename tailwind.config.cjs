@@ -12,6 +12,7 @@ module.exports = {
     './index.html',
     './vite.config.js',
     './src/**/*.{vue,js,ts,jsx,tsx,md}',
+    './layouts/**/*.{vue,js}',
     './pages/**/*.{vue,md}',
     './panels/**/*.{vue,md}',
     './components/**/*.{vue,md}',
@@ -40,8 +41,10 @@ module.exports = {
           georeference: withOpacity('--color-map-georeference'),
           aggregate: withOpacity('--color-map-aggregate'),
           asserted: withOpacity('--color-map-asserted'),
+          'asserted-absent': withOpacity('--color-map-asserted-absent'),
           'type-material': withOpacity('--color-map-type-material'),
-          'collection-object': withOpacity('--color-map-collection-object')
+          'collection-object': withOpacity('--color-map-collection-object'),
+          'field-occurrence': withOpacity('--color-map-field-occurrence')
         },
 
         primary: {

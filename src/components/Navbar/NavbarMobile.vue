@@ -1,7 +1,7 @@
 <template>
   <button
     type="button"
-    class="inline-flex items-center p-2 z-50 ml-3 text-sm text-primary-content rounded-lg md:hidden print:hidden"
+    class="tp-mobile-navbar-button inline-flex items-center p-2 z-50 ml-3 text-sm text-primary-content rounded-lg md:hidden print:hidden"
     title="Menu"
     aria-controls="mobile-menu"
     :aria-expanded="isMenuVisible"
@@ -18,7 +18,7 @@
   <AnimationOpacity>
     <div
       v-if="isMenuVisible"
-      class="absolute top-full left-0 w-full z-50 bg-base-foreground text-base-content block shadow-md md:hidden print:hidden"
+      class="tp-mobile-navbar absolute top-full left-0 w-full z-50 bg-base-foreground text-base-content block shadow-md md:hidden print:hidden"
     >
       <nav class="font-normal container mx-auto">
         <ul class="flex flex-col m-0 p-0 border-t border-base-border">
@@ -27,12 +27,36 @@
             :key="index"
             class="border-b border-base-border"
           >
-            <router-link
+            <div
+              v-if="item.submenu"
+              class="w-full"
+            >
+              <div class="font-bold py-3 px-4 border-b bg-base-background">
+                {{ item.label }}
+              </div>
+              <div>
+                <div
+                  v-for="item in item.submenu"
+                  class="border-b last:border-b-2 border-b-base-border"
+                >
+                  <RouterLink
+                    class="cursor-pointer text-base-content w-full py-3 px-4 box-border block"
+                    :to="item.link"
+                    @click="() => (isMenuVisible = false)"
+                  >
+                    {{ item.label }}
+                  </RouterLink>
+                </div>
+              </div>
+            </div>
+            <RouterLink
+              v-else
               :to="item.link"
-              class="text-base-content w-full p-4 pt-3 pb-3 block box-border"
+              class="text-base-content w-full p-4 py-3 block box-border"
+              @click="() => (isMenuVisible = false)"
             >
               {{ item.label }}
-            </router-link>
+            </RouterLink>
           </li>
           <li>
             <ClientOnly>
@@ -44,6 +68,7 @@
           <li>
             <TrackerReport
               icon
+              icon-class="size-6"
               button-class="text-base-content w-full p-4 pt-3 pb-3 block box-border border-b border-b-base-border"
             />
           </li>

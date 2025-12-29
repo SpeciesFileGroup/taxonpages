@@ -2,8 +2,7 @@
   <div class="grid gap-3">
     <div
       v-for="row in pageLayout.panels"
-      class="grid grid-cols-1 gap-3"
-      :class="[columnClasses[row.length]]"
+      :class="['grid', 'grid-cols-1', 'gap-3', columnClasses[row.length]]"
     >
       <div
         v-for="(column, index) in row"
@@ -32,8 +31,8 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
-import layouts from '../constants/layouts.js'
 import { isAvailableForRank } from '../utils'
+import layouts from '../constants/layouts.js'
 
 const props = defineProps({
   taxonId: {

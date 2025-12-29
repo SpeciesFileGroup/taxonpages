@@ -3,14 +3,16 @@
     saturate(0.3) brightness(0.7);
 }
 
-/* @media (prefers-color-scheme: dark) {
-  .map-tiles {
-    filter:var(--map-tiles-filter, none);
-  }
-} */
+.leaflet-fade-anim .leaflet-popup {
+  transition: none;
+}
 
 .map-point-marker {
   opacity: var(--color-map-marker-opacity);
+}
+
+.leaflet-hatch-pattern {
+  fill: url(#hatch-pattern);
 }
 
 .dark {

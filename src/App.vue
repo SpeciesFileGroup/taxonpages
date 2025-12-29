@@ -1,12 +1,28 @@
 <template>
-  <ApplicationLayout>
+  <component :is="currentLayout">
     <router-view />
-  </ApplicationLayout>
+  </component>
 </template>
 
 <script setup>
-import { useHead } from 'unhead'
+import { useHead } from '@unhead/vue'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { loadUserLayouts } from './utils'
 import ApplicationLayout from '@/layout/Application.vue'
+
+const DEFAULT_LAYOUT = 'default'
+const route = useRoute()
+const userLayouts = loadUserLayouts()
+
+const currentLayout = computed(() => {
+  const layouts = {
+    [DEFAULT_LAYOUT]: ApplicationLayout,
+    ...userLayouts
+  }
+
+  return layouts[route.meta?.layout || DEFAULT_LAYOUT] || ApplicationLayout
+})
 
 useHead({
   title: __APP_ENV__.project_name,
