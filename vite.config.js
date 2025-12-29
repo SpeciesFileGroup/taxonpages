@@ -22,6 +22,10 @@ export default () => {
       __APP_ENV__: configuration
     },
 
+    build: {
+      outDir: 'dist'
+    },
+
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
