@@ -105,7 +105,7 @@
         :per="pagination.per"
         @select="
           (value) => {
-            loadBiologicalAssociations({ page: value, per_page: perPage })
+            loadBiologicalAssociations(value)
           }
         "
       />
