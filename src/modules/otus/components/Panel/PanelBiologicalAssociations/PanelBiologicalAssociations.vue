@@ -84,16 +84,10 @@
                 {{ ba.objectLabel }}
               </template>
             </VTableBodyCell>
-            <VTableBodyCell class="border-l-2">
-              <ul>
-                <li
-                  v-for="c in ba.citations"
-                  :key="c.id"
-                >
-                  {{ c.citation_source_body }}
-                </li>
-              </ul>
-            </VTableBodyCell>
+            <VTableBodyCell
+              class="border-l-2"
+              v-html="ba.citations"
+            />
           </VTableBodyRow>
         </VTableBody>
       </VTable>
@@ -161,7 +155,7 @@ function loadBiologicalAssociations(page = 1) {
   isLoading.value = true
 
   useOtuPageRequest('panel:biological-associations', () =>
-    makeAPIRequest.get('/biological_associations', {
+    makeAPIRequest.get('/biological_associations/basic', {
       params: {
         'otu_query[coordinatify]': true,
         'otu_query[otu_id][]': props.otuId,
@@ -173,23 +167,6 @@ function loadBiologicalAssociations(page = 1) {
   )
     .then(async ({ data, headers }) => {
       const items = data.map(makeBiologicalAssociation)
-
-      if (data.length) {
-        const ids = data.map((d) => d.id)
-
-        const response = await makeAPIRequest.get('/citations', {
-          params: {
-            citation_object_id: ids,
-            citation_object_type: 'BiologicalAssociation'
-          }
-        })
-
-        items.forEach((item) => {
-          item.citations = response.data.filter(
-            (c) => c.citation_object_id === item.id
-          )
-        })
-      }
 
       pagination.value = {
         page: Number(headers['pagination-page']),
