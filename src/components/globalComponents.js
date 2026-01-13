@@ -2,7 +2,12 @@ import { defineAsyncComponent } from 'vue'
 
 export function registerGlobalComponents(app) {
   const files = import.meta.glob(
-    ['@/components/**/*.global.vue', '~/components/**/*.global.vue'],
+    [
+      '@/components/**/*.global.vue',
+      '~/components/**/*.global.vue',
+      '~/modules/**/components/**/*.global.vue',
+      '@/modules/**/components/**/*.global.vue'
+    ],
     {
       import: 'default'
     }
