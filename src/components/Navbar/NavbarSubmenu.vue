@@ -5,6 +5,7 @@
   >
     <button
       class="flex items-center gap-2 text-primary-content"
+      :aria-expanded="isOpen"
       @click="() => (isOpen = !isOpen)"
     >
       {{ label }}

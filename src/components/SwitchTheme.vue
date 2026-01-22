@@ -2,11 +2,8 @@
   <button
     type="button"
     @click="toggleTheme"
-    :title="
-      themeMode === themeModes.light
-        ? 'Change to dark mode'
-        : 'Change to light mode'
-    "
+    :title="title"
+    :aria-label="title"
   >
     <svg
       v-if="themeMode === themeModes.dark"
@@ -43,7 +40,7 @@
 </template>
 
 <script setup>
-import { watch, ref } from 'vue'
+import { computed, watch, ref } from 'vue'
 
 const themeModes = {
   dark: 'dark',
@@ -72,6 +69,12 @@ if (window !== undefined) {
     { immediate: true }
   )
 }
+
+const title = computed(() =>
+  themeMode.value === themeModes.light
+    ? 'Change to dark mode'
+    : 'Change to light mode'
+)
 
 const toggleTheme = () => {
   if (themeMode.value === themeModes.dark) {

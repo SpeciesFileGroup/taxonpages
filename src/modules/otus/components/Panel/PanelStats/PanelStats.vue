@@ -14,68 +14,104 @@
     </VCardHeader>
     <VCardContent class="text-sm overflow-auto">
       <VTable>
+        <caption class="sr-only">
+          Summary of taxonomic names by rank, showing valid extant names, fossil
+          names, invalid names, and total counts.
+        </caption>
+
         <VTableHeader>
           <VTableHeaderRow>
-            <VTableHeaderCell class="bg-base-foreground" />
+            <VTableHeaderCell scope="col"> Taxon </VTableHeaderCell>
             <VTableHeaderCell
               v-if="isAdvancedView"
+              scope="col"
               title="OTUs linked to valid protonyms"
             >
               Taxa
             </VTableHeaderCell>
+
             <VTableHeaderCell
               title="Taxon names"
               class="border-l border-r border-base-border"
               colspan="2"
+              scope="colgroup"
             >
               Valid names
             </VTableHeaderCell>
+
             <VTableHeaderCell
               colspan="3"
+              scope="colgroup"
               class="bg-base-foreground"
+              aria-hidden="true"
             />
           </VTableHeaderRow>
+
           <VTableHeaderRow>
-            <VTableHeaderCell>Rank</VTableHeaderCell>
+            <VTableHeaderCell scope="col"> Rank </VTableHeaderCell>
             <VTableHeaderCell
               v-if="isAdvancedView"
               title="OTUs linked to valid protonyms"
-              >Total</VTableHeaderCell
+              scope="col"
             >
+              Total
+            </VTableHeaderCell>
+            <VTableHeaderCell
+              class="border-l border-base-border"
+              scope="col"
+            >
+              Extant
+            </VTableHeaderCell>
+            <VTableHeaderCell scope="col"> Fossil </VTableHeaderCell>
+            <VTableHeaderCell
+              class="border-l border-base-border"
+              scope="col"
+            >
+              Invalid
+            </VTableHeaderCell>
 
-            <VTableHeaderCell class="border-l border-base-border"
-              >Extant</VTableHeaderCell
-            >
-            <VTableHeaderCell>Fossil</VTableHeaderCell>
-            <VTableHeaderCell class="border-l border-base-border"
-              >Invalid</VTableHeaderCell
-            >
             <VTableHeaderCell
               title="Taxon names"
               class="border-l border-base-border"
+              scope="col"
             >
               Total
             </VTableHeaderCell>
           </VTableHeaderRow>
         </VTableHeader>
+
         <VTableBody>
           <VTableBodyRow
             v-for="{ rank, taxa, names } in store.catalog.stats"
             :key="rank"
           >
-            <VTableBodyCell class="capitalize">{{ rank }}</VTableBodyCell>
-            <VTableBodyCell v-if="isAdvancedView">{{ taxa }}</VTableBodyCell>
+            <!-- Row header -->
+            <VTableBodyCell
+              class="capitalize"
+              scope="row"
+            >
+              {{ rank }}
+            </VTableBodyCell>
 
-            <VTableBodyCell class="border-l border-base-border">{{
-              names.valid_extant
-            }}</VTableBodyCell>
-            <VTableBodyCell>{{ names.valid_fossil }}</VTableBodyCell>
-            <VTableBodyCell class="border-l border-base-border">{{
-              names.invalid
-            }}</VTableBodyCell>
-            <VTableBodyCell class="border-l border-base-border">{{
-              names.invalid + names.valid
-            }}</VTableBodyCell>
+            <VTableBodyCell v-if="isAdvancedView">
+              {{ taxa }}
+            </VTableBodyCell>
+
+            <VTableBodyCell class="border-l border-base-border">
+              {{ names.valid_extant }}
+            </VTableBodyCell>
+
+            <VTableBodyCell>
+              {{ names.valid_fossil }}
+            </VTableBodyCell>
+
+            <VTableBodyCell class="border-l border-base-border">
+              {{ names.invalid }}
+            </VTableBodyCell>
+
+            <VTableBodyCell class="border-l border-base-border">
+              {{ names.invalid + names.valid }}
+            </VTableBodyCell>
           </VTableBodyRow>
         </VTableBody>
       </VTable>
