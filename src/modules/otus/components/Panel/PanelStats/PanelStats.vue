@@ -85,7 +85,6 @@
             v-for="{ rank, taxa, names } in store.catalog.stats"
             :key="rank"
           >
-            <!-- Row header -->
             <VTableBodyCell
               class="capitalize"
               scope="row"
