@@ -13,7 +13,7 @@
           v-if="header_logo_url"
           class="mr-3 h-10"
           :src="logoUrl"
-          :alt="header_logo_text"
+          alt=""
         />
         <span>
           {{ header_logo_text || project_name }}

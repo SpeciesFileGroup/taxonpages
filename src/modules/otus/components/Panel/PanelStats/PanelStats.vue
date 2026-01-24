@@ -12,7 +12,10 @@
         :menu-options="menuOptions"
       />
     </VCardHeader>
-    <VCardContent class="text-sm overflow-auto">
+    <VCardContent
+      class="text-sm overflow-auto"
+      tabindex="0"
+    >
       <VTable>
         <caption class="sr-only">
           Summary of taxonomic names by rank, showing valid extant names, fossil
@@ -85,12 +88,12 @@
             v-for="{ rank, taxa, names } in store.catalog.stats"
             :key="rank"
           >
-            <VTableBodyCell
+            <VTableHeaderCell
               class="capitalize"
               scope="row"
             >
               {{ rank }}
-            </VTableBodyCell>
+            </VTableHeaderCell>
 
             <VTableBodyCell v-if="isAdvancedView">
               {{ taxa }}
