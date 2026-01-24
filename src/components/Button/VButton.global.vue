@@ -5,6 +5,7 @@
       'tp-button',
       'px-3',
       'py-1',
+      'rounded-md',
       'hover:bg-opacity-80',
       {
         'bg-primary-color': primary,
