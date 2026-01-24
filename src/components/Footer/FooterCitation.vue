@@ -11,7 +11,7 @@
     <span v-if="currentUrl">
       at
       <a
-        class="text-secondary-on-dark"
+        class="text-secondary-on-dark underline"
         :href="currentUrl"
       >
         {{ currentUrl }}

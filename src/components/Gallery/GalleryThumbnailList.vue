@@ -1,5 +1,8 @@
 <template>
-  <div class="flex flex-row overflow-x-auto print:flex-wrap gap-1.5">
+  <div
+    class="flex flex-row overflow-x-auto print:flex-wrap gap-1.5"
+    tabindex="0"
+  >
     <div
       v-for="(image, index) in images"
       :key="image.id"
