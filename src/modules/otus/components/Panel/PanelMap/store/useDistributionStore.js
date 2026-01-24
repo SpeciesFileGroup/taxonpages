@@ -88,7 +88,9 @@ export const useDistributionStore = defineStore('distributionStore', {
 
     async loadDistribution({ otuId, rankString }) {
       const isSpeciesGroup =
-        rankString && isRankGroup('SpeciesGroup', rankString)
+        rankString &&
+        (isRankGroup('SpeciesGroup', rankString) ||
+          isRankGroup('SpeciesAndInfraspeciesGroup', rankString))
 
       this.controller = new AbortController()
 

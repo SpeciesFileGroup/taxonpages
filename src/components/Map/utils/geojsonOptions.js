@@ -40,6 +40,14 @@ export default ({ L }) => ({
       icon: L.divIcon(markerStyle)
     })
 
+    marker.on('add', () => {
+      const el = marker.getElement()
+
+      if (el) {
+        el.setAttribute('aria-label', type)
+      }
+    })
+
     marker.pm.setOptions(DISABLE_LAYER_OPTIONS)
 
     return marker

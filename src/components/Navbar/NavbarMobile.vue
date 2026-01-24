@@ -4,6 +4,7 @@
     class="tp-mobile-navbar-button inline-flex items-center p-2 z-50 ml-3 text-sm text-primary-content rounded-lg md:hidden print:hidden"
     title="Menu"
     aria-controls="mobile-menu"
+    aria-label="Open navigation menu"
     :aria-expanded="isMenuVisible"
     @click="toggleMenu"
   >

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h2 class="text-1xl capitalize">
+    <span class="text-1xl capitalize">
       {{ store.taxon.rank || 'Combination' }}
-    </h2>
+    </span>
     <h1 class="text-xl dark:text-gray-100">
       <span>
         <span
@@ -24,9 +24,9 @@
         </span>
       </span>
     </h1>
-    <h2 class="text-1xl">
+    <span class="text-1xl">
       <CommonNames />
-    </h2>
+    </span>
   </div>
 </template>
 

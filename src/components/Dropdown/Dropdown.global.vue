@@ -2,6 +2,7 @@
   <div class="relative inline">
     <button
       title="Menu"
+      aria-label="Open panel options"
       @click="toggleMenu"
     >
       <slot name="button" />

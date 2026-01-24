@@ -4,6 +4,7 @@
     type="button"
     title="Report a problem"
     :class="buttonClass"
+    aria-label="Report a problem"
     @click="openTracker"
   >
     <IconGithub

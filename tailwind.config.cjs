@@ -54,7 +54,8 @@ module.exports = {
 
         secondary: {
           color: withOpacity('--color-secondary'),
-          content: withOpacity('--color-secondary-content')
+          content: withOpacity('--color-secondary-content'),
+          'on-dark': withOpacity('--color-secondary-on-dark')
         },
 
         danger: withOpacity('--color-danger'),

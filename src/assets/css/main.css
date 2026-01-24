@@ -10,9 +10,8 @@
 }
 
 body {
-  @apply 
-    font-main
-    bg-base-background
+  @apply font-main
+    bg-base-background;
 }
 
 a {

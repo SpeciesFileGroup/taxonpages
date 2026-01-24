@@ -26,8 +26,8 @@
         <SoundObservations :sound-id="soundId" />
         <button
           class="h-8 w-8 flex items-center justify-center rounded-full text-primary-content bg-primary-color"
-          @click="togglePlay"
           :aria-label="isPlaying ? 'Pause' : 'Play'"
+          @click="togglePlay"
         >
           <IconPause
             v-if="isPlaying"
@@ -93,10 +93,17 @@
       ref="audioElement"
       :src="src"
       preload="metadata"
+      :aria-describedby="`sound-${soundId}-desc`"
       @timeupdate="handleTimeUpdate"
       @loadedmetadata="handleLoadedMetadata"
       @ended="handleEnded"
     ></audio>
+    <div
+      class="sr-only"
+      :id="`sound-${soundId}-desc`"
+    >
+      Audio recording: {{ title }}
+    </div>
   </div>
 </template>
 

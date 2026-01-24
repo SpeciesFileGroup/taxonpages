@@ -2,8 +2,9 @@
   --color-primary: 0, 0, 0;
   --color-primary-content: 255, 255, 255;
 
-  --color-secondary: 14, 165, 233;
+  --color-secondary: 3, 105, 161;
   --color-secondary-content: 255, 255, 255;
+  --color-secondary-on-dark: 56, 189, 248;
 
   --color-success: 34, 197, 94;
   --color-warning: 245, 158, 11;
@@ -12,7 +13,7 @@
   --color-base-foreground: 255, 255, 255;
   --color-base-background: 245, 247, 251;
   --color-base-muted: 226, 232, 240;
-  --color-base-soft: 156, 163, 175;
+  --color-base-soft: 107, 114, 128;
   --color-base-lighter: 55, 65, 81;
   --color-base-border: 203, 213, 225;
   --color-base-content: 0, 0, 0;
@@ -38,6 +39,7 @@
 
   --color-secondary: 14, 165, 233;
   --color-secondary-content: 255, 255, 255;
+  --color-secondary-on-dark: 14, 165, 233;
 
   --color-success: 22, 163, 74;
   --color-warning: 217, 119, 6;
