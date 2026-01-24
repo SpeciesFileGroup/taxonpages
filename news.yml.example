@@ -1,0 +1,15 @@
+news_module:
+  index_page: # Configuration for the news listing page (/news)
+    news_per_page: 10 # Number of news items displayed per page
+    pinned_news_id: [] # IDs of news items that are always shown at the top of the list
+    layout: 'list' # Layout style for the news list: 'list' or 'cards'
+    show_date: true # Display the publication date for each news item
+
+  news_page: # Configuration for the news detail page (/news/:id)
+    show_date: true # Display the publication date of the news item
+    show_author: true # Display the author of the news item
+
+  widget: # Configuration for the news widget
+    news_count: 3 # Total number of news items shown in the widget
+    show_date: true # Display the publication date for each news item in the widget
+    show_content: true # Display a summary or content preview of the news item
