@@ -5,7 +5,7 @@
       'tp-button',
       'px-3',
       'py-1',
-      'rounded-md',
+      circle ? 'rounded-full ' : 'rounded-md',
       'hover:bg-opacity-80',
       {
         'bg-primary-color': primary,
@@ -27,6 +27,11 @@ const props = defineProps({
   },
 
   secondary: {
+    type: Boolean,
+    default: false
+  },
+
+  circle: {
     type: Boolean,
     default: false
   }
