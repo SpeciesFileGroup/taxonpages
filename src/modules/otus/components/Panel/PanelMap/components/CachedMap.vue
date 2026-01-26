@@ -2,15 +2,18 @@
   <VButton
     class="left-2 bottom-2 !px-2 py-2 rounded-full absolute z-[1500]"
     primary
-    title="Map is not synchronized with the latest changes."
+    circle
+    :title="synchMessage"
     @click="isModalVisible = true"
   >
     <IconCheck
       v-if="cachedMap.synced"
+      :title="synchMessage"
       class="w-4 h-4"
     />
     <IconWarning
       v-else
+      :title="synchMessage"
       class="w-4 h-4"
     />
   </VButton>
@@ -38,18 +41,14 @@
                 v-if="cachedMap.synced"
               >
                 <IconCheck class="w-4 h-4" />
-                <span class="ml-1">
-                  Map is synchronized with the latest changes *
-                </span>
+                <span class="ml-1"> {{ synchMessage }} * </span>
               </p>
               <p
                 class="text-warning flex text-sm items-center"
                 v-else
               >
                 <IconWarning class="w-4 h-4" />
-                <span class="ml-1">
-                  Map is not synchronized with the latest changes *
-                </span>
+                <span class="ml-1"> {{ synchMessage }} * </span>
               </p>
             </VTableBodyCell>
           </VTableBodyRow>
@@ -92,9 +91,9 @@
   </VModal>
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
-defineProps({
+const props = defineProps({
   cachedMap: {
     type: Object,
     required: true
@@ -102,6 +101,12 @@ defineProps({
 })
 
 const isModalVisible = ref(false)
+
+const synchMessage = computed(() =>
+  props.cachedMap?.synced
+    ? 'Map is synchronized with the latest changes'
+    : 'Map is not synchronized with the latest changes'
+)
 </script>
 
 <style>

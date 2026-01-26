@@ -14,6 +14,7 @@ module.exports = {
     './src/**/*.{vue,js,ts,jsx,tsx,md}',
     './layouts/**/*.{vue,js}',
     './pages/**/*.{vue,md}',
+    './modules/**/*.{vue,md}',
     './panels/**/*.{vue,md}',
     './components/**/*.{vue,md}',
     './config/*.yml'

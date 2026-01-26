@@ -55,7 +55,7 @@ const pinnedNewsId = computed(() => {
 const store = useNewsStore()
 
 const layout = computed(() => {
-  return LAYOUT_CLASSES[news_module.layout] || LAYOUT_CLASSES.list
+  return LAYOUT_CLASSES[news_module?.index_page?.layout] || LAYOUT_CLASSES.list
 })
 
 async function init() {
