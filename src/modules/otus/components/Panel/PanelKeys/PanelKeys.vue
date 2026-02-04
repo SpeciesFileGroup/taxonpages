@@ -6,11 +6,7 @@
         v-for="(group, key) in keys"
         :key="key"
       >
-        <div
-          v-if="
-            [...Object.keys(group.matrices), ...Object.keys(group.leads)].length
-          "
-        >
+        <div v-if="[...group.matrices, ...group.leads].length">
           <VTable>
             <VTableHeader>
               <VTableHeaderRow>
@@ -21,24 +17,29 @@
             </VTableHeader>
             <VTableBody>
               <VTableBodyRow
-                v-for="(label, id) in group.matrices"
+                v-for="{ id, name, is_media } in group.matrices"
                 :key="id"
               >
                 <VTableBodyCell>
                   <RouterLink
-                    :to="{ name: 'interactive-keys-id', params: { id } }"
-                    v-text="label"
+                    :to="{
+                      name: is_media
+                        ? 'image-matrices-id'
+                        : 'interactive-keys-id',
+                      params: { id }
+                    }"
+                    v-text="name"
                   />
                 </VTableBodyCell>
               </VTableBodyRow>
               <VTableBodyRow
-                v-for="(label, id) in group.leads"
+                v-for="{ text, id } in group.leads"
                 :key="id"
               >
                 <VTableBodyCell>
                   <RouterLink
                     :to="{ name: 'keys-id', params: { id } }"
-                    v-text="label"
+                    v-text="text"
                   />
                 </VTableBodyCell>
               </VTableBodyRow>
@@ -69,10 +70,7 @@ const keys = ref({
 
 const count = computed(
   () =>
-    []
-      .concat(...Object.values(keys.value.to), ...Object.values(keys.value.in))
-      .map((h) => Object.keys(h))
-      .flat()
+    [...Object.values(keys.value.to), ...Object.values(keys.value.in)].flat()
       .length
 )
 
