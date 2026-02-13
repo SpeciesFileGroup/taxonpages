@@ -47,7 +47,8 @@
       >
         <button
           type="button"
-          aria-label="Go to page 1"
+          :aria-label="`Go to page ${n}`"
+          :aria-current="currentPage === n ? 'page' : undefined"
           :disabled="currentPage === n"
           :class="[
             'border',

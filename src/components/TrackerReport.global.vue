@@ -16,6 +16,7 @@
   <VModal
     v-if="isModalVisible"
     class="tp-tracker-report-modal text-base-content"
+    aria-label="Report a problem"
     @close="isModalVisible = false"
   >
     <template #header>
@@ -28,8 +29,10 @@
           <a
             :href="item.url"
             target="_blank"
+            rel="noopener"
           >
             {{ item.label }}
+            <span class="sr-only">(opens in new window)</span>
           </a>
           <span
             v-if="item.description"

@@ -1,5 +1,9 @@
 <template>
   <div
+    ref="viewerRef"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Image viewer"
     class="fixed z-[10000] h-full overflow-y-hidden overflow-x-hidden w-full top-0 left-0 flex flex-col items-center justify-center backdrop-blur-md bg-base-foreground"
   >
     <div
@@ -111,8 +115,11 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'previous', 'next', 'selectIndex'])
 
-const handleKeyboard = ({ key }) => {
-  switch (key) {
+let previouslyFocusedElement = null
+const viewerRef = ref(null)
+
+const handleKeyboard = (e) => {
+  switch (e.key) {
     case 'ArrowLeft':
       if (props.previous) {
         emit('previous')
@@ -126,6 +133,28 @@ const handleKeyboard = ({ key }) => {
     case 'Escape':
       emit('close')
       break
+    case 'Tab':
+      trapFocus(e)
+      break
+  }
+}
+
+function trapFocus(e) {
+  const focusable = viewerRef.value?.querySelectorAll(
+    'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  )
+
+  if (!focusable?.length) return
+
+  const first = focusable[0]
+  const last = focusable[focusable.length - 1]
+
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault()
+    last.focus()
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault()
+    first.focus()
   }
 }
 
@@ -134,6 +163,7 @@ const isLoading = ref(false)
 const errorMessage = ref(null)
 const image = computed(() => props.images[props.index])
 
+previouslyFocusedElement = document.activeElement
 document.addEventListener('keyup', handleKeyboard)
 
 function handleError() {
@@ -154,6 +184,7 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('keyup', handleKeyboard)
   document.body.classList.remove('overflow-hidden')
+  previouslyFocusedElement?.focus()
 })
 
 watch(

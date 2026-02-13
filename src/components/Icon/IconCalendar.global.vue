@@ -9,6 +9,7 @@
     stroke-width="2"
     stroke-linecap="round"
     stroke-linejoin="round"
+    aria-hidden="true"
   >
     <path d="M8 2v4"></path>
     <path d="M16 2v4"></path>

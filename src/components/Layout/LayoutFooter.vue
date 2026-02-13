@@ -17,9 +17,11 @@
             <a
               class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 font-medium"
               target="_blank"
+              rel="noopener"
               href="https://taxonworks.org/"
             >
               TaxonWorks
+              <span class="sr-only">(opens in new window)</span>
             </a>
           </span>
           <span>
@@ -27,9 +29,11 @@
             <a
               class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 font-medium"
               target="_blank"
+              rel="noopener"
               href="https://github.com/SpeciesFileGroup/taxonpages"
             >
               TaxonPages
+              <span class="sr-only">(opens in new window)</span>
             </a>
           </span>
           <span>
@@ -37,9 +41,11 @@
             <a
               class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 font-medium"
               target="_blank"
+              rel="noopener"
               href="https://speciesfilegroup.org"
             >
               Species File Group
+              <span class="sr-only">(opens in new window)</span>
             </a>
           </span>
           <FooterAnalytics class="italic" />

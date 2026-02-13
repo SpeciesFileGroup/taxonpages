@@ -13,7 +13,9 @@
       class="max-h-80 h-max w-100 cursor-zoom-in m-auto object-contain"
       :src="image.original"
       :alt="image.depictions?.map((d) => d.label).join(';')"
-      @click="emit('open:viewer')"
+      tabindex="0"
+      @keydown.enter="() => emit('open:viewer')"
+      @click="() => emit('open:viewer')"
     />
   </div>
 </template>

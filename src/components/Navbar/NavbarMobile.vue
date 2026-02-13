@@ -19,6 +19,7 @@
   <AnimationOpacity>
     <div
       v-if="isMenuVisible"
+      id="mobile-menu"
       class="tp-mobile-navbar absolute top-full left-0 w-full z-50 bg-base-foreground text-base-content block shadow-md md:hidden print:hidden"
     >
       <nav class="font-normal container mx-auto">

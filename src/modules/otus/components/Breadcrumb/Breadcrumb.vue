@@ -1,4 +1,5 @@
 <template>
+  <nav aria-label="Breadcrumb">
   <ul class="breadcrumb inline-flex items-center flex-wrap">
     <li
       v-for="([item], key, index) in list"
@@ -21,6 +22,7 @@
       <span v-html="current.full_name_tag" />
     </li>
   </ul>
+  </nav>
 </template>
 
 <script setup>

@@ -46,7 +46,7 @@
             :max="duration"
             step="0.1"
             :style="sliderStyle"
-            class="w-full h-2 text-base-lighter rounded-lg cursor-pointer appearance-none outline-none"
+            class="w-full h-2 text-base-lighter rounded-lg cursor-pointer appearance-none"
             aria-label="Seek time"
             @input="handleSeek"
           />
@@ -109,7 +109,7 @@
 
 <script setup>
 import { computed, ref, onMounted } from 'vue'
-import SoundObservations from './components/SoundObservations.vue'
+import SoundObservations from './SoundObservations.vue'
 
 const props = defineProps({
   soundId: {
@@ -266,5 +266,10 @@ input[type='range']::-moz-range-thumb {
   background: rgb(var(--color-primary));
   cursor: pointer;
   border: none;
+}
+
+input[type='range']:focus-visible {
+  outline: 2px solid rgb(var(--color-primary));
+  outline-offset: 2px;
 }
 </style>

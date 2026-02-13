@@ -1,6 +1,7 @@
 <template>
   <button
     type="button"
+    aria-label="Close image viewer"
     class="p-2 cursor-pointer opacity-50 text-base-content"
   >
     <IconClose />

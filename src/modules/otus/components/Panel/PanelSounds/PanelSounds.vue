@@ -17,7 +17,7 @@
 import { onMounted, ref } from 'vue'
 import { useOtuPageRequest } from '../../../helpers/useOtuPageRequest'
 import TaxonWorks from '../../../services/TaxonWorks'
-import PanelSoundRow from './PanelSoundRow.vue'
+import PanelSoundRow from './components/PanelSoundRow.vue'
 
 const props = defineProps({
   otuId: {
