@@ -8,7 +8,7 @@
       <img
         v-if="copyright_image"
         :src="copyright_image"
-        alt="copyright"
+        alt="Copyright holder logo"
       />
     </component>
     <span>{{ copyright_text }}</span>

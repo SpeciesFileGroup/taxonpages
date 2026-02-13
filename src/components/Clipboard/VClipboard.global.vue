@@ -2,6 +2,7 @@
   <VButton
     class="px-2 py-2 rounded-full"
     primary
+    :aria-label="isCopied ? 'Copied to clipboard' : 'Copy to clipboard'"
     @click="copyText"
   >
     <IconCheck

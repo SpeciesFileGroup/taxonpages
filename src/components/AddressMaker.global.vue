@@ -1,6 +1,8 @@
 <template>
-  <span
-    class="text-secondary-color cursor-pointer whitespace-nowrap"
+  <button
+    type="button"
+    class="text-secondary-color cursor-pointer whitespace-nowrap inline bg-transparent border-0 p-0 font-inherit text-inherit"
+    aria-label="Send email"
     @click="openClient"
   >
     <span v-html="data.username" />
@@ -13,6 +15,7 @@
         viewBox="0 0 24 24"
         stroke-width="1.5"
         stroke="currentColor"
+        aria-hidden="true"
       >
         <path
           stroke-linecap="round"
@@ -22,6 +25,7 @@
 
       <svg
         class="inline h-4 w-1"
+        aria-hidden="true"
         v-else
       >
         <circle
@@ -33,7 +37,7 @@
       </svg>
       <span v-html="item" />
     </template>
-  </span>
+  </button>
 </template>
 
 <script setup>

@@ -17,6 +17,9 @@
     >
       <img
         :src="item.imageMedium"
+        :alt="
+          item.depictions?.map((d) => d.label).join('; ') || 'Depiction image'
+        "
         :style="imageStyle"
         class="max-w-full my-0 object-cover w-full"
       />

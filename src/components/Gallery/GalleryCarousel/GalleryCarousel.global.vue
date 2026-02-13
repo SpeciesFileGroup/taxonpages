@@ -15,6 +15,22 @@
     <div class="bg-black bg-opacity-25 absolute h-full w-full">
       <slot />
     </div>
+    <VButton
+      v-if="interval && depictions.length > 1"
+      primary
+      circle
+      :aria-label="isPaused ? 'Play slideshow' : 'Pause slideshow'"
+      @click="togglePause"
+    >
+      <IconPlay
+        v-if="isPaused"
+        class="w-4 h-4"
+      />
+      <IconPause
+        v-else
+        class="w-4 h-4"
+      />
+    </VButton>
     <span
       v-if="currentDepiction.objectId"
       class="z-10 text-white text-sm drop-shadow absolute bottom-2 right-0 px-4"
@@ -60,6 +76,7 @@ const props = defineProps({
 const { depictions } = useGallery({ props })
 
 const currentIndex = ref(0)
+const isPaused = ref(false)
 
 const containerStyle = computed(() => ({ height: props.height }))
 const currentDepiction = computed(
@@ -76,6 +93,17 @@ let timeout = null
 
 function updateIndex() {
   currentIndex.value = (currentIndex.value + 1) % depictions.value.length
+}
+
+function togglePause() {
+  isPaused.value = !isPaused.value
+
+  if (isPaused.value) {
+    clearInterval(timeout)
+    timeout = null
+  } else {
+    timeout = setInterval(updateIndex, props.interval)
+  }
 }
 
 watch(depictions, () => {
