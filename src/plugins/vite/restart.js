@@ -1,8 +1,10 @@
 import path from 'node:path'
-import anymatch from 'anymatch'
+import picomatch from 'picomatch'
 
 export default function ViteRestart({ dir }) {
   const root = process.cwd()
+  const patterns = Array.isArray(dir) ? dir : [dir]
+  const isMatch = picomatch(patterns, { dot: true })
 
   return {
     name: 'vite-restart',
@@ -10,9 +12,8 @@ export default function ViteRestart({ dir }) {
     configureServer(server) {
       function handleChange(filePath) {
         const relativePath = path.relative(root, filePath)
-        const isWatched = anymatch(dir, relativePath)
 
-        if (isWatched) {
+        if (isMatch(relativePath)) {
           server.restart()
         }
       }
