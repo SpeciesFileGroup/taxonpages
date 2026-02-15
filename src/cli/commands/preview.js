@@ -15,6 +15,9 @@ export async function preview({ packageRoot, projectRoot, port }) {
   const server = await vitePreview({
     configFile: false,
     ...config,
+    build: {
+      outDir: resolve(projectRoot, 'dist')
+    },
     preview: {
       port: Number(port)
     }
