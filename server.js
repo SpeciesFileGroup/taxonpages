@@ -1,28 +1,40 @@
 // @ts-check
 import fs from 'node:fs'
 import path from 'node:path'
-import minimist from 'minimist'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
 import { generateConsoleMessage } from './src/ssr/utils/generateConsoleMessage.js'
 
-const { port = 6173 } = minimist(process.argv.slice(2))
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-export async function createServer(
-  root = process.cwd(),
+/**
+ * Create the Express SSR server.
+ *
+ * @param {object} [options]
+ * @param {string} [options.projectRoot] - User's project directory (where config/, dist/ live). Defaults to CWD.
+ * @param {string} [options.packageRoot] - The taxonpages package directory (where src/, index.html live). Defaults to this file's directory.
+ * @param {boolean} [options.isProd] - Whether to run in production mode. Defaults to NODE_ENV === 'production'.
+ * @param {number} [options.hmrPort] - HMR port for development mode.
+ */
+export async function createServer({
+  projectRoot = process.cwd(),
+  packageRoot = __dirname,
   isProd = process.env.NODE_ENV === 'production',
   hmrPort
-) {
-  const __dirname = path.dirname(fileURLToPath(import.meta.url))
-  const resolve = (p) => path.resolve(__dirname, p)
+} = {}) {
+  const resolveProject = (p) => path.resolve(projectRoot, p)
+  const resolvePackage = (p) => path.resolve(packageRoot, p)
 
   const templateHtml = isProd
-    ? fs.readFileSync(resolve('dist/client/index.html'), 'utf-8')
+    ? fs.readFileSync(resolveProject('dist/client/index.html'), 'utf-8')
     : ''
 
   const manifest = isProd
     ? JSON.parse(
-        fs.readFileSync(resolve('dist/client/.vite/ssr-manifest.json'), 'utf-8')
+        fs.readFileSync(
+          resolveProject('dist/client/.vite/ssr-manifest.json'),
+          'utf-8'
+        )
       )
     : {}
 
@@ -34,7 +46,7 @@ export async function createServer(
       await import('vite')
     ).createServer({
       base: '/',
-      root,
+      root: packageRoot,
       logLevel: 'info',
       server: {
         middlewareMode: true,
@@ -54,9 +66,10 @@ export async function createServer(
     app.use((await import('compression')).default())
     app.use(
       '/',
-      (await import('serve-static')).default(resolve('dist/client'), {
-        index: false
-      })
+      (await import('serve-static')).default(
+        resolveProject('dist/client'),
+        { index: false }
+      )
     )
   }
 
@@ -72,12 +85,13 @@ export async function createServer(
       let template, render
       if (!isProd) {
         // always read fresh template in dev
-        template = fs.readFileSync(resolve('index.html'), 'utf-8')
+        template = fs.readFileSync(resolvePackage('index.html'), 'utf-8')
         template = await vite.transformIndexHtml(url, template)
         render = (await vite.ssrLoadModule('/src/entry-server.js')).render
       } else {
         template = templateHtml
-        render = (await import('./dist/server/entry-server.js')).render
+        render = (await import(resolveProject('dist/server/entry-server.js')))
+          .render
       }
 
       const [appHtml, appState, preloadLinks, tagMeta, statusCode] =
@@ -105,8 +119,19 @@ function makeAppContainer(app = '') {
   return `<div id="app">${app}</div>`
 }
 
-createServer().then(({ app }) =>
-  app.listen(port, () => {
-    generateConsoleMessage({ port, url: 'http://localhost' })
-  })
-)
+// Standalone execution: when run directly (not imported by CLI)
+const isDirectRun =
+  process.argv[1] &&
+  (process.argv[1].endsWith('server.js') ||
+    process.argv[1].endsWith('server'))
+
+if (isDirectRun) {
+  const minimist = (await import('minimist')).default
+  const { port = 6173 } = minimist(process.argv.slice(2))
+
+  createServer().then(({ app }) =>
+    app.listen(port, () => {
+      generateConsoleMessage({ port, url: 'http://localhost' })
+    })
+  )
+}

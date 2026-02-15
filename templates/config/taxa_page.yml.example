@@ -1,0 +1,22 @@
+# Taxon page panel layout configuration
+# Customize which panels appear on taxon pages and their arrangement
+
+taxa_page:
+  overview:
+    panels:
+      - - - panel:gallery
+          - panel:type
+          - panel:type-specimen
+          - panel:nomenclature
+          - panel:nomenclature-references
+
+        - - panel:map
+          - panel:descendants
+          - panel:content
+          - panel:keys
+          - panel:statistics
+          - panel:sounds
+
+  biological_associations:
+    panels:
+      - - - panel:biological-associations

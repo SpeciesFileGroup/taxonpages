@@ -1,7 +1,7 @@
 import { glob } from 'glob'
 import fs from 'fs'
 import yaml from 'js-yaml'
-import defaultConfig from '../constants/defaultConfig'
+import defaultConfig from '../constants/defaultConfig.js'
 
 export const loadConfiguration = (appPath) => {
   const isProd = process.env.NODE_ENV === 'production'

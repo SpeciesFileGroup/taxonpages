@@ -1,2 +1,2 @@
-export * from './relativeToRouter'
-export * from './variableReplacement'
+export * from './relativeToRouter.js'
+export * from './variableReplacement.js'

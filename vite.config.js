@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import { loadConfiguration } from './src/utils/loadConfiguration.js'
 import { VitePluginRadar } from 'vite-plugin-radar'
 import path from 'path'
+import { fileURLToPath } from 'node:url'
 import Vue from '@vitejs/plugin-vue'
 import Markdown from 'unplugin-vue-markdown/vite'
 import markdownAnchor from 'markdown-it-anchor'
@@ -13,8 +14,20 @@ import {
 import Pages from 'vite-plugin-pages'
 import './src/utils/globalVars'
 
-export default () => {
-  const configuration = loadConfiguration(__dirname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+/**
+ * Vite configuration factory.
+ *
+ * Supports two modes:
+ * 1. Direct invocation via `vite` CLI (backward compatible) — uses __dirname as both package and project root.
+ * 2. Programmatic invocation via the taxonpages CLI — receives configEnv with packageRoot/projectRoot.
+ */
+export default (configEnv = {}) => {
+  const packageRoot = configEnv.packageRoot || __dirname
+  const projectRoot = configEnv.projectRoot || process.cwd()
+
+  const configuration = loadConfiguration(projectRoot)
 
   return defineConfig({
     base: configuration.base_url,
@@ -24,8 +37,8 @@ export default () => {
 
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src'),
-        '~': path.resolve(process.cwd())
+        '@': path.resolve(packageRoot, './src'),
+        '~': path.resolve(projectRoot)
       }
     },
 
@@ -38,7 +51,7 @@ export default () => {
     },
 
     plugins: [
-      ViteRestart({ dir: ['config/**/*.yml'] }),
+      ViteRestart({ dir: [path.resolve(projectRoot, 'config/**/*.yml')] }),
       Vue({
         include: [/\.vue$/, /\.md$/]
       }),
@@ -55,7 +68,7 @@ export default () => {
       }),
 
       Pages({
-        dirs: 'pages',
+        dirs: path.resolve(projectRoot, 'pages'),
         exclude: ['**/components/*.vue', 'components/**/*.vue'],
         extensions: ['vue', 'md'],
         extendRoute(route) {

@@ -1,0 +1,6 @@
+---
+# TaxonWorks API configuration
+# Replace with your TaxonWorks instance URL and project token
+
+url: https://sfg.taxonworks.org/api/v1
+project_token: YOUR_PROJECT_TOKEN_HERE

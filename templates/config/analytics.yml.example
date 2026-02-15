@@ -1,0 +1,22 @@
+analytics_services:
+  enableDev: true
+  analytics:
+    - id: 'G-XXXXX'
+      disable: false
+      config:
+        cookie_domain: auto
+        cookie_expires: 63072000
+        cookie_prefix: 'none'
+        cookie_update: true
+        cookie_flags: ''
+        send_page_view: true
+        allow_google_signals: true
+        allow_ad_personalization_signals: false
+
+      consentDefaults:
+        analytics_storage: 'granted'
+        ad_storage: 'denied'
+        wait_for_update: 500
+
+      persistentValues:
+        currency: 'USD'

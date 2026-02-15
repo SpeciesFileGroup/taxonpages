@@ -1,3 +1,8 @@
+const path = require('path')
+
+const packageRoot = __dirname
+const projectRoot = process.cwd()
+
 function withOpacity(variableName) {
   return ({ opacityValue }) => {
     if (opacityValue !== undefined) {
@@ -9,15 +14,17 @@ function withOpacity(variableName) {
 
 module.exports = {
   content: [
-    './index.html',
-    './vite.config.js',
-    './src/**/*.{vue,js,ts,jsx,tsx,md}',
-    './layouts/**/*.{vue,js}',
-    './pages/**/*.{vue,md}',
-    './modules/**/*.{vue,md}',
-    './panels/**/*.{vue,md}',
-    './components/**/*.{vue,md}',
-    './config/*.yml'
+    // Package core files
+    path.join(packageRoot, 'index.html'),
+    path.join(packageRoot, 'vite.config.js'),
+    path.join(packageRoot, 'src/**/*.{vue,js,ts,jsx,tsx,md}'),
+    // User project files
+    path.join(projectRoot, 'layouts/**/*.{vue,js}'),
+    path.join(projectRoot, 'pages/**/*.{vue,md}'),
+    path.join(projectRoot, 'modules/**/*.{vue,md}'),
+    path.join(projectRoot, 'panels/**/*.{vue,md}'),
+    path.join(projectRoot, 'components/**/*.{vue,md}'),
+    path.join(projectRoot, 'config/*.yml')
   ],
 
   darkMode: 'class',
