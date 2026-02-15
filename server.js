@@ -42,11 +42,16 @@ export async function createServer({
   let vite
 
   if (!isProd) {
+    const { getViteConfig } = await import(
+      './src/cli/utils/resolveConfig.js'
+    )
+    const viteConfig = getViteConfig({ packageRoot, projectRoot })
+
     vite = await (
       await import('vite')
     ).createServer({
-      base: '/',
-      root: packageRoot,
+      configFile: false,
+      ...viteConfig,
       logLevel: 'info',
       server: {
         middlewareMode: true,

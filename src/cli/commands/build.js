@@ -34,6 +34,13 @@ export async function runBuild({ packageRoot, projectRoot, mode }) {
   await viteBuild({
     configFile: false,
     ...config,
+    resolve: {
+      ...config.resolve,
+      dedupe: ['vue', 'vue-router', 'pinia']
+    },
+    ssr: {
+      noExternal: true
+    },
     build: {
       ssr: resolve(packageRoot, 'src/entry-server.js'),
       outDir: resolve(projectRoot, 'dist/server')
