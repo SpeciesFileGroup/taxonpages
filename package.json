@@ -1,8 +1,9 @@
 {
-  "name": "taxonpages",
+  "name": "@sfgrp/taxonpages",
   "version": "0.1.0",
-  "description": "CLI tool for building biodiversity taxon pages powered by SpeciesFileGroup",
+  "description": "CLI tool for building taxon pages powered by SpeciesFileGroup",
   "type": "module",
+  "private": false,
   "bin": {
     "taxonpages": "./bin/taxonpages.js"
   },
