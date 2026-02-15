@@ -1,6 +1,6 @@
 import picomatch from 'picomatch'
 
-export default function ViteRestart({ dir }) {
+export function ViteRestart({ dir }) {
   const patterns = Array.isArray(dir) ? dir : [dir]
   const isMatch = picomatch(patterns, { dot: true })
 

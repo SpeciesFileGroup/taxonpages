@@ -12,7 +12,7 @@ import {
   relativeToRouterPlugin,
   variableReplacementPlugin
 } from '../../plugins/markdown/index.js'
-import ViteRestart from '../../plugins/vite/restart.js'
+import { ViteRestart, projectStylesPlugin } from '../../plugins/vite/index.js'
 
 /**
  * Build the full Vite configuration, resolving paths correctly
@@ -61,6 +61,8 @@ export function getViteConfig({ packageRoot, projectRoot }) {
     },
 
     plugins: [
+      projectStylesPlugin(projectRoot),
+
       ViteRestart({ dir: [resolve(projectRoot, 'config/**/*.yml')] }),
 
       Vue({
@@ -103,6 +105,7 @@ export function getViteConfig({ packageRoot, projectRoot }) {
  * Prefers user's custom config at config/vendor/tailwind.config.cjs,
  * falls back to the package's default tailwind.config.cjs.
  */
+
 function getTailwindConfigPath(packageRoot, projectRoot) {
   const userConfig = resolve(projectRoot, 'config/vendor/tailwind.config.cjs')
   if (existsSync(userConfig)) {

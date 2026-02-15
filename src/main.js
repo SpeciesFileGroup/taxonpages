@@ -1,5 +1,4 @@
 import.meta.glob('@/assets/css/main.css', { eager: true })
-import.meta.glob('../config/style/*.{scss,css}', { eager: true })
 
 import App from './App.vue'
 import SetupApp from '@/modules/setup/views/Index.vue'
