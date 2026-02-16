@@ -12,7 +12,11 @@ import {
   relativeToRouterPlugin,
   variableReplacementPlugin
 } from '../../plugins/markdown/index.js'
-import { ViteRestart, projectStylesPlugin, componentRegistrationPlugin } from '../../plugins/vite/index.js'
+import {
+  ViteRestart,
+  projectStylesPlugin,
+  componentRegistrationPlugin
+} from '../../plugins/vite/index.js'
 
 /**
  * Build the full Vite configuration, resolving paths correctly
@@ -67,9 +71,12 @@ export function getViteConfig({ packageRoot, projectRoot }) {
 
     plugins: [
       componentRegistrationPlugin({ packageRoot, projectRoot }),
-      projectStylesPlugin(projectRoot),
+      //projectStylesPlugin(projectRoot),
 
-      ViteRestart({ dir: [resolve(projectRoot, 'config/**/*.yml')], projectRoot }),
+      ViteRestart({
+        dir: [resolve(projectRoot, 'config/**/*.yml')],
+        projectRoot
+      }),
 
       Vue({
         include: [/\.vue$/, /\.md$/]

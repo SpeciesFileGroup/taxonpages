@@ -53,7 +53,7 @@ export default (configEnv = {}) => {
     plugins: [
       ViteRestart({ dir: [path.resolve(projectRoot, 'config/**/*.yml')] }),
 
-      projectStylesPlugin(projectRoot),
+      //projectStylesPlugin(projectRoot),
 
       Vue({
         include: [/\.vue$/, /\.md$/]
