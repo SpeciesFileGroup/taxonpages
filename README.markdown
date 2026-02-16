@@ -117,16 +117,18 @@ taxonpages init my-project
 
 All commands are available through `npm run` scripts in your project or directly via the `taxonpages` CLI:
 
-| Command                       | npm script          | Description                                    |
-| ----------------------------- | ------------------- | ---------------------------------------------- |
-| `taxonpages init [directory]` | —                   | Scaffold a new TaxonPages project              |
-| `taxonpages dev`              | `npm run dev`       | Start development server (SPA mode, port 5173) |
-| `taxonpages dev:ssr`          | `npm run dev:ssr`   | Start SSR development server (port 6173)       |
-| `taxonpages build`            | `npm run build`     | Build for production (SPA mode)                |
-| `taxonpages build:ssr`        | `npm run build:ssr` | Build for production (SSR mode)                |
-| `taxonpages serve`            | `npm run serve`     | Start production SSR server (port 6173)        |
-| `taxonpages preview`          | `npm run preview`   | Preview production build locally (port 4173)   |
-| `taxonpages packages`         | —                   | List all discovered panels and modules         |
+| Command                          | npm script          | Description                                        |
+| -------------------------------- | ------------------- | -------------------------------------------------- |
+| `taxonpages init [directory]`    | —                   | Scaffold a new TaxonPages project                  |
+| `taxonpages dev`                 | `npm run dev`       | Start development server (SPA mode, port 5173)     |
+| `taxonpages dev:ssr`             | `npm run dev:ssr`   | Start SSR development server (port 6173)           |
+| `taxonpages build`               | `npm run build`     | Build for production (SPA mode)                    |
+| `taxonpages build:ssr`           | `npm run build:ssr` | Build for production (SSR mode)                    |
+| `taxonpages serve`               | `npm run serve`     | Start production SSR server (port 6173)            |
+| `taxonpages preview`             | `npm run preview`   | Preview production build locally (port 4173)       |
+| `taxonpages package list`        | —                   | List all discovered panels and modules             |
+| `taxonpages package add <name>`  | —                   | Install a TaxonPages package and auto-configure it |
+| `taxonpages package remove <name>` | —                 | Uninstall a package and clean up config            |
 
 ### Example workflow
 
@@ -413,11 +415,19 @@ If you have a local panel with the same base name as an NPM package, the local v
 
 ### Installing an NPM panel
 
+The easiest way is to use the `package add` command, which installs the package and adds its panel ID to `config/taxa_page.yml` automatically:
+
+```bash
+taxonpages package add @vendor/taxonpages-panel-inaturalist
+```
+
+If `config/taxa_page.yml` does not exist yet, the command will prompt you to create it from the default template.
+
+You can also install manually with `npm install` and reference the panel ID in `config/taxa_page.yml` yourself:
+
 ```bash
 npm install @vendor/taxonpages-panel-inaturalist
 ```
-
-Then reference its panel ID in `config/taxa_page.yml`:
 
 ```yaml
 taxa_page:
@@ -433,17 +443,25 @@ Restart the dev server. The panel appears in the layout.
 ### Installing an NPM module
 
 ```bash
-npm install @vendor/taxonpages-module-bibliography
+taxonpages package add @vendor/taxonpages-module-bibliography
 ```
 
 Module routes register automatically — no YAML configuration needed. Restart the dev server and the new routes are available.
 
-### Listing installed packages
-
-Use the `packages` CLI command to see all discovered panels and modules:
+### Removing an NPM package
 
 ```bash
-taxonpages packages
+taxonpages package remove @vendor/taxonpages-panel-inaturalist
+```
+
+This uninstalls the NPM package and removes all references to its panel ID from `config/taxa_page.yml`.
+
+### Listing installed packages
+
+Use the `package list` command to see all discovered panels and modules:
+
+```bash
+taxonpages package list
 ```
 
 Example output:

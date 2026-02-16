@@ -67,12 +67,31 @@ program
     await preview({ packageRoot, projectRoot: process.cwd(), ...options })
   })
 
-program
-  .command('packages')
+const pkg = program.command('package').description('Manage TaxonPages packages')
+
+pkg
+  .command('list')
   .description('List discovered TaxonPages modules and panels')
   .action(async () => {
     const { listPackages } = await import('../src/cli/commands/packages.js')
     listPackages({ packageRoot, projectRoot: process.cwd() })
+  })
+
+pkg
+  .command('add <name>')
+  .description('Install a TaxonPages package and auto-configure it')
+  .action(async (name) => {
+    const { packageAdd } = await import('../src/cli/commands/packageAdd.js')
+    await packageAdd({ packageRoot, projectRoot: process.cwd(), name })
+  })
+
+pkg
+  .command('remove <name>')
+  .description('Uninstall a TaxonPages package and clean up config')
+  .action(async (name) => {
+    const { packageRemove } =
+      await import('../src/cli/commands/packageRemove.js')
+    packageRemove({ projectRoot: process.cwd(), name })
   })
 
 program
