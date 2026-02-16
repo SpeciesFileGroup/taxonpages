@@ -1,87 +1,117 @@
 /**
- * Vite plugin that replaces import.meta.glob calls in component
- * registration files with pre-resolved absolute paths.
+ * Vite plugin that resolves import.meta.glob calls containing @/ or ~/
+ * aliases into pre-resolved absolute paths.
  *
- * This is necessary because import.meta.glob with aliases (@/, ~/)
- * won't scan inside node_modules when the package is installed
- * as a dependency.
+ * This is necessary because import.meta.glob with aliases pointing into
+ * node_modules won't scan those directories. This plugin intercepts the
+ * glob calls, performs the scanning with absolute paths, and replaces
+ * the call with a pre-built object of lazy imports.
  */
-import { resolve } from 'node:path'
+import { resolve, dirname } from 'node:path'
 import { globSync } from 'glob'
 
-const GLOBAL_PATTERNS = [
-  'src/components/**/*.global.vue',
-  'src/modules/**/components/**/*.global.vue'
-]
-
-const CLIENT_PATTERNS = [
-  'src/components/**/*.client.vue',
-  'src/modules/**/components/**/*.client.vue'
-]
-
-const USER_GLOBAL_PATTERNS = [
-  'components/**/*.global.vue',
-  'modules/**/components/**/*.global.vue'
-]
-
-const USER_CLIENT_PATTERNS = [
-  'components/**/*.client.vue',
-  'modules/**/components/**/*.client.vue'
-]
-
-function findComponents(baseDir, patterns) {
-  const files = []
-
-  for (const pattern of patterns) {
-    const matches = globSync(pattern, { cwd: baseDir })
-    files.push(...matches.map((f) => resolve(baseDir, f)))
-  }
-
-  return files
-}
-
-function buildGlobObject(files) {
-  return (
-    '{\n' +
-    files
-      .map((f) => `  '${f}': () => import('${f}')`)
-      .join(',\n') +
-    '\n}'
-  )
-}
+const STYLE_EXT = /\.(css|scss|sass|less|styl)$/
 
 export function componentRegistrationPlugin({ packageRoot, projectRoot }) {
+  const srcPath = resolve(packageRoot, 'src')
+
   return {
-    name: 'taxonpages:component-registration',
+    name: 'taxonpages:resolve-glob-aliases',
     enforce: 'pre',
     transform(code, id) {
-      if (
-        !id.includes('globalComponents') &&
-        !id.includes('clientComponents')
-      ) {
-        return
-      }
-
       if (!code.includes('import.meta.glob')) return
 
-      const isGlobal = id.includes('globalComponents')
-      const pkgPatterns = isGlobal ? GLOBAL_PATTERNS : CLIENT_PATTERNS
-      const userPatterns = isGlobal ? USER_GLOBAL_PATTERNS : USER_CLIENT_PATTERNS
+      let changed = false
+      let prependImports = ''
+      let varCounter = 0
 
-      const pkgFiles = findComponents(packageRoot, pkgPatterns)
-      const userFiles = findComponents(projectRoot, userPatterns)
-      const allFiles = [...pkgFiles, ...userFiles]
-
-      const globObject = buildGlobObject(allFiles)
+      const globRegex =
+        /import\.meta\.glob\(\s*(\[[\s\S]*?\]|['"][^'"]*['"])\s*(?:,\s*(\{[\s\S]*?\}))?\s*\)/g
 
       const transformed = code.replace(
-        /import\.meta\.glob\(\s*\[[\s\S]*?\]\s*,\s*\{[\s\S]*?\}\s*\)/,
-        globObject
+        globRegex,
+        (match, patternsStr, optionsStr) => {
+          if (!patternsStr.includes('@/') && !patternsStr.includes('~/')) {
+            return match
+          }
+
+          const patternMatches = [
+            ...patternsStr.matchAll(/['"]([^'"]+)['"]/g)
+          ]
+          const patterns = patternMatches.map((m) => m[1])
+
+          const isEager = optionsStr && /eager\s*:\s*true/.test(optionsStr)
+          const importDefault =
+            optionsStr && /import\s*:\s*['"]default['"]/.test(optionsStr)
+
+          const allFiles = []
+
+          // Resolve the directory of the file being transformed
+          const fileDir = dirname(id.replace(/\?.*$/, ''))
+
+          for (const pattern of patterns) {
+            let baseDir
+            let resolvedPattern
+
+            if (pattern.startsWith('@/')) {
+              baseDir = srcPath
+              resolvedPattern = pattern.slice(2)
+            } else if (pattern.startsWith('~/')) {
+              baseDir = projectRoot
+              resolvedPattern = pattern.slice(2)
+            } else if (pattern.startsWith('./') || pattern.startsWith('../')) {
+              baseDir = fileDir
+              resolvedPattern = pattern
+            } else {
+              continue
+            }
+
+            const matches = globSync(resolvedPattern, { cwd: baseDir })
+            allFiles.push(...matches.map((f) => resolve(baseDir, f)))
+          }
+
+          changed = true
+
+          if (allFiles.length === 0) return '{}'
+
+          if (isEager) {
+            const allStyles = allFiles.every((f) => STYLE_EXT.test(f))
+
+            if (allStyles) {
+              // Style files: generate side-effect imports
+              prependImports += allFiles
+                .map((f) => `import '${f}';`)
+                .join('\n') + '\n'
+              return '{}'
+            }
+
+            const entries = allFiles.map((f) => {
+              const varName = `__glob_${varCounter++}`
+              prependImports += importDefault
+                ? `import { default as ${varName} } from '${f}';\n`
+                : `import * as ${varName} from '${f}';\n`
+              return `  '${f}': ${varName}`
+            })
+
+            return '{\n' + entries.join(',\n') + '\n}'
+          }
+
+          const entries = allFiles.map((f) => {
+            const suffix = importDefault ? '.then(m => m.default)' : ''
+            return `  '${f}': () => import('${f}')${suffix}`
+          })
+
+          return '{\n' + entries.join(',\n') + '\n}'
+        }
       )
 
-      if (transformed === code) return
+      if (!changed) return
 
-      return { code: transformed, map: null }
+      const result = prependImports
+        ? prependImports + transformed
+        : transformed
+
+      return { code: result, map: null }
     }
   }
 }
