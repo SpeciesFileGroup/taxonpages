@@ -41,6 +41,14 @@ export function getViteConfig({ packageRoot, projectRoot }) {
       }
     },
 
+    optimizeDeps: {
+      include: [
+        'leaflet',
+        'leaflet.markercluster/dist/leaflet.markercluster',
+        '@geoman-io/leaflet-geoman-free'
+      ]
+    },
+
     css: {
       postcss: {
         plugins: [
