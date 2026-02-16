@@ -33,9 +33,6 @@ export function getViteConfig({ packageRoot, projectRoot }) {
   return {
     root,
     base: configuration.base_url,
-    define: {
-      __APP_ENV__: configuration
-    },
 
     resolve: {
       alias: {
@@ -63,7 +60,7 @@ export function getViteConfig({ packageRoot, projectRoot }) {
     plugins: [
       projectStylesPlugin(projectRoot),
 
-      ViteRestart({ dir: [resolve(projectRoot, 'config/**/*.yml')] }),
+      ViteRestart({ dir: [resolve(projectRoot, 'config/**/*.yml')], projectRoot }),
 
       Vue({
         include: [/\.vue$/, /\.md$/]
