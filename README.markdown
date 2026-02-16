@@ -126,6 +126,7 @@ All commands are available through `npm run` scripts in your project or directly
 | `taxonpages build:ssr`        | `npm run build:ssr` | Build for production (SSR mode)                |
 | `taxonpages serve`            | `npm run serve`     | Start production SSR server (port 6173)        |
 | `taxonpages preview`          | `npm run preview`   | Preview production build locally (port 4173)   |
+| `taxonpages packages`         | —                   | List all discovered panels and modules         |
 
 ### Example workflow
 
@@ -362,6 +363,334 @@ taxa_page_overview:
         - panel:gbif
         - panel:statistics
         - panel:sounds
+```
+
+### External modules
+
+Modules add new pages and routes to TaxonPages. Create a folder called `modules` in your project root, and inside it create a folder for your module with a `router/` directory:
+
+```
+modules/
+└── my-feature/
+    ├── router/
+    │   └── index.js
+    ├── views/
+    │   └── index.vue
+    └── components/
+        └── MyWidget.global.vue   # Optional: auto-registered globally
+```
+
+The router file must default-export an array of [Vue Router route records](https://router.vuejs.org/api/#routerecordraw):
+
+```javascript
+// modules/my-feature/router/index.js
+export default [
+  {
+    name: 'my-feature',
+    path: '/my-feature',
+    component: () => import('../views/index.vue')
+  }
+]
+```
+
+Module routes register automatically at startup. No YAML configuration is needed.
+
+## NPM panels and modules
+
+In addition to local `panels/` and `modules/` folders, TaxonPages can discover panels and modules installed as NPM packages. This allows the community to publish and share reusable extensions.
+
+### Package sources and priority
+
+Panels and modules can come from three sources. When a name conflict occurs, the higher-priority source wins:
+
+| Priority    | Source        | Location                                     |
+| ----------- | ------------- | -------------------------------------------- |
+| 1 (highest) | Local folders | `panels/*` and `modules/*` in your project   |
+| 2           | NPM packages  | `node_modules/` with a `taxonpages` manifest |
+| 3 (lowest)  | Core          | Built into `@sfgrp/taxonpages`               |
+
+If you have a local panel with the same base name as an NPM package, the local version takes precedence and a warning is logged at startup.
+
+### Installing an NPM panel
+
+```bash
+npm install @vendor/taxonpages-panel-inaturalist
+```
+
+Then reference its panel ID in `config/taxa_page.yml`:
+
+```yaml
+taxa_page:
+  overview:
+    panels:
+      - - - panel:gallery
+          - panel:inaturalist
+          - panel:map
+```
+
+Restart the dev server. The panel appears in the layout.
+
+### Installing an NPM module
+
+```bash
+npm install @vendor/taxonpages-module-bibliography
+```
+
+Module routes register automatically — no YAML configuration needed. Restart the dev server and the new routes are available.
+
+### Listing installed packages
+
+Use the `packages` CLI command to see all discovered panels and modules:
+
+```bash
+taxonpages packages
+```
+
+Example output:
+
+```
+  TaxonPages — Installed packages
+
+  PANELS
+  ├─ PanelScrutiny                  (local) ~/panels/PanelScrutiny
+  ├─ PaneliNaturalist               (npm)   @vendor/taxonpages-panel-inaturalist@1.0.0
+
+  MODULES
+  ├─ bibliography                   (npm)   @vendor/taxonpages-module-bibliography@2.1.0
+
+  2 npm, 1 local
+```
+
+### Disabling a package
+
+Add the package name to a `disabled` list in any `config/*.yml` file:
+
+```yaml
+packages:
+  disabled:
+    - '@vendor/taxonpages-panel-inaturalist'
+```
+
+### Overriding an NPM panel locally
+
+To customize a panel installed from NPM, create a local panel folder with the same base name. For example, if the NPM package is `@vendor/taxonpages-panel-foo`, create `panels/foo/main.js`. The local version takes priority.
+
+## Creating NPM panels (for developers)
+
+This section explains how to create and publish a TaxonPages panel as an NPM package.
+
+### Package structure
+
+```
+taxonpages-panel-inaturalist/
+├── package.json
+├── src/
+│   ├── main.js                   # Entry point (same contract as local panels)
+│   ├── PanelINaturalist.vue      # Vue component
+│   └── composables/
+│       └── useINaturalist.js     # Optional: composable logic
+└── README.md
+```
+
+### package.json
+
+The `taxonpages` field in `package.json` is required. It tells TaxonPages what type of package this is and where to find the entry point.
+
+```json
+{
+  "name": "@vendor/taxonpages-panel-inaturalist",
+  "version": "1.0.0",
+  "description": "iNaturalist observations panel for TaxonPages",
+  "type": "module",
+  "main": "./src/main.js",
+  "taxonpages": {
+    "type": "panel",
+    "entry": "./src/main.js"
+  },
+  "files": ["src/"],
+  "peerDependencies": {
+    "@sfgrp/taxonpages": ">=0.1.0"
+  },
+  "keywords": ["taxonpages", "taxonpages-panel"]
+}
+```
+
+#### The `taxonpages` manifest field
+
+| Field   | Type                    | Required | Description                                                                                                   |
+| ------- | ----------------------- | -------- | ------------------------------------------------------------------------------------------------------------- |
+| `type`  | `"panel"` or `"module"` | Yes      | Declares the package type.                                                                                    |
+| `entry` | `string`                | No       | Relative path to the entry file. Defaults to `./src/main.js` for panels, `./src/router/index.js` for modules. |
+
+### Entry point (main.js)
+
+The entry point uses the same contract as local panels:
+
+```javascript
+import PanelINaturalist from './PanelINaturalist.vue'
+
+export default {
+  id: 'panel:inaturalist',
+  component: PanelINaturalist,
+  rankGroup: []
+}
+```
+
+| Field       | Type          | Required | Description                                                                                  |
+| ----------- | ------------- | -------- | -------------------------------------------------------------------------------------------- |
+| `id`        | `string`      | Yes      | Unique identifier, conventionally `panel:<name>`. Referenced in `taxa_page.yml`.             |
+| `component` | Vue component | Yes      | The Vue component to render.                                                                 |
+| `rankGroup` | `string[]`    | No       | Restrict to specific taxonomic rank groups. Empty array or omitted means show for all ranks. |
+
+### Panel component
+
+Panel components receive these props from the layout system:
+
+```vue
+<script setup>
+const props = defineProps({
+  otuId: { type: [String, Number], default: null },
+  otu: { type: Object, default: null },
+  taxonId: { type: [String, Number], default: null },
+  taxon: { type: Object, default: null },
+  panelKey: { type: String, default: '' },
+  bind: { type: Object, default: () => ({}) }
+})
+</script>
+```
+
+### Example panel component
+
+```vue
+<template>
+  <div>
+    <h3>iNaturalist Observations</h3>
+    <ul v-if="observations.length">
+      <li
+        v-for="obs in observations"
+        :key="obs.id"
+      >
+        {{ obs.species_guess }} — {{ obs.observed_on }}
+      </li>
+    </ul>
+    <p v-else-if="loading">Loading...</p>
+    <p v-else>No observations found.</p>
+  </div>
+</template>
+
+<script setup>
+import { ref, watchEffect } from 'vue'
+
+const props = defineProps({
+  taxon: { type: Object, default: null },
+  otu: { type: Object, default: null },
+  otuId: { type: [String, Number], default: null },
+  taxonId: { type: [String, Number], default: null },
+  panelKey: { type: String, default: '' },
+  bind: { type: Object, default: () => ({}) }
+})
+
+const observations = ref([])
+const loading = ref(false)
+
+watchEffect(async () => {
+  if (!props.taxon?.name) return
+  loading.value = true
+
+  const res = await fetch(
+    `https://api.inaturalist.org/v1/observations?taxon_name=${encodeURIComponent(props.taxon.name)}&per_page=10`
+  )
+  const data = await res.json()
+  observations.value = data.results || []
+  loading.value = false
+})
+</script>
+```
+
+### Including global components in a panel package
+
+NPM packages can ship auto-registered components. Any `*.global.vue` or `*.client.vue` files inside the package are discovered and registered automatically.
+
+```
+taxonpages-panel-inaturalist/
+└── src/
+    ├── main.js
+    ├── PanelINaturalist.vue
+    └── components/
+        └── ObservationCard.global.vue   # Available as <ObservationCard> everywhere
+```
+
+### Naming convention
+
+The recommended naming pattern is:
+
+```
+taxonpages-panel-<name>              # unscoped
+@<vendor>/taxonpages-panel-<name>    # scoped
+```
+
+This convention is not strictly enforced (packages with other names but a valid `taxonpages` manifest still load), but following it helps with discoverability via `npm search`.
+
+## Creating NPM modules (for developers)
+
+### Package structure
+
+```
+taxonpages-module-bibliography/
+├── package.json
+├── src/
+│   ├── router/
+│   │   └── index.js              # Entry point: route definitions
+│   ├── views/
+│   │   └── Bibliography.vue
+│   └── components/
+│       └── CitationCard.global.vue
+└── README.md
+```
+
+### package.json
+
+```json
+{
+  "name": "@vendor/taxonpages-module-bibliography",
+  "version": "1.0.0",
+  "description": "Bibliography module for TaxonPages",
+  "type": "module",
+  "main": "./src/router/index.js",
+  "taxonpages": {
+    "type": "module",
+    "entry": "./src/router/index.js"
+  },
+  "files": ["src/"],
+  "peerDependencies": {
+    "@sfgrp/taxonpages": ">=0.1.0"
+  },
+  "keywords": ["taxonpages", "taxonpages-module"]
+}
+```
+
+### Router entry point
+
+Same contract as local modules — default-export an array of Vue Router route records:
+
+```javascript
+// src/router/index.js
+export default [
+  {
+    name: 'bibliography',
+    path: '/bibliography',
+    component: () => import('../views/Bibliography.vue')
+  }
+]
+```
+
+Module routes merge automatically into the application router. No YAML configuration is needed.
+
+### Naming convention
+
+```
+taxonpages-module-<name>              # unscoped
+@<vendor>/taxonpages-module-<name>    # scoped
 ```
 
 ## Defining global components

@@ -76,7 +76,11 @@ export function getViteConfig({ packageRoot, projectRoot }) {
     },
 
     plugins: [
-      componentRegistrationPlugin({ packageRoot, projectRoot }),
+      componentRegistrationPlugin({
+        packageRoot,
+        projectRoot,
+        disabled: configuration.packages?.disabled
+      }),
       //projectStylesPlugin(projectRoot),
 
       ViteRestart({

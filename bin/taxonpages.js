@@ -68,6 +68,14 @@ program
   })
 
 program
+  .command('packages')
+  .description('List discovered TaxonPages modules and panels')
+  .action(async () => {
+    const { listPackages } = await import('../src/cli/commands/packages.js')
+    listPackages({ packageRoot, projectRoot: process.cwd() })
+  })
+
+program
   .command('init [directory]')
   .description('Scaffold a new TaxonPages project')
   .action(async (directory) => {
