@@ -73,6 +73,70 @@ npm run dev
 
 TaxonPages will be running at http://localhost:5173/
 
+# NPM Installation (CLI)
+
+As an alternative to cloning the repository, you can use the TaxonPages CLI to scaffold and manage your project.
+
+### Requirements
+
+- [Node.js](https://nodejs.org/en/download/) >= 18.0.0
+
+### Quick start
+
+Create a new project using `npx` (no global install needed):
+
+```
+npx @sfgrp/taxonpages init my-project
+cd my-project
+npm install
+```
+
+Edit `config/api.yml` with your TaxonWorks API URL and project token, then start the development server:
+
+```
+npm run dev
+```
+
+Your site will be running at http://localhost:5173/
+
+### Global installation
+
+If you prefer to have the CLI available globally:
+
+```
+npm install -g @sfgrp/taxonpages
+```
+
+Then you can use it directly:
+
+```
+taxonpages init my-project
+```
+
+### CLI Commands
+
+All commands are available through `npm run` scripts in your project or directly via the `taxonpages` CLI:
+
+| Command                       | npm script          | Description                                    |
+| ----------------------------- | ------------------- | ---------------------------------------------- |
+| `taxonpages init [directory]` | —                   | Scaffold a new TaxonPages project              |
+| `taxonpages dev`              | `npm run dev`       | Start development server (SPA mode, port 5173) |
+| `taxonpages dev:ssr`          | `npm run dev:ssr`   | Start SSR development server (port 6173)       |
+| `taxonpages build`            | `npm run build`     | Build for production (SPA mode)                |
+| `taxonpages build:ssr`        | `npm run build:ssr` | Build for production (SSR mode)                |
+| `taxonpages serve`            | `npm run serve`     | Start production SSR server (port 6173)        |
+| `taxonpages preview`          | `npm run preview`   | Preview production build locally (port 4173)   |
+
+### Example workflow
+
+```
+npx @sfgrp/taxonpages init my-project
+cd my-project
+npm install
+# Edit config/api.yml with your API settings
+npm run dev
+```
+
 # Customization
 
 ## Pages
