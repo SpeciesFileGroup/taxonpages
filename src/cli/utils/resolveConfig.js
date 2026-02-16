@@ -38,6 +38,12 @@ export function getViteConfig({ packageRoot, projectRoot }) {
     root,
     base: configuration.base_url,
 
+    server: {
+      fs: {
+        allow: [packageRoot, projectRoot]
+      }
+    },
+
     resolve: {
       alias: {
         '@': resolve(packageRoot, 'src'),
