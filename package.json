@@ -1,6 +1,6 @@
 {
   "name": "@sfgrp/taxonpages",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI tool for building taxon pages powered by SpeciesFileGroup",
   "type": "module",
   "private": false,
