@@ -23,6 +23,9 @@ import {
 
 const STYLE_EXT = /\.(css|scss|sass|less|styl)$/
 
+// Normalize path separators for use in import specifiers (Windows backslash → forward slash)
+const toImportPath = (f) => f.replace(/\\/g, '/')
+
 export function componentRegistrationPlugin({
   packageRoot,
   projectRoot,
@@ -174,24 +177,26 @@ export function componentRegistrationPlugin({
             if (allStyles) {
               // Style files: generate side-effect imports
               prependImports +=
-                allFiles.map((f) => `import '${f}';`).join('\n') + '\n'
+                allFiles.map((f) => `import '${toImportPath(f)}';`).join('\n') + '\n'
               return '{}'
             }
 
             const entries = allFiles.map((f) => {
               const varName = `__glob_${varCounter++}`
+              const p = toImportPath(f)
               prependImports += importDefault
-                ? `import { default as ${varName} } from '${f}';\n`
-                : `import * as ${varName} from '${f}';\n`
-              return `  '${f}': ${varName}`
+                ? `import { default as ${varName} } from '${p}';\n`
+                : `import * as ${varName} from '${p}';\n`
+              return `  '${p}': ${varName}`
             })
 
             return '{\n' + entries.join(',\n') + '\n}'
           }
 
           const entries = allFiles.map((f) => {
+            const p = toImportPath(f)
             const suffix = importDefault ? '.then(m => m.default)' : ''
-            return `  '${f}': () => import('${f}')${suffix}`
+            return `  '${p}': () => import('${p}')${suffix}`
           })
 
           return '{\n' + entries.join(',\n') + '\n}'

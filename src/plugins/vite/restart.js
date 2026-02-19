@@ -1,8 +1,10 @@
 import picomatch from 'picomatch'
 import { loadConfiguration } from '../../utils/loadConfiguration.js'
 
+const toForwardSlash = (p) => p.replace(/\\/g, '/')
+
 export function ViteRestart({ dir, projectRoot }) {
-  const patterns = Array.isArray(dir) ? dir : [dir]
+  const patterns = (Array.isArray(dir) ? dir : [dir]).map(toForwardSlash)
   const isMatch = picomatch(patterns, { dot: true })
 
   return {
@@ -21,7 +23,7 @@ export function ViteRestart({ dir, projectRoot }) {
     configureServer(server) {
       server.watcher.add(dir)
       server.watcher.on('change', (filePath) => {
-        if (isMatch(filePath)) {
+        if (isMatch(toForwardSlash(filePath))) {
           server.restart()
         }
       })
