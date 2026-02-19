@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <div>
     <div class="bg-base-foreground border-b border-base-muted pl-4 pr-4">
       <div class="container mx-auto">
         <div class="pt-6 pb-6">
@@ -71,7 +71,7 @@
         />
       </div>
     </div>
-  </main>
+  </div>
 </template>
 
 <script setup>
