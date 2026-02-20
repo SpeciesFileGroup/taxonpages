@@ -79,8 +79,6 @@ const otuFilter = route.query?.otu_filter
 async function loadMatrix(id, page = 1) {
   isLoading.value = true
 
-  console.log(otuFilter)
-
   try {
     const { data } = await ObservationMatrixImage.find(id, {
       otu_filter: otuFilter,
