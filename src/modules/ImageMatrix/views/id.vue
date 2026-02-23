@@ -6,7 +6,7 @@
     />
     <VCardHeader>
       <div class="flex flex-row justify-between items-center">
-        <h1>{{ observationMatrix.name }}</h1>
+        <h1 v-if="observationMatrix">{{ observationMatrix.name }}</h1>
         <VPagination
           v-if="pagination"
           :total="pagination.total"
@@ -73,13 +73,15 @@ const observationMatrix = ref({})
 const route = useRoute()
 const pagination = ref()
 
-const matrixId = route.params.id
+const matrixId = route.params.id || 0
+const otuFilter = route.query?.otu_filter
 
 async function loadMatrix(id, page = 1) {
   isLoading.value = true
 
   try {
     const { data } = await ObservationMatrixImage.find(id, {
+      otu_filter: otuFilter,
       page,
       per: PER
     })
