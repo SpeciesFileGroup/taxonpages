@@ -1,7 +1,7 @@
 <template>
   <ImageGrid
     v-if="images.length"
-    :max-visible="1"
+    :max-visible="4"
     :images="[...images.map((i) => i.thumb)]"
     @select="
       ({ index }) => {
