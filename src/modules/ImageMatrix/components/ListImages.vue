@@ -41,6 +41,7 @@ const galleryIndex = ref(0)
 const previousImage = () => {
   galleryIndex.value--
 }
+
 const nextImage = () => {
   galleryIndex.value++
 }

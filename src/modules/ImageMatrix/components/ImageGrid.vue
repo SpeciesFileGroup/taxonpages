@@ -21,7 +21,7 @@
 
         <div
           v-if="showOverlay && index === visibleImages.length - 1"
-          class="absolute inset-0 flex items-center justify-center bg-black/30 text-white text-xl"
+          class="absolute bottom-0 right-0 px-1 flex items-center text-xs justify-cente rounded-tl-lg bg-black/30 text-white"
         >
           +{{ remainingCount }}
         </div>
@@ -59,9 +59,6 @@ const onImageLoad = (event, index) => {
         : 'square'
 }
 
-/**
- * Decide layout según orientación dominante
- */
 const dominantOrientation = computed(() => {
   const landscape = orientations.value.filter((o) => o === 'landscape').length
   const portrait = orientations.value.filter((o) => o === 'portrait').length
