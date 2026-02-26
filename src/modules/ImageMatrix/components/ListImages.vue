@@ -1,8 +1,10 @@
 <template>
-  <GalleryThumbnailList
-    :images="images"
-    @select-index="
-      (index) => {
+  <ImageGrid
+    v-if="images.length"
+    :max-visible="1"
+    :images="[...images.map((i) => i.thumb)]"
+    @select="
+      ({ index }) => {
         galleryIndex = index
         isImageViewerOpen = true
       }
@@ -23,8 +25,8 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import GalleryThumbnailList from '@/components/Gallery/GalleryThumbnailList.vue'
+import { ref, watch } from 'vue'
+import ImageGrid from './ImageGrid.vue'
 
 const props = defineProps({
   images: {
@@ -35,11 +37,11 @@ const props = defineProps({
 
 const isImageViewerOpen = ref(false)
 const galleryIndex = ref(0)
-const currentImage = computed(() => props.images[galleryIndex.value] || {})
 
 const previousImage = () => {
   galleryIndex.value--
 }
+
 const nextImage = () => {
   galleryIndex.value++
 }
