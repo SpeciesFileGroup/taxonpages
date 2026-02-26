@@ -21,7 +21,7 @@
 
         <div
           v-if="showOverlay && index === visibleImages.length - 1"
-          class="absolute bottom-0 right-0 px-1 flex items-center text-xs justify-cente rounded-tl-lg bg-black/30 text-white"
+          class="absolute bottom-0 right-0 px-1 rounded-tl-lg bg-black/30 text-white"
         >
           +{{ remainingCount }}
         </div>
