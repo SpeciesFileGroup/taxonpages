@@ -1,8 +1,5 @@
 <template>
-  <div
-    :class="containerClass"
-    class="gap-1 w-full max-w-sm"
-  >
+  <div class="flex flex-row w-full max-w-sm gap-1">
     <template
       v-for="(image, index) in visibleImages"
       :key="index"
@@ -15,7 +12,7 @@
         <img
           :src="image"
           alt=""
-          class="w-auto h-full object-contain"
+          class="w-auto h-full object-cover"
           @load="(e) => onImageLoad(e, index)"
         />
 
