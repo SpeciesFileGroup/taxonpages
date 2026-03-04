@@ -36,8 +36,12 @@ export default ({ L }) => ({
   pointToLayer: (feature, latLng) => {
     const type = getRelevantType(feature.properties.base)
     const markerStyle = Icons[type] || Icons.Georeference
+    const priorityIndex = TYPES.indexOf(type)
+    const zIndexOffset = priorityIndex === -1 ? 0 : (TYPES.length - priorityIndex) * 1000
+
     const marker = L.marker(latLng, {
-      icon: L.divIcon(markerStyle)
+      icon: L.divIcon(markerStyle),
+      zIndexOffset
     })
 
     marker.on('add', () => {
