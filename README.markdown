@@ -129,6 +129,7 @@ All commands are available through `npm run` scripts in your project or directly
 | `taxonpages package list`        | —                   | List all discovered panels and modules             |
 | `taxonpages package add <name>`  | —                   | Install a TaxonPages package and auto-configure it |
 | `taxonpages package remove <name>` | —                 | Uninstall a package and clean up config            |
+| `taxonpages package unpack <name>` | —                 | Unpack an NPM package into a local directory       |
 
 ### Example workflow
 
@@ -488,6 +489,18 @@ packages:
   disabled:
     - '@vendor/taxonpages-panel-inaturalist'
 ```
+
+### Unpacking an NPM package for customization
+
+If you want to customize an NPM package, you can unpack it into your local project directory using the `package unpack` command:
+
+```bash
+taxonpages package unpack @vendor/taxonpages-panel-inaturalist
+```
+
+This copies the package source into `panels/inaturalist/` (for panels) or `modules/bibliography/` (for modules), where you can edit the files directly. The command will also offer to uninstall the NPM package, since the local copy takes priority.
+
+If the package has its own dependencies, the command will list them so you can ensure they remain installed in your project.
 
 ### Overriding an NPM panel locally
 

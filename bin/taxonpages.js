@@ -94,6 +94,15 @@ pkg
     packageRemove({ projectRoot: process.cwd(), name })
   })
 
+pkg
+  .command('unpack <name>')
+  .description('Unpack an NPM package into a local directory for customization')
+  .action(async (name) => {
+    const { packageUnpack } =
+      await import('../src/cli/commands/packageUnpack.js')
+    await packageUnpack({ projectRoot: process.cwd(), name })
+  })
+
 program
   .command('init [directory]')
   .description('Scaffold a new TaxonPages project')
