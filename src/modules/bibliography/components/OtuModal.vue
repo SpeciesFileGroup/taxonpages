@@ -9,7 +9,7 @@
       @close="() => (isModalVisible = false)"
     >
       <template #header>
-        <div class="text-sm">Bibliography - <span v-html="label" /></div>
+        <div class="text-sm">Bibliography - <span v-html="linkify(label)" /></div>
       </template>
 
       <div class="md:max-h-[64vh] min-h-28 px-4 overflow-y-auto pb-4">
@@ -99,6 +99,15 @@ const pagination = ref({ page: 1, total: 0, per: 50 })
 const isLoading = ref(false)
 const isModalVisible = ref(false)
 const list = ref([])
+
+function linkify(html) {
+  if (!html) return ''
+  // Wrap bare URLs in clickable anchor tags
+  return html.replace(
+    /(https?:\/\/[^\s<>"]+)/g,
+    '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-secondary-color hover:underline">$1</a>'
+  )
+}
 
 function loadPage(page = 1) {
   isLoading.value = true
