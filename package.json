@@ -28,6 +28,7 @@
     "serve": "node bin/taxonpages.js serve",
     "debug": "node --inspect-brk server",
     "preview": "node bin/taxonpages.js preview",
+    "setup": "node bin/taxonpages.js setup",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
   },
   "dependencies": {

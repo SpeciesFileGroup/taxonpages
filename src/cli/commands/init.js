@@ -1,6 +1,12 @@
 import { createRequire } from 'node:module'
 import { resolve, basename } from 'node:path'
-import { existsSync, mkdirSync, cpSync, readdirSync, writeFileSync } from 'node:fs'
+import {
+  existsSync,
+  mkdirSync,
+  cpSync,
+  readdirSync,
+  writeFileSync
+} from 'node:fs'
 
 export async function init({ packageRoot, directory }) {
   const targetDir = resolve(process.cwd(), directory)
@@ -41,7 +47,8 @@ export async function init({ packageRoot, directory }) {
         build: 'taxonpages build',
         'build:ssr': 'taxonpages build:ssr',
         serve: 'taxonpages serve',
-        preview: 'taxonpages preview'
+        preview: 'taxonpages preview',
+        setup: 'taxonpages setup'
       },
       dependencies: {
         '@sfgrp/taxonpages': `^${taxonpagesVersion}`
