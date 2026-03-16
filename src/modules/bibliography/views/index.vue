@@ -114,7 +114,7 @@
               </VTableBodyCell>
               <VTableBodyCell
                 class="break-all"
-                v-html="linkify(item.cached)"
+                v-html="item.cached"
               />
             </VTableBodyRow>
           </VTableBody>
@@ -186,15 +186,6 @@ async function loadList(page = 1) {
     .finally(() => {
       isLoading.value = false
     })
-}
-
-function linkify(html) {
-  if (!html) return ''
-  // Wrap bare URLs in clickable anchor tags
-  return html.replace(
-    /(https?:\/\/[^\s<>"]+)/g,
-    '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-secondary-color hover:underline">$1</a>'
-  )
 }
 
 function setParameters(data = {}) {
