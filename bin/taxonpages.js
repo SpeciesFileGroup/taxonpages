@@ -104,6 +104,15 @@ pkg
   })
 
 program
+  .command('setup')
+  .description('Start the web-based configuration interface')
+  .option('-p, --port <number>', 'port number', '4400')
+  .action(async (options) => {
+    const { startSetup } = await import('../src/cli/commands/setup.js')
+    await startSetup({ packageRoot, projectRoot: process.cwd(), ...options })
+  })
+
+program
   .command('init [directory]')
   .description('Scaffold a new TaxonPages project')
   .action(async (directory) => {

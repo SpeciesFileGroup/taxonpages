@@ -130,6 +130,7 @@ All commands are available through `npm run` scripts in your project or directly
 | `taxonpages package add <name>`  | —                   | Install a TaxonPages package and auto-configure it |
 | `taxonpages package remove <name>` | —                 | Uninstall a package and clean up config            |
 | `taxonpages package unpack <name>` | —                 | Unpack an NPM package into a local directory       |
+| `taxonpages setup`                 | —                 | Start the web-based configuration interface        |
 
 ### Example workflow
 
@@ -548,10 +549,11 @@ The `taxonpages` field in `package.json` is required. It tells TaxonPages what t
 
 #### The `taxonpages` manifest field
 
-| Field   | Type                    | Required | Description                                                                                                   |
-| ------- | ----------------------- | -------- | ------------------------------------------------------------------------------------------------------------- |
-| `type`  | `"panel"` or `"module"` | Yes      | Declares the package type.                                                                                    |
-| `entry` | `string`                | No       | Relative path to the entry file. Defaults to `./src/main.js` for panels, `./src/router/index.js` for modules. |
+| Field    | Type                    | Required | Description                                                                                                   |
+| -------- | ----------------------- | -------- | ------------------------------------------------------------------------------------------------------------- |
+| `type`   | `"panel"` or `"module"` | Yes      | Declares the package type.                                                                                    |
+| `entry`  | `string`                | No       | Relative path to the entry file. Defaults to `./src/main.js` for panels, `./src/router/index.js` for modules. |
+| `schema` | `object`                | No       | Configuration schema for the `taxonpages setup` UI. See [Package configuration schema](#package-configuration-schema). |
 
 ### Entry point (main.js)
 
@@ -722,6 +724,224 @@ Module routes merge automatically into the application router. No YAML configura
 ```
 taxonpages-module-<name>              # unscoped
 @<vendor>/taxonpages-module-<name>    # scoped
+```
+
+## Package configuration schema
+
+NPM packages can define a configuration schema so their settings appear in the `taxonpages setup` web interface. The schema is declared in the `taxonpages.schema` field of `package.json`.
+
+When a package includes a schema, the setup UI automatically renders a form for its settings under the appropriate group (Modules for modules, Shared Components for panels with shared config).
+
+### Schema structure
+
+The schema describes which YAML config file to write to, a human-readable label, and the fields the user can configure:
+
+```json
+{
+  "taxonpages": {
+    "type": "panel",
+    "entry": "./src/main.js",
+    "schema": {
+      "file": "inaturalist.yml",
+      "label": "iNaturalist",
+      "description": "iNaturalist panel settings",
+      "fields": {
+        "per_page": {
+          "type": "number",
+          "label": "Results Per Page",
+          "default": 10
+        },
+        "show_photos": {
+          "type": "boolean",
+          "label": "Show Photos",
+          "default": true
+        }
+      }
+    }
+  }
+}
+```
+
+The configuration values are stored in `config/<file>` (e.g. `config/inaturalist.yml`) and are accessible at runtime via the `__APP_ENV__` global object.
+
+### Schema properties
+
+| Property      | Type     | Required | Description                                              |
+| ------------- | -------- | -------- | -------------------------------------------------------- |
+| `file`        | `string` | Yes      | YAML filename in `config/` where settings are stored     |
+| `label`       | `string` | Yes      | Display name shown in the setup UI sidebar               |
+| `description` | `string` | No       | Short description shown below the section heading        |
+| `fields`      | `object` | Yes      | Map of config keys to field definitions                  |
+
+### Field types
+
+Each field in `fields` is keyed by the YAML property name and describes how it should be rendered:
+
+| Property      | Type       | Description                                                   |
+| ------------- | ---------- | ------------------------------------------------------------- |
+| `type`        | `string`   | One of: `string`, `number`, `boolean`, `select`, `array`, `object` |
+| `label`       | `string`   | Display label for the field                                   |
+| `description` | `string`   | Help text shown below the label                               |
+| `placeholder` | `string`   | Placeholder text for string/number inputs                     |
+| `default`     | `any`      | Default value                                                 |
+| `required`    | `boolean`  | Whether the field is required                                 |
+| `options`     | `string[]` | Options list (only for `select` type)                         |
+| `items`       | `object`   | Item definition (only for `array` type)                       |
+| `fields`      | `object`   | Nested field definitions (only for `object` type)             |
+
+### Array fields
+
+For arrays of simple values, `items` should specify the value type:
+
+```json
+{
+  "blocked_taxa": {
+    "type": "array",
+    "label": "Blocked Taxa IDs",
+    "items": { "type": "number" }
+  }
+}
+```
+
+For arrays of objects, `items` should contain field definitions for each property:
+
+```json
+{
+  "data_sources": {
+    "type": "array",
+    "label": "Data Sources",
+    "items": {
+      "name": { "type": "string", "label": "Name" },
+      "url": { "type": "string", "label": "API URL" },
+      "enabled": { "type": "boolean", "label": "Enabled" }
+    }
+  }
+}
+```
+
+### Object fields
+
+Use `object` type with nested `fields` for grouped settings:
+
+```json
+{
+  "display": {
+    "type": "object",
+    "label": "Display Options",
+    "fields": {
+      "theme": {
+        "type": "select",
+        "label": "Theme",
+        "options": ["light", "dark", "auto"],
+        "default": "light"
+      },
+      "max_items": {
+        "type": "number",
+        "label": "Max Items",
+        "default": 20
+      }
+    }
+  }
+}
+```
+
+### Complete example: panel with schema
+
+```json
+{
+  "name": "@vendor/taxonpages-panel-inaturalist",
+  "version": "1.0.0",
+  "taxonpages": {
+    "type": "panel",
+    "entry": "./src/main.js",
+    "schema": {
+      "file": "inaturalist.yml",
+      "label": "iNaturalist",
+      "description": "Configure the iNaturalist observations panel",
+      "fields": {
+        "per_page": {
+          "type": "number",
+          "label": "Results Per Page",
+          "default": 10
+        },
+        "show_photos": {
+          "type": "boolean",
+          "label": "Show Observation Photos",
+          "default": true
+        },
+        "place_id": {
+          "type": "string",
+          "label": "Place ID",
+          "description": "iNaturalist place ID to filter observations",
+          "placeholder": "e.g. 1234"
+        },
+        "quality_grade": {
+          "type": "select",
+          "label": "Quality Grade",
+          "options": ["any", "research", "needs_id"],
+          "default": "any"
+        }
+      }
+    }
+  }
+}
+```
+
+This would generate a `config/inaturalist.yml` file:
+
+```yaml
+per_page: 10
+show_photos: true
+place_id: '1234'
+quality_grade: research
+```
+
+And the values are accessible in the panel component:
+
+```javascript
+const { per_page, show_photos } = __APP_ENV__
+```
+
+### Complete example: module with schema
+
+```json
+{
+  "name": "@vendor/taxonpages-module-bibliography",
+  "version": "1.0.0",
+  "taxonpages": {
+    "type": "module",
+    "entry": "./src/router/index.js",
+    "schema": {
+      "file": "bibliography.yml",
+      "label": "Bibliography",
+      "description": "Bibliography module settings",
+      "fields": {
+        "bibliography": {
+          "type": "object",
+          "label": "Bibliography Settings",
+          "fields": {
+            "items_per_page": {
+              "type": "number",
+              "label": "Items Per Page",
+              "default": 25
+            },
+            "show_abstract": {
+              "type": "boolean",
+              "label": "Show Abstract",
+              "default": false
+            },
+            "citation_style": {
+              "type": "select",
+              "label": "Citation Style",
+              "options": ["apa", "chicago", "mla"],
+              "default": "apa"
+            }
+          }
+        }
+      }
+    }
+  }
+}
 ```
 
 ## Defining global components
