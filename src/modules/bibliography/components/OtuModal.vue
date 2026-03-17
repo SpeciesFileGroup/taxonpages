@@ -9,7 +9,9 @@
       @close="() => (isModalVisible = false)"
     >
       <template #header>
-        <div class="text-sm">Bibliography - <span v-html="label" /></div>
+        <div class="text-sm">
+          Bibliography - <span v-html="convertUrlsToLinks(label)" />
+        </div>
       </template>
 
       <div class="md:max-h-[64vh] min-h-28 px-4 overflow-y-auto pb-4">
@@ -80,7 +82,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { makeAPIRequest } from '@/utils'
-import { getPagination } from '../utils/getPagination'
+import { getPagination, convertUrlsToLinks } from '../utils'
 
 const props = defineProps({
   sourceId: {
