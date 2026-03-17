@@ -6,7 +6,17 @@
     />
     <VCardHeader>
       <div class="flex flex-row justify-between items-center">
-        <h1 v-if="observationMatrix">{{ observationMatrix.name }}</h1>
+        <div v-if="observationMatrix">
+          <h1>
+            {{ observationMatrix.name }}
+            <span
+              v-if="citation?.citation_source_body"
+              class="text-sm font-normal"
+            >
+              - {{ citation.citation_source_body }}
+            </span>
+          </h1>
+        </div>
         <VPagination
           v-if="pagination"
           :total="pagination.total"
@@ -67,7 +77,6 @@ import { useRoute } from 'vue-router'
 import { makeImageObject } from '../utils/makeImageObject.js'
 import ListImage from '../components/ListImages.vue'
 import { ObservationMatrixImage } from '../services/Keys.js'
-
 const PER = 50
 
 const list = ref([])
@@ -76,6 +85,7 @@ const descriptors = ref([])
 const observationMatrix = ref({})
 const route = useRoute()
 const pagination = ref()
+const citation = ref()
 
 const matrixId = route.params.id || 0
 const otuFilter = route.query?.otu_filter
@@ -91,6 +101,8 @@ async function loadMatrix(id, page = 1) {
     })
 
     observationMatrix.value = data.observation_matrix
+    citation.value = data.observation_matrix_citation
+
     descriptors.value = data.list_of_descriptors.map((item) => ({
       label: item.name,
       id: item.id
