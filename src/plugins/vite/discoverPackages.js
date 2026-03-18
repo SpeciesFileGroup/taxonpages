@@ -278,13 +278,29 @@ function tryReadDescriptor(pkgDir, pkgName) {
     )
   }
 
+  // Load panel configuration schema if available
+  let configSchema = null
+  if (manifest.type === 'panel') {
+    const schemaRelPath = manifest.setupSchema || './setup.schema.json'
+    const schemaPath = resolve(pkgDir, schemaRelPath)
+
+    if (schemaPath.startsWith(pkgDir) && existsSync(schemaPath)) {
+      try {
+        configSchema = JSON.parse(readFileSync(schemaPath, 'utf-8'))
+      } catch {
+        // Skip invalid schema
+      }
+    }
+  }
+
   return {
     name: pkgName,
     type: manifest.type,
     path: pkgDir,
     entry: entryPath,
     source: 'npm',
-    version: pkgJson.version || '0.0.0'
+    version: pkgJson.version || '0.0.0',
+    configSchema
   }
 }
 

@@ -1,0 +1,11 @@
+{
+  "label": "Map Settings",
+  "fields": {
+    "cluster": {
+      "type": "boolean",
+      "label": "Enable Clustering",
+      "description": "Group nearby markers into clusters",
+      "default": true
+    }
+  }
+}

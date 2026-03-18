@@ -2,6 +2,7 @@ import express from 'express'
 import { resolve, dirname } from 'node:path'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
+import { exec } from 'node:child_process'
 import { createServer as createViteServer } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from 'tailwindcss'
@@ -12,6 +13,18 @@ import { createPanelRoutes } from './routes/panels.js'
 import schema from './schema.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
+
+function openBrowser(url) {
+  const { platform, env } = process
+  const isWSL = !!env.WSL_DISTRO_NAME
+  const cmd =
+    platform === 'darwin' ? 'open' :
+    platform === 'win32' ? 'start' :
+    isWSL ? 'explorer.exe' :
+    'xdg-open'
+
+  exec(`${cmd} ${url}`)
+}
 
 /**
  * Create the setup server.
@@ -78,12 +91,16 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
   })
 
   app.listen(port, '127.0.0.1', () => {
+    const url = `http://localhost:${port}`
+
     console.log('')
     console.log(`  TaxonPages Setup`)
-    console.log(`  Local: http://localhost:${port}`)
+    console.log(`  Local: ${url}`)
     console.log(`  Project: ${projectRoot}`)
     console.log('')
     console.log('  Press Ctrl+C to stop.')
     console.log('')
+
+    openBrowser(url)
   })
 }

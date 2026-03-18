@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { resolve, join } from 'node:path'
 import { readdirSync, readFileSync, existsSync } from 'node:fs'
+import { discoverNpmPackages } from '../../../plugins/vite/discoverPackages.js'
 
 /**
  * Create panels API routes.
@@ -24,7 +25,17 @@ export function createPanelRoutes(packageRoot, projectRoot) {
       'local'
     )
 
-    res.json([...builtIn, ...local])
+    const npmPanels = discoverNpmPackages(projectRoot)
+      .filter((p) => p.type === 'panel')
+      .map((p) => ({
+        id: extractPanelId(p.entry),
+        name: p.name,
+        source: 'npm',
+        configSchema: p.configSchema || null
+      }))
+      .filter((p) => p.id)
+
+    res.json([...builtIn, ...local, ...npmPanels])
   })
 
   return router
@@ -53,10 +64,13 @@ function scanPanelIds(panelsDir, source) {
         const match = content.match(/id:\s*['"]([^'"]+)['"]/)
 
         if (match) {
+          const configSchema = loadPanelSchema(join(panelsDir, entry.name))
+
           panels.push({
             id: match[1],
             name: entry.name,
-            source
+            source,
+            configSchema
           })
         }
       } catch {
@@ -68,4 +82,31 @@ function scanPanelIds(panelsDir, source) {
   }
 
   return panels
+}
+
+/**
+ * Extract the panel ID from a main.js entry file.
+ */
+function extractPanelId(entryPath) {
+  try {
+    const content = readFileSync(entryPath, 'utf-8')
+    const match = content.match(/id:\s*['"]([^'"]+)['"]/)
+    return match ? match[1] : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Load a panel's setup schema from setup.schema.json if it exists.
+ */
+function loadPanelSchema(panelDir) {
+  const schemaPath = join(panelDir, 'setup.schema.json')
+  if (!existsSync(schemaPath)) return null
+
+  try {
+    return JSON.parse(readFileSync(schemaPath, 'utf-8'))
+  } catch {
+    return null
+  }
 }

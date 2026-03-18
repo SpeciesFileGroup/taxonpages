@@ -124,11 +124,11 @@
                   <span class="text-base-soft text-xs cursor-grab">&#x2630;</span>
                   <span class="flex-1 text-sm font-mono text-base-content">{{ getPanelId(panel) }}</span>
                   <button
-                    v-if="hasBind(panel)"
+                    v-if="hasBind(panel) || getPanelSchema(getPanelId(panel))"
                     class="px-1.5 py-0.5 rounded text-xs border border-base-border text-base-soft hover:bg-base-muted transition-colors"
                     @click="toggleBindEditor(rowIdx, colIdx, panelIdx)"
                   >
-                    bind
+                    {{ getPanelSchema(getPanelId(panel)) ? 'config' : 'bind' }}
                   </button>
                   <button
                     class="w-5 h-5 flex items-center justify-center rounded text-xs text-danger hover:bg-danger hover:text-white transition-colors"
@@ -143,13 +143,21 @@
                   v-if="isBindEditorOpen(rowIdx, colIdx, panelIdx)"
                   class="px-2 pb-2 pt-1 border-t border-base-border"
                 >
-                  <label class="block text-xs font-medium text-base-content mb-1">Bind (JSON)</label>
-                  <input
-                    type="text"
-                    class="box-border w-full p-1 px-2 text-base-content rounded border border-base-border text-xs focus:ring-1 focus:ring-secondary-color focus:border-secondary-color"
-                    :value="JSON.stringify(panel.bind || {})"
-                    @change="updatePanelBind(rowIdx, colIdx, panelIdx, $event.target.value)"
-                  >
+                  <PanelConfigEditor
+                    v-if="getPanelSchema(getPanelId(panel))"
+                    :schema="getPanelSchema(getPanelId(panel))"
+                    :model-value="typeof panel === 'object' ? (panel.bind || {}) : {}"
+                    @update:model-value="updatePanelBindObject(rowIdx, colIdx, panelIdx, $event)"
+                  />
+                  <template v-else>
+                    <label class="block text-xs font-medium text-base-content mb-1">Bind (JSON)</label>
+                    <input
+                      type="text"
+                      class="box-border w-full p-1 px-2 text-base-content rounded border border-base-border text-xs focus:ring-1 focus:ring-secondary-color focus:border-secondary-color"
+                      :value="JSON.stringify(panel.bind || {})"
+                      @change="updatePanelBind(rowIdx, colIdx, panelIdx, $event.target.value)"
+                    >
+                  </template>
                 </div>
               </div>
 
@@ -202,6 +210,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import PanelConfigEditor from './PanelConfigEditor.vue'
 import { useConfig } from '../composables/useConfig.js'
 
 const {
@@ -355,6 +364,27 @@ function toggleBindEditor(rowIdx, colIdx, panelIdx) {
 
 function isBindEditorOpen(rowIdx, colIdx, panelIdx) {
   return bindEditorKey.value === `${rowIdx}-${colIdx}-${panelIdx}`
+}
+
+function getPanelSchema(panelId) {
+  const panel = availablePanels.value.find((p) => p.id === panelId)
+  return panel?.configSchema || null
+}
+
+function updatePanelBindObject(rowIdx, colIdx, panelIdx, bind) {
+  const tab = taxaPage.value[activeTab.value]
+  if (!tab) return
+
+  const panel = tab.panels[rowIdx][colIdx][panelIdx]
+  const id = getPanelId(panel)
+
+  if (Object.keys(bind).length === 0) {
+    tab.panels[rowIdx][colIdx][panelIdx] = id
+  } else {
+    tab.panels[rowIdx][colIdx][panelIdx] = { id, bind }
+  }
+
+  markDirty()
 }
 
 function updatePanelBind(rowIdx, colIdx, panelIdx, jsonStr) {
