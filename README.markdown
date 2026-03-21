@@ -346,7 +346,48 @@ export default {
 }
 ```
 
-This file is used to load your panel component in taxa page. Use the `id` to include and define the position in the layout in `taxa_page.yml`
+This file is used to load your panel component in taxa page. Use the `id` to include and define the position in the layout in `taxa_page.yml`.
+
+#### Panel configuration schema
+
+Panels can include a `setup.schema.json` file alongside `main.js` to provide a schema-driven configuration form in the `taxonpages setup` layout editor. When a schema is present, the layout editor shows a **config** button that opens a proper form instead of the raw JSON bind editor.
+
+Create `panels/PanelTest/setup.schema.json`:
+
+```json
+{
+  "label": "Test Panel Settings",
+  "fields": {
+    "show_images": {
+      "type": "boolean",
+      "label": "Show Images",
+      "description": "Display thumbnail images alongside results",
+      "default": true
+    },
+    "max_results": {
+      "type": "number",
+      "label": "Max Results",
+      "default": 10
+    }
+  }
+}
+```
+
+The field types are the same used in the setup UI: `string`, `number`, `boolean`, `select`, `array`, and `object`.
+
+Configuration values are stored in the panel's `bind` object in `taxa_page.yml`:
+
+```yaml
+taxa_page:
+  overview:
+    panels:
+      - - - id: panel:test
+            bind:
+              show_images: true
+              max_results: 20
+```
+
+Panels without a `setup.schema.json` still use the raw JSON bind editor as before
 
 ```yaml
 taxa_page_overview:
@@ -519,6 +560,7 @@ taxonpages-panel-inaturalist/
 ├── src/
 │   ├── main.js                   # Entry point (same contract as local panels)
 │   ├── PanelINaturalist.vue      # Vue component
+│   ├── setup.schema.json         # Optional: panel bind configuration schema
 │   └── composables/
 │       └── useINaturalist.js     # Optional: composable logic
 └── README.md
@@ -551,9 +593,10 @@ The `taxonpages` field in `package.json` is required. It tells TaxonPages what t
 
 | Field    | Type                    | Required | Description                                                                                                   |
 | -------- | ----------------------- | -------- | ------------------------------------------------------------------------------------------------------------- |
-| `type`   | `"panel"` or `"module"` | Yes      | Declares the package type.                                                                                    |
-| `entry`  | `string`                | No       | Relative path to the entry file. Defaults to `./src/main.js` for panels, `./src/router/index.js` for modules. |
-| `schema` | `object`                | No       | Configuration schema for the `taxonpages setup` UI. See [Package configuration schema](#package-configuration-schema). |
+| `type`        | `"panel"` or `"module"` | Yes      | Declares the package type.                                                                                    |
+| `entry`       | `string`                | No       | Relative path to the entry file. Defaults to `./src/main.js` for panels, `./src/router/index.js` for modules. |
+| `schema`      | `object`                | No       | Configuration schema for the `taxonpages setup` UI. See [Package configuration schema](#package-configuration-schema). |
+| `setupSchema` | `string`                | No       | Relative path to the panel bind configuration schema file. Defaults to `./setup.schema.json`. See [Panel bind configuration schema](#panel-bind-configuration-schema). |
 
 ### Entry point (main.js)
 
@@ -651,6 +694,83 @@ taxonpages-panel-inaturalist/
     ├── PanelINaturalist.vue
     └── components/
         └── ObservationCard.global.vue   # Available as <ObservationCard> everywhere
+```
+
+### Panel bind configuration schema
+
+NPM panels can include a `setup.schema.json` file to provide a schema-driven form for per-instance bind configuration in the `taxonpages setup` layout editor. This is different from the [Package configuration schema](#package-configuration-schema), which stores global settings in separate YAML files accessible via `__APP_ENV__`.
+
+| Feature | `setup.schema.json` (bind config) | `taxonpages.schema` (package config) |
+| --- | --- | --- |
+| **Scope** | Per-instance (each placement in the layout can have different values) | Global (shared across the entire project) |
+| **Storage** | `bind` object in `taxa_page.yml` | Separate YAML file in `config/` |
+| **Access** | Via component props (`v-bind`) | Via `__APP_ENV__` global |
+| **UI** | Config button in the layout editor | Dedicated section in the setup sidebar |
+
+By default, the setup server looks for `setup.schema.json` at the package root. You can specify a custom path using the `setupSchema` field in the `taxonpages` manifest:
+
+```json
+{
+  "taxonpages": {
+    "type": "panel",
+    "entry": "./src/main.js",
+    "setupSchema": "./src/setup.schema.json"
+  }
+}
+```
+
+The schema file format is the same as for local panels:
+
+```json
+{
+  "label": "iNaturalist Settings",
+  "fields": {
+    "per_page": {
+      "type": "number",
+      "label": "Results Per Page",
+      "default": 10
+    },
+    "show_photos": {
+      "type": "boolean",
+      "label": "Show Observation Photos",
+      "default": true
+    },
+    "quality_grade": {
+      "type": "select",
+      "label": "Quality Grade",
+      "options": ["any", "research", "needs_id"],
+      "default": "any"
+    }
+  }
+}
+```
+
+The resulting configuration in `taxa_page.yml`:
+
+```yaml
+taxa_page:
+  overview:
+    panels:
+      - - - id: panel:inaturalist
+            bind:
+              per_page: 10
+              show_photos: true
+              quality_grade: research
+```
+
+The bind values are passed as props to the panel component via `v-bind`, so declare matching props in your component:
+
+```vue
+<script setup>
+const props = defineProps({
+  otuId: { type: [String, Number], default: null },
+  otu: { type: Object, default: null },
+  taxon: { type: Object, default: null },
+  per_page: { type: Number, default: 10 },
+  show_photos: { type: Boolean, default: true },
+  quality_grade: { type: String, default: 'any' }
+})
+</script>
 ```
 
 ### Naming convention

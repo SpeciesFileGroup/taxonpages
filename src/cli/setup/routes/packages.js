@@ -6,6 +6,7 @@ import {
   discoverLocalModules,
   resolveConflicts
 } from '../../../plugins/vite/discoverPackages.js'
+import { checkPackageUpdates } from '../../commands/packageOutdated.js'
 
 /**
  * Create package API routes.
@@ -35,6 +36,19 @@ export function createPackageRoutes(projectRoot) {
     const modules = resolveConflicts(localModules, npmModules)
 
     res.json({ panels, modules })
+  })
+
+  /**
+   * GET /api/packages/outdated
+   * Returns update info for installed npm packages.
+   */
+  router.get('/outdated', async (req, res) => {
+    try {
+      const updates = await checkPackageUpdates(projectRoot)
+      res.json(updates)
+    } catch (err) {
+      res.status(500).json({ error: err.message })
+    }
   })
 
   return router

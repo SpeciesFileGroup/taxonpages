@@ -289,6 +289,17 @@ export default {
     }
   },
 
+  packages: {
+    label: 'Packages',
+    sections: {
+      installed: {
+        label: 'Installed Packages',
+        description: 'Manage installed TaxonPages modules and panels',
+        editor: 'packages'
+      }
+    }
+  },
+
   shared: {
     label: 'Shared Components',
     sections: {

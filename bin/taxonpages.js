@@ -103,6 +103,15 @@ pkg
     await packageUnpack({ projectRoot: process.cwd(), name })
   })
 
+pkg
+  .command('outdated')
+  .description('Check installed TaxonPages packages for available updates')
+  .action(async () => {
+    const { packageOutdated } =
+      await import('../src/cli/commands/packageOutdated.js')
+    await packageOutdated({ projectRoot: process.cwd() })
+  })
+
 program
   .command('setup')
   .description('Start the web-based configuration interface')

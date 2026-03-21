@@ -10,6 +10,9 @@
     <!-- Layout editor (special type for taxa_page.yml) -->
     <LayoutEditor v-if="section.editor === 'layout'" />
 
+    <!-- Packages editor -->
+    <PackagesEditor v-else-if="section.editor === 'packages'" />
+
     <!-- Standard form fields -->
     <div v-else class="tp-card rounded bg-base-foreground p-4 pl-5 pr-5">
       <template v-for="(field, key) in section.fields" :key="key">
@@ -54,6 +57,7 @@ import FormField from './FormField.vue'
 import ArrayEditor from './ArrayEditor.vue'
 import ObjectEditor from './ObjectEditor.vue'
 import LayoutEditor from './LayoutEditor.vue'
+import PackagesEditor from './PackagesEditor.vue'
 import { useConfig } from '../composables/useConfig.js'
 
 defineProps({
