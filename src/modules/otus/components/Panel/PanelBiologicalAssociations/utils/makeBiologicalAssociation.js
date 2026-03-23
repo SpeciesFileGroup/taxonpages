@@ -1,12 +1,3 @@
-function getBiologicalProperty(biologicalRelationshipTypes, type) {
-  return biologicalRelationshipTypes.find((r) => r.target === type)
-    ?.biological_property?.name
-}
-
-function parseRank(rank) {
-  return Array.isArray(rank) ? rank.filter(Boolean).join(' ') : rank
-}
-
 export function makeBiologicalAssociation(data) {
   return {
     id: data.id,

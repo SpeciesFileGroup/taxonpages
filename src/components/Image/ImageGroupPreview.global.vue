@@ -12,7 +12,7 @@
         <img
           :src="image"
           alt=""
-          class="w-auto h-full object-cover"
+          :class="imageClass"
           @load="(e) => onImageLoad(e, index)"
         />
 
@@ -31,10 +31,19 @@
 import { computed, ref } from 'vue'
 
 const props = defineProps({
-  images: Array,
+  images: {
+    type: Array,
+    required: true
+  },
+
   maxVisible: {
     type: Number,
     default: 4
+  },
+
+  imageClass: {
+    type: String,
+    default: 'w-auto h-full object-cover'
   }
 })
 
@@ -61,20 +70,6 @@ const dominantOrientation = computed(() => {
   const portrait = orientations.value.filter((o) => o === 'portrait').length
 
   return landscape > portrait ? 'landscape' : 'portrait'
-})
-
-const containerClass = computed(() => {
-  const count = visibleImages.value.length
-
-  if (count === 1) return ''
-
-  if (count === 2) {
-    return dominantOrientation.value === 'landscape'
-      ? 'grid grid-cols-1 grid-rows-2'
-      : 'grid grid-cols-2'
-  }
-
-  return 'grid grid-cols-2 grid-rows-2'
 })
 
 const itemClass = (index) => {
