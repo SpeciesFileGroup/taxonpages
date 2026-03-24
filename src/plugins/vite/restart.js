@@ -7,22 +7,25 @@ const GLOB_CHARS = /[*?[\]{}()!+]/
 
 function getWatchTarget(pattern) {
   const normalizedPattern = toForwardSlash(pattern)
+  const isAbsolute = normalizedPattern.startsWith('/')
   const segments = normalizedPattern.split('/')
   const staticSegments = []
 
   for (const segment of segments) {
-    if (!segment || GLOB_CHARS.test(segment)) {
+    if (GLOB_CHARS.test(segment)) {
       break
     }
 
     staticSegments.push(segment)
   }
 
-  if (staticSegments.length === 0) {
+  if (staticSegments.length === 0 || (staticSegments.length === 1 && staticSegments[0] === '')) {
     return '.'
   }
 
-  return staticSegments.join('/')
+  const result = staticSegments.join('/')
+
+  return isAbsolute && !result.startsWith('/') ? '/' + result : result
 }
 
 export function ViteRestart({ dir, projectRoot }) {
@@ -44,12 +47,16 @@ export function ViteRestart({ dir, projectRoot }) {
     },
 
     configureServer(server) {
-      server.watcher.add(watchTargets)
-      server.watcher.on('change', (filePath) => {
+      const restart = (filePath) => {
         if (isMatch(toForwardSlash(filePath))) {
           server.restart()
         }
-      })
+      }
+
+      server.watcher.add(watchTargets)
+      server.watcher.on('change', restart)
+      server.watcher.on('add', restart)
+      server.watcher.on('unlink', restart)
     }
   }
 }
