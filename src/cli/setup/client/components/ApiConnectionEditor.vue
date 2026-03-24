@@ -178,6 +178,8 @@
             setConfigValue(section.file, 'project_token', $event)
           "
         />
+
+        <TestConnection />
       </template>
 
       <!-- Current values display (in browse mode) -->
@@ -215,6 +217,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import FormField from './FormField.vue'
+import TestConnection from './TestConnection.vue'
 import { useConfig } from '../composables/useConfig.js'
 import { useProjectFetcher } from '../composables/useProjectFetcher.js'
 

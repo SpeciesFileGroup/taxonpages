@@ -7,8 +7,11 @@
       </p>
     </div>
 
+    <!-- Status overview -->
+    <StatusOverview v-if="section.editor === 'status'" />
+
     <!-- API Connection editor (project browser + manual input) -->
-    <ApiConnectionEditor v-if="section.editor === 'api-connection'" :section="section" />
+    <ApiConnectionEditor v-else-if="section.editor === 'api-connection'" :section="section" />
 
     <!-- Layout editor (special type for taxa_page.yml) -->
     <LayoutEditor v-else-if="section.editor === 'layout'" />
@@ -62,6 +65,7 @@ import ObjectEditor from './ObjectEditor.vue'
 import LayoutEditor from './LayoutEditor.vue'
 import PackagesEditor from './PackagesEditor.vue'
 import ApiConnectionEditor from './ApiConnectionEditor.vue'
+import StatusOverview from './StatusOverview.vue'
 import { useConfig } from '../composables/useConfig.js'
 
 defineProps({

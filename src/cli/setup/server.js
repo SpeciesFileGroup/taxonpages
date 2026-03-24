@@ -10,6 +10,7 @@ import { createConfigRoutes } from './routes/config.js'
 import { createPackageRoutes } from './routes/packages.js'
 import { createPanelRoutes } from './routes/panels.js'
 import { createProxyRoutes } from './routes/proxy.js'
+import { createStatusRoutes } from './routes/status.js'
 import schema from './schema.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -45,6 +46,7 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
   app.use('/api/packages', createPackageRoutes(projectRoot))
   app.use('/api/panels', createPanelRoutes(packageRoot, projectRoot))
   app.use('/api/proxy', createProxyRoutes())
+  app.use('/api/status', createStatusRoutes(packageRoot, projectRoot))
 
   app.get('/api/schema', (_req, res) => {
     res.json(schema)

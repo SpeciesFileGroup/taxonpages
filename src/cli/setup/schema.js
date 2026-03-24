@@ -9,6 +9,17 @@
  */
 
 export default {
+  status: {
+    label: 'Status',
+    sections: {
+      overview: {
+        label: 'Overview',
+        description: 'Version, environment, and package information',
+        editor: 'status'
+      }
+    }
+  },
+
   core: {
     label: 'Core',
     sections: {
