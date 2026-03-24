@@ -103,6 +103,112 @@ export default {
             }
           }
         }
+      },
+      analytics: {
+        file: 'analytics.yml',
+        label: 'Analytics',
+        description: 'Analytics and tracking services',
+        fields: {
+          analytics_services: {
+            type: 'object',
+            label: 'Analytics Services',
+            fields: {
+              enableDev: {
+                type: 'boolean',
+                label: 'Enable in Development',
+                default: false
+              },
+              analytics: {
+                type: 'array',
+                label: 'Google Analytics',
+                optional: true,
+                items: {
+                  id: { type: 'string', label: 'Measurement ID' }
+                }
+              },
+              gtm: {
+                type: 'array',
+                label: 'Google Tag Manager',
+                optional: true,
+                items: {
+                  id: { type: 'string', label: 'Container ID' }
+                }
+              },
+              pixel: {
+                type: 'array',
+                label: 'Facebook Pixel',
+                optional: true,
+                items: {
+                  id: { type: 'string', label: 'Pixel ID' }
+                }
+              },
+              retargeting: {
+                type: 'array',
+                label: 'VK Retargeting',
+                optional: true,
+                items: {
+                  id: { type: 'string', label: 'Retargeting ID' }
+                }
+              },
+              linkedin: {
+                type: 'array',
+                label: 'LinkedIn Insight',
+                optional: true,
+                items: {
+                  id: { type: 'string', label: 'Partner ID' }
+                }
+              },
+              tongji: {
+                type: 'array',
+                label: 'Baidu Tongji',
+                optional: true,
+                items: {
+                  id: { type: 'string', label: 'Token' }
+                }
+              },
+              metrica: {
+                type: 'array',
+                label: 'Yandex Metrica',
+                optional: true,
+                items: {
+                  id: { type: 'string', label: 'Counter ID' }
+                }
+              },
+              microsoft: {
+                type: 'array',
+                label: 'Microsoft Clarity / UET',
+                optional: true,
+                items: {
+                  id: { type: 'string', label: 'Tag ID' }
+                }
+              },
+              hotjar: {
+                type: 'array',
+                label: 'Hotjar',
+                optional: true,
+                items: {
+                  id: { type: 'string', label: 'Site ID' }
+                }
+              },
+              fullStory: {
+                type: 'array',
+                label: 'FullStory',
+                optional: true,
+                items: {
+                  id: { type: 'string', label: 'Org ID' }
+                }
+              },
+              tiktok: {
+                type: 'array',
+                label: 'TikTok Pixel',
+                optional: true,
+                items: {
+                  id: { type: 'string', label: 'Pixel ID' }
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -163,32 +269,6 @@ export default {
             type: 'string',
             label: 'Copyright Text',
             placeholder: 'License description'
-          }
-        }
-      },
-      analytics: {
-        file: 'analytics.yml',
-        label: 'Analytics',
-        description: 'Analytics and tracking services',
-        fields: {
-          analytics_services: {
-            type: 'object',
-            label: 'Analytics Services',
-            fields: {
-              enableDev: {
-                type: 'boolean',
-                label: 'Enable in Development',
-                default: false
-              },
-              analytics: {
-                type: 'array',
-                label: 'Google Analytics',
-                optional: true,
-                items: {
-                  id: { type: 'string', label: 'Measurement ID' }
-                }
-              }
-            }
           }
         }
       },
