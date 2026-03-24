@@ -16,6 +16,7 @@ export default {
         file: 'api.yml',
         label: 'API Connection',
         description: 'TaxonWorks API server and authentication',
+        editor: 'api-connection',
         fields: {
           url: {
             type: 'string',
@@ -204,7 +205,7 @@ export default {
     sections: {
       otus: {
         file: 'taxa_page.yml',
-        label: 'Taxa Page Layout',
+        label: 'Taxa Page',
         description: 'Panel layout for taxon pages',
         editor: 'layout'
       },

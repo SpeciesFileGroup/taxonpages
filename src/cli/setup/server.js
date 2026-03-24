@@ -9,6 +9,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { createConfigRoutes } from './routes/config.js'
 import { createPackageRoutes } from './routes/packages.js'
 import { createPanelRoutes } from './routes/panels.js'
+import { createProxyRoutes } from './routes/proxy.js'
 import schema from './schema.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -43,6 +44,7 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
   app.use('/api/config', createConfigRoutes(projectRoot))
   app.use('/api/packages', createPackageRoutes(projectRoot))
   app.use('/api/panels', createPanelRoutes(packageRoot, projectRoot))
+  app.use('/api/proxy', createProxyRoutes())
 
   app.get('/api/schema', (_req, res) => {
     res.json(schema)

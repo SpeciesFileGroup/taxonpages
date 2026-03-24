@@ -7,8 +7,11 @@
       </p>
     </div>
 
+    <!-- API Connection editor (project browser + manual input) -->
+    <ApiConnectionEditor v-if="section.editor === 'api-connection'" :section="section" />
+
     <!-- Layout editor (special type for taxa_page.yml) -->
-    <LayoutEditor v-if="section.editor === 'layout'" />
+    <LayoutEditor v-else-if="section.editor === 'layout'" />
 
     <!-- Packages editor -->
     <PackagesEditor v-else-if="section.editor === 'packages'" />
@@ -58,6 +61,7 @@ import ArrayEditor from './ArrayEditor.vue'
 import ObjectEditor from './ObjectEditor.vue'
 import LayoutEditor from './LayoutEditor.vue'
 import PackagesEditor from './PackagesEditor.vue'
+import ApiConnectionEditor from './ApiConnectionEditor.vue'
 import { useConfig } from '../composables/useConfig.js'
 
 defineProps({
