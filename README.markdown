@@ -187,8 +187,37 @@ TaxonPages global components are enable in your markdown pages, by default we pr
 
 ### Style
 
-If you want to change the color palette, you can edit `/config/style/theme.css` file, colors must be in RGB format.
-TaxonPages use [TailwindCSS](https://tailwindcss.com/docs/configuration) framework for the style. We already provide default settings for colors and markdown. If you want to make any change to your configuration, you must do so in the `config/vendor/tailwind.config.js` file. This file uses the TaxonPages configuration as a default. It is possible to overwrite it as long as you use it as a preset.
+If you want to change the color palette, you can edit `/config/style/theme.css` file. Colors use CSS custom properties with the `--tp-` prefix and support any valid CSS color format (`rgb()`, `hsl()`, `oklch()`, hex, etc.):
+
+```css
+:root {
+  --tp-primary: #047857;
+  --tp-secondary: rgb(3, 105, 161);
+}
+
+.dark {
+  --tp-primary: #171717;
+  --tp-secondary: hsl(199, 89%, 48%);
+}
+```
+
+TaxonPages uses [Tailwind CSS v4](https://tailwindcss.com/docs) for styling. The default theme configuration is defined in CSS using `@theme` directives. If you want to customize the Tailwind configuration (e.g., override theme values or add typography styles), create a `config/vendor/tailwind.css` file. This file imports the base TaxonPages theme and lets you add overrides:
+
+```css
+@import '@/assets/css/tailwind.css';
+
+/* Override theme colors */
+@theme {
+  --color-primary-color: rgb(25, 100, 200);
+}
+
+/* Customize typography prose styles */
+.prose p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  line-height: 1.5;
+}
+```
 
 ## Analytics
 
