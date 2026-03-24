@@ -41,8 +41,4 @@ export async function startDevSSR({ packageRoot, projectRoot, port }) {
 function setGlobalVars(packageRoot, projectRoot) {
   global.__basedir = projectRoot
   global.__packageRoot = packageRoot
-  global.__tailwindCSSTaxonPagesConfigPath = resolve(
-    packageRoot,
-    'tailwind.config.cjs'
-  )
 }

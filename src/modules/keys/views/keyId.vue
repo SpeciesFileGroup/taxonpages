@@ -111,7 +111,7 @@ const options = ref({
 }
 .pinpoint-button-up,
 .pinpoint-node-next-button {
-  @apply px-3 py-1 hover:bg-opacity-80 bg-primary-color text-primary-content text-sm items-center;
+  @apply px-3 py-1 hover:bg-primary-color/80 bg-primary-color text-primary-content text-sm items-center;
 }
 
 .pinpoint-node-next-container {

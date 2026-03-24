@@ -7,7 +7,7 @@
     >
       <RouterLink
         to="/"
-        class="flex items-center text-primary-content"
+        class="flex items-center !text-primary-content"
       >
         <img
           v-if="header_logo_url"
@@ -24,9 +24,7 @@
 
       <div class="relative hidden md:flex items-center ml-auto">
         <NavbarMenu :menu="header_links" />
-        <div
-          class="flex items-center border-l ml-6 pl-6 border-base-muted border-opacity-50"
-        >
+        <div class="flex items-center border-l ml-6 pl-6 border-base-muted/50">
           <ClientOnly>
             <SwitchTheme class="text-primary-content" />
           </ClientOnly>

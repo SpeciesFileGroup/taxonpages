@@ -1,5 +1,5 @@
 export const TypeMaterial = {
-  color: `rgb(var(--color-map-type-material))`,
+  color: `var(--tp-map-type-material)`,
   weight: 1,
-  fillOpacity: 'var(--color-map-shape-opacity)'
+  fillOpacity: 'var(--tp-map-shape-opacity)'
 }

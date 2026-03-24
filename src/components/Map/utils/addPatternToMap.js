@@ -24,14 +24,15 @@ export function addPatternToMap(mapElement) {
   rect.setAttribute('y', '0')
   rect.setAttribute('width', '10')
   rect.setAttribute('height', '10')
-  rect.setAttribute('fill', 'rgb(var(--color-map-asserted-absent), .75)')
+  rect.setAttribute('fill', 'var(--tp-map-asserted-absent)')
+  rect.setAttribute('fill-opacity', '0.75')
 
   const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
   line.setAttribute('x1', '0')
   line.setAttribute('y1', '0')
   line.setAttribute('x2', '10')
   line.setAttribute('y2', '10')
-  line.setAttribute('stroke', 'rgb(var(--color-map-asserted-absent))')
+  line.setAttribute('stroke', 'var(--tp-map-asserted-absent)')
   line.setAttribute('stroke-width', '2')
 
   pattern.appendChild(rect)

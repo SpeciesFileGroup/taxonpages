@@ -5,10 +5,6 @@ import { getViteConfig } from '../utils/resolveConfig.js'
 export async function preview({ packageRoot, projectRoot, port }) {
   global.__basedir = projectRoot
   global.__packageRoot = packageRoot
-  global.__tailwindCSSTaxonPagesConfigPath = resolve(
-    packageRoot,
-    'tailwind.config.cjs'
-  )
 
   const config = getViteConfig({ packageRoot, projectRoot })
 

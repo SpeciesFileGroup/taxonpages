@@ -1,3 +1,50 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@import './sources.css';
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-main: 'Roboto', sans-serif;
+
+  --color-base-background: var(--tp-base-background);
+  --color-base-border: var(--tp-base-border);
+  --color-base-content: var(--tp-base-content);
+  --color-base-foreground: var(--tp-base-foreground);
+  --color-base-lighter: var(--tp-base-lighter);
+  --color-base-muted: var(--tp-base-muted);
+  --color-base-soft: var(--tp-base-soft);
+
+  --color-map-georeference: var(--tp-map-georeference);
+  --color-map-aggregate: var(--tp-map-aggregate);
+  --color-map-asserted: var(--tp-map-asserted);
+  --color-map-asserted-absent: var(--tp-map-asserted-absent);
+  --color-map-type-material: var(--tp-map-type-material);
+  --color-map-collection-object: var(--tp-map-collection-object);
+  --color-map-field-occurrence: var(--tp-map-field-occurrence);
+
+  --color-primary-color: var(--tp-primary);
+  --color-primary-content: var(--tp-primary-content);
+
+  --color-secondary-color: var(--tp-secondary);
+  --color-secondary-content: var(--tp-secondary-content);
+  --color-secondary-on-dark: var(--tp-secondary-on-dark);
+
+  --color-danger: var(--tp-danger);
+  --color-success: var(--tp-success);
+  --color-warning: var(--tp-warning);
+
+  --color-scrollbar-thumb: var(--tp-scrollbar-thumb);
+  --color-scrollbar-track: var(--tp-scrollbar-track);
+}
+
+@custom-variant print {
+  @media print {
+    @slot;
+  }
+}
+
+.prose a,
+.prose-invert a {
+  color: var(--tp-secondary);
+}

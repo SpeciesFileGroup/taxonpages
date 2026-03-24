@@ -89,7 +89,7 @@ onMounted(() => {
 .slider-range {
   position: absolute;
   height: 100%;
-  background: rgb(var(--color-primary));
+  background: var(--tp-primary);
   border-radius: 3px;
   transition: all 0.2s ease;
 }
@@ -111,7 +111,7 @@ onMounted(() => {
   appearance: none;
   width: 20px;
   height: 20px;
-  background: rgb(var(--color-primary));
+  background: var(--tp-primary);
   border-radius: 50%;
   cursor: pointer;
   border: 3px solid #ffffff;
@@ -120,23 +120,23 @@ onMounted(() => {
 }
 
 .slider-input::-webkit-slider-thumb:hover {
-  background: rgb(var(--color-primary));
+  background: var(--tp-primary);
   transform: scale(1.1);
 }
 
 .slider-input::-moz-range-thumb {
   width: 20px;
   height: 20px;
-  background: rgb(var(--color-primary));
+  background: var(--tp-primary);
   border-radius: 50%;
   cursor: pointer;
-  border: 3px solid rgb(var(--color-primary-content));
+  border: 3px solid var(--tp-primary-content);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
 }
 
 .slider-input::-moz-range-thumb:hover {
-  background: rgb(var(--color-primary));
+  background: var(--tp-primary);
   transform: scale(1.1);
 }
 

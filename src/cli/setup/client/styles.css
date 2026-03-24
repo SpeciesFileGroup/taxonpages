@@ -1,23 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --font-main: 'Roboto', sans-serif;
+
+  --color-primary-color: rgb(0, 0, 0);
+  --color-primary-content: rgb(255, 255, 255);
+  --color-secondary-color: rgb(3, 105, 161);
+  --color-secondary-content: rgb(255, 255, 255);
+  --color-success: rgb(34, 197, 94);
+  --color-warning: rgb(245, 158, 11);
+  --color-danger: rgb(239, 68, 68);
+  --color-base-foreground: rgb(255, 255, 255);
+  --color-base-background: rgb(245, 247, 251);
+  --color-base-muted: rgb(226, 232, 240);
+  --color-base-soft: rgb(107, 114, 128);
+  --color-base-lighter: rgb(55, 65, 81);
+  --color-base-border: rgb(203, 213, 225);
+  --color-base-content: rgb(0, 0, 0);
+}
 
 :root {
-  --color-primary: 0, 0, 0;
-  --color-primary-content: 255, 255, 255;
-  --color-secondary: 3, 105, 161;
-  --color-secondary-content: 255, 255, 255;
-  --color-success: 34, 197, 94;
-  --color-warning: 245, 158, 11;
-  --color-danger: 239, 68, 68;
-  --color-base-foreground: 255, 255, 255;
-  --color-base-background: 245, 247, 251;
-  --color-base-muted: 226, 232, 240;
-  --color-base-soft: 107, 114, 128;
-  --color-base-lighter: 55, 65, 81;
-  --color-base-border: 203, 213, 225;
-  --color-base-content: 0, 0, 0;
   --sidebar-width: 240px;
 }
 

@@ -197,7 +197,7 @@
 
     <div class="flex gap-2 mt-4">
       <button
-        class="px-3 py-1 rounded-md bg-secondary-color text-secondary-content hover:bg-opacity-80 text-sm"
+        class="px-3 py-1 rounded-md bg-secondary-color text-secondary-content hover:bg-secondary-color/80 text-sm"
         :disabled="!isFileDirty('taxa_page.yml')"
         :class="{ 'opacity-50 cursor-not-allowed': !isFileDirty('taxa_page.yml') }"
         @click="saveConfig('taxa_page.yml')"

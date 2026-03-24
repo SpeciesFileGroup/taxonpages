@@ -12,7 +12,7 @@
         :alt="currentDepiction.label"
       />
     </Transition>
-    <div class="bg-black bg-opacity-25 absolute h-full w-full">
+    <div class="bg-black/25 absolute h-full w-full">
       <slot />
     </div>
     <VButton

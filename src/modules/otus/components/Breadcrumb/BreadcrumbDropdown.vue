@@ -33,7 +33,7 @@
         <router-link
           v-for="otu in list"
           :key="otu.id"
-          class="block px-4 py-2 text-sm capitalize hover:bg-secondary-color hover:bg-opacity-5"
+          class="block px-4 py-2 text-sm capitalize hover:bg-secondary-color/5"
           :to="{ name: 'otus-id', params: { id: otu.id } }"
         >
           {{ otu.name || key }}

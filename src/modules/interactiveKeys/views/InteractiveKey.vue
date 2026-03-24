@@ -51,16 +51,16 @@ const options = ref({
 
 <style>
 :root {
-  --distinguish-primary-content-color: rgb(var(--color-primary-content));
-  --distinguish-bg-color: rgb(var(--color-base-foreground));
-  --distinguish-bg-panel-color: rgb(var(--color-base-foreground));
-  --distinguish-bg-modal-color: rgb(var(--color-base-foreground));
+  --distinguish-primary-content-color: var(--tp-primary-content);
+  --distinguish-bg-color: var(--tp-base-foreground);
+  --distinguish-bg-panel-color: var(--tp-base-foreground);
+  --distinguish-bg-modal-color: var(--tp-base-foreground);
   --distinguish-bg-disabled-color: #e5e5e5;
   --distinguish-disabled-color: #999;
-  --distinguish-error-color: rgb(var(--color-danger));
-  --distinguish-primary-color: rgb(var(--color-primary));
+  --distinguish-error-color: var(--tp-danger);
+  --distinguish-primary-color: var(--tp-primary);
   --distinguish-border-color: #cccccc;
-  --distinguish-link-color: rgb(var(--color-secondary));
+  --distinguish-link-color: var(--tp-secondary);
   --distinguish-btn-medium-size: 20px;
 }
 
@@ -87,7 +87,7 @@ const options = ref({
 }
 
 .distinguish-app-container {
-  color: rgb(var(--color-base-content));
+  color: var(--tp-base-content);
 }
 
 .distinguish-modal-header h3 {

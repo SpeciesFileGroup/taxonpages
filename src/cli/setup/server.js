@@ -5,8 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { exec } from 'node:child_process'
 import { createServer as createViteServer } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import tailwindcss from 'tailwindcss'
-import autoprefixer from 'autoprefixer'
+import tailwindcss from '@tailwindcss/vite'
 import { createConfigRoutes } from './routes/config.js'
 import { createPackageRoutes } from './routes/packages.js'
 import { createPanelRoutes } from './routes/panels.js'
@@ -55,15 +54,7 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
     root: clientDir,
     server: { middlewareMode: true },
     appType: 'custom',
-    plugins: [vue()],
-    css: {
-      postcss: {
-        plugins: [
-          tailwindcss({ config: resolve(__dirname, 'client/tailwind.config.cjs') }),
-          autoprefixer()
-        ]
-      }
-    },
+    plugins: [tailwindcss(), vue()],
     optimizeDeps: {
       include: ['vue']
     }

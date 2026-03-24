@@ -14,7 +14,7 @@
       v-if="isVisible"
       ref="element"
       role="menu"
-      class="bg-base-foreground absolute font-normal text-sm text-base-lighter right-0 z-10 mt-2 w-56 origin-top-right rounded-md shadow-lg ring-1 ring-black ring-opacity-5"
+      class="bg-base-foreground absolute font-normal text-sm text-base-lighter right-0 z-10 mt-2 w-56 origin-top-right rounded-md shadow-lg ring-1 ring-black/5"
       @keydown="handleMenuKeydown"
     >
       <li
@@ -22,7 +22,7 @@
         :key="item.label"
         role="menuitem"
         tabindex="0"
-        class="block w-full px-4 py-2 text-left cursor-pointer hover:bg-secondary-color hover:bg-opacity-5 focus-visible:bg-secondary-color focus-visible:bg-opacity-10 focus-visible:outline-none box-border border-b border-base-border last:border-b-0"
+        class="block w-full px-4 py-2 text-left cursor-pointer hover:bg-secondary-color/5 focus-visible:bg-secondary-color/10 focus-visible:outline-none box-border border-b border-base-border last:border-b-0"
         @click="itemClicked(item)"
         @keydown.enter.prevent="itemClicked(item)"
         @keydown.space.prevent="itemClicked(item)"

@@ -11,9 +11,9 @@
 
 ::-webkit-scrollbar-thumb {
   @apply rounded;
-  background-color: rgb(var(--color-scrollbar-thumb));
+  background-color: var(--tp-scrollbar-thumb);
 }
 
 ::-webkit-scrollbar-track {
-  background-color: rgb(var(--color-scrollbar-track));
+  background-color: var(--tp-scrollbar-track);
 }

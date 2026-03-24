@@ -1,5 +1,5 @@
 export const FieldOccurrence = {
-  color: `rgb(var(--color-map-field-occurrence))`,
+  color: `var(--tp-map-field-occurrence)`,
   weight: 1,
-  fillOpacity: 'var(--color-map-shape-opacity)'
+  fillOpacity: 'var(--tp-map-shape-opacity)'
 }

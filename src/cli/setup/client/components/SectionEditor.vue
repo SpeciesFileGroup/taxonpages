@@ -40,7 +40,7 @@
 
       <div class="flex gap-2 mt-4">
         <button
-          class="px-3 py-1 rounded-md bg-secondary-color text-secondary-content hover:bg-opacity-80 text-sm"
+          class="px-3 py-1 rounded-md bg-secondary-color text-secondary-content hover:bg-secondary-color/80 text-sm"
           :disabled="!isFileDirty(section.file)"
           :class="{ 'opacity-50 cursor-not-allowed': !isFileDirty(section.file) }"
           @click="saveConfig(section.file)"

@@ -145,15 +145,15 @@ const sliderStyle = computed(() => {
 
   return {
     '--progress': `${progress}%`,
-    '--filled-color': 'rgb(var(--color-primary))',
-    '--empty-color': 'rgb(var(--color-base-lighter))'
+    '--filled-color': 'var(--tp-primary)',
+    '--empty-color': 'var(--tp-base-lighter)'
   }
 })
 
 const volumeSliderStyle = computed(() => ({
   '--progress': `${isMuted.value ? 0 : volume.value * 100}%`,
-  '--filled-color': 'rgb(var(--color-primary))',
-  '--empty-color': 'rgb(var(--color-base-lighter))'
+  '--filled-color': 'var(--tp-primary)',
+  '--empty-color': 'var(--tp-base-lighter)'
 }))
 
 function formatTime(seconds) {
@@ -238,7 +238,7 @@ onMounted(() => {
 input[type='range'] {
   -webkit-appearance: none;
   height: 6px;
-  background: rgb(var(--color-base-background));
+  background: var(--tp-base-background);
   border-radius: 5px;
   background: linear-gradient(
     to right,
@@ -255,7 +255,7 @@ input[type='range']::-webkit-slider-thumb {
   height: 14px;
   width: 14px;
   border-radius: 50%;
-  background: rgb(var(--color-primary));
+  background: var(--tp-primary);
   cursor: pointer;
 }
 
@@ -263,13 +263,13 @@ input[type='range']::-moz-range-thumb {
   height: 14px;
   width: 14px;
   border-radius: 50%;
-  background: rgb(var(--color-primary));
+  background: var(--tp-primary);
   cursor: pointer;
   border: none;
 }
 
 input[type='range']:focus-visible {
-  outline: 2px solid rgb(var(--color-primary));
+  outline: 2px solid var(--tp-primary);
   outline-offset: 2px;
 }
 </style>

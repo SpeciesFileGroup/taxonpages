@@ -6,10 +6,9 @@
       'px-3',
       'py-1',
       circle ? 'rounded-full ' : 'rounded-md',
-      'hover:bg-opacity-80',
       {
-        'bg-primary-color': primary,
-        'bg-secondary-color': secondary,
+        'bg-primary-color hover:bg-primary-color/80': primary,
+        'bg-secondary-color hover:bg-secondary-color/80': secondary,
         'text-primary-content': primary,
         'text-secondary-content': secondary
       }

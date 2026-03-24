@@ -3,10 +3,6 @@ import { resolve } from 'node:path'
 export async function serve({ packageRoot, projectRoot, port }) {
   global.__basedir = projectRoot
   global.__packageRoot = packageRoot
-  global.__tailwindCSSTaxonPagesConfigPath = resolve(
-    packageRoot,
-    'tailwind.config.cjs'
-  )
 
   process.env.NODE_ENV = 'production'
 

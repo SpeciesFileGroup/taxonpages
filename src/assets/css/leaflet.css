@@ -8,7 +8,7 @@
 }
 
 .map-point-marker {
-  opacity: var(--color-map-marker-opacity);
+  opacity: var(--tp-map-marker-opacity);
 }
 
 .leaflet-hatch-pattern {

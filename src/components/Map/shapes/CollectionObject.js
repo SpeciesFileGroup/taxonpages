@@ -1,5 +1,5 @@
 export const CollectionObject = {
-  color: `rgb(var(--color-map-collection-object))`,
+  color: `var(--tp-map-collection-object)`,
   weight: 1,
-  fillOpacity: 'var(--color-map-shape-opacity)'
+  fillOpacity: 'var(--tp-map-shape-opacity)'
 }

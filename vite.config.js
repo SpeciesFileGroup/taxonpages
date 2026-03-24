@@ -12,7 +12,8 @@ import {
   variableReplacementPlugin
 } from './src/plugins/markdown'
 import Pages from 'vite-plugin-pages'
-import './src/utils/globalVars'
+import tailwindcss from '@tailwindcss/vite'
+import { writeFileSync } from 'node:fs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -28,6 +29,16 @@ export default (configEnv = {}) => {
   const projectRoot = configEnv.projectRoot || process.cwd()
 
   const configuration = loadConfiguration(projectRoot)
+
+  // Write @source directives so Tailwind v4 scans user project files
+  const sourcesContent = [
+    `@source "${path.resolve(projectRoot, 'pages/**/*.{vue,md}')}";`,
+    `@source "${path.resolve(projectRoot, 'layouts/**/*.vue')}";`,
+    `@source "${path.resolve(projectRoot, 'modules/**/*.vue')}";`,
+    `@source "${path.resolve(projectRoot, 'panels/**/*.vue')}";`,
+    `@source "${path.resolve(projectRoot, 'components/**/*.vue')}";`
+  ].join('\n') + '\n'
+  writeFileSync(path.resolve(packageRoot, 'src/assets/css/sources.css'), sourcesContent)
 
   return defineConfig({
     base: configuration.base_url,
@@ -51,6 +62,8 @@ export default (configEnv = {}) => {
     },
 
     plugins: [
+      tailwindcss(),
+
       ViteRestart({ dir: [path.resolve(projectRoot, 'config/**/*.yml')] }),
 
       //projectStylesPlugin(projectRoot),
