@@ -122,6 +122,46 @@ body {
   box-sizing: border-box;
 }
 
+/* Checkbox */
+.tp-checkbox {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--color-base-border);
+  background-color: var(--color-base-foreground);
+  appearance: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.tp-checkbox:hover {
+  border-color: rgb(148, 163, 184);
+}
+
+.tp-checkbox:checked {
+  background-color: var(--color-secondary-color);
+  border-color: var(--color-secondary-color);
+}
+
+.tp-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  width: 5px;
+  height: 9px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: translate(-50%, -55%) rotate(45deg);
+}
+
+.tp-checkbox:focus-visible {
+  border-color: var(--color-secondary-color);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+}
+
 .tp-select:hover {
   border-color: rgb(148, 163, 184);
 }
@@ -239,9 +279,13 @@ body {
 }
 
 .tp-spinner-sm {
+  display: inline-block;
   width: 1rem;
   height: 1rem;
-  border-width: 1.5px;
+  border: 1.5px solid var(--color-base-border);
+  border-top-color: var(--color-secondary-color);
+  border-radius: 50%;
+  animation: tp-spin 0.6s linear infinite;
 }
 
 /* Section transitions */

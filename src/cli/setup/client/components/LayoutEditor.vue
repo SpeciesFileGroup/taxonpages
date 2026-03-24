@@ -29,7 +29,7 @@
     <!-- Active tab content -->
     <div v-if="activeTab && taxaPage[activeTab]" class="tp-card">
       <!-- Tab settings -->
-      <div class="p-5 border-b border-base-border">
+      <div class="p-5 border-b border-base-border space-y-4">
         <div class="flex gap-3 flex-wrap items-end">
           <div class="flex-1 min-w-[140px]">
             <label class="block text-sm font-medium text-base-content mb-1.5">Tab Key</label>
@@ -50,16 +50,6 @@
               @input="updateTabProp(activeTab, 'label', $event.target.value || undefined)"
             >
           </div>
-          <div class="flex-1 min-w-[180px]">
-            <label class="block text-sm font-medium text-base-content mb-1.5">Rank Groups</label>
-            <input
-              type="text"
-              class="tp-input"
-              :value="(taxaPage[activeTab].rank_group || []).join(', ')"
-              placeholder="e.g. SpeciesGroup, GenusGroup"
-              @change="updateTabProp(activeTab, 'rank_group', parseRankGroups($event.target.value))"
-            >
-          </div>
           <button
             class="tp-btn tp-btn-danger tp-btn-sm"
             @click="removeTab(activeTab)"
@@ -67,6 +57,11 @@
             Remove Tab
           </button>
         </div>
+        <RankGroupSelector
+          :model-value="taxaPage[activeTab].rank_group || []"
+          label="Tab visible for rank groups"
+          @update:model-value="updateTabProp(activeTab, 'rank_group', $event)"
+        />
       </div>
 
       <!-- Rows -->
@@ -127,9 +122,8 @@
                   </span>
                   <span class="flex-1 text-sm font-mono text-base-content">{{ getPanelId(panel) }}</span>
                   <button
-                    v-if="hasBind(panel) || getPanelSchema(getPanelId(panel))"
                     class="tp-btn tp-btn-ghost tp-btn-sm !px-1.5 !py-0.5"
-                    @click="toggleBindEditor(rowIdx, colIdx, panelIdx)"
+                    @click="openPanelModal(rowIdx, colIdx, panelIdx)"
                   >
                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -144,28 +138,6 @@
                       <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
-                </div>
-
-                <!-- Bind editor -->
-                <div
-                  v-if="isBindEditorOpen(rowIdx, colIdx, panelIdx)"
-                  class="px-2.5 pb-2.5 pt-1.5 border-t border-base-border"
-                >
-                  <PanelConfigEditor
-                    v-if="getPanelSchema(getPanelId(panel))"
-                    :schema="getPanelSchema(getPanelId(panel))"
-                    :model-value="typeof panel === 'object' ? (panel.bind || {}) : {}"
-                    @update:model-value="updatePanelBindObject(rowIdx, colIdx, panelIdx, $event)"
-                  />
-                  <template v-else>
-                    <label class="block text-xs font-medium text-base-content mb-1">Bind (JSON)</label>
-                    <input
-                      type="text"
-                      class="tp-input text-xs"
-                      :value="JSON.stringify(panel.bind || {})"
-                      @change="updatePanelBind(rowIdx, colIdx, panelIdx, $event.target.value)"
-                    >
-                  </template>
                 </div>
               </div>
 
@@ -221,12 +193,71 @@
         Unsaved changes
       </span>
     </div>
+
+    <!-- Panel settings modal -->
+    <Teleport to="body">
+      <div
+        v-if="panelModal"
+        class="fixed inset-0 z-50 flex items-center justify-center"
+      >
+        <div
+          class="absolute inset-0 bg-black/30 backdrop-blur-[2px]"
+          @click="closePanelModal"
+        />
+        <div class="relative tp-card w-full max-w-lg mx-4 shadow-xl">
+          <div class="flex items-center justify-between p-5 border-b border-base-border">
+            <h3 class="text-sm font-semibold text-base-content">
+              <span class="font-mono">{{ getPanelId(modalPanel) }}</span>
+            </h3>
+            <button
+              class="w-7 h-7 flex items-center justify-center rounded-md text-base-soft hover:bg-base-muted hover:text-base-content transition-colors"
+              @click="closePanelModal"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div class="p-5 space-y-5 max-h-[70vh] overflow-y-auto">
+            <RankGroupSelector
+              :model-value="getPanelRankGroup(modalPanel)"
+              label="Panel visible for rank groups"
+              @update:model-value="updatePanelRankGroup(panelModal.rowIdx, panelModal.colIdx, panelModal.panelIdx, $event)"
+            />
+            <PanelConfigEditor
+              v-if="getPanelSchema(getPanelId(modalPanel))"
+              :schema="getPanelSchema(getPanelId(modalPanel))"
+              :model-value="typeof modalPanel === 'object' ? (modalPanel.bind || {}) : {}"
+              @update:model-value="updatePanelBindObject(panelModal.rowIdx, panelModal.colIdx, panelModal.panelIdx, $event)"
+            />
+            <div v-else-if="hasBind(modalPanel)">
+              <label class="block text-sm font-medium text-base-content mb-1.5">Bind (JSON)</label>
+              <input
+                type="text"
+                class="tp-input"
+                :value="JSON.stringify(modalPanel.bind || {})"
+                @change="updatePanelBind(panelModal.rowIdx, panelModal.colIdx, panelModal.panelIdx, $event.target.value)"
+              >
+            </div>
+          </div>
+          <div class="flex justify-end p-5 border-t border-base-border">
+            <button
+              class="tp-btn tp-btn-primary tp-btn-sm"
+              @click="closePanelModal"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import PanelConfigEditor from './PanelConfigEditor.vue'
+import RankGroupSelector from './RankGroupSelector.vue'
 import { useConfig } from '../composables/useConfig.js'
 
 const {
@@ -238,8 +269,15 @@ const {
 
 const activeTab = ref('')
 const availablePanels = ref([])
-const bindEditorKey = ref(null)
+const panelModal = ref(null)
 const dragSource = ref(null)
+
+const modalPanel = computed(() => {
+  if (!panelModal.value) return null
+  const { rowIdx, colIdx, panelIdx } = panelModal.value
+  const tab = taxaPage.value[activeTab.value]
+  return tab?.panels?.[rowIdx]?.[colIdx]?.[panelIdx] ?? null
+})
 
 const taxaPage = computed(() => {
   return configData['taxa_page.yml']?.taxa_page || {}
@@ -296,11 +334,6 @@ function updateTabProp(tabKey, prop, value) {
 
   tp[tabKey] = tab
   setConfigValue('taxa_page.yml', 'taxa_page', tp)
-}
-
-function parseRankGroups(str) {
-  if (!str.trim()) return []
-  return str.split(',').map((s) => s.trim()).filter(Boolean)
 }
 
 // --- Row/Column operations ---
@@ -373,18 +406,29 @@ function removePanel(rowIdx, colIdx, panelIdx) {
   markDirty()
 }
 
-function toggleBindEditor(rowIdx, colIdx, panelIdx) {
-  const key = `${rowIdx}-${colIdx}-${panelIdx}`
-  bindEditorKey.value = bindEditorKey.value === key ? null : key
+function openPanelModal(rowIdx, colIdx, panelIdx) {
+  panelModal.value = { rowIdx, colIdx, panelIdx }
 }
 
-function isBindEditorOpen(rowIdx, colIdx, panelIdx) {
-  return bindEditorKey.value === `${rowIdx}-${colIdx}-${panelIdx}`
+function closePanelModal() {
+  panelModal.value = null
 }
 
 function getPanelSchema(panelId) {
   const panel = availablePanels.value.find((p) => p.id === panelId)
   return panel?.configSchema || null
+}
+
+function rebuildPanelObject(id, bind, rankGroup) {
+  const hasBind = bind && Object.keys(bind).length > 0
+  const hasRankGroup = rankGroup && rankGroup.length > 0
+
+  if (!hasBind && !hasRankGroup) return id
+
+  const obj = { id }
+  if (hasRankGroup) obj.rank_group = rankGroup
+  if (hasBind) obj.bind = bind
+  return obj
 }
 
 function updatePanelBindObject(rowIdx, colIdx, panelIdx, bind) {
@@ -393,13 +437,9 @@ function updatePanelBindObject(rowIdx, colIdx, panelIdx, bind) {
 
   const panel = tab.panels[rowIdx][colIdx][panelIdx]
   const id = getPanelId(panel)
+  const rankGroup = getPanelRankGroup(panel)
 
-  if (Object.keys(bind).length === 0) {
-    tab.panels[rowIdx][colIdx][panelIdx] = id
-  } else {
-    tab.panels[rowIdx][colIdx][panelIdx] = { id, bind }
-  }
-
+  tab.panels[rowIdx][colIdx][panelIdx] = rebuildPanelObject(id, bind, rankGroup)
   markDirty()
 }
 
@@ -411,17 +451,29 @@ function updatePanelBind(rowIdx, colIdx, panelIdx, jsonStr) {
     const bind = JSON.parse(jsonStr)
     const panel = tab.panels[rowIdx][colIdx][panelIdx]
     const id = getPanelId(panel)
+    const rankGroup = getPanelRankGroup(panel)
 
-    if (Object.keys(bind).length === 0) {
-      tab.panels[rowIdx][colIdx][panelIdx] = id
-    } else {
-      tab.panels[rowIdx][colIdx][panelIdx] = { id, bind }
-    }
-
+    tab.panels[rowIdx][colIdx][panelIdx] = rebuildPanelObject(id, bind, rankGroup)
     markDirty()
   } catch {
     // Invalid JSON, ignore
   }
+}
+
+function getPanelRankGroup(panel) {
+  return typeof panel === 'object' ? (panel.rank_group || []) : []
+}
+
+function updatePanelRankGroup(rowIdx, colIdx, panelIdx, rankGroup) {
+  const tab = taxaPage.value[activeTab.value]
+  if (!tab) return
+
+  const panel = tab.panels[rowIdx][colIdx][panelIdx]
+  const id = getPanelId(panel)
+  const bind = typeof panel === 'object' ? panel.bind : undefined
+
+  tab.panels[rowIdx][colIdx][panelIdx] = rebuildPanelObject(id, bind, rankGroup)
+  markDirty()
 }
 
 // --- Drag and drop ---
