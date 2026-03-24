@@ -1,9 +1,10 @@
 <template>
-  <div class="mb-4">
-    <label v-if="field.label" class="block text-sm font-medium text-base-content mb-1">
+  <div class="mb-5">
+    <label v-if="field.label" class="block text-sm font-medium text-base-content mb-1.5">
       {{ field.label }}
+      <span v-if="field.required" class="text-danger/70 ml-0.5">*</span>
     </label>
-    <p v-if="field.description" class="text-xs text-base-soft mb-1">
+    <p v-if="field.description" class="text-xs text-base-soft mb-2 leading-relaxed">
       {{ field.description }}
     </p>
 
@@ -11,7 +12,7 @@
     <input
       v-if="field.type === 'string'"
       type="text"
-      class="box-border w-full p-1.5 px-2 text-base-content rounded border border-base-border sm:text-sm placeholder:text-sm focus:ring-1 focus:ring-secondary-color focus:border-secondary-color"
+      class="tp-input"
       :value="modelValue"
       :placeholder="field.placeholder || ''"
       @input="$emit('update:modelValue', $event.target.value)"
@@ -21,35 +22,36 @@
     <input
       v-if="field.type === 'number'"
       type="number"
-      class="box-border w-full p-1.5 px-2 text-base-content rounded border border-base-border sm:text-sm focus:ring-1 focus:ring-secondary-color focus:border-secondary-color"
+      class="tp-input"
       :value="modelValue"
       @input="$emit('update:modelValue', Number($event.target.value))"
     >
 
-    <!-- Boolean -->
-    <label v-if="field.type === 'boolean'" class="inline-flex items-center gap-2 cursor-pointer">
-      <span
-        class="relative inline-block w-9 h-5 rounded-full transition-colors duration-200"
+    <!-- Boolean (toggle switch) -->
+    <label v-if="field.type === 'boolean'" class="inline-flex items-center gap-3 cursor-pointer group">
+      <button
+        type="button"
+        role="switch"
+        :aria-checked="!!modelValue"
+        class="relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-secondary-color focus-visible:ring-offset-2"
         :class="modelValue ? 'bg-secondary-color' : 'bg-base-muted'"
+        @click="$emit('update:modelValue', !modelValue)"
       >
         <span
-          class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
-          :class="{ 'translate-x-4': modelValue }"
+          class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition-transform duration-200"
+          :class="modelValue ? 'translate-x-5' : 'translate-x-0.5'"
+          style="margin-top: 2px;"
         />
-        <input
-          type="checkbox"
-          class="sr-only"
-          :checked="modelValue"
-          @change="$emit('update:modelValue', $event.target.checked)"
-        >
+      </button>
+      <span class="text-sm text-base-content select-none">
+        {{ modelValue ? 'Enabled' : 'Disabled' }}
       </span>
-      <span class="text-sm text-base-content">{{ modelValue ? 'Enabled' : 'Disabled' }}</span>
     </label>
 
     <!-- Select -->
     <select
       v-if="field.type === 'select'"
-      class="box-border w-full p-1.5 px-2 text-base-content rounded border border-base-border sm:text-sm focus:ring-1 focus:ring-secondary-color focus:border-secondary-color bg-base-foreground"
+      class="tp-select"
       :value="modelValue"
       @change="$emit('update:modelValue', $event.target.value)"
     >
