@@ -92,13 +92,17 @@ export function discoverLocalPanels(projectRoot) {
   return safeReaddir(panelsDir)
     .filter((d) => d.isDirectory())
     .filter((d) => existsSync(join(panelsDir, d.name, 'main.js')))
-    .map((d) => ({
-      name: d.name,
-      type: 'panel',
-      path: join(panelsDir, d.name),
-      entry: join(panelsDir, d.name, 'main.js'),
-      source: 'local'
-    }))
+    .map((d) => {
+      const panelPath = join(panelsDir, d.name)
+      return {
+        name: d.name,
+        type: 'panel',
+        path: panelPath,
+        entry: join(panelPath, 'main.js'),
+        source: 'local',
+        configSchema: loadSchema(panelPath)
+      }
+    })
 }
 
 /**
@@ -118,13 +122,17 @@ export function discoverLocalModules(projectRoot) {
       const routerDir = join(modulesDir, d.name, 'router')
       return existsSync(routerDir)
     })
-    .map((d) => ({
-      name: d.name,
-      type: 'module',
-      path: join(modulesDir, d.name),
-      entry: join(modulesDir, d.name, 'router', 'index.js'),
-      source: 'local'
-    }))
+    .map((d) => {
+      const modulePath = join(modulesDir, d.name)
+      return {
+        name: d.name,
+        type: 'module',
+        path: modulePath,
+        entry: join(modulePath, 'router', 'index.js'),
+        source: 'local',
+        configSchema: loadSchema(modulePath)
+      }
+    })
 }
 
 /**
@@ -226,6 +234,23 @@ export function logDiscoveredPackages({ panels, modules }) {
 
 // --- Internal helpers ---
 
+/**
+ * Load a setup.schema.json from a package directory.
+ *
+ * @param {string} dir - Package directory path
+ * @returns {object|null} Parsed schema or null
+ */
+export function loadSchema(dir) {
+  const schemaPath = join(dir, 'setup.schema.json')
+  if (!existsSync(schemaPath)) return null
+
+  try {
+    return JSON.parse(readFileSync(schemaPath, 'utf-8'))
+  } catch {
+    return null
+  }
+}
+
 function tryReadDescriptor(pkgDir, pkgName) {
   const pkgJsonPath = join(pkgDir, 'package.json')
   if (!existsSync(pkgJsonPath)) return null
@@ -278,18 +303,16 @@ function tryReadDescriptor(pkgDir, pkgName) {
     )
   }
 
-  // Load panel configuration schema if available
+  // Load configuration schema if available
   let configSchema = null
-  if (manifest.type === 'panel') {
-    const schemaRelPath = manifest.setupSchema || './setup.schema.json'
-    const schemaPath = resolve(pkgDir, schemaRelPath)
+  const schemaRelPath = manifest.setupSchema || './setup.schema.json'
+  const schemaPath = resolve(pkgDir, schemaRelPath)
 
-    if (schemaPath.startsWith(pkgDir) && existsSync(schemaPath)) {
-      try {
-        configSchema = JSON.parse(readFileSync(schemaPath, 'utf-8'))
-      } catch {
-        // Skip invalid schema
-      }
+  if (schemaPath.startsWith(pkgDir) && existsSync(schemaPath)) {
+    try {
+      configSchema = JSON.parse(readFileSync(schemaPath, 'utf-8'))
+    } catch {
+      // Skip invalid schema
     }
   }
 

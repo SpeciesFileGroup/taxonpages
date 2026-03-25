@@ -1,6 +1,6 @@
 import express from 'express'
 import { resolve, dirname } from 'node:path'
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { exec } from 'node:child_process'
 import { createServer as createViteServer } from 'vite'
@@ -12,6 +12,11 @@ import { createPanelRoutes } from './routes/panels.js'
 import { createProxyRoutes } from './routes/proxy.js'
 import { createStatusRoutes } from './routes/status.js'
 import schema from './schema.js'
+import {
+  discoverNpmPackages,
+  extractBaseName,
+  loadSchema
+} from '../../plugins/vite/discoverPackages.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -49,7 +54,8 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
   app.use('/api/status', createStatusRoutes(packageRoot, projectRoot))
 
   app.get('/api/schema', (_req, res) => {
-    res.json(schema)
+    const mergedSchema = injectModuleSchemas(schema, packageRoot, projectRoot)
+    res.json(mergedSchema)
   })
 
   // Vite dev server as middleware for the setup client SPA
@@ -98,4 +104,76 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
 
     openBrowser(url)
   })
+}
+
+/**
+ * Merge dynamically discovered module schemas into the base schema.
+ * Hardcoded sections in schema.js take precedence over discovered ones.
+ */
+function injectModuleSchemas(baseSchema, packageRoot, projectRoot) {
+  const merged = JSON.parse(JSON.stringify(baseSchema))
+
+  // Core modules: packageRoot/src/modules/*/setup.schema.json
+  const coreModulesDir = resolve(packageRoot, 'src/modules')
+  for (const { name, schema: moduleSchema } of scanModuleSchemas(coreModulesDir)) {
+    if (!merged.modules.sections[name]) {
+      merged.modules.sections[name] = moduleSchemaToSection(name, moduleSchema)
+    }
+  }
+
+  // Local modules: projectRoot/modules/*/setup.schema.json
+  const localModulesDir = resolve(projectRoot, 'modules')
+  for (const { name, schema: moduleSchema } of scanModuleSchemas(localModulesDir)) {
+    if (!merged.modules.sections[name]) {
+      merged.modules.sections[name] = moduleSchemaToSection(name, moduleSchema)
+    }
+  }
+
+  // NPM modules with configSchema
+  const npmModules = discoverNpmPackages(projectRoot)
+    .filter((p) => p.type === 'module' && p.configSchema)
+
+  for (const pkg of npmModules) {
+    const baseName = extractBaseName(pkg.name, 'module')
+    if (!merged.modules.sections[baseName]) {
+      merged.modules.sections[baseName] = moduleSchemaToSection(baseName, pkg.configSchema)
+    }
+  }
+
+  return merged
+}
+
+/**
+ * Scan a directory of module folders for setup.schema.json files.
+ */
+function scanModuleSchemas(modulesDir) {
+  if (!existsSync(modulesDir)) return []
+
+  const results = []
+  try {
+    const entries = readdirSync(modulesDir, { withFileTypes: true })
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue
+      const moduleSchema = loadSchema(resolve(modulesDir, entry.name))
+      if (moduleSchema) {
+        results.push({ name: entry.name, schema: moduleSchema })
+      }
+    }
+  } catch {
+    // Directory not readable
+  }
+  return results
+}
+
+/**
+ * Convert a module's setup.schema.json into a setup wizard section.
+ */
+function moduleSchemaToSection(name, moduleSchema) {
+  return {
+    file: moduleSchema.file || `${name}.yml`,
+    label: moduleSchema.label || name,
+    description: moduleSchema.description || '',
+    configKey: moduleSchema.configKey || null,
+    fields: moduleSchema.fields || {}
+  }
 }
