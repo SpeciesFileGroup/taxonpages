@@ -39,6 +39,7 @@ function openBrowser(url) {
 function tailwindCustomSources(clientDir, packageRoot, projectRoot) {
   return {
     name: 'tailwind-custom-sources',
+    enforce: 'pre',
     transform(code, id) {
       if (!id.endsWith('styles.css')) return
 
