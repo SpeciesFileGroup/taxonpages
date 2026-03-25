@@ -469,6 +469,126 @@ export default [
 
 Module routes register automatically at startup. No YAML configuration is needed.
 
+### Module configuration schema
+
+Modules can provide a `setup.schema.json` file in their root directory to add a configuration section to the `taxonpages setup` web interface. The setup wizard discovers these schemas automatically from core modules, local modules, and NPM packages.
+
+#### Field-based configuration
+
+For simple settings, define `fields` in your schema. The setup wizard auto-renders a form:
+
+```json
+{
+  "file": "my_feature.yml",
+  "label": "My Feature",
+  "description": "Configure my feature module",
+  "configKey": "my_feature",
+  "fields": {
+    "enabled": {
+      "type": "boolean",
+      "label": "Enabled",
+      "default": true
+    },
+    "items_per_page": {
+      "type": "number",
+      "label": "Items Per Page",
+      "default": 10
+    },
+    "display_mode": {
+      "type": "select",
+      "label": "Display Mode",
+      "options": ["list", "grid", "cards"],
+      "default": "list"
+    }
+  }
+}
+```
+
+| Property      | Type     | Required | Description                                              |
+| ------------- | -------- | -------- | -------------------------------------------------------- |
+| `file`        | `string` | Yes      | YAML filename in `config/` where settings are stored     |
+| `label`       | `string` | Yes      | Display name shown in the setup UI sidebar               |
+| `description` | `string` | No       | Short description shown below the section heading        |
+| `configKey`   | `string` | No       | Root key in the YAML file. Defaults to filename without extension |
+| `fields`      | `object` | Yes      | Map of config keys to field definitions (see [Field types](#field-types)) |
+
+The configuration values are stored in `config/<file>` and accessible at runtime via the `__APP_ENV__` global object.
+
+#### Custom editor component
+
+When the auto-generated form is not enough (e.g., drag-and-drop layout builders, visual editors, or complex interactive UIs), modules can provide a custom Vue component as the settings editor:
+
+```
+modules/
+└── my-feature/
+    ├── setup.schema.json
+    ├── setup/
+    │   └── MyEditor.vue        # Custom settings editor
+    ├── router/
+    │   └── index.js
+    └── ...
+```
+
+```json
+{
+  "file": "my_feature.yml",
+  "label": "My Feature",
+  "description": "Configure my feature module",
+  "editor": "custom",
+  "component": "./setup/MyEditor.vue",
+  "configKey": "my_feature"
+}
+```
+
+| Property    | Type     | Required | Description                                                  |
+| ----------- | -------- | -------- | ------------------------------------------------------------ |
+| `editor`    | `string` | Yes      | Must be `"custom"` to enable custom editor                   |
+| `component` | `string` | Yes      | Path to the Vue component, relative to the module directory  |
+| `file`      | `string` | Yes      | YAML filename in `config/` where settings are stored         |
+| `configKey` | `string` | No       | Root key in the YAML file                                    |
+
+The custom component receives `section` as a prop and uses `@setup/composables/useConfig.js` for reading, writing, and saving configuration:
+
+```vue
+<template>
+  <div class="tp-card p-5">
+    <p>Current value: {{ configData[section.file]?.[configKey] }}</p>
+
+    <button
+      class="tp-btn tp-btn-primary"
+      :disabled="!isFileDirty(section.file)"
+      @click="saveConfig(section.file)"
+    >
+      Save
+    </button>
+  </div>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+import { useConfig } from '@setup/composables/useConfig.js'
+
+const props = defineProps({
+  section: { type: Object, required: true }
+})
+
+const { configData, setConfigValue, saveConfig, isFileDirty } = useConfig()
+
+const configKey = computed(() => props.section.configKey || props.section.file.replace('.yml', ''))
+</script>
+```
+
+Custom editors can also import shared setup UI components:
+
+```javascript
+import FormField from '@setup/components/FormField.vue'
+import ArrayEditor from '@setup/components/ArrayEditor.vue'
+import ObjectEditor from '@setup/components/ObjectEditor.vue'
+import PanelConfigEditor from '@setup/components/PanelConfigEditor.vue'
+```
+
+The `@setup/` alias points to the setup wizard client directory, providing access to all reusable form components and composables. The Tailwind CSS utility classes used in the setup wizard are available in custom editor components.
+
 ## NPM panels and modules
 
 In addition to local `panels/` and `modules/` folders, TaxonPages can discover panels and modules installed as NPM packages. This allows the community to publish and share reusable extensions.
@@ -874,6 +994,36 @@ Module routes merge automatically into the application router. No YAML configura
 taxonpages-module-<name>              # unscoped
 @<vendor>/taxonpages-module-<name>    # scoped
 ```
+
+### Custom setup editor for NPM modules
+
+NPM modules can also provide a custom editor component for the setup wizard. Add a `setup.schema.json` file at the module root (or the path specified by `setupSchema` in the manifest) with the `editor` and `component` fields:
+
+```
+taxonpages-module-specimens/
+├── package.json
+├── src/
+│   ├── router/
+│   │   └── index.js
+│   ├── setup/
+│   │   └── LayoutEditor.vue        # Custom settings editor
+│   └── views/
+│       └── Specimens.vue
+└── setup.schema.json
+```
+
+```json
+{
+  "file": "specimen_page.yml",
+  "label": "Specimen Page",
+  "description": "Panel layout for specimen pages",
+  "editor": "custom",
+  "component": "./src/setup/LayoutEditor.vue",
+  "configKey": "specimen_page"
+}
+```
+
+The component path is relative to the module's root directory. The custom editor component follows the same contract as local modules — it receives `section` as a prop and uses `@setup/composables/useConfig.js` for state management. See [Custom editor component](#custom-editor-component) for details.
 
 ## Package configuration schema
 

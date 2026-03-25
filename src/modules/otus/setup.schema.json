@@ -1,0 +1,8 @@
+{
+  "file": "taxa_page.yml",
+  "label": "Taxa Page",
+  "description": "Panel layout for taxon pages",
+  "editor": "custom",
+  "component": "./setup/LayoutEditor.vue",
+  "configKey": "taxa_page"
+}

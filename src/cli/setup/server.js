@@ -1,5 +1,5 @@
 import express from 'express'
-import { resolve, dirname } from 'node:path'
+import { resolve, relative, dirname } from 'node:path'
 import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { exec } from 'node:child_process'
@@ -33,6 +33,32 @@ function openBrowser(url) {
 }
 
 /**
+ * Vite plugin that injects @source directives into styles.css
+ * so Tailwind CSS scans custom editor components from all module sources.
+ */
+function tailwindCustomSources(clientDir, packageRoot, projectRoot) {
+  return {
+    name: 'tailwind-custom-sources',
+    transform(code, id) {
+      if (!id.endsWith('styles.css')) return
+
+      const cssDir = dirname(id)
+      const sources = [
+        resolve(packageRoot, 'src/modules/*/setup/**/*.vue'),
+        resolve(projectRoot, 'modules/*/setup/**/*.vue'),
+        resolve(projectRoot, 'node_modules/taxonpages-*/setup/**/*.vue')
+      ]
+
+      const directives = sources
+        .map((src) => `@source "${relative(cssDir, src)}";`)
+        .join('\n')
+
+      return { code: directives + '\n' + code, map: null }
+    }
+  }
+}
+
+/**
  * Create the setup server.
  * Uses Vite as middleware to serve the Vue SPA client.
  *
@@ -62,9 +88,23 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
   const vite = await createViteServer({
     configFile: false,
     root: clientDir,
-    server: { middlewareMode: true },
+    server: {
+      middlewareMode: true,
+      fs: {
+        allow: [packageRoot, projectRoot]
+      }
+    },
     appType: 'custom',
-    plugins: [tailwindcss(), vue()],
+    plugins: [
+      tailwindCustomSources(clientDir, packageRoot, projectRoot),
+      tailwindcss(),
+      vue()
+    ],
+    resolve: {
+      alias: {
+        '@setup': clientDir
+      }
+    },
     optimizeDeps: {
       include: ['vue']
     }
@@ -115,17 +155,17 @@ function injectModuleSchemas(baseSchema, packageRoot, projectRoot) {
 
   // Core modules: packageRoot/src/modules/*/setup.schema.json
   const coreModulesDir = resolve(packageRoot, 'src/modules')
-  for (const { name, schema: moduleSchema } of scanModuleSchemas(coreModulesDir)) {
+  for (const { name, moduleDir, schema: moduleSchema } of scanModuleSchemas(coreModulesDir)) {
     if (!merged.modules.sections[name]) {
-      merged.modules.sections[name] = moduleSchemaToSection(name, moduleSchema)
+      merged.modules.sections[name] = moduleSchemaToSection(name, moduleSchema, moduleDir)
     }
   }
 
   // Local modules: projectRoot/modules/*/setup.schema.json
   const localModulesDir = resolve(projectRoot, 'modules')
-  for (const { name, schema: moduleSchema } of scanModuleSchemas(localModulesDir)) {
+  for (const { name, moduleDir, schema: moduleSchema } of scanModuleSchemas(localModulesDir)) {
     if (!merged.modules.sections[name]) {
-      merged.modules.sections[name] = moduleSchemaToSection(name, moduleSchema)
+      merged.modules.sections[name] = moduleSchemaToSection(name, moduleSchema, moduleDir)
     }
   }
 
@@ -156,7 +196,11 @@ function scanModuleSchemas(modulesDir) {
       if (!entry.isDirectory()) continue
       const moduleSchema = loadSchema(resolve(modulesDir, entry.name))
       if (moduleSchema) {
-        results.push({ name: entry.name, schema: moduleSchema })
+        results.push({
+          name: entry.name,
+          moduleDir: resolve(modulesDir, entry.name),
+          schema: moduleSchema
+        })
       }
     }
   } catch {
@@ -167,13 +211,29 @@ function scanModuleSchemas(modulesDir) {
 
 /**
  * Convert a module's setup.schema.json into a setup wizard section.
+ *
+ * @param {string} name - Module name
+ * @param {object} moduleSchema - Parsed setup.schema.json
+ * @param {string} [moduleDir] - Absolute path to the module directory (for resolving component paths)
  */
-function moduleSchemaToSection(name, moduleSchema) {
-  return {
+function moduleSchemaToSection(name, moduleSchema, moduleDir) {
+  const section = {
     file: moduleSchema.file || `${name}.yml`,
     label: moduleSchema.label || name,
-    description: moduleSchema.description || '',
-    configKey: moduleSchema.configKey || null,
-    fields: moduleSchema.fields || {}
+    description: moduleSchema.description || ''
   }
+
+  if (moduleSchema.editor === 'custom' && moduleSchema.component && moduleDir) {
+    section.editor = 'custom'
+    section.component = `/@fs/${resolve(moduleDir, moduleSchema.component)}`
+    section.configKey = moduleSchema.configKey || null
+  } else if (moduleSchema.editor) {
+    section.editor = moduleSchema.editor
+    section.configKey = moduleSchema.configKey || null
+  } else {
+    section.configKey = moduleSchema.configKey || null
+    section.fields = moduleSchema.fields || {}
+  }
+
+  return section
 }

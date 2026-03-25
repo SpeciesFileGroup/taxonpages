@@ -14,11 +14,15 @@
     <!-- API Connection editor -->
     <ApiConnectionEditor v-else-if="section.editor === 'api-connection'" :section="section" />
 
-    <!-- Layout editor -->
-    <LayoutEditor v-else-if="section.editor === 'layout'" />
-
     <!-- Packages editor -->
     <PackagesEditor v-else-if="section.editor === 'packages'" />
+
+    <!-- Custom module editor -->
+    <component
+      v-else-if="section.editor === 'custom' && section.component"
+      :is="loadCustomEditor(section.component)"
+      :section="section"
+    />
 
     <!-- Standard form fields -->
     <div v-else class="tp-card p-5 sm:p-6">
@@ -67,10 +71,10 @@
 </template>
 
 <script setup>
+import { defineAsyncComponent } from 'vue'
 import FormField from './FormField.vue'
 import ArrayEditor from './ArrayEditor.vue'
 import ObjectEditor from './ObjectEditor.vue'
-import LayoutEditor from './LayoutEditor.vue'
 import PackagesEditor from './PackagesEditor.vue'
 import ApiConnectionEditor from './ApiConnectionEditor.vue'
 import StatusOverview from './StatusOverview.vue'
@@ -81,4 +85,17 @@ defineProps({
 })
 
 const { getConfigValue, setConfigValue, saveConfig, isFileDirty } = useConfig()
+
+const editorCache = new Map()
+
+function loadCustomEditor(componentPath) {
+  if (!editorCache.has(componentPath)) {
+    editorCache.set(
+      componentPath,
+      defineAsyncComponent(() => import(/* @vite-ignore */ componentPath))
+    )
+  }
+
+  return editorCache.get(componentPath)
+}
 </script>

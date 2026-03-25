@@ -5,7 +5,7 @@
  * Each section within a group maps to a YAML config file and describes its fields.
  *
  * Field types: 'string', 'number', 'boolean', 'array', 'object', 'select'
- * Special editor types: 'layout' (taxa_page drag-and-drop editor)
+ * Modules can provide custom editors via setup.schema.json with editor: 'custom'
  */
 
 export default {
@@ -294,12 +294,6 @@ export default {
   modules: {
     label: 'Modules',
     sections: {
-      otus: {
-        file: 'taxa_page.yml',
-        label: 'Taxa Page',
-        description: 'Panel layout for taxon pages',
-        editor: 'layout'
-      },
       news: {
         file: 'news.yml',
         label: 'News',

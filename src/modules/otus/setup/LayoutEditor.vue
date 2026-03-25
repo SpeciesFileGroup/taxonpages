@@ -4,7 +4,7 @@
     <div class="flex items-center gap-1 mb-5">
       <div class="flex gap-1 p-1 bg-base-muted rounded-lg flex-wrap">
         <button
-          v-for="(tab, tabKey) in taxaPage"
+          v-for="(tab, tabKey) in layoutData"
           :key="tabKey"
           class="px-3.5 py-1.5 rounded-md text-sm font-medium transition-all duration-150"
           :class="activeTab === tabKey
@@ -27,7 +27,7 @@
     </div>
 
     <!-- Active tab content -->
-    <div v-if="activeTab && taxaPage[activeTab]" class="tp-card">
+    <div v-if="activeTab && layoutData[activeTab]" class="tp-card">
       <!-- Tab settings -->
       <div class="p-5 border-b border-base-border space-y-4">
         <div class="flex gap-3 flex-wrap items-end">
@@ -45,7 +45,7 @@
             <input
               type="text"
               class="tp-input"
-              :value="taxaPage[activeTab].label || ''"
+              :value="layoutData[activeTab].label || ''"
               placeholder="Uses tab key if empty"
               @input="updateTabProp(activeTab, 'label', $event.target.value || undefined)"
             >
@@ -58,7 +58,7 @@
           </button>
         </div>
         <RankGroupSelector
-          :model-value="taxaPage[activeTab].rank_group || []"
+          :model-value="layoutData[activeTab].rank_group || []"
           label="Tab visible for rank groups"
           @update:model-value="updateTabProp(activeTab, 'rank_group', $event)"
         />
@@ -67,7 +67,7 @@
       <!-- Rows -->
       <div class="p-5">
         <div
-          v-for="(row, rowIdx) in taxaPage[activeTab].panels"
+          v-for="(row, rowIdx) in layoutData[activeTab].panels"
           :key="rowIdx"
           class="border border-base-border rounded-lg mb-3 p-3.5 bg-base-muted/20"
         >
@@ -181,15 +181,15 @@
     <div class="flex items-center gap-3 mt-5">
       <button
         class="tp-btn tp-btn-primary"
-        :disabled="!isFileDirty('taxa_page.yml')"
-        @click="saveConfig('taxa_page.yml')"
+        :disabled="!isFileDirty(fileName)"
+        @click="saveConfig(fileName)"
       >
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
         </svg>
         Save Layout
       </button>
-      <span v-if="isFileDirty('taxa_page.yml')" class="text-xs text-warning font-medium">
+      <span v-if="isFileDirty(fileName)" class="text-xs text-warning font-medium">
         Unsaved changes
       </span>
     </div>
@@ -256,9 +256,13 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import PanelConfigEditor from './PanelConfigEditor.vue'
+import PanelConfigEditor from '@setup/components/PanelConfigEditor.vue'
 import RankGroupSelector from './RankGroupSelector.vue'
-import { useConfig } from '../composables/useConfig.js'
+import { useConfig } from '@setup/composables/useConfig.js'
+
+const props = defineProps({
+  section: { type: Object, required: true }
+})
 
 const {
   configData,
@@ -266,6 +270,9 @@ const {
   saveConfig,
   isFileDirty
 } = useConfig()
+
+const fileName = computed(() => props.section.file)
+const configKey = computed(() => props.section.configKey || fileName.value.replace('.yml', ''))
 
 const activeTab = ref('')
 const availablePanels = ref([])
@@ -275,16 +282,16 @@ const dragSource = ref(null)
 const modalPanel = computed(() => {
   if (!panelModal.value) return null
   const { rowIdx, colIdx, panelIdx } = panelModal.value
-  const tab = taxaPage.value[activeTab.value]
+  const tab = layoutData.value[activeTab.value]
   return tab?.panels?.[rowIdx]?.[colIdx]?.[panelIdx] ?? null
 })
 
-const taxaPage = computed(() => {
-  return configData['taxa_page.yml']?.taxa_page || {}
+const layoutData = computed(() => {
+  return configData[fileName.value]?.[configKey.value] || {}
 })
 
 function markDirty() {
-  setConfigValue('taxa_page.yml', 'taxa_page', { ...taxaPage.value })
+  setConfigValue(fileName.value, configKey.value, { ...layoutData.value })
 }
 
 // --- Tab operations ---
@@ -293,18 +300,18 @@ function addTab() {
   const key = prompt('Tab key (e.g. my_tab):')
   if (!key) return
 
-  const tp = { ...taxaPage.value }
+  const tp = { ...layoutData.value }
   tp[key] = { panels: [[[]]] }
-  setConfigValue('taxa_page.yml', 'taxa_page', tp)
+  setConfigValue(fileName.value, configKey.value, tp)
   activeTab.value = key
 }
 
 function removeTab(tabKey) {
   if (!confirm(`Remove tab "${tabKey}"?`)) return
 
-  const tp = { ...taxaPage.value }
+  const tp = { ...layoutData.value }
   delete tp[tabKey]
-  setConfigValue('taxa_page.yml', 'taxa_page', tp)
+  setConfigValue(fileName.value, configKey.value, tp)
 
   const keys = Object.keys(tp)
   activeTab.value = keys.length ? keys[0] : ''
@@ -314,16 +321,16 @@ function renameTab(oldKey, newKey) {
   if (!newKey || newKey === oldKey) return
 
   const tp = {}
-  for (const [k, v] of Object.entries(taxaPage.value)) {
+  for (const [k, v] of Object.entries(layoutData.value)) {
     tp[k === oldKey ? newKey : k] = v
   }
 
-  setConfigValue('taxa_page.yml', 'taxa_page', tp)
+  setConfigValue(fileName.value, configKey.value, tp)
   activeTab.value = newKey
 }
 
 function updateTabProp(tabKey, prop, value) {
-  const tp = { ...taxaPage.value }
+  const tp = { ...layoutData.value }
   const tab = { ...tp[tabKey] }
 
   if (value === undefined || (Array.isArray(value) && value.length === 0)) {
@@ -333,13 +340,13 @@ function updateTabProp(tabKey, prop, value) {
   }
 
   tp[tabKey] = tab
-  setConfigValue('taxa_page.yml', 'taxa_page', tp)
+  setConfigValue(fileName.value, configKey.value, tp)
 }
 
 // --- Row/Column operations ---
 
 function addRow() {
-  const tab = taxaPage.value[activeTab.value]
+  const tab = layoutData.value[activeTab.value]
   if (!tab) return
 
   tab.panels.push([[]])
@@ -347,7 +354,7 @@ function addRow() {
 }
 
 function removeRow(rowIdx) {
-  const tab = taxaPage.value[activeTab.value]
+  const tab = layoutData.value[activeTab.value]
   if (!tab) return
 
   tab.panels.splice(rowIdx, 1)
@@ -355,7 +362,7 @@ function removeRow(rowIdx) {
 }
 
 function addColumn(rowIdx) {
-  const tab = taxaPage.value[activeTab.value]
+  const tab = layoutData.value[activeTab.value]
   if (!tab) return
 
   tab.panels[rowIdx].push([])
@@ -363,7 +370,7 @@ function addColumn(rowIdx) {
 }
 
 function removeColumn(rowIdx, colIdx) {
-  const tab = taxaPage.value[activeTab.value]
+  const tab = layoutData.value[activeTab.value]
   if (!tab) return
 
   tab.panels[rowIdx].splice(colIdx, 1)
@@ -391,7 +398,7 @@ function addPanel(rowIdx, colIdx, event) {
 
   event.target.value = ''
 
-  const tab = taxaPage.value[activeTab.value]
+  const tab = layoutData.value[activeTab.value]
   if (!tab) return
 
   tab.panels[rowIdx][colIdx].push(panelId)
@@ -399,7 +406,7 @@ function addPanel(rowIdx, colIdx, event) {
 }
 
 function removePanel(rowIdx, colIdx, panelIdx) {
-  const tab = taxaPage.value[activeTab.value]
+  const tab = layoutData.value[activeTab.value]
   if (!tab) return
 
   tab.panels[rowIdx][colIdx].splice(panelIdx, 1)
@@ -432,7 +439,7 @@ function rebuildPanelObject(id, bind, rankGroup) {
 }
 
 function updatePanelBindObject(rowIdx, colIdx, panelIdx, bind) {
-  const tab = taxaPage.value[activeTab.value]
+  const tab = layoutData.value[activeTab.value]
   if (!tab) return
 
   const panel = tab.panels[rowIdx][colIdx][panelIdx]
@@ -444,7 +451,7 @@ function updatePanelBindObject(rowIdx, colIdx, panelIdx, bind) {
 }
 
 function updatePanelBind(rowIdx, colIdx, panelIdx, jsonStr) {
-  const tab = taxaPage.value[activeTab.value]
+  const tab = layoutData.value[activeTab.value]
   if (!tab) return
 
   try {
@@ -465,7 +472,7 @@ function getPanelRankGroup(panel) {
 }
 
 function updatePanelRankGroup(rowIdx, colIdx, panelIdx, rankGroup) {
-  const tab = taxaPage.value[activeTab.value]
+  const tab = layoutData.value[activeTab.value]
   if (!tab) return
 
   const panel = tab.panels[rowIdx][colIdx][panelIdx]
@@ -487,7 +494,7 @@ function onDrop(event, toRow, toCol, toPanel) {
   const from = dragSource.value
   if (!from) return
 
-  const tab = taxaPage.value[activeTab.value]
+  const tab = layoutData.value[activeTab.value]
   if (!tab) return
 
   const fromCol = tab.panels[from.rowIdx][from.colIdx]
@@ -503,7 +510,7 @@ function onDrop(event, toRow, toCol, toPanel) {
 // --- Init ---
 
 onMounted(async () => {
-  const keys = Object.keys(taxaPage.value)
+  const keys = Object.keys(layoutData.value)
   if (keys.length) {
     activeTab.value = keys[0]
   }
