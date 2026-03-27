@@ -60,12 +60,12 @@ const options = ref({
   @apply pb-1;
 
   li {
-    @apply text-secondary-color;
+    @apply text-secondary;
   }
 }
 
 .pinpoint-previous-list-item {
-  @apply text-secondary-color;
+  @apply text-secondary;
 }
 
 .pinpoint-previous-couplets {
@@ -111,7 +111,7 @@ const options = ref({
 }
 .pinpoint-button-up,
 .pinpoint-node-next-button {
-  @apply px-3 py-1 hover:bg-primary-color/80 bg-primary-color text-primary-content text-sm items-center;
+  @apply px-3 py-1 hover:bg-primary/80 bg-primary text-primary-content text-sm items-center;
 }
 
 .pinpoint-node-next-container {
@@ -135,8 +135,8 @@ pinpoint-button-up::before {
 .pinpoint-node,
 .pinpoint-node-container {
   @apply border-base-muted bg-base-foreground print:shadow-none print:border-0 rounded;
-  box-shadow: rgba(30, 41, 59, 0.04) 0 2px 4px 0;
-  border: 1px solid rgba(98, 105, 118, 0.16);
+  box-shadow: var(--tp-card-shadow) 0 2px 4px 0;
+  border: 1px solid var(--tp-card-border);
   transition: transform 0.3s ease-out, opacity 0.3s ease-out,
     box-shadow 0.3s ease-out;
 }

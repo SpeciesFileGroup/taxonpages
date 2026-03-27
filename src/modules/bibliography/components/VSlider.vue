@@ -114,8 +114,8 @@ onMounted(() => {
   background: var(--tp-primary);
   border-radius: 50%;
   cursor: pointer;
-  border: 3px solid #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 3px solid var(--tp-primary-content);
+  box-shadow: 0 2px 4px var(--tp-shadow-sm);
   transition: all 0.2s ease;
 }
 
@@ -131,7 +131,7 @@ onMounted(() => {
   border-radius: 50%;
   cursor: pointer;
   border: 3px solid var(--tp-primary-content);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px var(--tp-shadow-sm);
   transition: all 0.2s ease;
 }
 

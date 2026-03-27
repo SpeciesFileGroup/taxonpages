@@ -6,7 +6,7 @@
     >
       <GalleryThumbnail
         :image="image"
-        :class="{ 'border border-secondary-color': current === index }"
+        :class="{ 'border border-secondary': current === index }"
         :title="image.depictions?.map((d) => d.label).join(';')"
         tabindex="0"
         @keydown.enter="() => emit('selectIndex', index)"

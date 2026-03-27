@@ -9,7 +9,7 @@
       class="absolute -left-2.5"
     />
     <router-link
-      class="text-primary-500"
+      class="text-secondary"
       :to="{ name: 'otus-id', params: { id: taxonomy.otu_id } }"
       v-html="taxonomy.name"
     />
@@ -96,7 +96,7 @@ const loadDescendants = () => {
     position: relative;
     margin: 0;
     padding: 0px 6px;
-    border-left: 1px solid rgb(100, 100, 100);
+    border-left: 1px solid var(--tp-tree-line);
   }
 
   li:last-child {
@@ -109,14 +109,14 @@ const loadDescendants = () => {
     height: 1em;
     width: 12px;
     color: white;
-    border-bottom: 1px solid rgb(100, 100, 100);
+    border-bottom: 1px solid var(--tp-tree-line);
     content: '';
     display: inline-block;
     left: -6px;
   }
 
   li:last-child:before {
-    border-left: 1px solid rgb(100, 100, 100);
+    border-left: 1px solid var(--tp-tree-line);
   }
 }
 </style>

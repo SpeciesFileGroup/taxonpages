@@ -4,7 +4,7 @@
       class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none"
     >
       <IconSearch
-        class="w-4 h-4 text-gray-500"
+        class="w-4 h-4 text-base-soft"
         aria-hidden="true"
       />
     </div>
@@ -39,8 +39,8 @@
         v-for="(item, index) in list"
         :id="`autocomplete-option-${index}`"
         :key="item.id"
-        class="tp-autocomplete__item px-3 py-2 border-b text-xs text-base-content cursor-pointer hover:bg-secondary-color/5 border-base-border truncate"
-        :class="{ 'bg-secondary-color/10': index === activeIndex }"
+        class="tp-autocomplete__item px-3 py-2 border-b text-xs text-base-content cursor-pointer hover:bg-secondary/5 border-base-border truncate"
+        :class="{ 'bg-secondary/10': index === activeIndex }"
         role="option"
         :aria-selected="index === activeIndex"
         @mousedown.prevent="selectItem(item)"

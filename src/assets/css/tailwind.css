@@ -23,16 +23,25 @@
   --color-map-collection-object: var(--tp-map-collection-object);
   --color-map-field-occurrence: var(--tp-map-field-occurrence);
 
-  --color-primary-color: var(--tp-primary);
+  --color-primary: var(--tp-primary);
   --color-primary-content: var(--tp-primary-content);
 
-  --color-secondary-color: var(--tp-secondary);
+  --color-secondary: var(--tp-secondary);
   --color-secondary-content: var(--tp-secondary-content);
-  --color-secondary-on-dark: var(--tp-secondary-on-dark);
 
   --color-danger: var(--tp-danger);
   --color-success: var(--tp-success);
   --color-warning: var(--tp-warning);
+
+  --color-card-shadow: var(--tp-card-shadow);
+  --color-card-border: var(--tp-card-border);
+  --color-tree-line: var(--tp-tree-line);
+
+  --color-footer-background: var(--tp-footer-background);
+  --color-footer-content: var(--tp-footer-content);
+  --color-footer-link: var(--tp-footer-link);
+  --color-footer-link-hover: var(--tp-footer-link-hover);
+  --color-footer-border: var(--tp-footer-border);
 
   --color-scrollbar-thumb: var(--tp-scrollbar-thumb);
   --color-scrollbar-track: var(--tp-scrollbar-track);

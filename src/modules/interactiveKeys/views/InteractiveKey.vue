@@ -55,11 +55,11 @@ const options = ref({
   --distinguish-bg-color: var(--tp-base-foreground);
   --distinguish-bg-panel-color: var(--tp-base-foreground);
   --distinguish-bg-modal-color: var(--tp-base-foreground);
-  --distinguish-bg-disabled-color: #e5e5e5;
-  --distinguish-disabled-color: #999;
+  --distinguish-bg-disabled-color: var(--tp-base-muted);
+  --distinguish-disabled-color: var(--tp-base-soft);
   --distinguish-error-color: var(--tp-danger);
   --distinguish-primary-color: var(--tp-primary);
-  --distinguish-border-color: #cccccc;
+  --distinguish-border-color: var(--tp-base-border);
   --distinguish-link-color: var(--tp-secondary);
   --distinguish-btn-medium-size: 20px;
 }

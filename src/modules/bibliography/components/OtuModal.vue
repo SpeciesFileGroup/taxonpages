@@ -1,6 +1,6 @@
 <template>
   <IconPlusCircle
-    class="size-6 text-secondary-color cursor-pointer"
+    class="size-6 text-secondary cursor-pointer"
     @click="() => (isModalVisible = true)"
   />
   <Teleport to="body">

@@ -7,8 +7,8 @@
       'py-1',
       circle ? 'rounded-full ' : 'rounded-md',
       {
-        'bg-primary-color hover:bg-primary-color/80': primary,
-        'bg-secondary-color hover:bg-secondary-color/80': secondary,
+        'bg-primary hover:bg-primary/80': primary,
+        'bg-secondary hover:bg-secondary/80': secondary,
         'text-primary-content': primary,
         'text-secondary-content': secondary
       }

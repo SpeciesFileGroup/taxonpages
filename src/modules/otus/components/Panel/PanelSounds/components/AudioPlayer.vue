@@ -15,7 +15,7 @@
 
       <div class="flex items-center gap-2">
         <a
-          class="h-8 w-8 flex items-center justify-center rounded-full text-primary-content bg-primary-color"
+          class="h-8 w-8 flex items-center justify-center rounded-full text-primary-content bg-primary"
           aria-label="Download"
           title="Download"
           :href="src"
@@ -25,7 +25,7 @@
         </a>
         <SoundObservations :sound-id="soundId" />
         <button
-          class="h-8 w-8 flex items-center justify-center rounded-full text-primary-content bg-primary-color"
+          class="h-8 w-8 flex items-center justify-center rounded-full text-primary-content bg-primary"
           :aria-label="isPlaying ? 'Pause' : 'Play'"
           @click="togglePlay"
         >
@@ -53,7 +53,7 @@
         </div>
 
         <button
-          class="h-8 w-8 flex items-center justify-center rounded-full bg-primary-color text-primary-content"
+          class="h-8 w-8 flex items-center justify-center rounded-full bg-primary text-primary-content"
           :aria-label="isMuted ? 'Unmute' : 'Mute'"
           @click="toggleMute"
         >

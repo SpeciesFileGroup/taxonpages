@@ -2,7 +2,7 @@
   <li class="tp-tab-item inline-flex items-center text-sm">
     <RouterLink
       class="block py-2 px-3 text-base-content border-b-2 border-transparent"
-      active-class="border-b-2 !border-secondary-color text-secondary-color"
+      active-class="border-b-2 !border-secondary text-secondary"
       :to="to"
     >
       <slot />

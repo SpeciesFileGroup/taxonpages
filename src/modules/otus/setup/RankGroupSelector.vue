@@ -15,7 +15,7 @@
           :checked="(modelValue || []).includes(group.value)"
           @change="toggle(group.value, $event.target.checked)"
         >
-        <span class="text-sm text-base-content group-hover:text-secondary-color transition-colors select-none">
+        <span class="text-sm text-base-content group-hover:text-secondary transition-colors select-none">
           {{ group.label }}
         </span>
       </label>

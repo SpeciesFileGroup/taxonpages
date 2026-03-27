@@ -9,10 +9,15 @@
   --tp-base-foreground: rgb(255, 255, 255);
   --tp-base-background: rgb(245, 247, 251);
   --tp-base-muted: rgb(226, 232, 240);
-  --tp-base-soft: rgb(156, 163, 175);
+  --tp-base-soft: rgb(107, 114, 128);
   --tp-base-lighter: rgb(55, 65, 81);
   --tp-base-border: rgb(203, 213, 225);
   --tp-base-content: rgb(0, 0, 0);
+
+  --tp-card-shadow: rgba(30, 41, 59, 0.04);
+  --tp-card-border: rgba(98, 105, 118, 0.16);
+  --tp-shadow-sm: rgba(0, 0, 0, 0.2);
+  --tp-tree-line: rgb(100, 100, 100);
 
   --tp-map-georeference: rgb(239, 68, 68);
   --tp-map-aggregate: rgb(3, 115, 22);
@@ -41,6 +46,11 @@
   --tp-base-lighter: rgb(220, 220, 220);
   --tp-base-border: rgb(38, 38, 38);
   --tp-base-content: rgb(255, 255, 255);
+
+  --tp-card-shadow: rgba(0, 0, 0, 0.2);
+  --tp-card-border: rgba(255, 255, 255, 0.08);
+  --tp-shadow-sm: rgba(0, 0, 0, 0.4);
+  --tp-tree-line: rgb(160, 160, 160);
 
   --tp-scrollbar-thumb: rgb(156, 163, 175);
   --tp-scrollbar-track: rgb(55, 65, 81);

@@ -1,6 +1,6 @@
 <template>
   <button
-    class="h-8 w-8 flex items-center justify-center rounded-full text-primary-content bg-primary-color"
+    class="h-8 w-8 flex items-center justify-center rounded-full text-primary-content bg-primary"
     title="Observations"
     aria-label="View observations"
     @click="() => (isVisible = true)"

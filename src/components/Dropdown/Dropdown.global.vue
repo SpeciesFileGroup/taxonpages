@@ -22,7 +22,7 @@
         :key="item.label"
         role="menuitem"
         tabindex="0"
-        class="block w-full px-4 py-2 text-left cursor-pointer hover:bg-secondary-color/5 focus-visible:bg-secondary-color/10 focus-visible:outline-none box-border border-b border-base-border last:border-b-0"
+        class="block w-full px-4 py-2 text-left cursor-pointer hover:bg-secondary/5 focus-visible:bg-secondary/10 focus-visible:outline-none box-border border-b border-base-border last:border-b-0"
         @click="itemClicked(item)"
         @keydown.enter.prevent="itemClicked(item)"
         @keydown.space.prevent="itemClicked(item)"

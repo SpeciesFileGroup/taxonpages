@@ -7,7 +7,7 @@
         :class="[
           'block py-2 px-3 text-base-content border-b-2 border-transparent',
           selected === index &&
-            'border-b-2 !border-secondary-color text-secondary-color'
+            'border-b-2 !border-secondary text-secondary'
         ]"
         @click="selected = index"
       >

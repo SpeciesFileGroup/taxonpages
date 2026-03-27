@@ -1,12 +1,12 @@
 <template>
   <footer
-    class="footer text-white bottom-0 border-gray-200 bg-zinc-800 pl-4 pr-4"
+    class="footer text-footer-content bottom-0 bg-footer-background pl-4 pr-4"
   >
     <div class="container mx-auto text-sm pt-2 pb-4">
       <FooterCitation />
       <FooterCopyright />
 
-      <hr class="mt-3 mb-3 border-gray-500" />
+      <hr class="mt-3 mb-3 border-footer-border" />
 
       <div class="flex flex-col sm:flex-row justify-between gap-4">
         <div
@@ -15,7 +15,7 @@
           <span>
             Data provided by
             <a
-              class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 font-medium"
+              class="text-footer-link hover:text-footer-link-hover font-medium"
               target="_blank"
               rel="noopener"
               href="https://taxonworks.org/"
@@ -27,7 +27,7 @@
           <span>
             Pages by
             <a
-              class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 font-medium"
+              class="text-footer-link hover:text-footer-link-hover font-medium"
               target="_blank"
               rel="noopener"
               href="https://github.com/SpeciesFileGroup/taxonpages"
@@ -39,7 +39,7 @@
           <span>
             Support (Services) by
             <a
-              class="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 font-medium"
+              class="text-footer-link hover:text-footer-link-hover font-medium"
               target="_blank"
               rel="noopener"
               href="https://speciesfilegroup.org"

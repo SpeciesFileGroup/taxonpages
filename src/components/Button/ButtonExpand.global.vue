@@ -2,7 +2,7 @@
   <button
     type="button"
     :title="isExpanded ? 'Close' : 'Expand'"
-    class="button-expand bg-base-foreground text-secondary-color w-5 h-5"
+    class="button-expand bg-base-foreground text-secondary w-5 h-5"
     @click="isExpanded = !isExpanded"
   >
     <IconMinusCircle

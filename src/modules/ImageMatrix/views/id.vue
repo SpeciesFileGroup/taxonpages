@@ -151,6 +151,6 @@ loadMatrix(route.params.id)
 
 .image-matrix thead th,
 .image-matrix thead td {
-  box-shadow: inset 0 -2px 0 0 #e5e7eb;
+  box-shadow: inset 0 -2px 0 0 var(--tp-base-border);
 }
 </style>

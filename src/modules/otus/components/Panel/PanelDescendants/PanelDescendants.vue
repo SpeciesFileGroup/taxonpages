@@ -75,7 +75,7 @@ watch(
 <style scoped>
 .otu-synonyms {
   list-style: none;
-  border-left: 1px solid rgb(100, 100, 100);
+  border-left: 1px solid var(--tp-tree-line);
   padding-left: 8px;
   padding-bottom: 8px;
 }

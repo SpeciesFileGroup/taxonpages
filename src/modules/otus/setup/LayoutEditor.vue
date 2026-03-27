@@ -117,7 +117,7 @@
               <div
                 v-for="(panel, panelIdx) in col"
                 :key="panelIdx"
-                class="bg-base-foreground border border-base-border rounded-md mb-1.5 cursor-grab active:cursor-grabbing hover:border-secondary-color/40 transition-colors"
+                class="bg-base-foreground border border-base-border rounded-md mb-1.5 cursor-grab active:cursor-grabbing hover:border-secondary/40 transition-colors"
                 draggable="true"
                 @dragstart="onDragStart($event, rowIdx, colIdx, panelIdx)"
                 @dragover.prevent

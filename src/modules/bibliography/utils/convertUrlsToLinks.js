@@ -11,6 +11,6 @@ export function convertUrlsToLinks(html = '') {
   const safe = sanitizeHtml(html)
   return safe.replace(urlRegex, (url) => {
     const href = url.replace(/&/g, '&amp;')
-    return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="text-secondary-color">${url}</a>`
+    return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="text-secondary">${url}</a>`
   })
 }
