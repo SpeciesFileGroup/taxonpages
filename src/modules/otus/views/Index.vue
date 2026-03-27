@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="bg-base-foreground border-b border-base-muted pl-4 pr-4">
+    <div class="bg-base-foreground border-b border-base-border/60 px-4 sm:px-6">
       <div class="container mx-auto">
         <div class="pt-6 pb-6">
           <div
@@ -58,7 +58,7 @@
         </TabMenu>
       </div>
     </div>
-    <div class="pt-3 pb-4">
+    <div class="pt-5 pb-6">
       <div class="container mx-auto box-border">
         <RouterView
           v-if="isReady"

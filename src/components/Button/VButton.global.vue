@@ -3,12 +3,15 @@
     type="button"
     :class="[
       'tp-button',
-      'px-3',
-      'py-1',
-      circle ? 'rounded-full ' : 'rounded-md',
+      'inline-flex items-center justify-center gap-1.5',
+      'px-3 py-1',
+      'text-sm',
+      'transition-colors duration-150',
+      'cursor-pointer',
+      circle ? 'rounded-full' : 'rounded-md',
       {
-        'bg-primary hover:bg-primary/80': primary,
-        'bg-secondary hover:bg-secondary/80': secondary,
+        'bg-primary hover:bg-primary/85 active:bg-primary/75': primary,
+        'bg-secondary hover:bg-secondary/85 active:bg-secondary/75': secondary,
         'text-primary-content': primary,
         'text-secondary-content': secondary
       }

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed top-0 left-0 w-full h-screen max-h-screen flex flex-col justify-center bg-black/50 z-[2000]"
+    class="fixed top-0 left-0 w-full h-screen max-h-screen flex flex-col justify-center bg-black/40 backdrop-blur-[2px] z-[2000]"
     @click="emit('close')"
   >
     <div
@@ -9,7 +9,7 @@
       aria-modal="true"
       :aria-label="ariaLabel"
       :class="[
-        'h-full md:h-auto mx-auto  bg-base-foreground container overflow-y-auto rounded',
+        'h-full md:h-auto mx-auto bg-base-foreground container overflow-y-auto rounded-lg shadow-xl',
         containerClass
       ]"
       @click.stop
@@ -23,7 +23,7 @@
         <button
           type="button"
           aria-label="Close dialog"
-          class="p-1 cursor-pointer opacity-50"
+          class="p-1 cursor-pointer text-base-soft hover:text-base-content transition-colors duration-150"
           @click="() => emit('close')"
         >
           <IconClose class="w-6 h-6 min-w-6 min-h-6" />

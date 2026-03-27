@@ -19,7 +19,7 @@
       :aria-expanded="list.length > 0"
       aria-controls="autocomplete-listbox"
       :aria-activedescendant="activeDescendant"
-      class="tp-autocomplete__input bg-base-foreground block box-border w-full p-1.5 pl-10"
+      class="tp-autocomplete__input bg-base-foreground block box-border w-full pl-10"
       :placeholder="placeholder"
       @input="trigger"
       @keydown="handleKeydown"
@@ -32,7 +32,7 @@
     <ul
       v-if="list.length"
       id="autocomplete-listbox"
-      class="tp-autocomplete__list list absolute z-[500] max-h-52 w-full overflow-y-auto border bg-base-foreground border-base-border !m-0 shadow-md"
+      class="tp-autocomplete__list list absolute z-[500] max-h-52 w-full overflow-y-auto border bg-base-foreground border-base-border !m-0 rounded-md shadow-lg mt-1"
       role="listbox"
     >
       <li
