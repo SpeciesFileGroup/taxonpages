@@ -6,13 +6,22 @@
         <button
           v-for="(tab, tabKey) in layoutData"
           :key="tabKey"
-          class="px-3.5 py-1.5 rounded-md text-sm font-medium transition-all duration-150"
+          class="px-3.5 py-1.5 rounded-md text-sm font-medium transition-all duration-150 cursor-grab active:cursor-grabbing"
           :class="activeTab === tabKey
             ? 'bg-base-foreground text-base-content shadow-sm'
             : 'text-base-soft hover:text-base-content'"
+          draggable="true"
+          @dragstart="onTabDragStart($event, tabKey)"
+          @dragover.prevent
+          @drop="onTabDrop($event, tabKey)"
           @click="activeTab = tabKey"
         >
-          {{ tab.label || tabKey }}
+          <span class="inline-flex items-center gap-1.5">
+            <svg class="w-3 h-3 text-base-soft/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16M4 16h16" />
+            </svg>
+            {{ tab.label || tabKey }}
+          </span>
         </button>
       </div>
       <button
@@ -259,6 +268,7 @@ import { ref, computed, onMounted } from 'vue'
 import PanelConfigEditor from '@setup/components/PanelConfigEditor.vue'
 import RankGroupSelector from './RankGroupSelector.vue'
 import { useConfig } from '@setup/composables/useConfig.js'
+import { DEFAULT_OVERVIEW_LAYOUT } from '../constants/layouts/overview.js'
 
 const props = defineProps({
   section: { type: Object, required: true }
@@ -278,6 +288,7 @@ const activeTab = ref('')
 const availablePanels = ref([])
 const panelModal = ref(null)
 const dragSource = ref(null)
+const tabDragSource = ref(null)
 
 const modalPanel = computed(() => {
   if (!panelModal.value) return null
@@ -483,6 +494,33 @@ function updatePanelRankGroup(rowIdx, colIdx, panelIdx, rankGroup) {
   markDirty()
 }
 
+// --- Tab drag and drop ---
+
+function onTabDragStart(event, tabKey) {
+  tabDragSource.value = tabKey
+  event.dataTransfer.effectAllowed = 'move'
+}
+
+function onTabDrop(event, targetTabKey) {
+  const sourceKey = tabDragSource.value
+  tabDragSource.value = null
+
+  if (!sourceKey || sourceKey === targetTabKey) return
+
+  const oldData = layoutData.value
+  const keys = Object.keys(oldData)
+  const reordered = keys.filter((k) => k !== sourceKey)
+  const targetIdx = reordered.indexOf(targetTabKey)
+  reordered.splice(targetIdx, 0, sourceKey)
+
+  const newData = {}
+  for (const key of reordered) {
+    newData[key] = oldData[key]
+  }
+
+  setConfigValue(fileName.value, configKey.value, newData)
+}
+
 // --- Drag and drop ---
 
 function onDragStart(event, rowIdx, colIdx, panelIdx) {
@@ -510,10 +548,11 @@ function onDrop(event, toRow, toCol, toPanel) {
 // --- Init ---
 
 onMounted(async () => {
-  const keys = Object.keys(layoutData.value)
-  if (keys.length) {
-    activeTab.value = keys[0]
+  if (!Object.keys(layoutData.value).length) {
+    setConfigValue(fileName.value, configKey.value, structuredClone(DEFAULT_OVERVIEW_LAYOUT))
   }
+
+  activeTab.value = Object.keys(layoutData.value)[0] || ''
 
   try {
     const res = await fetch('/api/panels')
