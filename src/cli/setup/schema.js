@@ -291,6 +291,17 @@ export default {
     }
   },
 
+  style: {
+    label: 'Style',
+    sections: {
+      theme: {
+        label: 'Theme Colors',
+        description: 'Color palette for light and dark modes',
+        editor: 'style'
+      }
+    }
+  },
+
   modules: {
     label: 'Modules',
     sections: {

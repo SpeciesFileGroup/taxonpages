@@ -11,6 +11,7 @@ import { createPackageRoutes } from './routes/packages.js'
 import { createPanelRoutes } from './routes/panels.js'
 import { createProxyRoutes } from './routes/proxy.js'
 import { createStatusRoutes } from './routes/status.js'
+import { createStyleRoutes } from './routes/style.js'
 import schema from './schema.js'
 import {
   discoverNpmPackages,
@@ -79,6 +80,7 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
   app.use('/api/panels', createPanelRoutes(packageRoot, projectRoot))
   app.use('/api/proxy', createProxyRoutes())
   app.use('/api/status', createStatusRoutes(packageRoot, projectRoot))
+  app.use('/api/style', createStyleRoutes(projectRoot))
 
   app.get('/api/schema', (_req, res) => {
     const mergedSchema = injectModuleSchemas(schema, packageRoot, projectRoot)

@@ -14,6 +14,9 @@
     <!-- API Connection editor -->
     <ApiConnectionEditor v-else-if="section.editor === 'api-connection'" :section="section" />
 
+    <!-- Style editor -->
+    <StyleEditor v-else-if="section.editor === 'style'" />
+
     <!-- Packages editor -->
     <PackagesEditor v-else-if="section.editor === 'packages'" />
 
@@ -78,6 +81,7 @@ import ObjectEditor from './ObjectEditor.vue'
 import PackagesEditor from './PackagesEditor.vue'
 import ApiConnectionEditor from './ApiConnectionEditor.vue'
 import StatusOverview from './StatusOverview.vue'
+import StyleEditor from './StyleEditor.vue'
 import { useConfig } from '../composables/useConfig.js'
 
 defineProps({
