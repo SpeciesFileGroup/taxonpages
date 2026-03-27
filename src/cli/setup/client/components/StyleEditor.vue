@@ -1,5 +1,36 @@
 <template>
   <div>
+    <!-- Presets -->
+    <div class="mb-6">
+      <h3 class="text-sm font-semibold text-base-content mb-3">Presets</h3>
+      <div class="grid grid-cols-3 gap-3">
+        <div
+          v-for="preset in PRESETS"
+          :key="preset.name"
+          class="tp-card p-4 space-y-2.5"
+        >
+          <div>
+            <div class="text-sm font-semibold text-base-content">{{ preset.name }}</div>
+            <div class="text-xs text-base-soft leading-relaxed">{{ preset.description }}</div>
+          </div>
+          <div class="flex gap-1">
+            <span
+              v-for="color in preset.swatches"
+              :key="color"
+              class="w-6 h-6 rounded-md border border-base-border/50"
+              :style="{ backgroundColor: color }"
+            />
+          </div>
+          <button
+            class="tp-btn tp-btn-outline tp-btn-sm w-full"
+            @click="applyPreset(preset)"
+          >
+            Apply
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Mode tabs -->
     <div class="flex gap-1 p-1 bg-base-muted rounded-lg mb-5 w-fit">
       <button
@@ -146,6 +177,159 @@ const DEFAULTS = {
   }
 }
 
+const PRESETS = [
+  {
+    name: 'Chitin',
+    description: 'Earth tones inspired by beetle exoskeletons and entomological specimen drawers.',
+    swatches: ['rgb(62, 47, 35)', 'rgb(166, 94, 7)', 'rgb(249, 246, 240)', 'rgb(38, 30, 20)', 'rgb(14, 159, 132)'],
+    light: {
+      '--tp-primary': 'rgb(62, 47, 35)',
+      '--tp-primary-content': 'rgb(255, 248, 235)',
+      '--tp-secondary': 'rgb(166, 94, 7)',
+      '--tp-secondary-content': 'rgb(255, 255, 255)',
+      '--tp-secondary-on-dark': 'rgb(245, 171, 53)',
+      '--tp-success': 'rgb(22, 163, 74)',
+      '--tp-warning': 'rgb(202, 138, 4)',
+      '--tp-danger': 'rgb(220, 53, 53)',
+      '--tp-base-foreground': 'rgb(255, 255, 255)',
+      '--tp-base-background': 'rgb(249, 246, 240)',
+      '--tp-base-muted': 'rgb(235, 228, 216)',
+      '--tp-base-soft': 'rgb(113, 103, 89)',
+      '--tp-base-lighter': 'rgb(72, 63, 52)',
+      '--tp-base-border': 'rgb(214, 204, 189)',
+      '--tp-base-content': 'rgb(38, 30, 20)',
+      '--tp-map-georeference': 'rgb(220, 53, 53)',
+      '--tp-map-aggregate': 'rgb(22, 138, 54)',
+      '--tp-map-asserted': 'rgb(232, 119, 12)',
+      '--tp-map-asserted-absent': 'rgb(128, 71, 168)',
+      '--tp-map-type-material': 'rgb(37, 120, 220)',
+      '--tp-map-collection-object': 'rgb(194, 65, 105)',
+      '--tp-map-field-occurrence': 'rgb(14, 159, 132)',
+      '--tp-scrollbar-thumb': 'rgb(172, 160, 143)',
+      '--tp-scrollbar-track': 'rgb(235, 228, 216)'
+    },
+    dark: {
+      '--tp-primary': 'rgb(38, 30, 22)',
+      '--tp-primary-content': 'rgb(245, 237, 224)',
+      '--tp-secondary': 'rgb(232, 156, 40)',
+      '--tp-secondary-content': 'rgb(30, 20, 8)',
+      '--tp-secondary-on-dark': 'rgb(232, 156, 40)',
+      '--tp-success': 'rgb(34, 197, 94)',
+      '--tp-warning': 'rgb(234, 170, 30)',
+      '--tp-danger': 'rgb(239, 83, 83)',
+      '--tp-base-foreground': 'rgb(42, 36, 28)',
+      '--tp-base-background': 'rgb(28, 23, 17)',
+      '--tp-base-muted': 'rgb(56, 48, 38)',
+      '--tp-base-soft': 'rgb(189, 178, 163)',
+      '--tp-base-lighter': 'rgb(214, 204, 190)',
+      '--tp-base-border': 'rgb(72, 62, 50)',
+      '--tp-base-content': 'rgb(240, 233, 222)',
+      '--tp-scrollbar-thumb': 'rgb(113, 103, 89)',
+      '--tp-scrollbar-track': 'rgb(42, 36, 28)'
+    }
+  },
+  {
+    name: 'Bathyal',
+    description: 'Deep ocean blues and bioluminescent accents from mesopelagic marine ecosystems.',
+    swatches: ['rgb(18, 32, 64)', 'rgb(0, 128, 140)', 'rgb(240, 245, 250)', 'rgb(14, 24, 42)', 'rgb(0, 168, 142)'],
+    light: {
+      '--tp-primary': 'rgb(18, 32, 64)',
+      '--tp-primary-content': 'rgb(224, 240, 255)',
+      '--tp-secondary': 'rgb(0, 128, 140)',
+      '--tp-secondary-content': 'rgb(255, 255, 255)',
+      '--tp-secondary-on-dark': 'rgb(56, 210, 224)',
+      '--tp-success': 'rgb(16, 163, 94)',
+      '--tp-warning': 'rgb(224, 148, 8)',
+      '--tp-danger': 'rgb(210, 48, 62)',
+      '--tp-base-foreground': 'rgb(255, 255, 255)',
+      '--tp-base-background': 'rgb(240, 245, 250)',
+      '--tp-base-muted': 'rgb(218, 228, 240)',
+      '--tp-base-soft': 'rgb(90, 105, 124)',
+      '--tp-base-lighter': 'rgb(52, 66, 86)',
+      '--tp-base-border': 'rgb(195, 210, 228)',
+      '--tp-base-content': 'rgb(14, 24, 42)',
+      '--tp-map-georeference': 'rgb(220, 50, 50)',
+      '--tp-map-aggregate': 'rgb(28, 148, 56)',
+      '--tp-map-asserted': 'rgb(240, 124, 16)',
+      '--tp-map-asserted-absent': 'rgb(136, 72, 176)',
+      '--tp-map-type-material': 'rgb(24, 100, 210)',
+      '--tp-map-collection-object': 'rgb(200, 60, 110)',
+      '--tp-map-field-occurrence': 'rgb(0, 168, 142)',
+      '--tp-scrollbar-thumb': 'rgb(148, 164, 184)',
+      '--tp-scrollbar-track': 'rgb(218, 228, 240)'
+    },
+    dark: {
+      '--tp-primary': 'rgb(10, 18, 36)',
+      '--tp-primary-content': 'rgb(200, 225, 255)',
+      '--tp-secondary': 'rgb(40, 200, 212)',
+      '--tp-secondary-content': 'rgb(8, 16, 32)',
+      '--tp-secondary-on-dark': 'rgb(40, 200, 212)',
+      '--tp-success': 'rgb(34, 197, 110)',
+      '--tp-warning': 'rgb(240, 176, 40)',
+      '--tp-danger': 'rgb(240, 80, 90)',
+      '--tp-base-foreground': 'rgb(22, 32, 52)',
+      '--tp-base-background': 'rgb(12, 20, 38)',
+      '--tp-base-muted': 'rgb(32, 44, 68)',
+      '--tp-base-soft': 'rgb(158, 178, 202)',
+      '--tp-base-lighter': 'rgb(195, 210, 228)',
+      '--tp-base-border': 'rgb(44, 58, 82)',
+      '--tp-base-content': 'rgb(220, 232, 248)',
+      '--tp-scrollbar-thumb': 'rgb(72, 88, 112)',
+      '--tp-scrollbar-track': 'rgb(22, 32, 52)'
+    }
+  },
+  {
+    name: 'Stipule',
+    description: 'Muted sage greens and warm clay tones evoking pressed herbarium sheets.',
+    swatches: ['rgb(40, 56, 36)', 'rgb(164, 82, 42)', 'rgb(245, 245, 238)', 'rgb(28, 32, 24)', 'rgb(18, 154, 136)'],
+    light: {
+      '--tp-primary': 'rgb(40, 56, 36)',
+      '--tp-primary-content': 'rgb(238, 245, 233)',
+      '--tp-secondary': 'rgb(164, 82, 42)',
+      '--tp-secondary-content': 'rgb(255, 255, 255)',
+      '--tp-secondary-on-dark': 'rgb(222, 148, 100)',
+      '--tp-success': 'rgb(34, 168, 82)',
+      '--tp-warning': 'rgb(212, 148, 12)',
+      '--tp-danger': 'rgb(200, 50, 50)',
+      '--tp-base-foreground': 'rgb(255, 255, 255)',
+      '--tp-base-background': 'rgb(245, 245, 238)',
+      '--tp-base-muted': 'rgb(226, 228, 216)',
+      '--tp-base-soft': 'rgb(104, 110, 96)',
+      '--tp-base-lighter': 'rgb(62, 68, 56)',
+      '--tp-base-border': 'rgb(204, 208, 194)',
+      '--tp-base-content': 'rgb(28, 32, 24)',
+      '--tp-map-georeference': 'rgb(204, 48, 48)',
+      '--tp-map-aggregate': 'rgb(34, 140, 60)',
+      '--tp-map-asserted': 'rgb(228, 118, 18)',
+      '--tp-map-asserted-absent': 'rgb(118, 74, 162)',
+      '--tp-map-type-material': 'rgb(42, 112, 210)',
+      '--tp-map-collection-object': 'rgb(192, 58, 106)',
+      '--tp-map-field-occurrence': 'rgb(18, 154, 136)',
+      '--tp-scrollbar-thumb': 'rgb(164, 170, 154)',
+      '--tp-scrollbar-track': 'rgb(226, 228, 216)'
+    },
+    dark: {
+      '--tp-primary': 'rgb(24, 30, 22)',
+      '--tp-primary-content': 'rgb(220, 228, 214)',
+      '--tp-secondary': 'rgb(212, 140, 90)',
+      '--tp-secondary-content': 'rgb(28, 18, 10)',
+      '--tp-secondary-on-dark': 'rgb(212, 140, 90)',
+      '--tp-success': 'rgb(48, 200, 100)',
+      '--tp-warning': 'rgb(236, 178, 42)',
+      '--tp-danger': 'rgb(232, 78, 78)',
+      '--tp-base-foreground': 'rgb(34, 38, 30)',
+      '--tp-base-background': 'rgb(22, 26, 20)',
+      '--tp-base-muted': 'rgb(48, 52, 42)',
+      '--tp-base-soft': 'rgb(180, 186, 172)',
+      '--tp-base-lighter': 'rgb(208, 212, 200)',
+      '--tp-base-border': 'rgb(62, 66, 54)',
+      '--tp-base-content': 'rgb(232, 236, 226)',
+      '--tp-scrollbar-thumb': 'rgb(96, 102, 86)',
+      '--tp-scrollbar-track': 'rgb(34, 38, 30)'
+    }
+  }
+]
+
 const variableGroups = [
   {
     label: 'Brand',
@@ -215,6 +399,12 @@ function getVarValue(key) {
 
 function getDefault(key) {
   return DEFAULTS[activeMode.value]?.[key] || ''
+}
+
+function applyPreset(preset) {
+  styleData.light = { ...preset.light }
+  styleData.dark = { ...preset.dark }
+  dirty.value = true
 }
 
 function setVar(key, value) {
