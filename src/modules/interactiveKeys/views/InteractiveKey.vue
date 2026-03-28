@@ -50,6 +50,8 @@ const options = ref({
 </script>
 
 <style>
+@reference "@/assets/css/tailwind.css";
+
 :root {
   --distinguish-primary-content-color: var(--tp-primary-content);
   --distinguish-bg-color: var(--tp-base-foreground);

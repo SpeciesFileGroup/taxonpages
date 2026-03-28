@@ -49,6 +49,8 @@ const options = ref({
 </script>
 
 <style>
+@reference "@/assets/css/tailwind.css";
+
 .pinpoint-app {
   @apply py-4 flex flex-col gap-4;
   ul {
