@@ -2,65 +2,62 @@
   <div
     class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-6"
   >
-    <div class="max-w-2xl w-full">
-      <div class="text-center mb-10">
+    <div class="max-w-3xl w-full space-y-8">
+      <header class="text-center">
         <h1 class="text-5xl font-bold text-slate-800 mb-3">
           Welcome to TaxonPages
         </h1>
-        <p class="text-xl text-slate-500">You're almost there!</p>
-      </div>
+        <p class="text-xl text-slate-500">
+          Configure your TaxonWorks API connection to get started.
+        </p>
+      </header>
 
-      <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-8">
-        <div class="flex items-center gap-3 mb-4">
-          <span
-            class="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-600 text-sm font-bold"
-            >!</span
-          >
-          <h2 class="text-lg font-semibold text-slate-700">
-            API configuration required
-          </h2>
-        </div>
+      <SetupMethodCard
+        title="Setup Wizard"
+        :recommended="true"
+        description="Use the interactive wizard to configure your TaxonWorks connection, style, and installed packages — all from a visual interface. Available only for local development."
+      >
+        <ol class="text-sm text-slate-600 space-y-2 mb-6 list-decimal list-inside">
+          <li>
+            Run the setup wizard:
+            <CopyableCode text="npx @sfgrp/taxonpages setup" />
+          </li>
+          <li>Follow the on-screen steps to set your API URL and project token</li>
+          <li>Save your changes — the dev server will restart automatically</li>
+        </ol>
 
-        <p class="text-slate-600 mb-6">
-          To connect your TaxonPages site to a TaxonWorks project, edit the file
-          <code
-            class="px-2 py-1 bg-slate-100 rounded text-sm font-mono text-slate-800"
-            >config/api.yml</code
-          >
-          in your project root:
+        <InfoBox>
+          The wizard also lets you customize styles and manage installed
+          packages — ideal for first-time setup.
+        </InfoBox>
+      </SetupMethodCard>
+
+      <SetupMethodCard
+        title="Manual Configuration"
+        description="Edit the configuration file directly. Useful for advanced users, CI environments, or quick edits."
+      >
+        <p class="text-sm text-slate-600 mb-4">
+          Open
+          <code class="px-1.5 py-0.5 bg-slate-100 rounded text-xs font-mono">config/api.yml</code>
+          in your project root and set the following values:
         </p>
 
-        <div class="bg-slate-800 rounded-xl p-5 mb-6 overflow-x-auto">
-          <pre
-            class="text-sm font-mono leading-relaxed"
-          ><span class="text-slate-500"># config/api.yml</span>
-<span class="text-emerald-400">url</span><span class="text-slate-300">: </span><span class="text-amber-300">https://sfg.taxonworks.org/api/v1</span>
-<span class="text-emerald-400">project_token</span><span class="text-slate-300">: </span><span class="text-amber-300">YOUR_PROJECT_TOKEN_HERE</span></pre>
-        </div>
+        <CodeBlock />
 
-        <div class="flex items-start gap-3 bg-slate-50 rounded-xl p-4">
-          <span class="text-slate-400 mt-0.5">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-5 h-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </span>
-          <p class="text-sm text-slate-600">
-            Replace the <strong>url</strong> with your TaxonWorks instance API
-            endpoint and <strong>project_token</strong> with the token from your
-            TaxonWorks project. After saving, the development server will
-            restart automatically.
-          </p>
-        </div>
-      </div>
+        <InfoBox>
+          Replace <strong>url</strong> with your TaxonWorks instance API
+          endpoint and <strong>project_token</strong> with the token from your
+          TaxonWorks project. After saving, the development server will restart
+          automatically.
+        </InfoBox>
+      </SetupMethodCard>
     </div>
   </div>
 </template>
+
+<script setup>
+import SetupMethodCard from '../components/SetupMethodCard.vue'
+import CodeBlock from '../components/CodeBlock.vue'
+import InfoBox from '../components/InfoBox.vue'
+import CopyableCode from '../components/CopyableCode.vue'
+</script>
