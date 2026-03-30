@@ -1,4 +1,4 @@
-import { resolve, join, dirname, relative } from 'node:path'
+import { resolve, join, dirname, relative, basename as pathBasename } from 'node:path'
 import {
   readFileSync,
   existsSync,
@@ -81,7 +81,7 @@ export async function packageUnpack({ projectRoot, name }) {
   cpSync(srcDir, destDir, {
     recursive: true,
     filter: (src) => {
-      const name = src.split('/').pop()
+      const name = pathBasename(src)
       return name !== 'node_modules' && name !== '.git'
     }
   })

@@ -1,8 +1,9 @@
 import { Router } from 'express'
-import { resolve, join } from 'node:path'
+import { resolve, join, basename } from 'node:path'
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
 import { glob } from 'glob'
 import yaml from 'js-yaml'
+import { toForwardSlash } from '../../../utils/paths.js'
 
 /**
  * Create config API routes.
@@ -23,7 +24,7 @@ export function createConfigRoutes(projectRoot) {
     const result = {}
 
     for (const filePath of files) {
-      const filename = filePath.split('/').pop()
+      const filename = basename(filePath)
 
       try {
         const content = readFileSync(filePath, 'utf-8')
@@ -117,7 +118,7 @@ export function createConfigRoutes(projectRoot) {
 function getConfigFiles(configDir) {
   if (!existsSync(configDir)) return []
 
-  return glob.sync(join(configDir, '*.yml'))
+  return glob.sync(toForwardSlash(join(configDir, '*.yml')))
 }
 
 function isValidFilename(filename) {

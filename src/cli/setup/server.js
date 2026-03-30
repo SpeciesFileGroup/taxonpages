@@ -18,6 +18,7 @@ import {
   extractBaseName,
   loadSchema
 } from '../../plugins/vite/discoverPackages.js'
+import { toForwardSlash } from '../../utils/paths.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -47,12 +48,18 @@ function tailwindCustomSources(clientDir, packageRoot, projectRoot) {
       const cssDir = dirname(id)
       const sources = [
         resolve(packageRoot, 'src/modules/*/setup/**/*.vue'),
-        resolve(projectRoot, 'modules/*/setup/**/*.vue'),
-        resolve(projectRoot, 'node_modules/taxonpages-*/setup/**/*.vue')
+        resolve(projectRoot, 'modules/*/setup/**/*.vue')
       ]
 
+      // Discover NPM modules (both scoped and unscoped) with setup schemas
+      const npmPackages = discoverNpmPackages(projectRoot)
+        .filter((p) => p.type === 'module' && p.configSchema)
+      for (const pkg of npmPackages) {
+        sources.push(resolve(pkg.path, 'setup/**/*.vue'))
+      }
+
       const directives = sources
-        .map((src) => `@source "${relative(cssDir, src)}";`)
+        .map((src) => `@source "${toForwardSlash(relative(cssDir, src))}";`)
         .join('\n')
 
       return { code: directives + '\n' + code, map: null }
@@ -228,7 +235,7 @@ function moduleSchemaToSection(name, moduleSchema, moduleDir) {
 
   if (moduleSchema.editor === 'custom' && moduleSchema.component && moduleDir) {
     section.editor = 'custom'
-    section.component = `/@fs/${resolve(moduleDir, moduleSchema.component)}`
+    section.component = `/@fs/${toForwardSlash(resolve(moduleDir, moduleSchema.component))}`
     section.configKey = moduleSchema.configKey || null
   } else if (moduleSchema.editor) {
     section.editor = moduleSchema.editor

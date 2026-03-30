@@ -1,6 +1,13 @@
 import { resolve } from 'node:path'
 import { existsSync, writeFileSync } from 'node:fs'
 import { loadConfiguration } from '../../utils/loadConfiguration.js'
+import { toForwardSlash } from '../../utils/paths.js'
+import {
+  discoverNpmPackages,
+  discoverLocalPanels,
+  discoverLocalModules,
+  resolveConflicts
+} from '../../plugins/vite/discoverPackages.js'
 import { VitePluginRadar } from 'vite-plugin-radar'
 import Vue from '@vitejs/plugin-vue'
 import Markdown from 'unplugin-vue-markdown/vite'
@@ -28,7 +35,9 @@ import {
 export function getViteConfig({ packageRoot, projectRoot }) {
   const configuration = loadConfiguration(projectRoot)
 
-  writeTailwindSources(packageRoot, projectRoot)
+  writeTailwindSources(packageRoot, projectRoot, {
+    disabled: configuration.packages?.disabled
+  })
 
   // Use user's index.html if it exists, otherwise fall back to the package's
   const root = existsSync(resolve(projectRoot, 'index.html'))
@@ -125,18 +134,47 @@ export function getViteConfig({ packageRoot, projectRoot }) {
 
 /**
  * Write a physical CSS file with @source directives pointing to the user's
- * project directories so Tailwind v4 scans them for utility classes.
+ * project directories and discovered NPM packages so Tailwind v4 scans
+ * them for utility classes.
+ *
+ * @param {string} packageRoot
+ * @param {string} projectRoot
+ * @param {object} [options]
+ * @param {string[]} [options.disabled] - Package names to skip
  */
-function writeTailwindSources(packageRoot, projectRoot) {
+function writeTailwindSources(packageRoot, projectRoot, options = {}) {
   const sourcesFile = resolve(packageRoot, 'src/assets/css/sources.css')
-  const content =
-    [
-      `@source "${resolve(projectRoot, 'pages/**/*.{vue,md,js}')}";`,
-      `@source "${resolve(projectRoot, 'layouts/**/*.{vue,js}')}";`,
-      `@source "${resolve(projectRoot, 'modules/**/*.{vue,js}')}";`,
-      `@source "${resolve(projectRoot, 'panels/**/*.{vue,js}')}";`,
-      `@source "${resolve(projectRoot, 'components/**/*.{vue,js}')}";`
-    ].join('\n') + '\n'
 
-  writeFileSync(sourcesFile, content)
+  // User project directories
+  const sources = [
+    `@source "${toForwardSlash(resolve(projectRoot, 'pages/**/*.{vue,md,js}'))}";`,
+    `@source "${toForwardSlash(resolve(projectRoot, 'layouts/**/*.{vue,js}'))}";`,
+    `@source "${toForwardSlash(resolve(projectRoot, 'modules/**/*.{vue,js}'))}";`,
+    `@source "${toForwardSlash(resolve(projectRoot, 'panels/**/*.{vue,js}'))}";`,
+    `@source "${toForwardSlash(resolve(projectRoot, 'components/**/*.{vue,js}'))}";`
+  ]
+
+  // Discover NPM packages and add their source directories
+  const npmPackages = discoverNpmPackages(projectRoot, {
+    disabled: options.disabled
+  })
+  const localPanels = discoverLocalPanels(projectRoot)
+  const localModules = discoverLocalModules(projectRoot)
+
+  const panels = resolveConflicts(
+    localPanels,
+    npmPackages.filter((p) => p.type === 'panel')
+  ).filter((p) => p.source === 'npm')
+
+  const modules = resolveConflicts(
+    localModules,
+    npmPackages.filter((p) => p.type === 'module')
+  ).filter((p) => p.source === 'npm')
+
+  for (const pkg of [...panels, ...modules]) {
+    const pkgSource = toForwardSlash(resolve(pkg.path, 'src/**/*.{vue,js}'))
+    sources.push(`@source "${pkgSource}";`)
+  }
+
+  writeFileSync(sourcesFile, sources.join('\n') + '\n')
 }

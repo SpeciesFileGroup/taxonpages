@@ -1,11 +1,13 @@
 import { glob } from 'glob'
 import fs from 'fs'
 import yaml from 'js-yaml'
+import { join } from 'node:path'
 import defaultConfig from '../constants/defaultConfig.js'
+import { toForwardSlash } from './paths.js'
 
 export const loadConfiguration = (appPath) => {
   const isProd = process.env.NODE_ENV === 'production'
-  const filePaths = glob.sync(appPath + '/config/*.yml')
+  const filePaths = glob.sync(toForwardSlash(join(appPath, 'config', '*.yml')))
   const configurationPaths = splitFilePathsByEnv(filePaths)
 
   const jsonConfig = [
