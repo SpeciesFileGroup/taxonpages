@@ -49,7 +49,9 @@ export function getViteConfig({ packageRoot, projectRoot }) {
       alias: {
         '@': resolve(packageRoot, 'src'),
         '~': projectRoot,
-        '@tailwind-config': existsSync(resolve(projectRoot, 'config/vendor/tailwind.css'))
+        '@tailwind-config': existsSync(
+          resolve(projectRoot, 'config/vendor/tailwind.css')
+        )
           ? resolve(projectRoot, 'config/vendor/tailwind.css')
           : resolve(packageRoot, 'src/assets/css/tailwind.css')
       }
@@ -127,13 +129,14 @@ export function getViteConfig({ packageRoot, projectRoot }) {
  */
 function writeTailwindSources(packageRoot, projectRoot) {
   const sourcesFile = resolve(packageRoot, 'src/assets/css/sources.css')
-  const content = [
-    `@source "${resolve(projectRoot, 'pages/**/*.{vue,md}')}";`,
-    `@source "${resolve(projectRoot, 'layouts/**/*.vue')}";`,
-    `@source "${resolve(projectRoot, 'modules/**/*.vue')}";`,
-    `@source "${resolve(projectRoot, 'panels/**/*.vue')}";`,
-    `@source "${resolve(projectRoot, 'components/**/*.vue')}";`
-  ].join('\n') + '\n'
+  const content =
+    [
+      `@source "${resolve(projectRoot, 'pages/**/*.{vue,md,js}')}";`,
+      `@source "${resolve(projectRoot, 'layouts/**/*.{vue,js}')}";`,
+      `@source "${resolve(projectRoot, 'modules/**/*.{vue,js}')}";`,
+      `@source "${resolve(projectRoot, 'panels/**/*.{vue,js}')}";`,
+      `@source "${resolve(projectRoot, 'components/**/*.{vue,js}')}";`
+    ].join('\n') + '\n'
 
   writeFileSync(sourcesFile, content)
 }

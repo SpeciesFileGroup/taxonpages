@@ -91,6 +91,7 @@ import { useSchemaOrg, defineTaxon } from '@/plugins/schemaOrg/composables'
 import { RESPONSE_ERROR } from '../constants'
 import { isAvailableForRank } from '../utils'
 import { useChildrenRoutes, useUserLifeCycles } from '../composables'
+import { defaultTabRouteName } from '../router/index.js'
 import DataMap from '../components/DataMap.vue'
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
 import TaxaInfo from '../components/TaxaInfo.vue'
@@ -209,7 +210,7 @@ function updateMetadata() {
 
 function loadOtu({ id, otu_valid_id }) {
   router.push({
-    name: 'otus-id-overview',
+    name: defaultTabRouteName,
     params: {
       id: otu_valid_id || id
     }

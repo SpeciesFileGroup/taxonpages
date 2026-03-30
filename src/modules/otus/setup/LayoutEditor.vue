@@ -167,6 +167,7 @@
             </div>
 
             <button
+              v-if="row.length < MAX_COLUMNS"
               class="tp-btn tp-btn-outline tp-btn-sm whitespace-nowrap self-stretch"
               @click="addColumn(rowIdx)"
             >
@@ -281,6 +282,8 @@ const {
   isFileDirty
 } = useConfig()
 
+const MAX_COLUMNS = 3
+
 const fileName = computed(() => props.section.file)
 const configKey = computed(() => props.section.configKey || fileName.value.replace('.yml', ''))
 
@@ -375,6 +378,7 @@ function removeRow(rowIdx) {
 function addColumn(rowIdx) {
   const tab = layoutData.value[activeTab.value]
   if (!tab) return
+  if (tab.panels[rowIdx].length >= MAX_COLUMNS) return
 
   tab.panels[rowIdx].push([])
   markDirty()
