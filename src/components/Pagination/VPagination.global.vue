@@ -57,9 +57,10 @@
             'cursor-pointer',
             'border-r-0',
             'tabular-nums',
+            'border-base-border',
             currentPage === n
-              ? 'text-primary-content border-primary bg-primary'
-              : 'text-base-content border-base-border'
+              ? 'text-primary-content bg-primary'
+              : 'text-base-content'
           ]"
           @click="() => (currentPage = n)"
         >

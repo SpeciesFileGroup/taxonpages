@@ -2,7 +2,7 @@
   <div>
     <VButton
       primary
-      class="text-sm md:flex items-center gap-1 hidden"
+      class="text-sm py-1.5 md:flex items-center gap-1 hidden"
       title="Links used to obtain the information present on this page in JSON format."
       @click="isModalVisible = true"
     >

@@ -7,9 +7,9 @@
         <div
           v-for="preset in PRESETS"
           :key="preset.name"
-          class="tp-card p-4 space-y-2.5"
+          class="tp-card p-4 space-y-2.5 flex flex-col"
         >
-          <div>
+          <div class="flex-1">
             <div class="text-sm font-semibold text-base-content">{{ preset.name }}</div>
             <div class="text-xs text-base-soft leading-relaxed">{{ preset.description }}</div>
           </div>
