@@ -1,8 +1,8 @@
 <template>
   <ImageGroupPreview
-    v-if="images.length"
-    :max-visible="2"
-    :images="[...images.map((i) => i.thumb)]"
+    :images="images.map((d) => d.thumb)"
+    :max-visible="1"
+    image-class="min-w-12 h-full object-cover"
     @select="
       ({ index }) => {
         galleryIndex = index
@@ -10,14 +10,13 @@
       }
     "
   />
-
   <ImageViewer
     v-if="isImageViewerOpen"
     :index="galleryIndex"
     :images="images"
     :next="galleryIndex < props.images.length - 1"
     :previous="galleryIndex > 0"
-    @select-index="galleryIndex = $event"
+    @select-index="(index) => (galleryIndex = index)"
     @next="nextImage()"
     @previous="previousImage()"
     @close="isImageViewerOpen = false"
@@ -25,31 +24,23 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 
 const props = defineProps({
   images: {
     type: Array,
-    default: () => []
+    required: true
   }
 })
 
 const isImageViewerOpen = ref(false)
 const galleryIndex = ref(0)
 
-const previousImage = () => {
+function previousImage() {
   galleryIndex.value--
 }
 
-const nextImage = () => {
+function nextImage() {
   galleryIndex.value++
 }
-
-watch(
-  () => props.images,
-  () => {
-    galleryIndex.value = 0
-  },
-  { immediate: true }
-)
 </script>
