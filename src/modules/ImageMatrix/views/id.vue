@@ -35,12 +35,12 @@
           <VTableHeader>
             <VTableHeaderRow class="bg-base-foreground">
               <VTableBodyCell
-                class="sticky top-0 border-r-2 bg-base-foreground"
+                class="sticky top-0 border-r-2 border-base-border bg-base-foreground"
               />
               <VTableHeaderCell
                 v-for="{ id, label } in descriptors"
                 :key="id"
-                class="border-l min-w-28 sticky top-0 bg-base-foreground z-10"
+                class="border-l border-base-border min-w-28 sticky top-0 bg-base-foreground z-10"
                 scope="col"
               >
                 {{ label }}
@@ -50,7 +50,7 @@
           <VTableBody>
             <VTableBodyRow v-for="item in list">
               <VTableBodyCell
-                class="border-b border-r-2 text-base-content h-20"
+                class="border-b border-r-2 border-base-border text-base-content h-20"
               >
                 <RouterLink
                   :to="{ name: 'otus-id', params: { id: item.id } }"
@@ -59,7 +59,7 @@
               </VTableBodyCell>
               <VTableBodyCell
                 v-for="images in item.depictions"
-                class="border-l border-b"
+                class="border-l border-b border-base-border"
               >
                 <ListImage :images="images" />
               </VTableBodyCell>

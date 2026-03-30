@@ -3,13 +3,13 @@
     <VTableHeader class="normal-case">
       <VTableHeaderRow>
         <VTableHeaderCell :colspan="subjectColspan">Subject</VTableHeaderCell>
-        <VTableHeaderCell class="border-l-2 border-r-2">
+        <VTableHeaderCell class="border-l-2 border-r-2 border-base-border">
           Biological
         </VTableHeaderCell>
         <VTableHeaderCell :colspan="objectColspan"> Object </VTableHeaderCell>
         <VTableHeaderCell
           v-if="visibleColumns.assertedDistribution"
-          class="hidden lg:table-cell border-l-2"
+          class="hidden lg:table-cell border-l-2 border-base-border"
         >
           Asserted
         </VTableHeaderCell>
@@ -18,7 +18,7 @@
           :colspan="
             (visibleColumns.citations ? 1 : 0) + (visibleColumns.images ? 1 : 0)
           "
-          class="hidden lg:table-cell border-l-2"
+          class="hidden lg:table-cell border-l-2 border-base-border"
         >
           Annotations
         </VTableHeaderCell>
@@ -56,7 +56,7 @@
           }}</VTableHeaderCell
         >
         <VTableHeaderCell
-          class="border-l-2 border-r-2 cursor-pointer"
+          class="border-l-2 border-r-2 border-base-border cursor-pointer"
           @click="toggleSort('biologicalRelationship')"
         >
           Relationship{{ sortIndicator('biologicalRelationship') }}
@@ -100,7 +100,7 @@
         </VTableHeaderCell>
         <VTableHeaderCell
           v-if="visibleColumns.citations"
-          class="border-l-2 cursor-pointer"
+          class="border-l-2 border-base-border cursor-pointer"
           @click="toggleSort('citations')"
         >
           Citations{{ sortIndicator('citations') }}
@@ -146,7 +146,7 @@
           v-text="ba.biologicalPropertySubject"
         />
         <VTableBodyCell
-          class="border-l-2 border-r-2"
+          class="border-l-2 border-r-2 border-base-border"
           v-text="ba.biologicalRelationship"
         />
         <VTableBodyCell
@@ -182,14 +182,14 @@
 
         <VTableBodyCell
           v-if="visibleColumns.assertedDistribution"
-          class="border-l-2"
+          class="border-l-2 border-base-border"
         >
           {{ ba.assertedDistributions.join('; ') }}
         </VTableBodyCell>
 
         <VTableBodyCell
           v-if="visibleColumns.citations"
-          class="border-l-2"
+          class="border-l-2 border-base-border"
           v-html="ba.citations"
         />
 

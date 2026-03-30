@@ -5,10 +5,13 @@ function makeOriginalImageUrl(imagePath) {
 }
 
 export function makeImageObject(item) {
+  console.log(item.attribution)
   return {
     depiction: {
       label: item.figure_label
     },
+
+    attribution: { label: item.attribution },
     ...item.image,
     original: makeOriginalImageUrl(item.image.original_png)
   }
