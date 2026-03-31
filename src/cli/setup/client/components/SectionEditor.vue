@@ -28,7 +28,7 @@
       :config-data="configData"
       :set-config-value="setConfigValue"
       :save-config="saveConfig"
-      :is-file-dirty="hasUnsavedChanges"
+      :has-unsaved-changes="hasUnsavedChanges"
     />
 
     <!-- Standard form fields -->
