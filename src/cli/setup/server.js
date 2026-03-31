@@ -1,5 +1,5 @@
 import express from 'express'
-import { resolve, relative, dirname } from 'node:path'
+import { resolve, dirname } from 'node:path'
 import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { exec } from 'node:child_process'
@@ -12,13 +12,17 @@ import { createPanelRoutes } from './routes/panels.js'
 import { createProxyRoutes } from './routes/proxy.js'
 import { createStatusRoutes } from './routes/status.js'
 import { createStyleRoutes } from './routes/style.js'
+import {
+  customEditorPlugin,
+  VIRTUAL_EDITOR_PREFIX
+} from './plugins/customEditorPlugin.js'
+import { tailwindCustomSources } from './plugins/tailwindCustomSources.js'
 import schema from './schema.js'
 import {
   discoverNpmPackages,
   extractBaseName,
   loadSchema
 } from '../../plugins/vite/discoverPackages.js'
-import { toForwardSlash } from '../../utils/paths.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -35,36 +39,42 @@ function openBrowser(url) {
 }
 
 /**
- * Vite plugin that injects @source directives into styles.css
- * so Tailwind CSS scans custom editor components from all module sources.
+ * Scan all module sources for custom editor components and return
+ * a map of editor name -> absolute file path.
+ *
+ * @param {string} packageRoot
+ * @param {string} projectRoot
+ * @returns {Map<string, string>}
  */
-function tailwindCustomSources(clientDir, packageRoot, projectRoot) {
-  return {
-    name: 'tailwind-custom-sources',
-    enforce: 'pre',
-    transform(code, id) {
-      if (!id.endsWith('styles.css')) return
+function discoverCustomEditors(packageRoot, projectRoot) {
+  const editors = new Map()
 
-      const cssDir = dirname(id)
-      const sources = [
-        resolve(packageRoot, 'src/modules/*/setup/**/*.vue'),
-        resolve(projectRoot, 'modules/*/setup/**/*.vue')
-      ]
-
-      // Discover NPM modules (both scoped and unscoped) with setup schemas
-      const npmPackages = discoverNpmPackages(projectRoot)
-        .filter((p) => p.type === 'module' && p.configSchema)
-      for (const pkg of npmPackages) {
-        sources.push(resolve(pkg.path, 'setup/**/*.vue'))
-      }
-
-      const directives = sources
-        .map((src) => `@source "${toForwardSlash(relative(cssDir, src))}";`)
-        .join('\n')
-
-      return { code: directives + '\n' + code, map: null }
+  // Core modules
+  for (const { name, moduleDir, schema: moduleSchema } of scanModuleSchemas(resolve(packageRoot, 'src/modules'))) {
+    if (moduleSchema.editor === 'custom' && moduleSchema.component) {
+      editors.set(name, resolve(moduleDir, moduleSchema.component))
     }
   }
+
+  // Local modules
+  for (const { name, moduleDir, schema: moduleSchema } of scanModuleSchemas(resolve(projectRoot, 'modules'))) {
+    if (moduleSchema.editor === 'custom' && moduleSchema.component) {
+      editors.set(name, resolve(moduleDir, moduleSchema.component))
+    }
+  }
+
+  // NPM modules
+  const npmModules = discoverNpmPackages(projectRoot)
+    .filter((p) => p.type === 'module' && p.configSchema)
+
+  for (const pkg of npmModules) {
+    const baseName = extractBaseName(pkg.name, 'module')
+    if (pkg.configSchema.editor === 'custom' && pkg.configSchema.component) {
+      editors.set(baseName, resolve(pkg.path, pkg.configSchema.component))
+    }
+  }
+
+  return editors
 }
 
 /**
@@ -78,6 +88,10 @@ function tailwindCustomSources(clientDir, packageRoot, projectRoot) {
 export async function createSetupServer({ packageRoot, projectRoot, port }) {
   const app = express()
   const clientDir = resolve(__dirname, 'client')
+
+  // Discover custom editors before starting Vite so they can be
+  // registered as virtual modules in the normal module graph.
+  const editorMap = discoverCustomEditors(packageRoot, projectRoot)
 
   app.use(express.json())
 
@@ -106,6 +120,7 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
     },
     appType: 'custom',
     plugins: [
+      customEditorPlugin(editorMap),
       tailwindCustomSources(clientDir, packageRoot, projectRoot),
       tailwindcss(),
       vue()
@@ -222,6 +237,9 @@ function scanModuleSchemas(modulesDir) {
 /**
  * Convert a module's setup.schema.json into a setup wizard section.
  *
+ * Custom editors use virtual:editor/<name> identifiers that are resolved
+ * by the customEditorPlugin to actual file paths on disk.
+ *
  * @param {string} name - Module name
  * @param {object} moduleSchema - Parsed setup.schema.json
  * @param {string} [moduleDir] - Absolute path to the module directory (for resolving component paths)
@@ -235,7 +253,7 @@ function moduleSchemaToSection(name, moduleSchema, moduleDir) {
 
   if (moduleSchema.editor === 'custom' && moduleSchema.component && moduleDir) {
     section.editor = 'custom'
-    section.component = `/@fs/${toForwardSlash(resolve(moduleDir, moduleSchema.component))}`
+    section.component = `${VIRTUAL_EDITOR_PREFIX}${name}`
     section.configKey = moduleSchema.configKey || null
   } else if (moduleSchema.editor) {
     section.editor = moduleSchema.editor

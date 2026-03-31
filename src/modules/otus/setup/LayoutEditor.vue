@@ -268,7 +268,7 @@
 import { ref, computed, onMounted } from 'vue'
 import PanelConfigEditor from '@setup/components/PanelConfigEditor.vue'
 import RankGroupSelector from './RankGroupSelector.vue'
-import { injectConfig } from '@setup/composables/useConfig.js'
+import { useConfig } from '@setup/composables/useConfig.js'
 import { DEFAULT_OVERVIEW_LAYOUT } from '../constants/layouts/overview.js'
 
 const props = defineProps({
@@ -280,7 +280,7 @@ const {
   setConfigValue,
   saveConfig,
   isFileDirty
-} = injectConfig()
+} = useConfig()
 
 const MAX_COLUMNS = 3
 

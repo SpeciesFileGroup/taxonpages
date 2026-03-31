@@ -139,11 +139,8 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { useConfig, provideConfig } from './composables/useConfig.js'
+import { useConfig } from './composables/useConfig.js'
 import SectionEditor from './components/SectionEditor.vue'
-
-const config = useConfig()
-provideConfig(config)
 
 const {
   schema,
@@ -153,7 +150,7 @@ const {
   loadSchema,
   loadAllConfig,
   isFileDirty
-} = config
+} = useConfig()
 
 const loading = ref(true)
 const activeSection = ref('')

@@ -1,6 +1,4 @@
-import { ref, reactive, computed, provide, inject } from 'vue'
-
-const CONFIG_INJECTION_KEY = Symbol('taxonpages-config')
+import { ref, reactive, computed } from 'vue'
 
 const schema = ref(null)
 const configData = reactive({})
@@ -83,7 +81,7 @@ export function useConfig() {
     return dirty.value.has(filename)
   }
 
-  const store = {
+  return {
     schema,
     configData,
     status,
@@ -98,24 +96,4 @@ export function useConfig() {
     setConfigContent,
     isFileDirty
   }
-
-  return store
-}
-
-/**
- * Provide the config store to all descendant components.
- * Call once from the root component (App.vue).
- */
-export function provideConfig(store) {
-  provide(CONFIG_INJECTION_KEY, store)
-}
-
-/**
- * Inject the config store provided by a parent component.
- * Use this in custom editors loaded via /@fs/ to avoid
- * duplicate module instances from different Vite module graphs.
- * Falls back to the module-level singleton if not provided.
- */
-export function injectConfig() {
-  return inject(CONFIG_INJECTION_KEY, null) || useConfig()
 }

@@ -74,7 +74,6 @@
 </template>
 
 <script setup>
-import { defineAsyncComponent } from 'vue'
 import FormField from './FormField.vue'
 import ArrayEditor from './ArrayEditor.vue'
 import ObjectEditor from './ObjectEditor.vue'
@@ -83,6 +82,7 @@ import ApiConnectionEditor from './ApiConnectionEditor.vue'
 import StatusOverview from './StatusOverview.vue'
 import StyleEditor from './StyleEditor.vue'
 import { useConfig } from '../composables/useConfig.js'
+import editorRegistry from 'virtual:editor-registry'
 
 defineProps({
   section: { type: Object, required: true }
@@ -90,16 +90,7 @@ defineProps({
 
 const { getConfigValue, setConfigValue, saveConfig, isFileDirty } = useConfig()
 
-const editorCache = new Map()
-
-function loadCustomEditor(componentPath) {
-  if (!editorCache.has(componentPath)) {
-    editorCache.set(
-      componentPath,
-      defineAsyncComponent(() => import(/* @vite-ignore */ componentPath))
-    )
-  }
-
-  return editorCache.get(componentPath)
+function loadCustomEditor(componentId) {
+  return editorRegistry[componentId] || null
 }
 </script>
