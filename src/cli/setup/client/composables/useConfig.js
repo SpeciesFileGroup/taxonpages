@@ -77,7 +77,7 @@ export function useConfig() {
 
   const isDirty = computed(() => dirty.value.size > 0)
 
-  function isFileDirty(filename) {
+  function hasUnsavedChanges(filename) {
     return dirty.value.has(filename)
   }
 
@@ -94,6 +94,6 @@ export function useConfig() {
     getConfigValue,
     setConfigValue,
     setConfigContent,
-    isFileDirty
+    hasUnsavedChanges
   }
 }

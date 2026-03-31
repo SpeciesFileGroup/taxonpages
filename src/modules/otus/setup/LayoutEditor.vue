@@ -191,7 +191,7 @@
     <div class="flex items-center gap-3 mt-5">
       <button
         class="tp-btn tp-btn-primary"
-        :disabled="!isFileDirty(fileName)"
+        :disabled="!hasUnsavedChanges(fileName)"
         @click="saveConfig(fileName)"
       >
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -199,7 +199,7 @@
         </svg>
         Save Layout
       </button>
-      <span v-if="isFileDirty(fileName)" class="text-xs text-warning font-medium">
+      <span v-if="hasUnsavedChanges(fileName)" class="text-xs text-warning font-medium">
         Unsaved changes
       </span>
     </div>
@@ -265,22 +265,19 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import PanelConfigEditor from '@setup/components/PanelConfigEditor.vue'
+import { ref, computed, onMounted, inject } from 'vue'
 import RankGroupSelector from './RankGroupSelector.vue'
-import { useConfig } from '@setup/composables/useConfig.js'
 import { DEFAULT_OVERVIEW_LAYOUT } from '../constants/layouts/overview.js'
 
-const props = defineProps({
-  section: { type: Object, required: true }
-})
+const PanelConfigEditor = inject('tp:PanelConfigEditor')
 
-const {
-  configData,
-  setConfigValue,
-  saveConfig,
-  isFileDirty
-} = useConfig()
+const props = defineProps({
+  section: { type: Object, required: true },
+  configData: { type: Object, required: true },
+  setConfigValue: { type: Function, required: true },
+  saveConfig: { type: Function, required: true },
+  hasUnsavedChanges: { type: Function, required: true }
+})
 
 const MAX_COLUMNS = 3
 
@@ -301,11 +298,11 @@ const modalPanel = computed(() => {
 })
 
 const layoutData = computed(() => {
-  return configData[fileName.value]?.[configKey.value] || {}
+  return props.configData[fileName.value]?.[configKey.value] || {}
 })
 
 function markDirty() {
-  setConfigValue(fileName.value, configKey.value, { ...layoutData.value })
+  props.setConfigValue(fileName.value, configKey.value, { ...layoutData.value })
 }
 
 // --- Tab operations ---
@@ -316,7 +313,7 @@ function addTab() {
 
   const tp = { ...layoutData.value }
   tp[key] = { panels: [[[]]] }
-  setConfigValue(fileName.value, configKey.value, tp)
+  props.setConfigValue(fileName.value, configKey.value, tp)
   activeTab.value = key
 }
 
@@ -325,7 +322,7 @@ function removeTab(tabKey) {
 
   const tp = { ...layoutData.value }
   delete tp[tabKey]
-  setConfigValue(fileName.value, configKey.value, tp)
+  props.setConfigValue(fileName.value, configKey.value, tp)
 
   const keys = Object.keys(tp)
   activeTab.value = keys.length ? keys[0] : ''
@@ -339,7 +336,7 @@ function renameTab(oldKey, newKey) {
     tp[k === oldKey ? newKey : k] = v
   }
 
-  setConfigValue(fileName.value, configKey.value, tp)
+  props.setConfigValue(fileName.value, configKey.value, tp)
   activeTab.value = newKey
 }
 
@@ -354,7 +351,7 @@ function updateTabProp(tabKey, prop, value) {
   }
 
   tp[tabKey] = tab
-  setConfigValue(fileName.value, configKey.value, tp)
+  props.setConfigValue(fileName.value, configKey.value, tp)
 }
 
 // --- Row/Column operations ---
@@ -522,7 +519,7 @@ function onTabDrop(event, targetTabKey) {
     newData[key] = oldData[key]
   }
 
-  setConfigValue(fileName.value, configKey.value, newData)
+  props.setConfigValue(fileName.value, configKey.value, newData)
 }
 
 // --- Drag and drop ---
@@ -553,7 +550,7 @@ function onDrop(event, toRow, toCol, toPanel) {
 
 onMounted(async () => {
   if (!Object.keys(layoutData.value).length) {
-    setConfigValue(fileName.value, configKey.value, structuredClone(DEFAULT_OVERVIEW_LAYOUT))
+    props.setConfigValue(fileName.value, configKey.value, structuredClone(DEFAULT_OVERVIEW_LAYOUT))
   }
 
   activeTab.value = Object.keys(layoutData.value)[0] || ''

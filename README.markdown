@@ -547,7 +547,15 @@ modules/
 | `file`      | `string` | Yes      | YAML filename in `config/` where settings are stored         |
 | `configKey` | `string` | No       | Root key in the YAML file                                    |
 
-The custom component receives `section` as a prop and uses `@setup/composables/useConfig.js` for reading, writing, and saving configuration. Custom editors are loaded as virtual modules (`virtual:editor/<name>`) so they participate in Vite's normal module graph and can use `@setup/` imports directly:
+Custom editors are loaded as virtual modules (`virtual:editor/<name>`) so they participate in Vite's normal module graph. The setup wizard passes configuration methods as props, so custom editors do not need to import from the setup client directly:
+
+| Prop             | Type       | Description                                      |
+| ---------------- | ---------- | ------------------------------------------------ |
+| `section`        | `Object`   | The section definition from the schema           |
+| `configData`     | `Object`   | Reactive object with all loaded config files     |
+| `setConfigValue` | `Function` | `(filename, key, value)` — sets a config value   |
+| `saveConfig`     | `Function` | `(filename)` — saves a config file               |
+| `hasUnsavedChanges`    | `Function` | `(filename)` — returns whether a file has unsaved changes |
 
 ```vue
 <template>
@@ -556,7 +564,7 @@ The custom component receives `section` as a prop and uses `@setup/composables/u
 
     <button
       class="tp-btn tp-btn-primary"
-      :disabled="!isFileDirty(section.file)"
+      :disabled="!hasUnsavedChanges(section.file)"
       @click="saveConfig(section.file)"
     >
       Save
@@ -566,28 +574,28 @@ The custom component receives `section` as a prop and uses `@setup/composables/u
 
 <script setup>
 import { computed } from 'vue'
-import { useConfig } from '@setup/composables/useConfig.js'
 
 const props = defineProps({
-  section: { type: Object, required: true }
+  section: { type: Object, required: true },
+  configData: { type: Object, required: true },
+  setConfigValue: { type: Function, required: true },
+  saveConfig: { type: Function, required: true },
+  hasUnsavedChanges: { type: Function, required: true }
 })
-
-const { configData, setConfigValue, saveConfig, isFileDirty } = useConfig()
 
 const configKey = computed(() => props.section.configKey || props.section.file.replace('.yml', ''))
 </script>
 ```
 
-Custom editors can also import shared setup UI components:
+Shared setup UI components like `PanelConfigEditor` are available via Vue's `inject`:
 
 ```javascript
-import FormField from '@setup/components/FormField.vue'
-import ArrayEditor from '@setup/components/ArrayEditor.vue'
-import ObjectEditor from '@setup/components/ObjectEditor.vue'
-import PanelConfigEditor from '@setup/components/PanelConfigEditor.vue'
+import { inject } from 'vue'
+
+const PanelConfigEditor = inject('tp:PanelConfigEditor')
 ```
 
-The `@setup/` alias points to the setup wizard client directory, providing access to all reusable form components and composables. The Tailwind CSS utility classes used in the setup wizard are available in custom editor components.
+The Tailwind CSS utility classes used in the setup wizard are available in custom editor components.
 
 ## NPM panels and modules
 
@@ -1023,7 +1031,7 @@ taxonpages-module-specimens/
 }
 ```
 
-The component path is relative to the module's root directory. The custom editor component follows the same contract as local modules — it receives `section` as a prop and uses `@setup/composables/useConfig.js` for state management. See [Custom editor component](#custom-editor-component) for details.
+The component path is relative to the module's root directory. The custom editor component follows the same contract as local modules — it receives configuration props (`section`, `configData`, `setConfigValue`, `saveConfig`, `hasUnsavedChanges`) from the setup wizard. See [Custom editor component](#custom-editor-component) for details.
 
 ## Package configuration schema
 

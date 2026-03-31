@@ -58,7 +58,7 @@
                 class="w-1.5 h-1.5 rounded-full shrink-0 transition-colors"
                 :class="activeSection === `${groupKey}.${sectionKey}`
                   ? 'bg-sidebar-accent'
-                  : isFileDirty(section.file) ? 'bg-warning' : 'bg-sidebar-muted/50'"
+                  : hasUnsavedChanges(section.file) ? 'bg-warning' : 'bg-sidebar-muted/50'"
               />
               <span class="truncate">{{ section.label }}</span>
             </button>
@@ -149,7 +149,7 @@ const {
   isDirty,
   loadSchema,
   loadAllConfig,
-  isFileDirty
+  hasUnsavedChanges
 } = useConfig()
 
 const loading = ref(true)
@@ -171,7 +171,7 @@ const currentGroupLabel = computed(() => {
 function getGroupDirtyCount(groupKey) {
   if (!schema.value?.[groupKey]?.sections) return 0
   return Object.values(schema.value[groupKey].sections)
-    .filter(s => s.file && isFileDirty(s.file))
+    .filter(s => s.file && hasUnsavedChanges(s.file))
     .length
 }
 

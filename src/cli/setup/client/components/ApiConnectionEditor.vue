@@ -192,7 +192,7 @@
       <div class="flex items-center gap-3 mt-6 pt-5 border-t border-base-border">
         <button
           class="tp-btn tp-btn-primary"
-          :disabled="!isFileDirty(section.file)"
+          :disabled="!hasUnsavedChanges(section.file)"
           @click="saveConfig(section.file)"
         >
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -200,7 +200,7 @@
           </svg>
           Save {{ section.label }}
         </button>
-        <span v-if="isFileDirty(section.file)" class="text-xs text-warning font-medium">
+        <span v-if="hasUnsavedChanges(section.file)" class="text-xs text-warning font-medium">
           Unsaved changes
         </span>
       </div>
@@ -219,7 +219,7 @@ const props = defineProps({
   section: { type: Object, required: true }
 })
 
-const { getConfigValue, setConfigValue, saveConfig, isFileDirty } = useConfig()
+const { getConfigValue, setConfigValue, saveConfig, hasUnsavedChanges } = useConfig()
 const { projects, loading, error, fetchProjects, clearCache } =
   useProjectFetcher()
 

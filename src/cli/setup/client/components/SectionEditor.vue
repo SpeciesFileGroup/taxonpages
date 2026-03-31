@@ -25,6 +25,10 @@
       v-else-if="section.editor === 'custom' && section.component"
       :is="loadCustomEditor(section.component)"
       :section="section"
+      :config-data="configData"
+      :set-config-value="setConfigValue"
+      :save-config="saveConfig"
+      :is-file-dirty="hasUnsavedChanges"
     />
 
     <!-- Standard form fields -->
@@ -57,7 +61,7 @@
       <div class="flex items-center gap-3 mt-6 pt-5 border-t border-base-border">
         <button
           class="tp-btn tp-btn-primary"
-          :disabled="!isFileDirty(section.file)"
+          :disabled="!hasUnsavedChanges(section.file)"
           @click="saveConfig(section.file)"
         >
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -65,7 +69,7 @@
           </svg>
           Save {{ section.label }}
         </button>
-        <span v-if="isFileDirty(section.file)" class="text-xs text-warning font-medium">
+        <span v-if="hasUnsavedChanges(section.file)" class="text-xs text-warning font-medium">
           Unsaved changes
         </span>
       </div>
@@ -74,6 +78,7 @@
 </template>
 
 <script setup>
+import { provide } from 'vue'
 import FormField from './FormField.vue'
 import ArrayEditor from './ArrayEditor.vue'
 import ObjectEditor from './ObjectEditor.vue'
@@ -81,6 +86,7 @@ import PackagesEditor from './PackagesEditor.vue'
 import ApiConnectionEditor from './ApiConnectionEditor.vue'
 import StatusOverview from './StatusOverview.vue'
 import StyleEditor from './StyleEditor.vue'
+import PanelConfigEditor from './PanelConfigEditor.vue'
 import { useConfig } from '../composables/useConfig.js'
 import editorRegistry from 'virtual:editor-registry'
 
@@ -88,7 +94,10 @@ defineProps({
   section: { type: Object, required: true }
 })
 
-const { getConfigValue, setConfigValue, saveConfig, isFileDirty } = useConfig()
+const { configData, getConfigValue, setConfigValue, saveConfig, hasUnsavedChanges } = useConfig()
+
+// Provide client components to custom editors so they don't need @setup/ imports
+provide('tp:PanelConfigEditor', PanelConfigEditor)
 
 function loadCustomEditor(componentId) {
   return editorRegistry[componentId] || null
