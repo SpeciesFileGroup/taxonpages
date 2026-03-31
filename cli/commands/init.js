@@ -35,7 +35,7 @@ export async function init({ packageRoot, directory }) {
 
   if (!existsSync(packageJsonPath)) {
     const require = createRequire(import.meta.url)
-    const { version: taxonpagesVersion } = require('../../../package.json')
+    const { version: taxonpagesVersion } = require('../../package.json')
 
     const pkg = {
       name: projectName,

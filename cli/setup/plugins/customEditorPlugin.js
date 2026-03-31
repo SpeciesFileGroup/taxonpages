@@ -1,4 +1,4 @@
-import { toForwardSlash } from '../../../utils/paths.js'
+import { toForwardSlash } from '../../../src/utils/paths.js'
 
 const VIRTUAL_EDITOR_PREFIX = 'virtual:editor/'
 const RESOLVED_PREFIX = '\0virtual:editor/'

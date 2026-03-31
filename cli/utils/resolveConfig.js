@@ -1,13 +1,13 @@
 import { resolve } from 'node:path'
 import { existsSync, writeFileSync } from 'node:fs'
-import { loadConfiguration } from '../../utils/loadConfiguration.js'
-import { toForwardSlash } from '../../utils/paths.js'
+import { loadConfiguration } from '../../src/utils/loadConfiguration.js'
+import { toForwardSlash } from '../../src/utils/paths.js'
 import {
   discoverNpmPackages,
   discoverLocalPanels,
   discoverLocalModules,
   resolveConflicts
-} from '../../plugins/vite/discoverPackages.js'
+} from '../../src/plugins/vite/discoverPackages.js'
 import { VitePluginRadar } from 'vite-plugin-radar'
 import Vue from '@vitejs/plugin-vue'
 import Markdown from 'unplugin-vue-markdown/vite'
@@ -17,12 +17,12 @@ import tailwindcss from '@tailwindcss/vite'
 import {
   relativeToRouterPlugin,
   variableReplacementPlugin
-} from '../../plugins/markdown/index.js'
+} from '../../src/plugins/markdown/index.js'
 import {
   ViteRestart,
   projectStylesPlugin,
   componentRegistrationPlugin
-} from '../../plugins/vite/index.js'
+} from '../../src/plugins/vite/index.js'
 
 /**
  * Build the full Vite configuration, resolving paths correctly

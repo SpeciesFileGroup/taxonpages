@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { resolve, join } from 'node:path'
 import { readdirSync, readFileSync, existsSync } from 'node:fs'
-import { discoverNpmPackages } from '../../../plugins/vite/discoverPackages.js'
+import { discoverNpmPackages } from '../../../src/plugins/vite/discoverPackages.js'
 
 /**
  * Create panels API routes.

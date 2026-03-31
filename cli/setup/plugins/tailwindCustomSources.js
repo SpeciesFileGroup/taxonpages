@@ -1,6 +1,6 @@
 import { resolve, relative, dirname } from 'node:path'
-import { discoverNpmPackages } from '../../../plugins/vite/discoverPackages.js'
-import { toForwardSlash } from '../../../utils/paths.js'
+import { discoverNpmPackages } from '../../../src/plugins/vite/discoverPackages.js'
+import { toForwardSlash } from '../../../src/utils/paths.js'
 
 /**
  * Vite plugin that injects @source directives into styles.css

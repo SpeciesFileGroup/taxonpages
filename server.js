@@ -43,7 +43,7 @@ export async function createServer({
 
   if (!isProd) {
     const { getViteConfig } = await import(
-      './src/cli/utils/resolveConfig.js'
+      './cli/utils/resolveConfig.js'
     )
     const viteConfig = getViteConfig({ packageRoot, projectRoot })
 

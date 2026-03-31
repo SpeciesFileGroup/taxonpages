@@ -1,5 +1,5 @@
-import { loadConfiguration } from '../../utils/loadConfiguration.js'
-import { discoverNpmPackages } from '../../plugins/vite/discoverPackages.js'
+import { loadConfiguration } from '../../src/utils/loadConfiguration.js'
+import { discoverNpmPackages } from '../../src/plugins/vite/discoverPackages.js'
 
 const REGISTRY_TIMEOUT = 5000
 

@@ -1,11 +1,11 @@
-import { loadConfiguration } from '../../utils/loadConfiguration.js'
+import { loadConfiguration } from '../../src/utils/loadConfiguration.js'
 import {
   discoverNpmPackages,
   discoverLocalPanels,
   discoverLocalModules,
   resolveConflicts,
   extractBaseName
-} from '../../plugins/vite/discoverPackages.js'
+} from '../../src/plugins/vite/discoverPackages.js'
 
 /**
  * List all discovered TaxonPages packages (local + npm).

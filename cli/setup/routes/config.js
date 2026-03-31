@@ -3,7 +3,7 @@ import { resolve, join, basename } from 'node:path'
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
 import { glob } from 'glob'
 import yaml from 'js-yaml'
-import { toForwardSlash } from '../../../utils/paths.js'
+import { toForwardSlash } from '../../../src/utils/paths.js'
 
 /**
  * Create config API routes.

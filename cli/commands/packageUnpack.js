@@ -12,7 +12,7 @@ import {
   discoverLocalPanels,
   discoverLocalModules,
   extractBaseName
-} from '../../plugins/vite/discoverPackages.js'
+} from '../../src/plugins/vite/discoverPackages.js'
 
 /**
  * Unpack an NPM TaxonPages package into the local project directory

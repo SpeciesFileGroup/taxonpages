@@ -1,11 +1,11 @@
 import { Router } from 'express'
-import { loadConfiguration } from '../../../utils/loadConfiguration.js'
+import { loadConfiguration } from '../../../src/utils/loadConfiguration.js'
 import {
   discoverNpmPackages,
   discoverLocalPanels,
   discoverLocalModules,
   resolveConflicts
-} from '../../../plugins/vite/discoverPackages.js'
+} from '../../../src/plugins/vite/discoverPackages.js'
 import { checkPackageUpdates } from '../../commands/packageOutdated.js'
 
 /**

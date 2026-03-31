@@ -20,7 +20,7 @@ program
   .option('-p, --port <number>', 'port number', '5173')
   .option('--host [host]', 'expose to network')
   .action(async (options) => {
-    const { startDev } = await import('../src/cli/commands/dev.js')
+    const { startDev } = await import('../cli/commands/dev.js')
     await startDev({ packageRoot, projectRoot: process.cwd(), ...options })
   })
 
@@ -29,7 +29,7 @@ program
   .description('Start SSR development server')
   .option('-p, --port <number>', 'port number', '6173')
   .action(async (options) => {
-    const { startDevSSR } = await import('../src/cli/commands/dev.js')
+    const { startDevSSR } = await import('../cli/commands/dev.js')
     await startDevSSR({ packageRoot, projectRoot: process.cwd(), ...options })
   })
 
@@ -37,7 +37,7 @@ program
   .command('build')
   .description('Build for production (SPA mode)')
   .action(async () => {
-    const { runBuild } = await import('../src/cli/commands/build.js')
+    const { runBuild } = await import('../cli/commands/build.js')
     await runBuild({ packageRoot, projectRoot: process.cwd(), mode: 'spa' })
   })
 
@@ -45,7 +45,7 @@ program
   .command('build:ssr')
   .description('Build for production (SSR mode)')
   .action(async () => {
-    const { runBuild } = await import('../src/cli/commands/build.js')
+    const { runBuild } = await import('../cli/commands/build.js')
     await runBuild({ packageRoot, projectRoot: process.cwd(), mode: 'ssr' })
   })
 
@@ -54,7 +54,7 @@ program
   .description('Start production SSR server')
   .option('-p, --port <number>', 'port number', '6173')
   .action(async (options) => {
-    const { serve } = await import('../src/cli/commands/serve.js')
+    const { serve } = await import('../cli/commands/serve.js')
     await serve({ packageRoot, projectRoot: process.cwd(), ...options })
   })
 
@@ -63,7 +63,7 @@ program
   .description('Preview production build locally')
   .option('-p, --port <number>', 'port number', '4173')
   .action(async (options) => {
-    const { preview } = await import('../src/cli/commands/preview.js')
+    const { preview } = await import('../cli/commands/preview.js')
     await preview({ packageRoot, projectRoot: process.cwd(), ...options })
   })
 
@@ -73,7 +73,7 @@ pkg
   .command('list')
   .description('List discovered TaxonPages modules and panels')
   .action(async () => {
-    const { listPackages } = await import('../src/cli/commands/packages.js')
+    const { listPackages } = await import('../cli/commands/packages.js')
     listPackages({ packageRoot, projectRoot: process.cwd() })
   })
 
@@ -81,7 +81,7 @@ pkg
   .command('add <name>')
   .description('Install a TaxonPages package and auto-configure it')
   .action(async (name) => {
-    const { packageAdd } = await import('../src/cli/commands/packageAdd.js')
+    const { packageAdd } = await import('../cli/commands/packageAdd.js')
     await packageAdd({ packageRoot, projectRoot: process.cwd(), name })
   })
 
@@ -90,7 +90,7 @@ pkg
   .description('Uninstall a TaxonPages package and clean up config')
   .action(async (name) => {
     const { packageRemove } =
-      await import('../src/cli/commands/packageRemove.js')
+      await import('../cli/commands/packageRemove.js')
     packageRemove({ projectRoot: process.cwd(), name })
   })
 
@@ -99,7 +99,7 @@ pkg
   .description('Unpack an NPM package into a local directory for customization')
   .action(async (name) => {
     const { packageUnpack } =
-      await import('../src/cli/commands/packageUnpack.js')
+      await import('../cli/commands/packageUnpack.js')
     await packageUnpack({ projectRoot: process.cwd(), name })
   })
 
@@ -108,7 +108,7 @@ pkg
   .description('Check installed TaxonPages packages for available updates')
   .action(async () => {
     const { packageOutdated } =
-      await import('../src/cli/commands/packageOutdated.js')
+      await import('../cli/commands/packageOutdated.js')
     await packageOutdated({ projectRoot: process.cwd() })
   })
 
@@ -117,7 +117,7 @@ program
   .description('Start the web-based configuration interface')
   .option('-p, --port <number>', 'port number', '4400')
   .action(async (options) => {
-    const { startSetup } = await import('../src/cli/commands/setup.js')
+    const { startSetup } = await import('../cli/commands/setup.js')
     await startSetup({ packageRoot, projectRoot: process.cwd(), ...options })
   })
 
@@ -125,7 +125,7 @@ program
   .command('init [directory]')
   .description('Scaffold a new TaxonPages project')
   .action(async (directory) => {
-    const { init } = await import('../src/cli/commands/init.js')
+    const { init } = await import('../cli/commands/init.js')
     await init({ packageRoot, directory: directory || '.' })
   })
 

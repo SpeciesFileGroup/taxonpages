@@ -22,7 +22,7 @@ import {
   discoverNpmPackages,
   extractBaseName,
   loadSchema
-} from '../../plugins/vite/discoverPackages.js'
+} from '../../src/plugins/vite/discoverPackages.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
