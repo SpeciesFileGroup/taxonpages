@@ -547,7 +547,7 @@ modules/
 | `file`      | `string` | Yes      | YAML filename in `config/` where settings are stored         |
 | `configKey` | `string` | No       | Root key in the YAML file                                    |
 
-The custom component receives `section` as a prop and uses `@setup/composables/useConfig.js` for reading, writing, and saving configuration:
+The custom component receives `section` as a prop and uses `injectConfig` from `@setup/composables/useConfig.js` to access the shared configuration store. Use `injectConfig()` instead of `useConfig()` in custom editors — this ensures the editor shares the same config state as the setup wizard, even though the component is loaded from a different directory via `/@fs/`:
 
 ```vue
 <template>
@@ -566,13 +566,13 @@ The custom component receives `section` as a prop and uses `@setup/composables/u
 
 <script setup>
 import { computed } from 'vue'
-import { useConfig } from '@setup/composables/useConfig.js'
+import { injectConfig } from '@setup/composables/useConfig.js'
 
 const props = defineProps({
   section: { type: Object, required: true }
 })
 
-const { configData, setConfigValue, saveConfig, isFileDirty } = useConfig()
+const { configData, setConfigValue, saveConfig, isFileDirty } = injectConfig()
 
 const configKey = computed(() => props.section.configKey || props.section.file.replace('.yml', ''))
 </script>
@@ -1023,7 +1023,7 @@ taxonpages-module-specimens/
 }
 ```
 
-The component path is relative to the module's root directory. The custom editor component follows the same contract as local modules — it receives `section` as a prop and uses `@setup/composables/useConfig.js` for state management. See [Custom editor component](#custom-editor-component) for details.
+The component path is relative to the module's root directory. The custom editor component follows the same contract as local modules — it receives `section` as a prop and uses `injectConfig()` from `@setup/composables/useConfig.js` for state management. See [Custom editor component](#custom-editor-component) for details.
 
 ## Package configuration schema
 

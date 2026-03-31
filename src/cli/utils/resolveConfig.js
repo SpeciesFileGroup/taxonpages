@@ -172,7 +172,7 @@ function writeTailwindSources(packageRoot, projectRoot, options = {}) {
   ).filter((p) => p.source === 'npm')
 
   for (const pkg of [...panels, ...modules]) {
-    const pkgSource = toForwardSlash(resolve(pkg.path, 'src/**/*.{vue,js}'))
+    const pkgSource = toForwardSlash(resolve(pkg.path, '**/*.{vue,js}'))
     sources.push(`@source "${pkgSource}";`)
   }
 
