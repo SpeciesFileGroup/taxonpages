@@ -119,6 +119,7 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
       }
     },
     appType: 'custom',
+    cacheDir: resolve(projectRoot, 'node_modules/.vite-setup'),
     plugins: [
       customEditorPlugin(editorMap),
       tailwindCustomSources(clientDir, packageRoot, projectRoot),
