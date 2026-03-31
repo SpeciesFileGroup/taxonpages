@@ -2,8 +2,13 @@
   <div>
     <!-- Section header -->
     <div class="mb-6">
-      <h2 class="text-xl font-semibold text-base-content tracking-tight">{{ section.label }}</h2>
-      <p v-if="section.description" class="text-sm text-base-soft mt-1.5 leading-relaxed">
+      <h2 class="text-xl font-semibold text-base-content tracking-tight">
+        {{ section.label }}
+      </h2>
+      <p
+        v-if="section.description"
+        class="text-sm text-base-soft mt-1.5 leading-relaxed"
+      >
         {{ section.description }}
       </p>
     </div>
@@ -12,7 +17,10 @@
     <StatusOverview v-if="section.editor === 'status'" />
 
     <!-- API Connection editor -->
-    <ApiConnectionEditor v-else-if="section.editor === 'api-connection'" :section="section" />
+    <ApiConnectionEditor
+      v-else-if="section.editor === 'api-connection'"
+      :section="section"
+    />
 
     <!-- Style editor -->
     <StyleEditor v-else-if="section.editor === 'style'" />
@@ -32,9 +40,15 @@
     />
 
     <!-- Standard form fields -->
-    <div v-else class="tp-card p-5 sm:p-6">
+    <div
+      v-else
+      class="tp-card p-5 sm:p-6"
+    >
       <div class="space-y-1">
-        <template v-for="(field, key) in section.fields" :key="key">
+        <template
+          v-for="(field, key) in section.fields"
+          :key="key"
+        >
           <ObjectEditor
             v-if="field.type === 'object'"
             :field="field"
@@ -58,18 +72,33 @@
         </template>
       </div>
 
-      <div class="flex items-center gap-3 mt-6 pt-5 border-t border-base-border">
+      <div
+        class="flex items-center gap-3 mt-6 pt-5 border-t border-base-border"
+      >
         <button
           class="tp-btn tp-btn-primary"
           :disabled="!hasUnsavedChanges(section.file)"
           @click="saveConfig(section.file)"
         >
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M5 13l4 4L19 7"
+            />
           </svg>
           Save {{ section.label }}
         </button>
-        <span v-if="hasUnsavedChanges(section.file)" class="text-xs text-warning font-medium">
+        <span
+          v-if="hasUnsavedChanges(section.file)"
+          class="text-xs text-warning font-medium"
+        >
           Unsaved changes
         </span>
       </div>
@@ -78,7 +107,7 @@
 </template>
 
 <script setup>
-import { provide } from 'vue'
+import { provide, defineAsyncComponent } from 'vue'
 import FormField from './FormField.vue'
 import ArrayEditor from './ArrayEditor.vue'
 import ObjectEditor from './ObjectEditor.vue'
@@ -88,18 +117,35 @@ import StatusOverview from './StatusOverview.vue'
 import StyleEditor from './StyleEditor.vue'
 import PanelConfigEditor from './PanelConfigEditor.vue'
 import { useConfig } from '../composables/useConfig.js'
-import editorRegistry from 'virtual:editor-registry'
 
 defineProps({
   section: { type: Object, required: true }
 })
 
-const { configData, getConfigValue, setConfigValue, saveConfig, hasUnsavedChanges } = useConfig()
+const {
+  configData,
+  getConfigValue,
+  setConfigValue,
+  saveConfig,
+  hasUnsavedChanges
+} = useConfig()
 
 // Provide client components to custom editors so they don't need @setup/ imports
 provide('tp:PanelConfigEditor', PanelConfigEditor)
 
+const registryPromise = import(/* @vite-ignore */ 'virtual:editor-registry')
+
+const editorCache = new Map()
+
 function loadCustomEditor(componentId) {
-  return editorRegistry[componentId] || null
+  if (!editorCache.has(componentId)) {
+    editorCache.set(
+      componentId,
+      defineAsyncComponent(() =>
+        registryPromise.then((mod) => mod.default[componentId])
+      )
+    )
+  }
+  return editorCache.get(componentId)
 }
 </script>
