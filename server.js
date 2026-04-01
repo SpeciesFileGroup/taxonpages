@@ -4,6 +4,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
 import { generateConsoleMessage } from './src/ssr/utils/generateConsoleMessage.js'
+import { loadApiRoutes } from './src/server/loadApiRoutes.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -76,6 +77,48 @@ export async function createServer({
         { index: false }
       )
     )
+  }
+
+  // User-defined API routes from ~/server/routes/*.js
+  const apiRouter = express.Router()
+  app.use('/api', apiRouter)
+
+  async function mountApiRoutes() {
+    apiRouter.stack.length = 0
+    const routes = await loadApiRoutes(projectRoot)
+
+    for (const { name, handler } of routes) {
+      apiRouter.use(`/${name}`, handler)
+    }
+  }
+
+  await mountApiRoutes()
+
+  if (!isProd) {
+    const { watch } = await import('node:fs')
+    const routesDir = path.resolve(projectRoot, 'server', 'routes')
+
+    try {
+      watch(routesDir, { recursive: true }, async (eventType, filename) => {
+        if (!filename) return
+
+        // Bust the module cache so re-import picks up changes
+        const filePath = path.resolve(routesDir, filename)
+        const fileUrl = String(new URL(`file://${filePath}`))
+
+        // For ESM we append a query param to force re-import
+        if (!globalThis.__apiRouteVersions) {
+          globalThis.__apiRouteVersions = {}
+        }
+        globalThis.__apiRouteVersions[fileUrl] =
+          (globalThis.__apiRouteVersions[fileUrl] || 0) + 1
+
+        console.log(`[taxonpages] API route changed: ${filename}. Reloading...`)
+        await mountApiRoutes()
+      })
+    } catch {
+      // routesDir doesn't exist yet — that's fine
+    }
   }
 
   app.use('/ping', async (req, res) => {

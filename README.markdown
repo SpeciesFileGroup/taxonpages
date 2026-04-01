@@ -597,6 +597,88 @@ const PanelConfigEditor = inject('tp:PanelConfigEditor')
 
 The Tailwind CSS utility classes used in the setup wizard are available in custom editor components.
 
+## Server Routes (API Proxy)
+
+TaxonPages supports user-defined server-side API routes, useful for proxying external APIs that require tokens or sensitive credentials. This keeps secrets on the server and avoids exposing them to the browser.
+
+Server routes are only available in SSR mode (`dev:ssr` / `serve`).
+
+### Creating a route
+
+Create a `server/routes/` directory in your project root. Each `.js` file becomes an API endpoint, where the filename determines the URL prefix:
+
+```
+server/
+└── routes/
+    └── xeno-canto.js   →  /api/xeno-canto/*
+```
+
+Each file must export a default function that receives a context object and returns an Express Router:
+
+```javascript
+// server/routes/xeno-canto.js
+export default function ({ env, router }) {
+  const r = router()
+
+  r.get('/recordings', async (req, res) => {
+    const { query } = req.query
+
+    if (!query) {
+      return res.status(400).json({ error: 'Missing query parameter' })
+    }
+
+    const params = new URLSearchParams({
+      query,
+      key: env.TAXONPAGES_XENO_CANTO_API_KEY
+    })
+
+    const response = await fetch(
+      `https://xeno-canto.org/api/3/recordings?${params}`
+    )
+
+    res.status(response.status).json(await response.json())
+  })
+
+  return r
+}
+```
+
+### Environment variables
+
+Store sensitive credentials in a `.env` file at the project root. Only variables prefixed with `TAXONPAGES_` are loaded and available in route handlers via `ctx.env`:
+
+```
+# .env
+TAXONPAGES_XENO_CANTO_API_KEY=your_key_here
+```
+
+The `.env` file supports the same variants as Vite: `.env`, `.env.local`, `.env.development`, `.env.production`.
+
+Environment variables set on the host (e.g., in production deployments) take precedence over `.env` file values. These variables are never exposed to the client.
+
+### Context object
+
+The route factory function receives a context object with the following properties:
+
+| Property      | Type       | Description                                           |
+| ------------- | ---------- | ----------------------------------------------------- |
+| `env`         | `object`   | Environment variables prefixed with `TAXONPAGES_`     |
+| `router`      | `function` | Factory that returns a new Express Router instance     |
+| `projectRoot` | `string`   | Absolute path to the user's project directory          |
+
+### Calling from the frontend
+
+From your Vue components, call the route using the `/api/<filename>/` prefix:
+
+```javascript
+const response = await fetch(`/api/xeno-canto/recordings?${new URLSearchParams({ query: name })}`)
+const data = await response.json()
+```
+
+### Hot reload
+
+In development mode (`dev:ssr`), route files are watched for changes and reloaded automatically without restarting the server.
+
 ## NPM panels and modules
 
 In addition to local `panels/` and `modules/` folders, TaxonPages can discover panels and modules installed as NPM packages. This allows the community to publish and share reusable extensions.
