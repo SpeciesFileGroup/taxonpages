@@ -126,6 +126,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import { apiFetch } from '../composables/useApi.js'
 import { DEFAULTS, PRESETS, VARIABLE_GROUPS as variableGroups } from './styleConstants.js'
 
 const activeMode = ref('light')
@@ -175,7 +176,7 @@ function rgbToHex(rgb) {
 
 async function save() {
   try {
-    const res = await fetch('/api/style', {
+    const res = await apiFetch('/api/style', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ light: styleData.light, dark: styleData.dark })
@@ -194,7 +195,7 @@ async function save() {
 
 onMounted(async () => {
   try {
-    const res = await fetch('/api/style')
+    const res = await apiFetch('/api/style')
     const data = await res.json()
 
     styleData.light = data.light || {}

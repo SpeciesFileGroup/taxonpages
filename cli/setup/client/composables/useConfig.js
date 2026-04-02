@@ -1,4 +1,5 @@
 import { ref, reactive, computed } from 'vue'
+import { apiFetch } from './useApi.js'
 
 const schema = ref(null)
 const configData = reactive({})
@@ -8,12 +9,12 @@ const statusMessage = ref('')
 
 export function useConfig() {
   async function loadSchema() {
-    const res = await fetch('/api/schema')
+    const res = await apiFetch('/api/schema')
     schema.value = await res.json()
   }
 
   async function loadAllConfig() {
-    const res = await fetch('/api/config')
+    const res = await apiFetch('/api/config')
     const data = await res.json()
 
     for (const [filename, entry] of Object.entries(data)) {
@@ -22,7 +23,7 @@ export function useConfig() {
   }
 
   async function loadConfig(filename) {
-    const res = await fetch(`/api/config/${filename}`)
+    const res = await apiFetch(`/api/config/${filename}`)
     const data = await res.json()
     configData[filename] = data.content
   }
@@ -31,7 +32,7 @@ export function useConfig() {
     status.value = 'saving'
 
     try {
-      const res = await fetch(`/api/config/${filename}`, {
+      const res = await apiFetch(`/api/config/${filename}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: configData[filename] || {} })

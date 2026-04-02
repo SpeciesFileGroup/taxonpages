@@ -1,4 +1,5 @@
 import { ref, shallowRef } from 'vue'
+import { apiFetch } from './useApi.js'
 
 const cache = new Map()
 const CACHE_TTL = 5 * 60 * 1000
@@ -31,9 +32,11 @@ export function useProjectFetcher() {
     projects.value = []
 
     try {
-      const res = await fetch(
-        `/api/proxy/projects?url=${encodeURIComponent(baseUrl)}`
-      )
+      const res = await apiFetch('/api/proxy/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: baseUrl })
+      })
       const data = await res.json()
 
       if (!res.ok) {

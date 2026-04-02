@@ -155,8 +155,8 @@ export async function createServer({
       res.status(statusCode).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (e) {
       vite && vite.ssrFixStacktrace(e)
-      console.log(e.stack)
-      res.status(500).end(e.stack)
+      console.error(e.stack)
+      res.status(500).end(isProd ? 'Internal Server Error' : e.stack)
     }
   })
 

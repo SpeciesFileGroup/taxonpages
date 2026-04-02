@@ -153,6 +153,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { apiFetch } from '../composables/useApi.js'
 import UpdateBadge from './UpdateBadge.vue'
 
 const packages = ref({ panels: [], modules: [] })
@@ -179,7 +180,7 @@ function showStatus(message, isError = false) {
 
 async function refreshPackages() {
   try {
-    const res = await fetch('/api/packages')
+    const res = await apiFetch('/api/packages')
     packages.value = await res.json()
   } catch {
     packages.value = { panels: [], modules: [] }
@@ -187,7 +188,7 @@ async function refreshPackages() {
 
   updatesLoading.value = true
   try {
-    const res = await fetch('/api/packages/outdated')
+    const res = await apiFetch('/api/packages/outdated')
     updates.value = await res.json()
   } catch {
     updates.value = []
@@ -205,7 +206,7 @@ async function installPackage() {
   statusMessage.value = ''
 
   try {
-    const res = await fetch('/api/packages/install', {
+    const res = await apiFetch('/api/packages/install', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name })
@@ -234,7 +235,7 @@ async function uninstallPackage(name) {
   statusMessage.value = ''
 
   try {
-    const res = await fetch('/api/packages/uninstall', {
+    const res = await apiFetch('/api/packages/uninstall', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name })
@@ -261,7 +262,7 @@ async function updatePackage(name) {
   statusMessage.value = ''
 
   try {
-    const res = await fetch('/api/packages/update', {
+    const res = await apiFetch('/api/packages/update', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name })

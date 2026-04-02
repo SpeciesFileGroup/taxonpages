@@ -128,7 +128,13 @@ export function createStatusRoutes(packageRoot, projectRoot) {
     }
 
     try {
-      new URL(url)
+      const parsed = new URL(url)
+      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+        return res.status(400).json({ error: 'URL must use HTTP or HTTPS' })
+      }
+      if (!parsed.pathname.includes('/api/v1')) {
+        return res.status(400).json({ error: 'URL must be a TaxonWorks API endpoint (/api/v1)' })
+      }
     } catch {
       return res.status(400).json({ error: 'Invalid URL format' })
     }

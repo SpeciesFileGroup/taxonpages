@@ -1,6 +1,21 @@
 import { Router } from 'express'
 
 /**
+ * Validate that a URL is a safe TaxonWorks API endpoint.
+ * Blocks non-HTTP protocols and URLs that don't target /api/v1.
+ */
+function isTaxonWorksUrl(urlString) {
+  try {
+    const parsed = new URL(urlString)
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return false
+    if (!parsed.pathname.includes('/api/v1')) return false
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
  * Proxy route to fetch remote TaxonWorks API data.
  * Avoids CORS issues when the setup client calls external APIs.
  */
@@ -8,20 +23,19 @@ export function createProxyRoutes() {
   const router = Router()
 
   /**
-   * GET /api/proxy/projects?url=<base_api_url>
+   * POST /api/proxy/projects
    * Fetches the project list from a remote TaxonWorks API.
+   * Body: { url: string }
    */
-  router.get('/projects', async (req, res) => {
-    const { url } = req.query
+  router.post('/projects', async (req, res) => {
+    const { url } = req.body || {}
 
     if (!url) {
-      return res.status(400).json({ error: 'Missing "url" query parameter' })
+      return res.status(400).json({ error: 'Missing "url" in request body' })
     }
 
-    try {
-      new URL(url)
-    } catch {
-      return res.status(400).json({ error: 'Invalid URL' })
+    if (!isTaxonWorksUrl(url)) {
+      return res.status(400).json({ error: 'URL must be an HTTP(S) TaxonWorks API endpoint (/api/v1)' })
     }
 
     try {

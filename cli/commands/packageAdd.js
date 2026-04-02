@@ -1,4 +1,4 @@
-import { execSync } from 'node:child_process'
+import { execFileSync } from 'node:child_process'
 import { resolve, join } from 'node:path'
 import { readFileSync, writeFileSync, existsSync, copyFileSync } from 'node:fs'
 import { createInterface } from 'node:readline'
@@ -16,7 +16,7 @@ export async function packageAdd({ packageRoot, projectRoot, name }) {
   // 1. Install the package
   console.log(`Installing ${name}...`)
   try {
-    execSync(`npm install ${name}`, { cwd: projectRoot, stdio: 'inherit' })
+    execFileSync('npm', ['install', name], { cwd: projectRoot, stdio: 'inherit' })
   } catch {
     console.error(`Failed to install ${name}.`)
     process.exit(1)
@@ -191,7 +191,7 @@ function askYesNo(question) {
  */
 export function packageAddCore({ packageRoot, projectRoot, name }) {
   try {
-    execSync(`npm install ${name}`, { cwd: projectRoot, stdio: 'pipe' })
+    execFileSync('npm', ['install', name], { cwd: projectRoot, stdio: 'pipe' })
   } catch (err) {
     const stderr = err.stderr?.toString().trim()
     const firstLine = stderr?.split('\n').find((l) => l && !l.startsWith('npm warn')) || ''

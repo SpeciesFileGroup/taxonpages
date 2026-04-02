@@ -1,4 +1,4 @@
-import { execSync } from 'node:child_process'
+import { execFileSync } from 'node:child_process'
 import { resolve, join } from 'node:path'
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import yaml from 'js-yaml'
@@ -35,7 +35,7 @@ export function packageRemove({ projectRoot, name }) {
   // 3. Uninstall the package
   console.log(`Uninstalling ${name}...`)
   try {
-    execSync(`npm uninstall ${name}`, { cwd: projectRoot, stdio: 'inherit' })
+    execFileSync('npm', ['uninstall', name], { cwd: projectRoot, stdio: 'inherit' })
   } catch {
     console.error(`Failed to uninstall ${name}.`)
     process.exit(1)
@@ -117,7 +117,7 @@ export function packageRemoveCore({ projectRoot, name }) {
   }
 
   try {
-    execSync(`npm uninstall ${name}`, { cwd: projectRoot, stdio: 'pipe' })
+    execFileSync('npm', ['uninstall', name], { cwd: projectRoot, stdio: 'pipe' })
   } catch (err) {
     const stderr = err.stderr?.toString().trim()
     const firstLine = stderr?.split('\n').find((l) => l && !l.startsWith('npm warn')) || ''

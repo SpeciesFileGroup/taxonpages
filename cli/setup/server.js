@@ -3,6 +3,7 @@ import { resolve, dirname } from 'node:path'
 import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { exec } from 'node:child_process'
+import { randomUUID } from 'node:crypto'
 import { createServer as createViteServer } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
@@ -88,12 +89,20 @@ function discoverCustomEditors(packageRoot, projectRoot) {
 export async function createSetupServer({ packageRoot, projectRoot, port }) {
   const app = express()
   const clientDir = resolve(__dirname, 'client')
+  const csrfToken = randomUUID()
 
   // Discover custom editors before starting Vite so they can be
   // registered as virtual modules in the normal module graph.
   const editorMap = discoverCustomEditors(packageRoot, projectRoot)
 
   app.use(express.json())
+
+  // CSRF protection: require token on state-changing API requests
+  app.use('/api', (req, res, next) => {
+    if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return next()
+    if (req.headers['x-csrf-token'] === csrfToken) return next()
+    res.status(403).json({ error: 'Invalid or missing CSRF token' })
+  })
 
   // API routes (before Vite middleware)
   app.use('/api/config', createConfigRoutes(projectRoot))
@@ -124,7 +133,16 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
       customEditorPlugin(editorMap),
       tailwindCustomSources(clientDir, packageRoot, projectRoot),
       tailwindcss(),
-      vue()
+      vue(),
+      {
+        name: 'csrf-token-inject',
+        transformIndexHtml(html) {
+          return html.replace(
+            '</head>',
+            `  <meta name="csrf-token" content="${csrfToken}">\n  </head>`
+          )
+        }
+      }
     ],
     resolve: {
       alias: {

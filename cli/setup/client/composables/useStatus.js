@@ -1,4 +1,5 @@
 import { ref, shallowRef } from 'vue'
+import { apiFetch } from './useApi.js'
 
 let cached = null
 
@@ -21,7 +22,7 @@ export function useStatus() {
     error.value = ''
 
     try {
-      const res = await fetch('/api/status')
+      const res = await apiFetch('/api/status')
       if (!res.ok) throw new Error(`Request failed (${res.status})`)
 
       const result = await res.json()
@@ -35,7 +36,7 @@ export function useStatus() {
   }
 
   async function testConnection(url, projectToken) {
-    const res = await fetch('/api/status/test-connection', {
+    const res = await apiFetch('/api/status/test-connection', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url, project_token: projectToken })
