@@ -92,6 +92,42 @@ function extractPanelId(entryPath) {
 }
 
 /**
+ * Non-interactive core for uninstalling a TaxonPages package.
+ * Designed for API/programmatic use — throws on failure.
+ *
+ * @param {object} options
+ * @param {string} options.projectRoot - Path to the user's project
+ * @param {string} options.name - NPM package name to remove
+ * @returns {{ message: string }}
+ */
+export function packageRemoveCore({ projectRoot, name }) {
+  const manifest = readManifest(projectRoot, name)
+  let panelId = null
+
+  if (manifest?.type === 'panel') {
+    panelId = extractPanelId(manifest.entryPath)
+  }
+
+  if (panelId) {
+    const configPath = resolve(projectRoot, 'config', 'taxa_page.yml')
+
+    if (existsSync(configPath)) {
+      removePanelFromConfig(configPath, panelId)
+    }
+  }
+
+  try {
+    execSync(`npm uninstall ${name}`, { cwd: projectRoot, stdio: 'pipe' })
+  } catch (err) {
+    const stderr = err.stderr?.toString().trim()
+    const firstLine = stderr?.split('\n').find((l) => l && !l.startsWith('npm warn')) || ''
+    throw new Error(firstLine || `Failed to uninstall "${name}".`)
+  }
+
+  return { message: `Uninstalled ${name}.` }
+}
+
+/**
  * Remove all occurrences of a panel ID from taxa_page.yml.
  * Handles both string entries and objects with an `id` field.
  *

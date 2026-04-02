@@ -97,7 +97,7 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
 
   // API routes (before Vite middleware)
   app.use('/api/config', createConfigRoutes(projectRoot))
-  app.use('/api/packages', createPackageRoutes(projectRoot))
+  app.use('/api/packages', createPackageRoutes(packageRoot, projectRoot))
   app.use('/api/panels', createPanelRoutes(packageRoot, projectRoot))
   app.use('/api/proxy', createProxyRoutes())
   app.use('/api/status', createStatusRoutes(packageRoot, projectRoot))

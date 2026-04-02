@@ -312,8 +312,8 @@ export default {
     label: 'Packages',
     sections: {
       installed: {
-        label: 'Installed Packages',
-        description: 'Manage installed TaxonPages modules and panels',
+        label: 'Package Manager',
+        description: 'Install, update, and manage TaxonPages modules and panels',
         editor: 'packages'
       }
     }

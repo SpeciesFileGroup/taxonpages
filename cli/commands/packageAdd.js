@@ -178,3 +178,60 @@ function askYesNo(question) {
     })
   })
 }
+
+/**
+ * Non-interactive core for installing a TaxonPages package.
+ * Designed for API/programmatic use — throws on failure, no interactive prompts.
+ *
+ * @param {object} options
+ * @param {string} options.packageRoot - Path to the TaxonPages framework
+ * @param {string} options.projectRoot - Path to the user's project
+ * @param {string} options.name - NPM package name to install
+ * @returns {{ type: string, panelId: string|null, message: string }}
+ */
+export function packageAddCore({ packageRoot, projectRoot, name }) {
+  try {
+    execSync(`npm install ${name}`, { cwd: projectRoot, stdio: 'pipe' })
+  } catch (err) {
+    const stderr = err.stderr?.toString().trim()
+    const firstLine = stderr?.split('\n').find((l) => l && !l.startsWith('npm warn')) || ''
+    throw new Error(firstLine || `Failed to install "${name}".`)
+  }
+
+  const manifest = readManifest(projectRoot, name)
+
+  if (!manifest) {
+    throw new Error(
+      `Package "${name}" does not have a taxonpages manifest. Is this a TaxonPages package?`
+    )
+  }
+
+  if (manifest.type === 'module') {
+    return { type: 'module', panelId: null, message: `Installed ${name}. Routes registered automatically.` }
+  }
+
+  const panelId = extractPanelId(manifest.entryPath)
+
+  if (!panelId) {
+    throw new Error(
+      `Could not extract panel ID from ${manifest.entry}. Make sure it exports an object with an \`id\` string field.`
+    )
+  }
+
+  const configPath = resolve(projectRoot, 'config', 'taxa_page.yml')
+
+  if (!existsSync(configPath)) {
+    const templatePath = resolve(packageRoot, 'templates', 'config', 'taxa_page.yml.example')
+
+    if (existsSync(templatePath)) {
+      copyFileSync(templatePath, configPath)
+    }
+  }
+
+  if (existsSync(configPath)) {
+    addPanelToConfig(configPath, panelId)
+    return { type: 'panel', panelId, message: `Installed ${name} and added ${panelId} to taxa_page.yml.` }
+  }
+
+  return { type: 'panel', panelId, message: `Installed ${name}. Add ${panelId} manually to your taxa_page.yml config.` }
+}

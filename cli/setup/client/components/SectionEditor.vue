@@ -107,7 +107,7 @@
 </template>
 
 <script setup>
-import { provide, defineAsyncComponent, onMounted, onUnmounted } from 'vue'
+import { defineAsyncComponent, onMounted, onUnmounted } from 'vue'
 import FormField from './FormField.vue'
 import ArrayEditor from './ArrayEditor.vue'
 import ObjectEditor from './ObjectEditor.vue'
@@ -115,7 +115,6 @@ import PackagesEditor from './PackagesEditor.vue'
 import ApiConnectionEditor from './ApiConnectionEditor.vue'
 import StatusOverview from './StatusOverview.vue'
 import StyleEditor from './StyleEditor.vue'
-import PanelConfigEditor from './PanelConfigEditor.vue'
 import { useConfig } from '../composables/useConfig.js'
 
 const props = defineProps({
@@ -142,8 +141,6 @@ const {
   hasUnsavedChanges
 } = useConfig()
 
-// Provide client components to custom editors so they don't need @setup/ imports
-provide('tp:PanelConfigEditor', PanelConfigEditor)
 
 const registryPromise = import(/* @vite-ignore */ 'virtual:editor-registry')
 

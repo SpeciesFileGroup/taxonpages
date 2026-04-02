@@ -16,10 +16,4 @@
     box-shadow 0.2s ease,
     border-color 0.2s ease;
 }
-
-.tp-card:hover {
-  box-shadow:
-    0 1px 3px var(--tp-card-shadow),
-    0 4px 8px var(--tp-card-shadow);
-}
 </style>

@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router, json } from 'express'
 import { loadConfiguration } from '../../../src/utils/loadConfiguration.js'
 import {
   discoverNpmPackages,
@@ -7,15 +7,21 @@ import {
   resolveConflicts
 } from '../../../src/plugins/vite/discoverPackages.js'
 import { checkPackageUpdates } from '../../commands/packageOutdated.js'
+import { packageAddCore } from '../../commands/packageAdd.js'
+import { packageRemoveCore } from '../../commands/packageRemove.js'
+
+const VALID_PKG_NAME = /^(@[\w.-]+\/)?[\w.-]+$/
 
 /**
  * Create package API routes.
  *
+ * @param {string} packageRoot
  * @param {string} projectRoot
  * @returns {Router}
  */
-export function createPackageRoutes(projectRoot) {
+export function createPackageRoutes(packageRoot, projectRoot) {
   const router = Router()
+  router.use(json())
 
   /**
    * GET /api/packages
@@ -48,6 +54,63 @@ export function createPackageRoutes(projectRoot) {
       res.json(updates)
     } catch (err) {
       res.status(500).json({ error: err.message })
+    }
+  })
+
+  /**
+   * POST /api/packages/install
+   * Install a TaxonPages package.
+   */
+  router.post('/install', (req, res) => {
+    const { name } = req.body || {}
+
+    if (!name || !VALID_PKG_NAME.test(name)) {
+      return res.status(400).json({ ok: false, error: 'Invalid package name.' })
+    }
+
+    try {
+      const result = packageAddCore({ packageRoot, projectRoot, name })
+      res.json({ ok: true, ...result })
+    } catch (err) {
+      res.status(500).json({ ok: false, error: err.message })
+    }
+  })
+
+  /**
+   * POST /api/packages/uninstall
+   * Uninstall a TaxonPages package.
+   */
+  router.post('/uninstall', (req, res) => {
+    const { name } = req.body || {}
+
+    if (!name || !VALID_PKG_NAME.test(name)) {
+      return res.status(400).json({ ok: false, error: 'Invalid package name.' })
+    }
+
+    try {
+      const result = packageRemoveCore({ projectRoot, name })
+      res.json({ ok: true, ...result })
+    } catch (err) {
+      res.status(500).json({ ok: false, error: err.message })
+    }
+  })
+
+  /**
+   * POST /api/packages/update
+   * Update a TaxonPages package to latest version.
+   */
+  router.post('/update', (req, res) => {
+    const { name } = req.body || {}
+
+    if (!name || !VALID_PKG_NAME.test(name)) {
+      return res.status(400).json({ ok: false, error: 'Invalid package name.' })
+    }
+
+    try {
+      const result = packageAddCore({ packageRoot, projectRoot, name })
+      res.json({ ok: true, ...result })
+    } catch (err) {
+      res.status(500).json({ ok: false, error: err.message })
     }
   })
 

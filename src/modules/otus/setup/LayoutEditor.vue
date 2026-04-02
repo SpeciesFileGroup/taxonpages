@@ -300,108 +300,64 @@
     </div>
 
     <!-- Panel settings modal -->
-    <Teleport to="body">
-      <div
-        v-if="panelModal"
-        class="fixed inset-0 z-50 flex items-center justify-center"
-      >
-        <div
-          class="absolute inset-0 bg-black/30 backdrop-blur-[2px]"
-          @click="closePanelModal"
+    <SwModal
+      :visible="!!panelModal"
+      :title="modalPanel ? getPanelId(modalPanel) : ''"
+      @close="closePanelModal"
+    >
+      <template v-if="modalPanel">
+        <RankGroupSelector
+          :model-value="getPanelRankGroup(modalPanel)"
+          label="Panel visible for rank groups"
+          @update:model-value="
+            updatePanelRankGroup(
+              panelModal.rowIdx,
+              panelModal.colIdx,
+              panelModal.panelIdx,
+              $event
+            )
+          "
         />
-        <div class="relative tp-card w-full max-w-lg mx-4 shadow-xl">
-          <div
-            class="flex items-center justify-between p-5 border-b border-base-border"
-          >
-            <h3 class="text-sm font-semibold text-base-content">
-              <span class="font-mono">{{ getPanelId(modalPanel) }}</span>
-            </h3>
-            <button
-              class="w-7 h-7 flex items-center justify-center rounded-md text-base-soft hover:bg-base-muted hover:text-base-content transition-colors"
-              @click="closePanelModal"
-            >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-          <div class="p-5 space-y-5 max-h-[70vh] overflow-y-auto">
-            <RankGroupSelector
-              :model-value="getPanelRankGroup(modalPanel)"
-              label="Panel visible for rank groups"
-              @update:model-value="
-                updatePanelRankGroup(
-                  panelModal.rowIdx,
-                  panelModal.colIdx,
-                  panelModal.panelIdx,
-                  $event
-                )
-              "
-            />
-            <PanelConfigEditor
-              v-if="getPanelSchema(getPanelId(modalPanel))"
-              :schema="getPanelSchema(getPanelId(modalPanel))"
-              :model-value="
-                typeof modalPanel === 'object' ? modalPanel.bind || {} : {}
-              "
-              @update:model-value="
-                updatePanelBindObject(
-                  panelModal.rowIdx,
-                  panelModal.colIdx,
-                  panelModal.panelIdx,
-                  $event
-                )
-              "
-            />
-            <div v-else-if="hasBind(modalPanel)">
-              <label class="block text-sm font-medium text-base-content mb-1.5"
-                >Bind (JSON)</label
-              >
-              <input
-                type="text"
-                class="tp-input"
-                :value="JSON.stringify(modalPanel.bind || {})"
-                @change="
-                  updatePanelBind(
-                    panelModal.rowIdx,
-                    panelModal.colIdx,
-                    panelModal.panelIdx,
-                    $event.target.value
-                  )
-                "
-              />
-            </div>
-          </div>
-          <div class="flex justify-end p-5 border-t border-base-border">
-            <button
-              class="tp-btn tp-btn-primary tp-btn-sm"
-              @click="closePanelModal"
-            >
-              Done
-            </button>
-          </div>
+        <SwPanelConfigEditor
+          v-if="getPanelSchema(getPanelId(modalPanel))"
+          :schema="getPanelSchema(getPanelId(modalPanel))"
+          :model-value="typeof modalPanel === 'object' ? modalPanel.bind || {} : {}"
+          @update:model-value="
+            updatePanelBindObject(
+              panelModal.rowIdx,
+              panelModal.colIdx,
+              panelModal.panelIdx,
+              $event
+            )
+          "
+        />
+        <div v-else-if="typeof modalPanel === 'object' && modalPanel.bind">
+          <label class="block text-sm font-medium text-base-content mb-1.5">
+            Bind (JSON)
+          </label>
+          <input
+            type="text"
+            class="tp-input"
+            :value="JSON.stringify(modalPanel.bind || {})"
+            @change="
+              updatePanelBind(
+                panelModal.rowIdx,
+                panelModal.colIdx,
+                panelModal.panelIdx,
+                $event.target.value
+              )
+            "
+          />
         </div>
-      </div>
-    </Teleport>
+      </template>
+    </SwModal>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, inject } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import RankGroupSelector from './RankGroupSelector.vue'
 import { DEFAULT_OVERVIEW_LAYOUT } from '../constants/layouts/overview.js'
-
-const PanelConfigEditor = inject('tp:PanelConfigEditor')
 
 const props = defineProps({
   section: { type: Object, required: true },
@@ -532,10 +488,6 @@ function removeColumn(rowIdx, colIdx) {
 
 function getPanelId(panel) {
   return typeof panel === 'string' ? panel : panel.id
-}
-
-function hasBind(panel) {
-  return typeof panel === 'object' && panel.bind
 }
 
 function addPanel(rowIdx, colIdx, event) {
