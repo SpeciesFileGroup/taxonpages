@@ -1,10 +1,20 @@
 <template>
   <div class="mb-3">
-    <label v-if="field.label" class="block text-sm font-medium text-base-content mb-1.5">
+    <label
+      v-if="field.label"
+      class="block text-sm font-medium text-base-content mb-1.5"
+    >
       {{ field.label }}
-      <span v-if="field.required" class="text-danger/70 ml-0.5">*</span>
+      <span
+        v-if="field.required"
+        class="text-danger/70 ml-0.5"
+        >*</span
+      >
     </label>
-    <p v-if="field.description" class="text-xs text-base-soft mb-2 leading-relaxed">
+    <p
+      v-if="field.description"
+      class="text-xs text-base-soft mb-2 leading-relaxed"
+    >
       {{ field.description }}
     </p>
 
@@ -16,7 +26,7 @@
       :value="modelValue"
       :placeholder="field.placeholder || ''"
       @input="$emit('update:modelValue', $event.target.value)"
-    >
+    />
 
     <!-- Number -->
     <input
@@ -25,10 +35,13 @@
       class="tp-input"
       :value="modelValue"
       @input="$emit('update:modelValue', Number($event.target.value))"
-    >
+    />
 
     <!-- Boolean (toggle switch) -->
-    <label v-if="field.type === 'boolean'" class="inline-flex items-center gap-3 cursor-pointer group">
+    <label
+      v-if="field.type === 'boolean'"
+      class="inline-flex items-center gap-3 cursor-pointer group"
+    >
       <button
         type="button"
         role="switch"
@@ -40,7 +53,7 @@
         <span
           class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition-transform duration-200"
           :class="modelValue ? 'translate-x-5' : 'translate-x-0.5'"
-          style="margin-top: 2px;"
+          style="margin-top: 2px"
         />
       </button>
       <span class="text-sm text-base-content select-none">

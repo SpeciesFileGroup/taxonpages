@@ -234,6 +234,7 @@ export default {
           header_links: {
             type: 'array',
             label: 'Navigation Links',
+            sortable: true,
             items: {
               label: { type: 'string', label: 'Label' },
               link: { type: 'string', label: 'URL' },

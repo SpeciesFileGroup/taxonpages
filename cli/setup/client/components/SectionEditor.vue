@@ -107,7 +107,7 @@
 </template>
 
 <script setup>
-import { provide, defineAsyncComponent } from 'vue'
+import { provide, defineAsyncComponent, onMounted, onUnmounted } from 'vue'
 import FormField from './FormField.vue'
 import ArrayEditor from './ArrayEditor.vue'
 import ObjectEditor from './ObjectEditor.vue'
@@ -118,9 +118,21 @@ import StyleEditor from './StyleEditor.vue'
 import PanelConfigEditor from './PanelConfigEditor.vue'
 import { useConfig } from '../composables/useConfig.js'
 
-defineProps({
+const props = defineProps({
   section: { type: Object, required: true }
 })
+
+function onKeydown(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault()
+    if (props.section.file && hasUnsavedChanges(props.section.file)) {
+      saveConfig(props.section.file)
+    }
+  }
+}
+
+onMounted(() => window.addEventListener('keydown', onKeydown))
+onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
 const {
   configData,
