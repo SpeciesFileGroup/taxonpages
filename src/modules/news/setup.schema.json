@@ -23,7 +23,7 @@
               "type": "array",
               "label": "Pinned News IDs",
               "description": "These articles will always be visible at the top of the listing, regardless of publication date.",
-              "items": { "type": "number" }
+              "items": { "type": "number", "placeholder": "News ID" }
             },
             "layout": {
               "type": "select",

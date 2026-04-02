@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-5">
+  <div class="mb-3">
     <label v-if="field.label" class="block text-sm font-medium text-base-content mb-1.5">
       {{ field.label }}
       <span v-if="field.required" class="text-danger/70 ml-0.5">*</span>

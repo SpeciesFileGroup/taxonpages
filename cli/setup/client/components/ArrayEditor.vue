@@ -1,39 +1,52 @@
 <template>
-  <div class="mb-5">
+  <div class="mb-3">
     <label v-if="field.label" class="block text-sm font-medium text-base-content mb-2">
       {{ field.label }}
     </label>
 
-    <div
-      v-for="(item, index) in items"
-      :key="index"
-      class="relative bg-base-muted/40 border border-base-border rounded-lg p-4 mb-2.5 group"
-    >
-      <div class="flex justify-between items-center mb-3">
-        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-base-muted text-[10px] font-semibold text-base-soft">
-          {{ index + 1 }}
-        </span>
+    <!-- Simple value array: compact inline rows -->
+    <template v-if="isSimpleType">
+      <div
+        v-for="(item, index) in items"
+        :key="index"
+        class="flex items-center gap-2 mb-1.5 group"
+      >
+        <input
+          :type="field.items.type === 'number' ? 'number' : 'text'"
+          class="tp-input"
+          :placeholder="field.items.placeholder || 'Enter a value'"
+          :value="item"
+          @input="updateSimpleItem(index, $event.target.value)"
+        >
         <button
-          class="tp-btn tp-btn-danger tp-btn-sm opacity-0 group-hover:opacity-100 transition-opacity"
+          class="tp-btn tp-btn-danger tp-btn-sm opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
           @click="removeItem(index)"
         >
           Remove
         </button>
       </div>
+    </template>
 
-      <div class="space-y-1">
-        <!-- Simple value array -->
-        <template v-if="isSimpleType">
-          <input
-            :type="field.items.type === 'number' ? 'number' : 'text'"
-            class="tp-input"
-            :value="item"
-            @input="updateSimpleItem(index, $event.target.value)"
+    <!-- Object array: card layout -->
+    <template v-else>
+      <div
+        v-for="(item, index) in items"
+        :key="index"
+        class="relative bg-base-muted/40 border border-base-border rounded-lg p-4 mb-2.5 group"
+      >
+        <div class="flex justify-between items-center mb-3">
+          <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-base-muted text-[10px] font-semibold text-base-soft">
+            {{ index + 1 }}
+          </span>
+          <button
+            class="tp-btn tp-btn-danger tp-btn-sm opacity-0 group-hover:opacity-100 transition-opacity"
+            @click="removeItem(index)"
           >
-        </template>
+            Remove
+          </button>
+        </div>
 
-        <!-- Object array -->
-        <template v-else>
+        <div class="space-y-1">
           <div
             v-for="(subField, subKey) in field.items"
             :key="subKey"
@@ -46,9 +59,9 @@
               />
             </template>
           </div>
-        </template>
+        </div>
       </div>
-    </div>
+    </template>
 
     <button
       class="tp-btn tp-btn-outline tp-btn-sm"
@@ -84,7 +97,7 @@ function addItem() {
   const newItems = [...items.value]
 
   if (isSimpleType.value) {
-    newItems.push(props.field.items.type === 'number' ? 0 : '')
+    newItems.push('')
   } else {
     const obj = {}
     for (const [key, subField] of Object.entries(props.field.items)) {

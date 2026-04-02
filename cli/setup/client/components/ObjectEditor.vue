@@ -2,12 +2,15 @@
   <div class="mb-5 rounded-lg border border-base-border bg-base-muted/30 p-4">
     <div
       v-if="field.label"
-      class="text-sm font-medium text-base-content mb-3 pb-2.5 border-b border-base-border"
+      class="text-base font-semibold text-base-content mb-3 pb-2.5 border-b border-base-border"
     >
       {{ field.label }}
     </div>
 
-    <template v-for="(subField, subKey) in field.fields" :key="subKey">
+    <template
+      v-for="(subField, subKey) in field.fields"
+      :key="subKey"
+    >
       <!-- Nested object -->
       <ObjectEditor
         v-if="subField.type === 'object'"
