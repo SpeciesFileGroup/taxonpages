@@ -32,7 +32,7 @@
           >
             <li>
               Run the setup wizard:
-              <CopyableCode text="npx @sfgrp/taxonpages setup" />
+              <CopyableCode text="npm run setup" />
             </li>
             <li>
               Follow the on-screen steps to set your API URL and project token

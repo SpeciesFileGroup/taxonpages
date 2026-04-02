@@ -1,0 +1,90 @@
+{
+  "file": "news.yml",
+  "label": "News",
+  "description": "Configure how news articles are displayed across your site.",
+  "configKey": "news_module",
+  "fields": {
+    "news_module": {
+      "type": "object",
+      "label": "News Module",
+      "fields": {
+        "index_page": {
+          "type": "object",
+          "label": "Index Page",
+          "description": "Settings for the main news listing page.",
+          "fields": {
+            "news_per_page": {
+              "type": "number",
+              "label": "Items Per Page",
+              "description": "Number of news articles shown per page.",
+              "default": 10
+            },
+            "pinned_news_id": {
+              "type": "array",
+              "label": "Pinned News IDs",
+              "description": "These articles will always be visible at the top of the listing, regardless of publication date.",
+              "items": { "type": "number" }
+            },
+            "layout": {
+              "type": "select",
+              "label": "Layout",
+              "description": "Display articles as a vertical list or as a card grid.",
+              "options": ["list", "cards"],
+              "default": "list"
+            },
+            "show_date": {
+              "type": "boolean",
+              "label": "Show Date",
+              "description": "Display the publication date on each article in the listing.",
+              "default": true
+            }
+          }
+        },
+        "news_page": {
+          "type": "object",
+          "label": "News Page",
+          "description": "Settings for individual news article pages.",
+          "fields": {
+            "show_date": {
+              "type": "boolean",
+              "label": "Show Date",
+              "description": "Display the publication date on the article page.",
+              "default": true
+            },
+            "show_author": {
+              "type": "boolean",
+              "label": "Show Author",
+              "description": "Display the author name on the article page.",
+              "default": true
+            }
+          }
+        },
+        "widget": {
+          "type": "object",
+          "label": "Widget",
+          "description": "Settings for the news widget shown on other pages.",
+          "fields": {
+            "news_count": {
+              "type": "number",
+              "label": "Items Count",
+              "description": "Number of recent articles to show in the widget.",
+              "default": 3
+            },
+            "show_date": {
+              "type": "boolean",
+              "label": "Show Date",
+              "description": "Display the publication date in the widget.",
+              "default": true
+            },
+            "show_content": {
+              "type": "boolean",
+              "label": "Show Content Preview",
+              "description": "Show a short text preview of each article in the widget.",
+              "default": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,15 +1,17 @@
 <template>
   <div>
     <!-- Tab bar -->
-    <div class="flex items-center gap-1 mb-5">
+    <div class="flex items-center justify-between gap-2 mb-5">
       <div class="flex gap-1 p-1 bg-base-muted rounded-lg flex-wrap">
         <button
           v-for="(tab, tabKey) in layoutData"
           :key="tabKey"
           class="px-3.5 py-1.5 rounded-md text-sm font-medium transition-all duration-150 cursor-grab active:cursor-grabbing"
-          :class="activeTab === tabKey
-            ? 'bg-base-foreground text-base-content shadow-sm'
-            : 'text-base-soft hover:text-base-content'"
+          :class="
+            activeTab === tabKey
+              ? 'bg-base-foreground text-base-content shadow-sm'
+              : 'text-base-soft hover:text-base-content'
+          "
           draggable="true"
           @dragstart="onTabDragStart($event, tabKey)"
           @dragover.prevent
@@ -17,47 +19,67 @@
           @click="activeTab = tabKey"
         >
           <span class="inline-flex items-center gap-1.5">
-            <svg class="w-3 h-3 text-base-soft/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16M4 16h16" />
-            </svg>
             {{ tab.label || tabKey }}
           </span>
         </button>
       </div>
       <button
-        class="tp-btn tp-btn-ghost tp-btn-sm"
+        class="tp-btn tp-btn-ghost tp-btn-sm self-stretch"
         @click="addTab"
       >
-        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        <svg
+          class="w-3.5 h-3.5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 4v16m8-8H4"
+          />
         </svg>
         Add Tab
       </button>
     </div>
 
     <!-- Active tab content -->
-    <div v-if="activeTab && layoutData[activeTab]" class="tp-card">
+    <div
+      v-if="activeTab && layoutData[activeTab]"
+      class="tp-card"
+    >
       <!-- Tab settings -->
       <div class="p-5 border-b border-base-border space-y-4">
         <div class="flex gap-3 flex-wrap items-end">
           <div class="flex-1 min-w-[140px]">
-            <label class="block text-sm font-medium text-base-content mb-1.5">Tab Key</label>
+            <label class="block text-sm font-medium text-base-content mb-1.5"
+              >Tab Key</label
+            >
             <input
               type="text"
               class="tp-input"
               :value="activeTab"
               @change="renameTab(activeTab, $event.target.value)"
-            >
+            />
           </div>
           <div class="flex-1 min-w-[140px]">
-            <label class="block text-sm font-medium text-base-content mb-1.5">Label</label>
+            <label class="block text-sm font-medium text-base-content mb-1.5"
+              >Label</label
+            >
             <input
               type="text"
               class="tp-input"
               :value="layoutData[activeTab].label || ''"
               placeholder="Uses tab key if empty"
-              @input="updateTabProp(activeTab, 'label', $event.target.value || undefined)"
-            >
+              @input="
+                updateTabProp(
+                  activeTab,
+                  'label',
+                  $event.target.value || undefined
+                )
+              "
+            />
           </div>
           <button
             class="tp-btn tp-btn-danger tp-btn-sm"
@@ -78,10 +100,12 @@
         <div
           v-for="(row, rowIdx) in layoutData[activeTab].panels"
           :key="rowIdx"
-          class="border border-base-border rounded-lg mb-3 p-3.5 bg-base-muted/20"
+          class="border border-base-border rounded-lg mb-4 p-3.5 bg-base-muted/30"
         >
           <div class="flex justify-between items-center mb-3">
-            <span class="text-xs font-semibold uppercase tracking-wider text-base-soft">
+            <span
+              class="text-xs font-semibold uppercase tracking-wider text-base-soft"
+            >
               Row {{ rowIdx + 1 }}
             </span>
             <button
@@ -97,18 +121,30 @@
             <div
               v-for="(col, colIdx) in row"
               :key="colIdx"
-              class="flex-1 min-w-[150px] bg-base-background rounded-lg p-2.5 border border-base-border/50"
+              class="flex-1 min-w-[150px] bg-base-background rounded-lg p-3 border border-base-border/50"
             >
               <div class="flex justify-between items-center mb-2">
-                <span class="text-[10px] font-semibold uppercase tracking-wider text-base-soft">
+                <span
+                  class="text-xs font-semibold uppercase tracking-wider text-base-soft"
+                >
                   Col {{ colIdx + 1 }}
                 </span>
                 <button
                   class="w-5 h-5 flex items-center justify-center rounded text-base-soft hover:bg-danger hover:text-white transition-colors"
                   @click="removeColumn(rowIdx, colIdx)"
                 >
-                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    class="w-3 h-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -117,34 +153,70 @@
               <div
                 v-for="(panel, panelIdx) in col"
                 :key="panelIdx"
-                class="bg-base-foreground border border-base-border rounded-md mb-1.5 cursor-grab active:cursor-grabbing hover:border-secondary/40 transition-colors"
+                class="bg-base-foreground border border-base-border rounded-md mb-1.5 shadow-xs cursor-grab active:cursor-grabbing hover:border-secondary/40 transition-colors"
                 draggable="true"
                 @dragstart="onDragStart($event, rowIdx, colIdx, panelIdx)"
                 @dragover.prevent
                 @drop="onDrop($event, rowIdx, colIdx, panelIdx)"
               >
-                <div class="flex items-center gap-1.5 px-2.5 py-1.5">
-                  <span class="text-base-soft/50 cursor-grab">
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16M4 16h16" />
+                <div class="flex items-center gap-1.5 px-3 py-2">
+                  <span class="text-base-soft/70 cursor-grab">
+                    <svg
+                      class="w-3.5 h-3.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M4 8h16M4 16h16"
+                      />
                     </svg>
                   </span>
-                  <span class="flex-1 text-sm font-mono text-base-content">{{ getPanelId(panel) }}</span>
+                  <span class="flex-1 text-sm font-mono text-base-content">{{
+                    getPanelId(panel)
+                  }}</span>
                   <button
                     class="tp-btn tp-btn-ghost tp-btn-sm !px-1.5 !py-0.5"
                     @click="openPanelModal(rowIdx, colIdx, panelIdx)"
                   >
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <svg
+                      class="w-3.5 h-3.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                      />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
                     </svg>
                   </button>
                   <button
                     class="w-5 h-5 flex items-center justify-center rounded text-base-soft hover:bg-danger hover:text-white transition-colors"
                     @click="removePanel(rowIdx, colIdx, panelIdx)"
                   >
-                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                      class="w-3 h-3"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                   </button>
                 </div>
@@ -168,7 +240,7 @@
 
             <button
               v-if="row.length < MAX_COLUMNS"
-              class="tp-btn tp-btn-outline tp-btn-sm whitespace-nowrap self-stretch"
+              class="tp-btn tp-btn-outline tp-btn-sm whitespace-nowrap self-stretch !border-dashed"
               @click="addColumn(rowIdx)"
             >
               + Col
@@ -177,29 +249,52 @@
         </div>
 
         <button
-          class="tp-btn tp-btn-outline"
+          class="tp-btn tp-btn-outline !border-dashed"
           @click="addRow"
         >
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 4v16m8-8H4"
+            />
           </svg>
           Add Row
         </button>
       </div>
     </div>
 
-    <div class="flex items-center gap-3 mt-5">
+    <div class="flex items-center gap-3 pt-5 border-t border-base-border/40">
       <button
         class="tp-btn tp-btn-primary"
         :disabled="!hasUnsavedChanges(fileName)"
         @click="saveConfig(fileName)"
       >
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M5 13l4 4L19 7"
+          />
         </svg>
         Save Layout
       </button>
-      <span v-if="hasUnsavedChanges(fileName)" class="text-xs text-warning font-medium">
+      <span
+        v-if="hasUnsavedChanges(fileName)"
+        class="text-xs text-warning font-medium"
+      >
         Unsaved changes
       </span>
     </div>
@@ -215,7 +310,9 @@
           @click="closePanelModal"
         />
         <div class="relative tp-card w-full max-w-lg mx-4 shadow-xl">
-          <div class="flex items-center justify-between p-5 border-b border-base-border">
+          <div
+            class="flex items-center justify-between p-5 border-b border-base-border"
+          >
             <h3 class="text-sm font-semibold text-base-content">
               <span class="font-mono">{{ getPanelId(modalPanel) }}</span>
             </h3>
@@ -223,8 +320,18 @@
               class="w-7 h-7 flex items-center justify-center rounded-md text-base-soft hover:bg-base-muted hover:text-base-content transition-colors"
               @click="closePanelModal"
             >
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -232,22 +339,47 @@
             <RankGroupSelector
               :model-value="getPanelRankGroup(modalPanel)"
               label="Panel visible for rank groups"
-              @update:model-value="updatePanelRankGroup(panelModal.rowIdx, panelModal.colIdx, panelModal.panelIdx, $event)"
+              @update:model-value="
+                updatePanelRankGroup(
+                  panelModal.rowIdx,
+                  panelModal.colIdx,
+                  panelModal.panelIdx,
+                  $event
+                )
+              "
             />
             <PanelConfigEditor
               v-if="getPanelSchema(getPanelId(modalPanel))"
               :schema="getPanelSchema(getPanelId(modalPanel))"
-              :model-value="typeof modalPanel === 'object' ? (modalPanel.bind || {}) : {}"
-              @update:model-value="updatePanelBindObject(panelModal.rowIdx, panelModal.colIdx, panelModal.panelIdx, $event)"
+              :model-value="
+                typeof modalPanel === 'object' ? modalPanel.bind || {} : {}
+              "
+              @update:model-value="
+                updatePanelBindObject(
+                  panelModal.rowIdx,
+                  panelModal.colIdx,
+                  panelModal.panelIdx,
+                  $event
+                )
+              "
             />
             <div v-else-if="hasBind(modalPanel)">
-              <label class="block text-sm font-medium text-base-content mb-1.5">Bind (JSON)</label>
+              <label class="block text-sm font-medium text-base-content mb-1.5"
+                >Bind (JSON)</label
+              >
               <input
                 type="text"
                 class="tp-input"
                 :value="JSON.stringify(modalPanel.bind || {})"
-                @change="updatePanelBind(panelModal.rowIdx, panelModal.colIdx, panelModal.panelIdx, $event.target.value)"
-              >
+                @change="
+                  updatePanelBind(
+                    panelModal.rowIdx,
+                    panelModal.colIdx,
+                    panelModal.panelIdx,
+                    $event.target.value
+                  )
+                "
+              />
             </div>
           </div>
           <div class="flex justify-end p-5 border-t border-base-border">
@@ -282,7 +414,9 @@ const props = defineProps({
 const MAX_COLUMNS = 3
 
 const fileName = computed(() => props.section.file)
-const configKey = computed(() => props.section.configKey || fileName.value.replace('.yml', ''))
+const configKey = computed(
+  () => props.section.configKey || fileName.value.replace('.yml', '')
+)
 
 const activeTab = ref('')
 const availablePanels = ref([])
@@ -472,7 +606,11 @@ function updatePanelBind(rowIdx, colIdx, panelIdx, jsonStr) {
     const id = getPanelId(panel)
     const rankGroup = getPanelRankGroup(panel)
 
-    tab.panels[rowIdx][colIdx][panelIdx] = rebuildPanelObject(id, bind, rankGroup)
+    tab.panels[rowIdx][colIdx][panelIdx] = rebuildPanelObject(
+      id,
+      bind,
+      rankGroup
+    )
     markDirty()
   } catch {
     // Invalid JSON, ignore
@@ -480,7 +618,7 @@ function updatePanelBind(rowIdx, colIdx, panelIdx, jsonStr) {
 }
 
 function getPanelRankGroup(panel) {
-  return typeof panel === 'object' ? (panel.rank_group || []) : []
+  return typeof panel === 'object' ? panel.rank_group || [] : []
 }
 
 function updatePanelRankGroup(rowIdx, colIdx, panelIdx, rankGroup) {
@@ -550,7 +688,11 @@ function onDrop(event, toRow, toCol, toPanel) {
 
 onMounted(async () => {
   if (!Object.keys(layoutData.value).length) {
-    props.setConfigValue(fileName.value, configKey.value, structuredClone(DEFAULT_OVERVIEW_LAYOUT))
+    props.setConfigValue(
+      fileName.value,
+      configKey.value,
+      structuredClone(DEFAULT_OVERVIEW_LAYOUT)
+    )
   }
 
   activeTab.value = Object.keys(layoutData.value)[0] || ''
