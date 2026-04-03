@@ -235,7 +235,7 @@ function injectModuleSchemas(baseSchema, packageRoot, projectRoot) {
   for (const pkg of npmModules) {
     const baseName = extractBaseName(pkg.name, 'module')
     if (!merged.modules.sections[baseName]) {
-      merged.modules.sections[baseName] = moduleSchemaToSection(baseName, pkg.configSchema)
+      merged.modules.sections[baseName] = moduleSchemaToSection(baseName, pkg.configSchema, pkg.path)
     }
   }
 
