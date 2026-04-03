@@ -27,13 +27,13 @@ export async function startDevSSR({ packageRoot, projectRoot, port }) {
     resolve(packageRoot, 'server.js')
   )
 
-  const { app } = await createServer({
+  const { httpServer } = await createServer({
     projectRoot,
     packageRoot,
     isProd: false
   })
 
-  app.listen(Number(port), () => {
+  httpServer.listen(Number(port), () => {
     console.log(`TaxonPages SSR dev server running at http://localhost:${port}`)
   })
 }

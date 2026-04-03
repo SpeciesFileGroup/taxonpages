@@ -1,5 +1,6 @@
 // @ts-check
 import fs from 'node:fs'
+import http from 'node:http'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
@@ -40,6 +41,7 @@ export async function createServer({
     : {}
 
   const app = express()
+  const httpServer = http.createServer(app)
   let vite
 
   if (!isProd) {
@@ -55,13 +57,14 @@ export async function createServer({
       ...viteConfig,
       logLevel: 'info',
       server: {
+        ...viteConfig.server,
         middlewareMode: true,
         watch: {
           usePolling: true,
           interval: 100
         },
         hmr: {
-          port: hmrPort
+          server: httpServer
         }
       },
       appType: 'custom'
@@ -160,7 +163,7 @@ export async function createServer({
     }
   })
 
-  return { app, vite }
+  return { app, httpServer, vite }
 }
 
 function makeAppContainer(app = '') {
@@ -177,8 +180,8 @@ if (isDirectRun) {
   const minimist = (await import('minimist')).default
   const { port = 6173 } = minimist(process.argv.slice(2))
 
-  createServer().then(({ app }) =>
-    app.listen(port, () => {
+  createServer().then(({ httpServer }) =>
+    httpServer.listen(port, () => {
       generateConsoleMessage({ port, url: 'http://localhost' })
     })
   )
