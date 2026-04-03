@@ -3,6 +3,8 @@ import { resolve, join } from 'node:path'
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import yaml from 'js-yaml'
 
+const NPM_OPTIONS = process.platform === 'win32' ? { shell: true } : {}
+
 /**
  * Uninstall a TaxonPages package and clean up its configuration.
  *
@@ -35,7 +37,7 @@ export function packageRemove({ projectRoot, name }) {
   // 3. Uninstall the package
   console.log(`Uninstalling ${name}...`)
   try {
-    execFileSync('npm', ['uninstall', name], { cwd: projectRoot, stdio: 'inherit' })
+    execFileSync('npm', ['uninstall', name], { ...NPM_OPTIONS, cwd: projectRoot, stdio: 'inherit' })
   } catch {
     console.error(`Failed to uninstall ${name}.`)
     process.exit(1)
@@ -117,7 +119,7 @@ export function packageRemoveCore({ projectRoot, name }) {
   }
 
   try {
-    execFileSync('npm', ['uninstall', name], { cwd: projectRoot, stdio: 'pipe' })
+    execFileSync('npm', ['uninstall', name], { ...NPM_OPTIONS, cwd: projectRoot, stdio: 'pipe' })
   } catch (err) {
     const stderr = err.stderr?.toString().trim()
     const firstLine = stderr?.split('\n').find((l) => l && !l.startsWith('npm warn')) || ''

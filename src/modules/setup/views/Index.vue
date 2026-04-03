@@ -32,7 +32,7 @@
           >
             <li>
               Run the setup wizard:
-              <CopyableCode text="npm run setup" />
+              <CopyableCode text="npx taxonpages setup" />
             </li>
             <li>
               Follow the on-screen steps to set your API URL and project token

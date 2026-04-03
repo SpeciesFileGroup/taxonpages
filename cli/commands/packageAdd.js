@@ -4,6 +4,8 @@ import { readFileSync, writeFileSync, existsSync, copyFileSync } from 'node:fs'
 import { createInterface } from 'node:readline'
 import yaml from 'js-yaml'
 
+const NPM_OPTIONS = process.platform === 'win32' ? { shell: true } : {}
+
 /**
  * Install a TaxonPages package and auto-configure it.
  *
@@ -40,7 +42,7 @@ export async function packageAdd({ packageRoot, projectRoot, name }) {
   // 3. Install the package (--ignore-scripts prevents postinstall RCE)
   console.log(`Installing ${name}...`)
   try {
-    execFileSync('npm', ['install', '--ignore-scripts', name], { cwd: projectRoot, stdio: 'inherit' })
+    execFileSync('npm', ['install', '--ignore-scripts', name], { ...NPM_OPTIONS, cwd: projectRoot, stdio: 'inherit' })
   } catch {
     console.error(`Failed to install ${name}.`)
     process.exit(1)
@@ -54,7 +56,7 @@ export async function packageAdd({ packageRoot, projectRoot, name }) {
       `Package "${name}" does not have a taxonpages manifest. Uninstalling...`
     )
     try {
-      execFileSync('npm', ['uninstall', name], { cwd: projectRoot, stdio: 'inherit' })
+      execFileSync('npm', ['uninstall', name], { ...NPM_OPTIONS, cwd: projectRoot, stdio: 'inherit' })
     } catch { /* best effort */ }
     process.exit(1)
   }
@@ -238,7 +240,7 @@ export function packageAddCore({ packageRoot, projectRoot, name }) {
   const isCommunity = !name.startsWith('@sfgrp/')
 
   try {
-    execFileSync('npm', ['install', '--ignore-scripts', name], { cwd: projectRoot, stdio: 'pipe' })
+    execFileSync('npm', ['install', '--ignore-scripts', name], { ...NPM_OPTIONS, cwd: projectRoot, stdio: 'pipe' })
   } catch (err) {
     const stderr = err.stderr?.toString().trim()
     const firstLine = stderr?.split('\n').find((l) => l && !l.startsWith('npm warn')) || ''
@@ -249,7 +251,7 @@ export function packageAddCore({ packageRoot, projectRoot, name }) {
 
   if (!manifest) {
     try {
-      execFileSync('npm', ['uninstall', name], { cwd: projectRoot, stdio: 'pipe' })
+      execFileSync('npm', ['uninstall', name], { ...NPM_OPTIONS, cwd: projectRoot, stdio: 'pipe' })
     } catch { /* best effort */ }
     throw new Error(
       `Package "${name}" does not have a taxonpages manifest. Is this a TaxonPages package?`

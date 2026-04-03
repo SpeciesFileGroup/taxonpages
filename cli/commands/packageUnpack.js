@@ -124,9 +124,10 @@ export async function packageUnpack({ projectRoot, name }) {
 
   if (shouldUninstall) {
     const { execFileSync } = await import('node:child_process')
+    const npmOptions = process.platform === 'win32' ? { shell: true } : {}
 
     try {
-      execFileSync('npm', ['uninstall', name], { cwd: projectRoot, stdio: 'inherit' })
+      execFileSync('npm', ['uninstall', name], { ...npmOptions, cwd: projectRoot, stdio: 'inherit' })
       console.log(`\nUninstalled ${name}.`)
     } catch {
       console.error(`Failed to uninstall ${name}. You can remove it manually.`)

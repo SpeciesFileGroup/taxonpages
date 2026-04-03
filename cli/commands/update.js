@@ -2,6 +2,8 @@ import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
+const NPM_OPTIONS = process.platform === 'win32' ? { shell: true } : {}
+
 const REGISTRY_TIMEOUT = 5000
 
 async function fetchLatestVersion(name) {
@@ -59,6 +61,7 @@ export async function update({ packageRoot, projectRoot }) {
 
   try {
     execFileSync('npm', ['install', `${name}@${latestVersion}`], {
+      ...NPM_OPTIONS,
       cwd: projectRoot,
       stdio: 'inherit'
     })

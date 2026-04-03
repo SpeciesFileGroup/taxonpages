@@ -1,6 +1,7 @@
 import express from 'express'
 import { resolve, dirname } from 'node:path'
 import { readFileSync, readdirSync, existsSync } from 'node:fs'
+import { createServer as createHttpServer } from 'node:http'
 import { fileURLToPath } from 'node:url'
 import { exec } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
@@ -175,7 +176,21 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
     }
   })
 
-  app.listen(port, '127.0.0.1', () => {
+  const server = createHttpServer(app)
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error('')
+      console.error(`  Port ${port} is already in use.`)
+      console.error('  If you have another setup wizard running, use that one instead.')
+      console.error(`  Otherwise, run: npx taxonpages setup --port ${port + 1}`)
+      console.error('')
+      process.exit(1)
+    }
+    throw err
+  })
+
+  server.listen(port, '127.0.0.1', () => {
     const url = `http://localhost:${port}`
 
     console.log('')
