@@ -14,6 +14,7 @@
 import { resolve, dirname } from 'node:path'
 import { watch, existsSync, writeFileSync } from 'node:fs'
 import { globSync } from 'glob'
+import { writeTailwindSources } from './writeTailwindSources.js'
 import {
   discoverNpmPackages,
   resolveConflicts,
@@ -127,6 +128,9 @@ export function componentRegistrationPlugin({
         _npmPackages = null
         _resolvedPanels = null
         _resolvedModules = null
+
+        // Re-write Tailwind sources so new packages are scanned for classes
+        writeTailwindSources(packageRoot, projectRoot, { disabled })
 
         // Invalidate all modules that were transformed by this plugin
         for (const id of transformedModules) {
