@@ -351,7 +351,7 @@ async function installPackage() {
     const message = [
       `"${name}" is a community package.`,
       '',
-      'This package was not published by the SpeciesFileGroup organization (@sfgrp).',
+      'This package was not published by the SpeciesFileGroup (@sfgrp).',
       'Make sure you trust the author before installing.',
       '',
       'Do you want to continue?'

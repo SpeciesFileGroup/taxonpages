@@ -93,7 +93,9 @@ export function getViteConfig({ packageRoot, projectRoot }) {
       //projectStylesPlugin(projectRoot),
 
       ViteRestart({
-        dir: [resolve(projectRoot, 'config/**/*.yml')],
+        dir: [
+          resolve(projectRoot, 'config/**/*.yml'),
+        ],
         projectRoot
       }),
 

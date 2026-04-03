@@ -7,6 +7,14 @@ import yaml from 'js-yaml'
 const NPM_OPTIONS = process.platform === 'win32' ? { shell: true } : {}
 
 /**
+ * Touch a sentinel file so ViteRestart triggers a dev server reload.
+ */
+function notifyViteRestart(projectRoot) {
+  const sentinel = resolve(projectRoot, 'node_modules', '.taxonpages-refresh')
+  writeFileSync(sentinel, Date.now().toString(), 'utf-8')
+}
+
+/**
  * Install a TaxonPages package and auto-configure it.
  *
  * @param {object} options
@@ -60,6 +68,8 @@ export async function packageAdd({ packageRoot, projectRoot, name }) {
     } catch { /* best effort */ }
     process.exit(1)
   }
+
+  notifyViteRestart(projectRoot)
 
   // 5. Module: no YAML changes needed
   if (manifest.type === 'module') {
@@ -257,6 +267,8 @@ export function packageAddCore({ packageRoot, projectRoot, name }) {
       `Package "${name}" does not have a taxonpages manifest. Is this a TaxonPages package?`
     )
   }
+
+  notifyViteRestart(projectRoot)
 
   if (manifest.type === 'module') {
     return { type: 'module', panelId: null, isCommunity, message: `Installed ${name}. Routes registered automatically.` }

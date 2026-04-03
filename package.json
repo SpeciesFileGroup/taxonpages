@@ -1,6 +1,6 @@
 {
   "name": "@sfgrp/taxonpages",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "CLI tool for building taxon pages powered by SpeciesFileGroup",
   "type": "module",
   "private": false,
@@ -13,7 +13,6 @@
     "src/",
     "templates/",
     "server.js",
-    "vite.config.js",
     "index.html"
   ],
   "engines": {

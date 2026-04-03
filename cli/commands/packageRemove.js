@@ -5,6 +5,11 @@ import yaml from 'js-yaml'
 
 const NPM_OPTIONS = process.platform === 'win32' ? { shell: true } : {}
 
+function notifyViteRestart(projectRoot) {
+  const sentinel = resolve(projectRoot, 'node_modules', '.taxonpages-refresh')
+  writeFileSync(sentinel, Date.now().toString(), 'utf-8')
+}
+
 /**
  * Uninstall a TaxonPages package and clean up its configuration.
  *
@@ -43,6 +48,7 @@ export function packageRemove({ projectRoot, name }) {
     process.exit(1)
   }
 
+  notifyViteRestart(projectRoot)
   console.log(`\nUninstalled ${name}.`)
 }
 
@@ -126,6 +132,7 @@ export function packageRemoveCore({ projectRoot, name }) {
     throw new Error(firstLine || `Failed to uninstall "${name}".`)
   }
 
+  notifyViteRestart(projectRoot)
   return { message: `Uninstalled ${name}.` }
 }
 

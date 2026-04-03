@@ -12,6 +12,7 @@
  * making `npm install @vendor/taxonpages-panel-foo` work seamlessly.
  */
 import { resolve, dirname } from 'node:path'
+import { watch, existsSync, writeFileSync } from 'node:fs'
 import { globSync } from 'glob'
 import {
   discoverNpmPackages,
@@ -108,9 +109,40 @@ export function componentRegistrationPlugin({
     return extra
   }
 
+  const sentinelPath = resolve(projectRoot, 'node_modules', '.taxonpages-refresh')
+  const transformedModules = new Set()
+
   return {
     name: 'taxonpages:resolve-glob-aliases',
     enforce: 'pre',
+
+    configureServer(server) {
+      // Ensure the sentinel file exists so fs.watch can observe it
+      if (!existsSync(sentinelPath)) {
+        writeFileSync(sentinelPath, '0', 'utf-8')
+      }
+
+      watch(sentinelPath, () => {
+        // Clear package cache
+        _npmPackages = null
+        _resolvedPanels = null
+        _resolvedModules = null
+
+        // Invalidate all modules that were transformed by this plugin
+        for (const id of transformedModules) {
+          const mod = server.moduleGraph.getModuleById(id)
+          if (mod) {
+            server.moduleGraph.invalidateModule(mod)
+          }
+        }
+
+        // Wait for Vite to finish re-processing before reloading the browser
+        setTimeout(() => {
+          server.ws.send({ type: 'full-reload' })
+        }, 500)
+      })
+    },
+
     transform(code, id) {
       if (!code.includes('import.meta.glob')) return
 
@@ -204,6 +236,8 @@ export function componentRegistrationPlugin({
       )
 
       if (!changed) return
+
+      transformedModules.add(id)
 
       const result = prependImports
         ? prependImports + transformed
