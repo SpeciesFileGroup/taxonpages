@@ -128,7 +128,7 @@ export function componentRegistrationPlugin({
       }
 
       watch(sentinelPath, () => {
-        // Clear package cache
+        // Clear package cache so next transform re-discovers packages
         _npmPackages = null
         _resolvedPanels = null
         _resolvedModules = null
@@ -136,18 +136,10 @@ export function componentRegistrationPlugin({
         // Re-write Tailwind sources so new packages are scanned for classes
         writeTailwindSources(packageRoot, projectRoot, { disabled })
 
-        // Invalidate all modules that were transformed by this plugin
-        for (const id of transformedModules) {
-          const mod = server.moduleGraph.getModuleById(id)
-          if (mod) {
-            server.moduleGraph.invalidateModule(mod)
-          }
-        }
-
-        // Wait for Vite to finish re-processing before reloading the browser
-        setTimeout(() => {
-          server.ws.send({ type: 'full-reload' })
-        }, 500)
+        // Full server restart to clear both client and SSR module caches.
+        // Simple invalidation is not enough because ssrLoadModule() may
+        // serve stale cached modules with old route imports.
+        server.restart()
       })
     },
 
