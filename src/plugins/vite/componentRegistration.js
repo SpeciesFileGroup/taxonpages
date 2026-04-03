@@ -110,7 +110,11 @@ export function componentRegistrationPlugin({
     return extra
   }
 
-  const sentinelPath = resolve(projectRoot, 'node_modules', '.taxonpages-refresh')
+  const sentinelPath = resolve(
+    projectRoot,
+    'node_modules',
+    '.taxonpages-refresh'
+  )
   const transformedModules = new Set()
 
   return {
@@ -164,9 +168,7 @@ export function componentRegistrationPlugin({
             return match
           }
 
-          const patternMatches = [
-            ...patternsStr.matchAll(/['"]([^'"]+)['"]/g)
-          ]
+          const patternMatches = [...patternsStr.matchAll(/['"]([^'"]+)['"]/g)]
           const patterns = patternMatches.map((m) => m[1])
 
           const isEager = optionsStr && /eager\s*:\s*true/.test(optionsStr)
@@ -213,7 +215,8 @@ export function componentRegistrationPlugin({
             if (allStyles) {
               // Style files: generate side-effect imports
               prependImports +=
-                allFiles.map((f) => `import '${toImportPath(f)}';`).join('\n') + '\n'
+                allFiles.map((f) => `import '${toImportPath(f)}';`).join('\n') +
+                '\n'
               return '{}'
             }
 
@@ -243,9 +246,7 @@ export function componentRegistrationPlugin({
 
       transformedModules.add(id)
 
-      const result = prependImports
-        ? prependImports + transformed
-        : transformed
+      const result = prependImports ? prependImports + transformed : transformed
 
       return { code: result, map: null }
     }

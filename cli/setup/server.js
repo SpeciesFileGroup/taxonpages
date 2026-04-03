@@ -18,7 +18,7 @@ import {
   customEditorPlugin,
   VIRTUAL_EDITOR_PREFIX
 } from './plugins/customEditorPlugin.js'
-import { tailwindCustomSources } from './plugins/tailwindCustomSources.js'
+import { writeSetupTailwindSources } from './plugins/tailwindCustomSources.js'
 import schema from './schema.js'
 import {
   discoverNpmPackages,
@@ -32,10 +32,13 @@ function openBrowser(url) {
   const { platform, env } = process
   const isWSL = !!env.WSL_DISTRO_NAME
   const cmd =
-    platform === 'darwin' ? 'open' :
-    platform === 'win32' ? 'start' :
-    isWSL ? 'explorer.exe' :
-    'xdg-open'
+    platform === 'darwin'
+      ? 'open'
+      : platform === 'win32'
+        ? 'start'
+        : isWSL
+          ? 'explorer.exe'
+          : 'xdg-open'
 
   exec(`${cmd} ${url}`)
 }
@@ -52,22 +55,27 @@ function discoverCustomEditors(packageRoot, projectRoot) {
   const editors = new Map()
 
   // Core modules
-  for (const { name, moduleDir, schema: moduleSchema } of scanModuleSchemas(resolve(packageRoot, 'src/modules'))) {
+  for (const { name, moduleDir, schema: moduleSchema } of scanModuleSchemas(
+    resolve(packageRoot, 'src/modules')
+  )) {
     if (moduleSchema.editor === 'custom' && moduleSchema.component) {
       editors.set(name, resolve(moduleDir, moduleSchema.component))
     }
   }
 
   // Local modules
-  for (const { name, moduleDir, schema: moduleSchema } of scanModuleSchemas(resolve(projectRoot, 'modules'))) {
+  for (const { name, moduleDir, schema: moduleSchema } of scanModuleSchemas(
+    resolve(projectRoot, 'modules')
+  )) {
     if (moduleSchema.editor === 'custom' && moduleSchema.component) {
       editors.set(name, resolve(moduleDir, moduleSchema.component))
     }
   }
 
   // NPM modules
-  const npmModules = discoverNpmPackages(projectRoot)
-    .filter((p) => p.type === 'module' && p.configSchema)
+  const npmModules = discoverNpmPackages(projectRoot).filter(
+    (p) => p.type === 'module' && p.configSchema
+  )
 
   for (const pkg of npmModules) {
     const baseName = extractBaseName(pkg.name, 'module')
@@ -96,6 +104,10 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
   // registered as virtual modules in the normal module graph.
   const editorMap = discoverCustomEditors(packageRoot, projectRoot)
 
+  // Write Tailwind @source directives to a real file so @tailwindcss/vite
+  // can detect changes via file watching when modules are installed/removed.
+  writeSetupTailwindSources(clientDir, packageRoot, projectRoot)
+
   app.use(express.json())
 
   // CSRF protection: require token on state-changing API requests
@@ -119,7 +131,6 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
     cacheDir: resolve(projectRoot, 'node_modules/.vite-setup'),
     plugins: [
       customEditorPlugin(editorMap),
-      tailwindCustomSources(clientDir, packageRoot, projectRoot),
       tailwindcss(),
       vue(),
       {
@@ -143,7 +154,7 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
   })
 
   /**
-   * Refresh custom editors, invalidate Vite caches, and trigger
+   * Refresh custom editors, rewrite Tailwind sources file, and trigger
    * a full browser reload so newly installed packages are picked up.
    */
   function reloadSetup() {
@@ -159,21 +170,24 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
       }
     }
 
-    // Invalidate styles.css so Tailwind sources are re-discovered
-    for (const [id, mod] of vite.moduleGraph.idToModuleMap) {
-      if (id.endsWith('styles.css')) {
-        vite.moduleGraph.invalidateModule(mod)
-      }
-    }
+    // Rewrite the sources file on disk so @tailwindcss/vite detects the
+    // change via file watching and re-scans the new module directories.
+    writeSetupTailwindSources(clientDir, packageRoot, projectRoot)
 
-    vite.ws.send({ type: 'full-reload' })
+    // Give Tailwind time to detect and process the file change
+    setTimeout(() => {
+      vite.restart()
+    }, 500)
   }
 
   // API routes (before Vite middleware so they take priority)
   app.use('/api/config', createConfigRoutes(projectRoot))
-  app.use('/api/packages', createPackageRoutes(packageRoot, projectRoot, {
-    onPackagesChanged: reloadSetup
-  }))
+  app.use(
+    '/api/packages',
+    createPackageRoutes(packageRoot, projectRoot, {
+      onPackagesChanged: reloadSetup
+    })
+  )
   app.use('/api/panels', createPanelRoutes(packageRoot, projectRoot))
   app.use('/api/proxy', createProxyRoutes())
   app.use('/api/status', createStatusRoutes(packageRoot, projectRoot))
@@ -211,7 +225,9 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
     if (err.code === 'EADDRINUSE') {
       console.error('')
       console.error(`  Port ${port} is already in use.`)
-      console.error('  If you have another setup wizard running, use that one instead.')
+      console.error(
+        '  If you have another setup wizard running, use that one instead.'
+      )
       console.error(`  Otherwise, run: npx taxonpages setup --port ${port + 1}`)
       console.error('')
       process.exit(1)
@@ -243,28 +259,45 @@ function injectModuleSchemas(baseSchema, packageRoot, projectRoot) {
 
   // Core modules: packageRoot/src/modules/*/setup.schema.json
   const coreModulesDir = resolve(packageRoot, 'src/modules')
-  for (const { name, moduleDir, schema: moduleSchema } of scanModuleSchemas(coreModulesDir)) {
+  for (const { name, moduleDir, schema: moduleSchema } of scanModuleSchemas(
+    coreModulesDir
+  )) {
     if (!merged.modules.sections[name]) {
-      merged.modules.sections[name] = moduleSchemaToSection(name, moduleSchema, moduleDir)
+      merged.modules.sections[name] = moduleSchemaToSection(
+        name,
+        moduleSchema,
+        moduleDir
+      )
     }
   }
 
   // Local modules: projectRoot/modules/*/setup.schema.json
   const localModulesDir = resolve(projectRoot, 'modules')
-  for (const { name, moduleDir, schema: moduleSchema } of scanModuleSchemas(localModulesDir)) {
+  for (const { name, moduleDir, schema: moduleSchema } of scanModuleSchemas(
+    localModulesDir
+  )) {
     if (!merged.modules.sections[name]) {
-      merged.modules.sections[name] = moduleSchemaToSection(name, moduleSchema, moduleDir)
+      merged.modules.sections[name] = moduleSchemaToSection(
+        name,
+        moduleSchema,
+        moduleDir
+      )
     }
   }
 
   // NPM modules with configSchema
-  const npmModules = discoverNpmPackages(projectRoot)
-    .filter((p) => p.type === 'module' && p.configSchema)
+  const npmModules = discoverNpmPackages(projectRoot).filter(
+    (p) => p.type === 'module' && p.configSchema
+  )
 
   for (const pkg of npmModules) {
     const baseName = extractBaseName(pkg.name, 'module')
     if (!merged.modules.sections[baseName]) {
-      merged.modules.sections[baseName] = moduleSchemaToSection(baseName, pkg.configSchema, pkg.path)
+      merged.modules.sections[baseName] = moduleSchemaToSection(
+        baseName,
+        pkg.configSchema,
+        pkg.path
+      )
     }
   }
 

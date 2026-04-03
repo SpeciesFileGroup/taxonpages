@@ -13,3 +13,4 @@ README.md
 .env
 .vite
 src/assets/css/sources.css
+cli/setup/client/sources.css
