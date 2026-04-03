@@ -1,5 +1,6 @@
 // @ts-check
 import { resolve, basename } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { readdirSync, existsSync } from 'node:fs'
 import { Router } from 'express'
 import { loadEnvFile } from './loadEnvFile.js'
@@ -63,7 +64,7 @@ export async function loadApiRoutes(projectRoot) {
 
     try {
       // Append a version query param to bust the ESM module cache on reload
-      const fileUrl = String(new URL(`file://${filePath}`))
+      const fileUrl = pathToFileURL(filePath).href
       const version = globalThis.__apiRouteVersions?.[fileUrl] || 0
       const importPath = version > 0 ? `${fileUrl}?v=${version}` : fileUrl
 

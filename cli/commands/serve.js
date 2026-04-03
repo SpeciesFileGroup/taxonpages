@@ -1,4 +1,5 @@
 import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 
 export async function serve({ packageRoot, projectRoot, port }) {
   global.__basedir = projectRoot
@@ -7,7 +8,7 @@ export async function serve({ packageRoot, projectRoot, port }) {
   process.env.NODE_ENV = 'production'
 
   const { createServer } = await import(
-    resolve(packageRoot, 'server.js')
+    pathToFileURL(resolve(packageRoot, 'server.js')).href
   )
 
   const { app } = await createServer({

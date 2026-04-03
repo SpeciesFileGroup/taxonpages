@@ -1,4 +1,5 @@
 import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { createServer as createViteServer } from 'vite'
 import { getViteConfig } from '../utils/resolveConfig.js'
 
@@ -24,7 +25,7 @@ export async function startDevSSR({ packageRoot, projectRoot, port }) {
   setGlobalVars(packageRoot, projectRoot)
 
   const { createServer } = await import(
-    resolve(packageRoot, 'server.js')
+    pathToFileURL(resolve(packageRoot, 'server.js')).href
   )
 
   const { httpServer } = await createServer({

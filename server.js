@@ -2,7 +2,7 @@
 import fs from 'node:fs'
 import http from 'node:http'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import express from 'express'
 import { generateConsoleMessage } from './src/ssr/utils/generateConsoleMessage.js'
 import { loadApiRoutes } from './src/server/loadApiRoutes.js'
@@ -107,7 +107,7 @@ export async function createServer({
 
         // Bust the module cache so re-import picks up changes
         const filePath = path.resolve(routesDir, filename)
-        const fileUrl = String(new URL(`file://${filePath}`))
+        const fileUrl = pathToFileURL(filePath).href
 
         // For ESM we append a query param to force re-import
         if (!globalThis.__apiRouteVersions) {
@@ -141,7 +141,7 @@ export async function createServer({
         render = (await vite.ssrLoadModule('/src/entry-server.js')).render
       } else {
         template = templateHtml
-        render = (await import(resolveProject('dist/server/entry-server.js')))
+        render = (await import(pathToFileURL(resolveProject('dist/server/entry-server.js')).href))
           .render
       }
 
