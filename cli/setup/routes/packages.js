@@ -17,9 +17,11 @@ const VALID_PKG_NAME = /^(@[\w.-]+\/)?[\w.-]+$/
  *
  * @param {string} packageRoot
  * @param {string} projectRoot
+ * @param {object} [hooks]
+ * @param {() => void} [hooks.onPackagesChanged] - Called after install/uninstall/update
  * @returns {Router}
  */
-export function createPackageRoutes(packageRoot, projectRoot) {
+export function createPackageRoutes(packageRoot, projectRoot, hooks = {}) {
   const router = Router()
   router.use(json())
 
@@ -70,6 +72,7 @@ export function createPackageRoutes(packageRoot, projectRoot) {
 
     try {
       const result = packageAddCore({ packageRoot, projectRoot, name })
+      if (result.type === 'module') hooks.onPackagesChanged?.()
       res.json({ ok: true, ...result })
     } catch (err) {
       res.status(500).json({ ok: false, error: err.message })
@@ -88,7 +91,12 @@ export function createPackageRoutes(packageRoot, projectRoot) {
     }
 
     try {
+      // Check if the package being removed is a module before uninstalling
+      const isModule = discoverNpmPackages(projectRoot)
+        .some((p) => p.name === name && p.type === 'module')
+
       const result = packageRemoveCore({ projectRoot, name })
+      if (isModule) hooks.onPackagesChanged?.()
       res.json({ ok: true, ...result })
     } catch (err) {
       res.status(500).json({ ok: false, error: err.message })
@@ -108,6 +116,7 @@ export function createPackageRoutes(packageRoot, projectRoot) {
 
     try {
       const result = packageAddCore({ packageRoot, projectRoot, name })
+      if (result.type === 'module') hooks.onPackagesChanged?.()
       res.json({ ok: true, ...result })
     } catch (err) {
       res.status(500).json({ ok: false, error: err.message })

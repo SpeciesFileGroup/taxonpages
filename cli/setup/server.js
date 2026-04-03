@@ -105,19 +105,6 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
     res.status(403).json({ error: 'Invalid or missing CSRF token' })
   })
 
-  // API routes (before Vite middleware)
-  app.use('/api/config', createConfigRoutes(projectRoot))
-  app.use('/api/packages', createPackageRoutes(packageRoot, projectRoot))
-  app.use('/api/panels', createPanelRoutes(packageRoot, projectRoot))
-  app.use('/api/proxy', createProxyRoutes())
-  app.use('/api/status', createStatusRoutes(packageRoot, projectRoot))
-  app.use('/api/style', createStyleRoutes(projectRoot))
-
-  app.get('/api/schema', (_req, res) => {
-    const mergedSchema = injectModuleSchemas(schema, packageRoot, projectRoot)
-    res.json(mergedSchema)
-  })
-
   // Vite dev server as middleware for the setup client SPA
   const vite = await createViteServer({
     configFile: false,
@@ -153,6 +140,48 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
     optimizeDeps: {
       include: ['vue']
     }
+  })
+
+  /**
+   * Refresh custom editors, invalidate Vite caches, and trigger
+   * a full browser reload so newly installed packages are picked up.
+   */
+  function reloadSetup() {
+    // Re-discover custom editors in place
+    const freshEditors = discoverCustomEditors(packageRoot, projectRoot)
+    editorMap.clear()
+    for (const [k, v] of freshEditors) editorMap.set(k, v)
+
+    // Invalidate virtual editor modules so Vite re-runs load()
+    for (const [id, mod] of vite.moduleGraph.idToModuleMap) {
+      if (id.startsWith('\0virtual:editor')) {
+        vite.moduleGraph.invalidateModule(mod)
+      }
+    }
+
+    // Invalidate styles.css so Tailwind sources are re-discovered
+    for (const [id, mod] of vite.moduleGraph.idToModuleMap) {
+      if (id.endsWith('styles.css')) {
+        vite.moduleGraph.invalidateModule(mod)
+      }
+    }
+
+    vite.ws.send({ type: 'full-reload' })
+  }
+
+  // API routes (before Vite middleware so they take priority)
+  app.use('/api/config', createConfigRoutes(projectRoot))
+  app.use('/api/packages', createPackageRoutes(packageRoot, projectRoot, {
+    onPackagesChanged: reloadSetup
+  }))
+  app.use('/api/panels', createPanelRoutes(packageRoot, projectRoot))
+  app.use('/api/proxy', createProxyRoutes())
+  app.use('/api/status', createStatusRoutes(packageRoot, projectRoot))
+  app.use('/api/style', createStyleRoutes(projectRoot))
+
+  app.get('/api/schema', (_req, res) => {
+    const mergedSchema = injectModuleSchemas(schema, packageRoot, projectRoot)
+    res.json(mergedSchema)
   })
 
   app.use(vite.middlewares)
