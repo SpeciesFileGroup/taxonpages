@@ -13,32 +13,59 @@ import yaml from 'js-yaml'
  * @param {string} options.name - NPM package name to install
  */
 export async function packageAdd({ packageRoot, projectRoot, name }) {
-  // 1. Install the package
+  // 1. Check if already installed
+  const alreadyInstalled = isPackageInstalled(projectRoot, name)
+
+  if (alreadyInstalled) {
+    if (readManifest(projectRoot, name)) {
+      console.error(`Package "${name}" is already installed.`)
+    } else {
+      console.error(`Package "${name}" is installed but is not a TaxonPages package.`)
+    }
+    process.exit(1)
+  }
+
+  // 2. Warn about community packages
+  if (!name.startsWith('@sfgrp/')) {
+    console.warn(`\nNote: "${name}" is a community package.`)
+    console.warn('This package was not published by the SpeciesFileGroup organization (@sfgrp).')
+    console.warn('Make sure you trust the author before installing.\n')
+    const proceed = await askYesNo('Do you want to continue?')
+    if (!proceed) {
+      console.log('Installation cancelled.')
+      process.exit(0)
+    }
+  }
+
+  // 3. Install the package (--ignore-scripts prevents postinstall RCE)
   console.log(`Installing ${name}...`)
   try {
-    execFileSync('npm', ['install', name], { cwd: projectRoot, stdio: 'inherit' })
+    execFileSync('npm', ['install', '--ignore-scripts', name], { cwd: projectRoot, stdio: 'inherit' })
   } catch {
     console.error(`Failed to install ${name}.`)
     process.exit(1)
   }
 
-  // 2. Read the installed package's manifest
+  // 4. Verify it's a TaxonPages package
   const manifest = readManifest(projectRoot, name)
 
   if (!manifest) {
     console.error(
-      `Package "${name}" does not have a taxonpages manifest. Is this a TaxonPages package?`
+      `Package "${name}" does not have a taxonpages manifest. Uninstalling...`
     )
+    try {
+      execFileSync('npm', ['uninstall', name], { cwd: projectRoot, stdio: 'inherit' })
+    } catch { /* best effort */ }
     process.exit(1)
   }
 
-  // 3. Module: no YAML changes needed
+  // 5. Module: no YAML changes needed
   if (manifest.type === 'module') {
     console.log(`\nInstalled ${name}. Routes registered automatically.`)
     return
   }
 
-  // 4. Panel: extract ID and update taxa_page.yml
+  // 6. Panel: extract ID and update taxa_page.yml
   const panelId = extractPanelId(manifest.entryPath)
 
   if (!panelId) {
@@ -50,12 +77,16 @@ export async function packageAdd({ packageRoot, projectRoot, name }) {
   }
 
   const configPath = resolve(projectRoot, 'config', 'taxa_page.yml')
+  const shouldAdd = await askYesNo(`Add ${panelId} to taxa_page.yml?`)
+
+  if (!shouldAdd) {
+    console.log(`\nInstalled ${name}. You can add ${panelId} to your taxa_page.yml config later.`)
+    return
+  }
 
   if (existsSync(configPath)) {
     addPanelToConfig(configPath, panelId)
-    console.log(
-      `\nInstalled ${name} and added ${panelId} to taxa_page.yml (overview tab).`
-    )
+    console.log(`\nInstalled ${name} and added ${panelId} to taxa_page.yml (overview tab).`)
   } else {
     const shouldCreate = await askYesNo(
       'config/taxa_page.yml not found. Create it from the default template?'
@@ -76,15 +107,19 @@ export async function packageAdd({ packageRoot, projectRoot, name }) {
 
       copyFileSync(templatePath, configPath)
       addPanelToConfig(configPath, panelId)
-      console.log(
-        `\nCreated config/taxa_page.yml and added ${panelId} (overview tab).`
-      )
+      console.log(`\nCreated config/taxa_page.yml and added ${panelId} (overview tab).`)
     } else {
-      console.log(
-        `\nInstalled ${name}. Add ${panelId} manually to your taxa_page.yml config.`
-      )
+      console.log(`\nInstalled ${name}. Add ${panelId} manually to your taxa_page.yml config.`)
     }
   }
+}
+
+/**
+ * Check if a package exists in node_modules.
+ */
+function isPackageInstalled(projectRoot, pkgName) {
+  const pkgJsonPath = resolve(projectRoot, 'node_modules', ...pkgName.split('/'), 'package.json')
+  return existsSync(pkgJsonPath)
 }
 
 /**
@@ -190,8 +225,20 @@ function askYesNo(question) {
  * @returns {{ type: string, panelId: string|null, message: string }}
  */
 export function packageAddCore({ packageRoot, projectRoot, name }) {
+  const alreadyInstalled = isPackageInstalled(projectRoot, name)
+
+  if (alreadyInstalled) {
+    if (readManifest(projectRoot, name)) {
+      throw new Error(`Package "${name}" is already installed.`)
+    } else {
+      throw new Error(`Package "${name}" is installed but is not a TaxonPages package.`)
+    }
+  }
+
+  const isCommunity = !name.startsWith('@sfgrp/')
+
   try {
-    execFileSync('npm', ['install', name], { cwd: projectRoot, stdio: 'pipe' })
+    execFileSync('npm', ['install', '--ignore-scripts', name], { cwd: projectRoot, stdio: 'pipe' })
   } catch (err) {
     const stderr = err.stderr?.toString().trim()
     const firstLine = stderr?.split('\n').find((l) => l && !l.startsWith('npm warn')) || ''
@@ -201,13 +248,16 @@ export function packageAddCore({ packageRoot, projectRoot, name }) {
   const manifest = readManifest(projectRoot, name)
 
   if (!manifest) {
+    try {
+      execFileSync('npm', ['uninstall', name], { cwd: projectRoot, stdio: 'pipe' })
+    } catch { /* best effort */ }
     throw new Error(
       `Package "${name}" does not have a taxonpages manifest. Is this a TaxonPages package?`
     )
   }
 
   if (manifest.type === 'module') {
-    return { type: 'module', panelId: null, message: `Installed ${name}. Routes registered automatically.` }
+    return { type: 'module', panelId: null, isCommunity, message: `Installed ${name}. Routes registered automatically.` }
   }
 
   const panelId = extractPanelId(manifest.entryPath)
@@ -218,20 +268,5 @@ export function packageAddCore({ packageRoot, projectRoot, name }) {
     )
   }
 
-  const configPath = resolve(projectRoot, 'config', 'taxa_page.yml')
-
-  if (!existsSync(configPath)) {
-    const templatePath = resolve(packageRoot, 'templates', 'config', 'taxa_page.yml.example')
-
-    if (existsSync(templatePath)) {
-      copyFileSync(templatePath, configPath)
-    }
-  }
-
-  if (existsSync(configPath)) {
-    addPanelToConfig(configPath, panelId)
-    return { type: 'panel', panelId, message: `Installed ${name} and added ${panelId} to taxa_page.yml.` }
-  }
-
-  return { type: 'panel', panelId, message: `Installed ${name}. Add ${panelId} manually to your taxa_page.yml config.` }
+  return { type: 'panel', panelId, isCommunity, message: `Installed ${name}.` }
 }

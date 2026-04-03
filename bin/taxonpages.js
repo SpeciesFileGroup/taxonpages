@@ -113,6 +113,14 @@ pkg
   })
 
 program
+  .command('update')
+  .description('Update TaxonPages to the latest version')
+  .action(async () => {
+    const { update } = await import('../cli/commands/update.js')
+    await update({ packageRoot, projectRoot: process.cwd() })
+  })
+
+program
   .command('setup')
   .description('Start the web-based configuration interface')
   .option('-p, --port <number>', 'port number', '4400')
