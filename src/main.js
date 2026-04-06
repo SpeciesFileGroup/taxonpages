@@ -6,6 +6,7 @@ import SetupApp from '@/modules/setup/views/Index.vue'
 import { createPinia } from 'pinia'
 import { createSSRApp } from 'vue'
 import { createRouter } from './router'
+import { vueSetupHooks } from 'virtual:taxonpages-plugins'
 
 export function createApp({ originUrl }) {
   const { url, project_token } = __APP_ENV__
@@ -16,6 +17,11 @@ export function createApp({ originUrl }) {
 
   app.use(router)
   app.use(store)
+
+  // Apply vue setup hooks from discovered plugins
+  for (const setup of vueSetupHooks) {
+    setup(app, { router, store })
+  }
 
   return { app, router, store }
 }

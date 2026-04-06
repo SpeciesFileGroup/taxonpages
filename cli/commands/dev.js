@@ -6,7 +6,7 @@ import { getViteConfig } from '../utils/resolveConfig.js'
 export async function startDev({ packageRoot, projectRoot, port, host }) {
   setGlobalVars(packageRoot, projectRoot)
 
-  const config = getViteConfig({ packageRoot, projectRoot })
+  const config = await getViteConfig({ packageRoot, projectRoot })
 
   const server = await createViteServer({
     configFile: false,

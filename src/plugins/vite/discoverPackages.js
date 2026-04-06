@@ -12,11 +12,12 @@
 import { resolve, join } from 'node:path'
 import { readdirSync, readFileSync, existsSync } from 'node:fs'
 
-const VALID_TYPES = ['module', 'panel']
+const VALID_TYPES = ['module', 'panel', 'plugin']
 
 const DEFAULT_ENTRIES = {
   panel: './src/main.js',
-  module: './src/router/index.js'
+  module: './src/router/index.js',
+  plugin: './src/plugin.js'
 }
 
 /**
@@ -184,26 +185,55 @@ export function resolveConflicts(localDescriptors, npmDescriptors) {
 }
 
 /**
+ * Scan ~/plugins/* for local plugin packages.
+ *
+ * @param {string} projectRoot
+ * @returns {Array<{name: string, type: string, path: string, entry: string, source: 'local'}>}
+ */
+export function discoverLocalPlugins(projectRoot) {
+  const pluginsDir = resolve(projectRoot, 'plugins')
+  if (!existsSync(pluginsDir)) return []
+
+  return safeReaddir(pluginsDir)
+    .filter((d) => d.isDirectory())
+    .filter((d) => existsSync(join(pluginsDir, d.name, 'plugin.js')))
+    .map((d) => {
+      const pluginPath = join(pluginsDir, d.name)
+      return {
+        name: d.name,
+        type: 'plugin',
+        path: pluginPath,
+        entry: join(pluginPath, 'plugin.js'),
+        source: 'local',
+        configSchema: loadSchema(pluginPath)
+      }
+    })
+}
+
+/**
  * Full discovery: find all packages from both local and npm sources,
  * resolve conflicts, and return a unified list.
  *
  * @param {string} projectRoot
  * @param {object} [options]
  * @param {string[]} [options.disabled] - Package names to skip
- * @returns {{ panels: Array, modules: Array }}
+ * @returns {{ panels: Array, modules: Array, plugins: Array }}
  */
 export function discoverAllPackages(projectRoot, options = {}) {
   const npmPackages = discoverNpmPackages(projectRoot, options)
   const npmPanels = npmPackages.filter((p) => p.type === 'panel')
   const npmModules = npmPackages.filter((p) => p.type === 'module')
+  const npmPlugins = npmPackages.filter((p) => p.type === 'plugin')
 
   const localPanels = discoverLocalPanels(projectRoot)
   const localModules = discoverLocalModules(projectRoot)
+  const localPlugins = discoverLocalPlugins(projectRoot)
 
   const panels = resolveConflicts(localPanels, npmPanels)
   const modules = resolveConflicts(localModules, npmModules)
+  const plugins = resolveConflicts(localPlugins, npmPlugins)
 
-  return { panels, modules, all: [...panels, ...modules] }
+  return { panels, modules, plugins, all: [...panels, ...modules, ...plugins] }
 }
 
 /**
@@ -316,6 +346,17 @@ function tryReadDescriptor(pkgDir, pkgName) {
     }
   }
 
+  // Resolve vueSetup path for plugins
+  let vueSetup = null
+  if (manifest.type === 'plugin') {
+    const vueSetupRelPath = manifest.vueSetup || './vueSetup.js'
+    const vueSetupPath = resolve(pkgDir, vueSetupRelPath)
+
+    if (vueSetupPath.startsWith(pkgDir) && existsSync(vueSetupPath)) {
+      vueSetup = vueSetupPath
+    }
+  }
+
   return {
     name: pkgName,
     type: manifest.type,
@@ -323,7 +364,8 @@ function tryReadDescriptor(pkgDir, pkgName) {
     entry: entryPath,
     source: 'npm',
     version: pkgJson.version || '0.0.0',
-    configSchema
+    configSchema,
+    vueSetup
   }
 }
 

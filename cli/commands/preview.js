@@ -6,7 +6,7 @@ export async function preview({ packageRoot, projectRoot, port }) {
   global.__basedir = projectRoot
   global.__packageRoot = packageRoot
 
-  const config = getViteConfig({ packageRoot, projectRoot })
+  const config = await getViteConfig({ packageRoot, projectRoot })
 
   const server = await vitePreview({
     configFile: false,

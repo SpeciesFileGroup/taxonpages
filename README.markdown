@@ -117,20 +117,20 @@ taxonpages init my-project
 
 All commands are available through `npm run` scripts in your project or directly via the `taxonpages` CLI:
 
-| Command                          | npm script          | Description                                        |
-| -------------------------------- | ------------------- | -------------------------------------------------- |
-| `taxonpages init [directory]`    | —                   | Scaffold a new TaxonPages project                  |
-| `taxonpages dev`                 | `npm run dev`       | Start development server (SPA mode, port 5173)     |
-| `taxonpages dev:ssr`             | `npm run dev:ssr`   | Start SSR development server (port 6173)           |
-| `taxonpages build`               | `npm run build`     | Build for production (SPA mode)                    |
-| `taxonpages build:ssr`           | `npm run build:ssr` | Build for production (SSR mode)                    |
-| `taxonpages serve`               | `npm run serve`     | Start production SSR server (port 6173)            |
-| `taxonpages preview`             | `npm run preview`   | Preview production build locally (port 4173)       |
-| `taxonpages package list`        | —                   | List all discovered panels and modules             |
-| `taxonpages package add <name>`  | —                   | Install a TaxonPages package and auto-configure it |
-| `taxonpages package remove <name>` | —                 | Uninstall a package and clean up config            |
-| `taxonpages package unpack <name>` | —                 | Unpack an NPM package into a local directory       |
-| `taxonpages setup`                 | —                 | Start the web-based configuration interface        |
+| Command                            | npm script          | Description                                        |
+| ---------------------------------- | ------------------- | -------------------------------------------------- |
+| `taxonpages init [directory]`      | —                   | Scaffold a new TaxonPages project                  |
+| `taxonpages dev`                   | `npm run dev`       | Start development server (SPA mode, port 5173)     |
+| `taxonpages dev:ssr`               | `npm run dev:ssr`   | Start SSR development server (port 6173)           |
+| `taxonpages build`                 | `npm run build`     | Build for production (SPA mode)                    |
+| `taxonpages build:ssr`             | `npm run build:ssr` | Build for production (SSR mode)                    |
+| `taxonpages serve`                 | `npm run serve`     | Start production SSR server (port 6173)            |
+| `taxonpages preview`               | `npm run preview`   | Preview production build locally (port 4173)       |
+| `taxonpages package list`          | —                   | List all discovered plugins, panels, and modules   |
+| `taxonpages package add <name>`    | —                   | Install a TaxonPages package and auto-configure it |
+| `taxonpages package remove <name>` | —                   | Uninstall a package and clean up config            |
+| `taxonpages package unpack <name>` | —                   | Unpack an NPM package into a local directory       |
+| `taxonpages setup`                 | —                   | Start the web-based configuration interface        |
 
 ### Example workflow
 
@@ -504,12 +504,12 @@ For simple settings, define `fields` in your schema. The setup wizard auto-rende
 }
 ```
 
-| Property      | Type     | Required | Description                                              |
-| ------------- | -------- | -------- | -------------------------------------------------------- |
-| `file`        | `string` | Yes      | YAML filename in `config/` where settings are stored     |
-| `label`       | `string` | Yes      | Display name shown in the setup UI sidebar               |
-| `description` | `string` | No       | Short description shown below the section heading        |
-| `configKey`   | `string` | No       | Root key in the YAML file. Defaults to filename without extension |
+| Property      | Type     | Required | Description                                                               |
+| ------------- | -------- | -------- | ------------------------------------------------------------------------- |
+| `file`        | `string` | Yes      | YAML filename in `config/` where settings are stored                      |
+| `label`       | `string` | Yes      | Display name shown in the setup UI sidebar                                |
+| `description` | `string` | No       | Short description shown below the section heading                         |
+| `configKey`   | `string` | No       | Root key in the YAML file. Defaults to filename without extension         |
 | `fields`      | `object` | Yes      | Map of config keys to field definitions (see [Field types](#field-types)) |
 
 The configuration values are stored in `config/<file>` and accessible at runtime via the `__APP_ENV__` global object.
@@ -540,22 +540,22 @@ modules/
 }
 ```
 
-| Property    | Type     | Required | Description                                                  |
-| ----------- | -------- | -------- | ------------------------------------------------------------ |
-| `editor`    | `string` | Yes      | Must be `"custom"` to enable custom editor                   |
-| `component` | `string` | Yes      | Path to the Vue component, relative to the module directory  |
-| `file`      | `string` | Yes      | YAML filename in `config/` where settings are stored         |
-| `configKey` | `string` | No       | Root key in the YAML file                                    |
+| Property    | Type     | Required | Description                                                 |
+| ----------- | -------- | -------- | ----------------------------------------------------------- |
+| `editor`    | `string` | Yes      | Must be `"custom"` to enable custom editor                  |
+| `component` | `string` | Yes      | Path to the Vue component, relative to the module directory |
+| `file`      | `string` | Yes      | YAML filename in `config/` where settings are stored        |
+| `configKey` | `string` | No       | Root key in the YAML file                                   |
 
 Custom editors are loaded as virtual modules (`virtual:editor/<name>`) so they participate in Vite's normal module graph. The setup wizard passes configuration methods as props, so custom editors do not need to import from the setup client directly:
 
-| Prop             | Type       | Description                                      |
-| ---------------- | ---------- | ------------------------------------------------ |
-| `section`        | `Object`   | The section definition from the schema           |
-| `configData`     | `Object`   | Reactive object with all loaded config files     |
-| `setConfigValue` | `Function` | `(filename, key, value)` — sets a config value   |
-| `saveConfig`     | `Function` | `(filename)` — saves a config file               |
-| `hasUnsavedChanges`    | `Function` | `(filename)` — returns whether a file has unsaved changes |
+| Prop                | Type       | Description                                               |
+| ------------------- | ---------- | --------------------------------------------------------- |
+| `section`           | `Object`   | The section definition from the schema                    |
+| `configData`        | `Object`   | Reactive object with all loaded config files              |
+| `setConfigValue`    | `Function` | `(filename, key, value)` — sets a config value            |
+| `saveConfig`        | `Function` | `(filename)` — saves a config file                        |
+| `hasUnsavedChanges` | `Function` | `(filename)` — returns whether a file has unsaved changes |
 
 ```vue
 <template>
@@ -583,7 +583,9 @@ const props = defineProps({
   hasUnsavedChanges: { type: Function, required: true }
 })
 
-const configKey = computed(() => props.section.configKey || props.section.file.replace('.yml', ''))
+const configKey = computed(
+  () => props.section.configKey || props.section.file.replace('.yml', '')
+)
 </script>
 ```
 
@@ -660,18 +662,20 @@ Environment variables set on the host (e.g., in production deployments) take pre
 
 The route factory function receives a context object with the following properties:
 
-| Property      | Type       | Description                                           |
-| ------------- | ---------- | ----------------------------------------------------- |
-| `env`         | `object`   | Environment variables prefixed with `TAXONPAGES_`     |
-| `router`      | `function` | Factory that returns a new Express Router instance     |
-| `projectRoot` | `string`   | Absolute path to the user's project directory          |
+| Property      | Type       | Description                                        |
+| ------------- | ---------- | -------------------------------------------------- |
+| `env`         | `object`   | Environment variables prefixed with `TAXONPAGES_`  |
+| `router`      | `function` | Factory that returns a new Express Router instance |
+| `projectRoot` | `string`   | Absolute path to the user's project directory      |
 
 ### Calling from the frontend
 
 From your Vue components, call the route using the `/api/<filename>/` prefix:
 
 ```javascript
-const response = await fetch(`/api/xeno-canto/recordings?${new URLSearchParams({ query: name })}`)
+const response = await fetch(
+  `/api/xeno-canto/recordings?${new URLSearchParams({ query: name })}`
+)
 const data = await response.json()
 ```
 
@@ -787,6 +791,192 @@ If the package has its own dependencies, the command will list them so you can e
 
 To customize a panel installed from NPM, create a local panel folder with the same base name. For example, if the NPM package is `@vendor/taxonpages-panel-foo`, create `panels/foo/main.js`. The local version takes priority.
 
+## Plugins
+
+Plugins extend TaxonPages at the framework level — they can modify the Vite build pipeline, add Express middleware, register Vue plugins, or add CLI commands. Unlike panels and modules (which add content), plugins modify how TaxonPages itself works.
+
+### When to use a plugin vs a panel/module
+
+| Extension type | Use when you want to...                            |
+| -------------- | -------------------------------------------------- |
+| Panel          | Add a UI panel to taxon pages                      |
+| Module         | Add new routes/pages                               |
+| Plugin         | Modify the build pipeline, server, Vue app, or CLI |
+
+### Installing a plugin
+
+```bash
+taxonpages package add @vendor/taxonpages-plugin-react
+```
+
+Or install manually:
+
+```bash
+npm install @vendor/taxonpages-plugin-react
+```
+
+Plugins are discovered automatically at startup from `node_modules` using the same mechanism as panels and modules. Restart the dev server after installing.
+
+### Local plugins
+
+For development or project-specific plugins, create a `plugins/` directory in your project root:
+
+```
+plugins/
+└── my-plugin/
+    └── plugin.js
+```
+
+Local plugins take priority over NPM plugins with the same name.
+
+### Disabling a plugin
+
+Same as panels and modules — add the package name to the `disabled` list:
+
+```yaml
+packages:
+  disabled:
+    - '@vendor/taxonpages-plugin-react'
+```
+
+### Creating a plugin (for developers)
+
+A plugin is an NPM package with `"type": "plugin"` in the `taxonpages` manifest:
+
+```json
+{
+  "name": "@vendor/taxonpages-plugin-react",
+  "version": "1.0.0",
+  "taxonpages": {
+    "type": "plugin",
+    "entry": "./src/plugin.js"
+  },
+  "peerDependencies": {
+    "@sfgrp/taxonpages": ">=0.3.0"
+  }
+}
+```
+
+The entry file must export a default function (the plugin factory) that receives a context object and returns a descriptor with optional hooks:
+
+```javascript
+// src/plugin.js
+export default function ({ projectRoot, packageRoot, configuration, logger }) {
+  return {
+    name: 'my-plugin',
+
+    // Extend the Vite configuration (returns config to merge)
+    vite(config) {
+      return {
+        plugins: [
+          /* additional Vite plugins */
+        ],
+        optimizeDeps: { include: ['some-lib'] }
+      }
+    },
+
+    // Add Express middleware or routes (SSR mode only)
+    server(app, { isProd }) {
+      app.use('/my-endpoint', (req, res) => {
+        /* ... */
+      })
+    },
+
+    // Add CLI commands
+    cli(program) {
+      program
+        .command('my-command')
+        .description('Does something')
+        .action(() => {
+          /* ... */
+        })
+    }
+  }
+}
+```
+
+All hooks are optional. A plugin only needs to implement the hooks it uses.
+
+### Available hooks
+
+| Hook       | When it runs                           | Receives                      | Returns                     |
+| ---------- | -------------------------------------- | ----------------------------- | --------------------------- |
+| `vite()`   | During Vite config resolution          | Core Vite config object       | Config object to deep-merge |
+| `server()` | After API routes, before SSR catch-all | Express app, `{ isProd }`     | Nothing                     |
+| `cli()`    | Before `program.parse()` in the CLI    | Commander.js program instance | Nothing                     |
+
+The `vite()` hook merges returned config additively. Protected keys (`root`, `base`, `resolve.alias`) cannot be overridden by plugins.
+
+### Vue app setup
+
+Plugins that need to extend the Vue app (e.g., register a Vue plugin like i18n) should provide a `vueSetup.js` file in the plugin directory:
+
+```
+taxonpages-plugin-i18n/
+├── package.json
+└── src/
+    ├── plugin.js       # Plugin factory (vite hook, etc.)
+    └── vueSetup.js     # Vue app setup (auto-discovered)
+```
+
+```javascript
+// src/vueSetup.js — note: this file is NOT inside the plugin.js factory
+import { createI18n } from 'vue-i18n'
+
+export default function (app, { router, store }) {
+  const i18n = createI18n({
+    /* ... */
+  })
+  app.use(i18n)
+}
+```
+
+The `vueSetup.js` file is discovered automatically if it exists in the plugin's root directory. It exports a default function that receives the Vue app instance and `{ router, store }`.
+
+### Plugin context
+
+The factory function receives a context object:
+
+| Property        | Type     | Description                                       |
+| --------------- | -------- | ------------------------------------------------- |
+| `projectRoot`   | `string` | Absolute path to the user's project directory     |
+| `packageRoot`   | `string` | Absolute path to the TaxonPages package directory |
+| `configuration` | `object` | Loaded YAML configuration (`__APP_ENV__` values)  |
+| `logger`        | `object` | Namespaced logger with `info`, `warn`, `error`    |
+
+### Naming convention
+
+```
+taxonpages-plugin-<name>              # unscoped
+@<vendor>/taxonpages-plugin-<name>    # scoped
+```
+
+### Example: React support plugin
+
+A minimal plugin that adds React/JSX compilation support:
+
+```javascript
+// src/plugin.js
+import react from '@vitejs/plugin-react'
+
+export default function ({ configuration }) {
+  return {
+    name: 'react',
+
+    vite() {
+      return {
+        plugins: [react()],
+        optimizeDeps: {
+          include: ['react', 'react-dom']
+        }
+      }
+    }
+  }
+}
+```
+
+Once installed, `.jsx` and `.tsx` files compile anywhere in the project. React-based panels would use a Vue wrapper component to mount a React root inside the existing panel system.
+
 ## Creating NPM panels (for developers)
 
 This section explains how to create and publish a TaxonPages panel as an NPM package.
@@ -830,12 +1020,12 @@ The `taxonpages` field in `package.json` is required. It tells TaxonPages what t
 
 #### The `taxonpages` manifest field
 
-| Field    | Type                    | Required | Description                                                                                                   |
-| -------- | ----------------------- | -------- | ------------------------------------------------------------------------------------------------------------- |
-| `type`        | `"panel"` or `"module"` | Yes      | Declares the package type.                                                                                    |
-| `entry`       | `string`                | No       | Relative path to the entry file. Defaults to `./src/main.js` for panels, `./src/router/index.js` for modules. |
-| `schema`      | `object`                | No       | Configuration schema for the `taxonpages setup` UI. See [Package configuration schema](#package-configuration-schema). |
-| `setupSchema` | `string`                | No       | Relative path to the panel bind configuration schema file. Defaults to `./setup.schema.json`. See [Panel bind configuration schema](#panel-bind-configuration-schema). |
+| Field         | Type                                 | Required | Description                                                                                                                                                            |
+| ------------- | ------------------------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`        | `"panel"`, `"module"`, or `"plugin"` | Yes      | Declares the package type.                                                                                                                                             |
+| `entry`       | `string`                             | No       | Relative path to the entry file. Defaults to `./src/main.js` for panels, `./src/router/index.js` for modules, `./src/plugin.js` for plugins.                           |
+| `schema`      | `object`                             | No       | Configuration schema for the `taxonpages setup` UI. See [Package configuration schema](#package-configuration-schema).                                                 |
+| `setupSchema` | `string`                             | No       | Relative path to the panel bind configuration schema file. Defaults to `./setup.schema.json`. See [Panel bind configuration schema](#panel-bind-configuration-schema). |
 
 ### Entry point (main.js)
 
@@ -939,12 +1129,12 @@ taxonpages-panel-inaturalist/
 
 NPM panels can include a `setup.schema.json` file to provide a schema-driven form for per-instance bind configuration in the `taxonpages setup` layout editor. This is different from the [Package configuration schema](#package-configuration-schema), which stores global settings in separate YAML files accessible via `__APP_ENV__`.
 
-| Feature | `setup.schema.json` (bind config) | `taxonpages.schema` (package config) |
-| --- | --- | --- |
-| **Scope** | Per-instance (each placement in the layout can have different values) | Global (shared across the entire project) |
-| **Storage** | `bind` object in `taxa_page.yml` | Separate YAML file in `config/` |
-| **Access** | Via component props (`v-bind`) | Via `__APP_ENV__` global |
-| **UI** | Config button in the layout editor | Dedicated section in the setup sidebar |
+| Feature     | `setup.schema.json` (bind config)                                     | `taxonpages.schema` (package config)      |
+| ----------- | --------------------------------------------------------------------- | ----------------------------------------- |
+| **Scope**   | Per-instance (each placement in the layout can have different values) | Global (shared across the entire project) |
+| **Storage** | `bind` object in `taxa_page.yml`                                      | Separate YAML file in `config/`           |
+| **Access**  | Via component props (`v-bind`)                                        | Via `__APP_ENV__` global                  |
+| **UI**      | Config button in the layout editor                                    | Dedicated section in the setup sidebar    |
 
 By default, the setup server looks for `setup.schema.json` at the package root. You can specify a custom path using the `setupSchema` field in the `taxonpages` manifest:
 
@@ -1155,28 +1345,28 @@ The configuration values are stored in `config/<file>` (e.g. `config/inaturalist
 
 ### Schema properties
 
-| Property      | Type     | Required | Description                                              |
-| ------------- | -------- | -------- | -------------------------------------------------------- |
-| `file`        | `string` | Yes      | YAML filename in `config/` where settings are stored     |
-| `label`       | `string` | Yes      | Display name shown in the setup UI sidebar               |
-| `description` | `string` | No       | Short description shown below the section heading        |
-| `fields`      | `object` | Yes      | Map of config keys to field definitions                  |
+| Property      | Type     | Required | Description                                          |
+| ------------- | -------- | -------- | ---------------------------------------------------- |
+| `file`        | `string` | Yes      | YAML filename in `config/` where settings are stored |
+| `label`       | `string` | Yes      | Display name shown in the setup UI sidebar           |
+| `description` | `string` | No       | Short description shown below the section heading    |
+| `fields`      | `object` | Yes      | Map of config keys to field definitions              |
 
 ### Field types
 
 Each field in `fields` is keyed by the YAML property name and describes how it should be rendered:
 
-| Property      | Type       | Description                                                   |
-| ------------- | ---------- | ------------------------------------------------------------- |
+| Property      | Type       | Description                                                        |
+| ------------- | ---------- | ------------------------------------------------------------------ |
 | `type`        | `string`   | One of: `string`, `number`, `boolean`, `select`, `array`, `object` |
-| `label`       | `string`   | Display label for the field                                   |
-| `description` | `string`   | Help text shown below the label                               |
-| `placeholder` | `string`   | Placeholder text for string/number inputs                     |
-| `default`     | `any`      | Default value                                                 |
-| `required`    | `boolean`  | Whether the field is required                                 |
-| `options`     | `string[]` | Options list (only for `select` type)                         |
-| `items`       | `object`   | Item definition (only for `array` type)                       |
-| `fields`      | `object`   | Nested field definitions (only for `object` type)             |
+| `label`       | `string`   | Display label for the field                                        |
+| `description` | `string`   | Help text shown below the label                                    |
+| `placeholder` | `string`   | Placeholder text for string/number inputs                          |
+| `default`     | `any`      | Default value                                                      |
+| `required`    | `boolean`  | Whether the field is required                                      |
+| `options`     | `string[]` | Options list (only for `select` type)                              |
+| `items`       | `object`   | Item definition (only for `array` type)                            |
+| `fields`      | `object`   | Nested field definitions (only for `object` type)                  |
 
 ### Array fields
 

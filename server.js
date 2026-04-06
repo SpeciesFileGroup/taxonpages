@@ -6,6 +6,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import express from 'express'
 import { generateConsoleMessage } from './src/ssr/utils/generateConsoleMessage.js'
 import { loadApiRoutes } from './src/server/loadApiRoutes.js'
+import { loadPlugins } from './cli/utils/loadPlugins.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -48,7 +49,7 @@ export async function createServer({
     const { getViteConfig } = await import(
       './cli/utils/resolveConfig.js'
     )
-    const viteConfig = getViteConfig({ packageRoot, projectRoot })
+    const viteConfig = await getViteConfig({ packageRoot, projectRoot })
 
     vite = await (
       await import('vite')
@@ -121,6 +122,22 @@ export async function createServer({
       })
     } catch {
       // routesDir doesn't exist yet — that's fine
+    }
+  }
+
+  // Apply server() hooks from discovered plugins
+  const plugins = await loadPlugins({ projectRoot, packageRoot })
+
+  for (const plugin of plugins) {
+    if (typeof plugin.server !== 'function') continue
+
+    try {
+      plugin.server(app, { isProd })
+    } catch (err) {
+      console.error(
+        `[taxonpages] Plugin "${plugin.name}" server() hook failed:`,
+        err.message
+      )
     }
   }
 

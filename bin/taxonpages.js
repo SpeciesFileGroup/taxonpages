@@ -137,4 +137,28 @@ program
     await init({ packageRoot, directory: directory || '.' })
   })
 
+// Apply cli() hooks from discovered plugins
+try {
+  const { loadPlugins } = await import('../cli/utils/loadPlugins.js')
+  const plugins = await loadPlugins({
+    projectRoot: process.cwd(),
+    packageRoot
+  })
+
+  for (const plugin of plugins) {
+    if (typeof plugin.cli !== 'function') continue
+
+    try {
+      plugin.cli(program)
+    } catch (err) {
+      console.error(
+        `[taxonpages] Plugin "${plugin.name}" cli() hook failed:`,
+        err.message
+      )
+    }
+  }
+} catch {
+  // Plugin loading failed — continue with core commands only
+}
+
 program.parse()

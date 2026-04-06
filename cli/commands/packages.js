@@ -1,9 +1,6 @@
 import { loadConfiguration } from '../../src/utils/loadConfiguration.js'
 import {
-  discoverNpmPackages,
-  discoverLocalPanels,
-  discoverLocalModules,
-  resolveConflicts,
+  discoverAllPackages,
   extractBaseName
 } from '../../src/plugins/vite/discoverPackages.js'
 
@@ -18,24 +15,30 @@ export function listPackages({ packageRoot, projectRoot }) {
   const configuration = loadConfiguration(projectRoot)
   const disabled = configuration.packages?.disabled || []
 
-  const npmPackages = discoverNpmPackages(projectRoot, { disabled })
-  const npmPanels = npmPackages.filter((p) => p.type === 'panel')
-  const npmModules = npmPackages.filter((p) => p.type === 'module')
-
-  const localPanels = discoverLocalPanels(projectRoot)
-  const localModules = discoverLocalModules(projectRoot)
-
-  const panels = resolveConflicts(localPanels, npmPanels)
-  const modules = resolveConflicts(localModules, npmModules)
+  const { panels, modules, plugins } = discoverAllPackages(projectRoot, {
+    disabled
+  })
 
   console.log('')
   console.log('  TaxonPages — Installed packages')
   console.log('')
 
-  if (panels.length === 0 && modules.length === 0) {
+  if (panels.length === 0 && modules.length === 0 && plugins.length === 0) {
     console.log('  No external packages found.')
     console.log('')
     return
+  }
+
+  if (plugins.length > 0) {
+    console.log('  PLUGINS')
+    for (const p of plugins) {
+      const label =
+        p.source === 'npm'
+          ? `(npm)   ${p.name}@${p.version}`
+          : `(local) ~/plugins/${p.name}`
+      console.log(`  ├─ ${p.name.padEnd(30)} ${label}`)
+    }
+    console.log('')
   }
 
   if (panels.length > 0) {
@@ -62,10 +65,9 @@ export function listPackages({ packageRoot, projectRoot }) {
     console.log('')
   }
 
-  const npmCount = panels.filter((p) => p.source === 'npm').length +
-    modules.filter((m) => m.source === 'npm').length
-  const localCount = panels.filter((p) => p.source === 'local').length +
-    modules.filter((m) => m.source === 'local').length
+  const all = [...panels, ...modules, ...plugins]
+  const npmCount = all.filter((p) => p.source === 'npm').length
+  const localCount = all.filter((p) => p.source === 'local').length
 
   console.log(`  ${npmCount} npm, ${localCount} local`)
   console.log('')

@@ -1,7 +1,9 @@
 import { resolve } from 'node:path'
 import { existsSync } from 'node:fs'
+import { mergeConfig } from 'vite'
 import { loadConfiguration } from '../../src/utils/loadConfiguration.js'
 import { writeTailwindSources } from '../../src/plugins/vite/writeTailwindSources.js'
+import { loadPlugins } from './loadPlugins.js'
 import { VitePluginRadar } from 'vite-plugin-radar'
 import Vue from '@vitejs/plugin-vue'
 import Markdown from 'unplugin-vue-markdown/vite'
@@ -17,6 +19,7 @@ import {
   projectStylesPlugin,
   componentRegistrationPlugin
 } from '../../src/plugins/vite/index.js'
+import { pluginInjectionPlugin } from '../../src/plugins/vite/pluginInjection.js'
 
 /**
  * Build the full Vite configuration, resolving paths correctly
@@ -26,7 +29,7 @@ import {
  * @param {string} options.packageRoot - Absolute path to the taxonpages package
  * @param {string} options.projectRoot - Absolute path to the user's project (CWD)
  */
-export function getViteConfig({ packageRoot, projectRoot }) {
+export async function getViteConfig({ packageRoot, projectRoot }) {
   const configuration = loadConfiguration(projectRoot)
 
   writeTailwindSources(packageRoot, projectRoot, {
@@ -38,7 +41,7 @@ export function getViteConfig({ packageRoot, projectRoot }) {
     ? projectRoot
     : packageRoot
 
-  return {
+  const config = {
     root,
     base: configuration.base_url,
 
@@ -84,6 +87,12 @@ export function getViteConfig({ packageRoot, projectRoot }) {
         projectRoot,
         disabled: configuration.packages?.disabled
       }),
+
+      pluginInjectionPlugin({
+        projectRoot,
+        packageRoot,
+        disabled: configuration.packages?.disabled
+      }),
       //projectStylesPlugin(projectRoot),
 
       ViteRestart({
@@ -126,5 +135,33 @@ export function getViteConfig({ packageRoot, projectRoot }) {
       })
     ]
   }
-}
 
+  // Apply vite() hooks from discovered plugins.
+  // Protected keys (root, base, resolve.alias) cannot be overridden.
+  const plugins = await loadPlugins({ projectRoot, packageRoot, configuration })
+  const protectedKeys = { root: config.root, base: config.base }
+  const protectedAliases = { ...config.resolve.alias }
+
+  for (const plugin of plugins) {
+    if (typeof plugin.vite !== 'function') continue
+
+    try {
+      const additions = plugin.vite(config)
+      if (!additions || typeof additions !== 'object') continue
+
+      Object.assign(config, mergeConfig(config, additions))
+    } catch (err) {
+      console.error(
+        `[taxonpages] Plugin "${plugin.name}" vite() hook failed:`,
+        err.message
+      )
+    }
+  }
+
+  // Restore protected keys
+  config.root = protectedKeys.root
+  config.base = protectedKeys.base
+  config.resolve.alias = protectedAliases
+
+  return config
+}
