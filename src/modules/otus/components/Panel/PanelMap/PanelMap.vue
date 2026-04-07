@@ -73,10 +73,10 @@ import { useDistributionStore } from './store/useDistributionStore.js'
 import { makeClusterIconFor } from './clusters'
 import { useGeojsonOptions } from './composables/useGeojsonOptions.js'
 import { LEGEND } from './constants'
-import MapPopup from './components/MapPopup.vue'
+import MapPopup from './components/Popup/MapPopup.vue'
 import CachedMap from './components/CachedMap.vue'
 import OtuSearch from './components/Search/OtuSearch.vue'
-import DwcTable from './components/DwcTable.vue'
+import DwcTable from './components/DwcModal/DwcTable.vue'
 
 const props = defineProps({
   otuId: {

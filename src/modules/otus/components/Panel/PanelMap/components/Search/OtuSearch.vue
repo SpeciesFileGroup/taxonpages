@@ -74,8 +74,8 @@ import { useGeojsonOptions } from '../../composables/useGeojsonOptions.js'
 import TaxonWorks from '../../../../../services/TaxonWorks.js'
 import SearchBar from './SearchBar.vue'
 import ListResults from './ListResults.vue'
-import MapPopup from '../MapPopup.vue'
-import DwcTable from '../DwcTable.vue'
+import MapPopup from '../Popup/MapPopup.vue'
+import DwcTable from '../DwcModal/DwcTable.vue'
 
 const props = defineProps({
   shapes: {

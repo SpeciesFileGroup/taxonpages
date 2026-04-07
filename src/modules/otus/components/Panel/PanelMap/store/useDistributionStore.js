@@ -18,22 +18,29 @@ function normalizeAbsentFeatures(arr) {
   })
 }
 
-function sortFeaturesByType(arr, reference) {
+function sortFeaturesByType({ features, shapeTypes }, reference) {
   const referenceMap = new Map()
 
   reference.forEach((item, index) => {
     referenceMap.set(item, index)
   })
 
-  return arr.toSorted((a, b) => {
-    const indexA = referenceMap.has(a.properties.base.type)
-      ? referenceMap.get(a.properties.base.type)
-      : Infinity
-    const indexB = referenceMap.has(b.properties.base.type)
-      ? referenceMap.get(b.properties.base.type)
-      : Infinity
-    return indexA - indexB
-  })
+  return {
+    shapeTypes,
+    features: features.toSorted((a, b) => {
+      const indexA = Math.max(
+        ...a.properties.base.map((item) =>
+          referenceMap.has(item.type) ? referenceMap.get(item.type) : Infinity
+        )
+      )
+      const indexB = Math.max(
+        ...b.properties.base.map((item) =>
+          referenceMap.has(item.type) ? referenceMap.get(item.type) : Infinity
+        )
+      )
+      return indexA - indexB
+    })
+  }
 }
 
 export const useDistributionStore = defineStore('distributionStore', {
@@ -107,8 +114,9 @@ export const useDistributionStore = defineStore('distributionStore', {
             } else {
               normalizeAbsentFeatures(data.features)
 
-              const { features, shapeTypes } = removeDuplicateShapes(
-                sortFeaturesByType(data.features, Object.keys(LEGEND))
+              const { features, shapeTypes } = sortFeaturesByType(
+                removeDuplicateShapes(data.features),
+                Object.keys(LEGEND)
               )
 
               this.distribution.currentShapeTypes = shapeTypes

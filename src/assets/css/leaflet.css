@@ -7,6 +7,11 @@
   transition: none;
 }
 
+.leaflet-popup-content-wrapper {
+  background-color: var(--color-base-foreground);
+  color: var(--color-base-content);
+}
+
 .map-point-marker {
   opacity: var(--tp-map-marker-opacity);
 }
