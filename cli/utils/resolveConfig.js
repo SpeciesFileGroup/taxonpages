@@ -43,6 +43,7 @@ export async function getViteConfig({ packageRoot, projectRoot }) {
 
   const config = {
     root,
+    publicDir: resolve(projectRoot, 'public'),
     base: configuration.base_url,
 
     server: {
