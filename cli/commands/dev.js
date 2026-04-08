@@ -12,6 +12,7 @@ export async function startDev({ packageRoot, projectRoot, port, host }) {
     configFile: false,
     ...config,
     server: {
+      ...config.server,
       port: Number(port),
       host: host === true ? '0.0.0.0' : host
     }
