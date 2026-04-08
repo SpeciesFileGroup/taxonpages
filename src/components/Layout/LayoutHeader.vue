@@ -1,6 +1,6 @@
 <template>
   <header
-    class="tp-header relative bg-primary px-4 sm:px-6 py-3 shadow-sm shadow-base-muted/50 align-middle flex items-center"
+    class="tp-header relative bg-primary px-4 sm:px-6 py-2 min-h-10 shadow-sm shadow-base-muted/50 align-middle flex items-center"
   >
     <div
       class="container flex flex-wrap justify-between items-center mx-auto font-medium text-secondary-content"
