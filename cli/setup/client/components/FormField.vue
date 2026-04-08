@@ -2,7 +2,10 @@
   <div class="mb-3">
     <label
       v-if="field.label"
-      class="block text-sm font-medium text-base-content mb-1.5"
+      :class="[
+        'block text-sm font-medium text-base-content',
+        !field.description && 'mb-1.5'
+      ]"
     >
       {{ field.label }}
       <span

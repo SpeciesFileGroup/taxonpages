@@ -7,7 +7,7 @@
   </div>
   <div
     v-for="item in items"
-    class="flex justify-between flex-col gap-2 text-sm px-4 py-4 border-b"
+    class="flex justify-between flex-col gap-2 text-sm px-4 py-4 border-b border-base-border"
     :key="item.id"
   >
     <div class="flex flex-col">

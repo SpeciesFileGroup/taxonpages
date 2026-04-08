@@ -10,7 +10,7 @@
     >
       <template #header>
         <div class="text-sm">
-          Bibliography - <span v-html="convertUrlsToLinks(label)" />
+          Bibliography - <span v-html="sanitizeAndLinkifyHtml(label)" />
         </div>
       </template>
 
@@ -81,8 +81,8 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { makeAPIRequest } from '@/utils'
-import { getPagination, convertUrlsToLinks } from '../utils'
+import { makeAPIRequest, sanitizeAndLinkifyHtml } from '@/utils'
+import { getPagination } from '../utils'
 
 const props = defineProps({
   sourceId: {

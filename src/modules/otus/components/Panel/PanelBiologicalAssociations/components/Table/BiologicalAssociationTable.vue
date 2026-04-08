@@ -190,8 +190,12 @@
         <VTableBodyCell
           v-if="visibleColumns.citations"
           class="border-l-2 border-base-border"
-          v-html="ba.citations"
-        />
+        >
+          <BiologicalAssociationCitations
+            :biological-association="ba"
+            :citations="ba.citations"
+          />
+        </VTableBodyCell>
 
         <VTableBodyCell v-if="visibleColumns.images">
           <BiologicalAssociationImages :images="ba.images" />
@@ -204,6 +208,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import BiologicalAssociationImages from './BiologicalAssociationImages.vue'
+import BiologicalAssociationCitations from './BiologicalAssociationCitations.vue'
 
 const props = defineProps({
   biologicalAssociations: {

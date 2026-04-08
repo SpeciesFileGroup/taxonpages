@@ -20,7 +20,7 @@
     </template>
     <VSpinner v-if="isLoading" />
     <div class="mx-4 min-h-48">
-      <div class="border-b">
+      <div class="border-b border-base-border">
         <TabList
           :tabs="tabs"
           v-model="activeIndex"

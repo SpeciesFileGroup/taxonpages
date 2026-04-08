@@ -114,7 +114,7 @@
               </VTableBodyCell>
               <VTableBodyCell
                 class="break-all"
-                v-html="convertUrlsToLinks(item.cached)"
+                v-html="sanitizeAndLinkifyHtml(item.cached)"
               />
             </VTableBodyRow>
           </VTableBody>
@@ -140,8 +140,8 @@
 <script setup>
 import { ref, onBeforeMount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { makeAPIRequest } from '@/utils'
-import { getPagination, convertUrlsToLinks } from '../utils'
+import { getPagination } from '../utils'
+import { makeAPIRequest, sanitizeAndLinkifyHtml } from '@/utils'
 import DropdownMenu from '../components/DropdownMenu.vue'
 import YearPicker from '../components/YearPicker.vue'
 import VSlider from '../components/VSlider.vue'
