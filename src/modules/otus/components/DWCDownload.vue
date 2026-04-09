@@ -1,16 +1,17 @@
 <template>
   <VButton
-    primary
-    class="text-sm flex items-center"
+    class="flex items-center"
     title="Download DwC Occurrences"
+    size="sm"
     @click="
       () => {
         downloadCSV()
       }
     "
   >
-    <IconDownload class="w-4 h-4 mr-1" />
-    DwC
+    <div class="flex gap-1 items-center">
+      <IconDownload class="w-3.5 h-3.5" />
+    </div>
   </VButton>
 </template>
 

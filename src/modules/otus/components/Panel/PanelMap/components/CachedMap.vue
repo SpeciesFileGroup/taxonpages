@@ -1,8 +1,8 @@
 <template>
   <VButton
-    class="left-2 bottom-2 !px-2 py-2 rounded-full absolute z-[1500]"
-    primary
+    class="left-2 bottom-2 absolute z-1500"
     circle
+    size="lg"
     :title="synchMessage"
     @click="isModalVisible = true"
   >

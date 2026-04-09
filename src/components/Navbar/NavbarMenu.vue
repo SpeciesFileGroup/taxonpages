@@ -1,6 +1,6 @@
 <template>
   <nav class="tp-header-nav text-sm leading-6 font-normal">
-    <div class="flex gap-8">
+    <div class="flex gap-6">
       <template
         v-for="(item, index) in menu"
         :key="index"

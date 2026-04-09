@@ -1,9 +1,10 @@
 <template>
   <button
     type="button"
-    @click="toggleTheme"
+    class="cursor-pointer"
     :title="title"
     :aria-label="title"
+    @click="toggleTheme"
   >
     <svg
       v-if="themeMode === themeModes.dark"

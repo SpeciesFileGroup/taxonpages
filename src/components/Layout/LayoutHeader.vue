@@ -22,18 +22,21 @@
 
       <NavbarMobile />
 
-      <div class="relative hidden md:flex items-center ml-auto">
+      <div class="relative hidden md:flex items-center ml-auto gap-5">
         <NavbarMenu :menu="header_links" />
-        <div class="flex items-center border-l ml-6 pl-6 border-base-muted/50">
-          <ClientOnly>
-            <SwitchTheme class="text-primary-content" />
-          </ClientOnly>
-        </div>
-        <div class="flex items-center ml-2 border-base-muted">
-          <TrackerReport
-            icon
-            button-class="text-primary-content"
-          />
+        <div class="h-6 w-px ml-[1px] bg-primary-content/25"></div>
+        <div class="flex flex-row gap-4">
+          <div class="flex items-center">
+            <ClientOnly>
+              <SwitchTheme class="text-primary-content" />
+            </ClientOnly>
+          </div>
+          <div class="flex items-center border-base-border/50">
+            <TrackerReport
+              icon
+              button-class="text-primary-content"
+            />
+          </div>
         </div>
       </div>
     </div>

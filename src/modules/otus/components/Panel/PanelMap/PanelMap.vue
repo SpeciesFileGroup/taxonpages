@@ -22,8 +22,8 @@
           />
         </div>
         <VButton
-          class="h-6 text-sm absolute right-3 top-3 z-[400]"
-          primary
+          size="sm"
+          class="absolute right-3 top-3 z-[400]"
           @click="() => (isOtuSearchVisible = true)"
         >
           Search

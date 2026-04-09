@@ -1,7 +1,6 @@
 <template>
   <VButton
-    primary
-    class="!px-1 py-1"
+    size="xs"
     circle
     title="Metadata"
     @click="isModalVisible = true"

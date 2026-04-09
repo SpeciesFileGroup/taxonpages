@@ -17,7 +17,6 @@
     </div>
     <VButton
       v-if="interval && depictions.length > 1"
-      primary
       circle
       :aria-label="isPaused ? 'Play slideshow' : 'Pause slideshow'"
       @click="togglePause"

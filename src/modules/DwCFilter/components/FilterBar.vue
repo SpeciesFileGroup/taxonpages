@@ -30,19 +30,12 @@
             class="hidden md:flex flex-row gap-2 justify-center md:self-end text-sm"
           >
             <VButton
-              class="py-1.5 border border-primary"
-              primary
+              size="md"
               @click="() => emit('search')"
             >
               Search
             </VButton>
-            <VButton
-              class="py-1.5 border border-primary"
-              primary
-              @click="() => emit('reset')"
-            >
-              Reset
-            </VButton>
+            <VButton @click="() => emit('reset')"> Reset </VButton>
           </div>
         </div>
 
@@ -55,9 +48,7 @@
               }
             "
           >
-            <div
-              class="text-secondary flex flex-row gap-1 cursor-pointer"
-            >
+            <div class="text-secondary flex flex-row gap-1 cursor-pointer">
               <IconMinusCircle
                 v-if="showMoreFilters"
                 class="w-5 h-5"
@@ -86,15 +77,13 @@
           class="flex md:hidden flex-row gap-2 justify-center md:self-end text-sm"
         >
           <VButton
-            class="py-1.5 border border-primary"
-            primary
+            size="md"
             @click="() => emit('search')"
           >
             Search
           </VButton>
           <VButton
-            class="py-1.5 border border-primary"
-            primary
+            size="md"
             @click="() => emit('reset')"
           >
             Reset

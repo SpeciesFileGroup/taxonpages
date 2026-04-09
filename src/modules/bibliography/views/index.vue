@@ -56,14 +56,10 @@
           </div>
           <div class="flex flex-row gap-2 md:self-end">
             <VButton
-              class="text-sm py-1.5 border border-primary"
-              primary
               @click="() => loadList()"
               >Search</VButton
             >
             <VButton
-              class="text-sm py-1.5 border border-primary"
-              primary
               @click="() => reset()"
             >
               Reset
