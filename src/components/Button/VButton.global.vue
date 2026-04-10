@@ -5,6 +5,7 @@
       'tp-button',
       'transition-colors duration-150',
       'cursor-pointer',
+      'disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed',
       variantClasses,
       sizeClasses,
       circle ? 'rounded-full' : radiusClass
