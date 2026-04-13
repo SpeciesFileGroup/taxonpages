@@ -12,6 +12,8 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
+
 const props = defineProps({
   rows: {
     type: Array,
@@ -24,6 +26,8 @@ const props = defineProps({
   }
 })
 
+const router = useRouter()
+
 function openImageMatrix() {
   const otuIds = props.rows
     .filter(
@@ -32,6 +36,10 @@ function openImageMatrix() {
     )
     .map((r) => r.observationObjectId)
 
-  window.open(`/image_matrices/0?otu_filter=${otuIds.join('|')}`, '_self')
+  router.push({
+    name: 'image-matrices-id',
+    params: { id: '0' },
+    query: { otu_filter: otuIds.join('|') }
+  })
 }
 </script>

@@ -2,6 +2,7 @@
   <div>
     <VButton
       class="md:block hidden"
+      size="sm"
       title="Links used to obtain the information present on this page in JSON format."
       @click="isModalVisible = true"
     >

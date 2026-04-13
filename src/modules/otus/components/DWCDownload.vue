@@ -10,7 +10,7 @@
     "
   >
     <div class="flex gap-1 items-center">
-      <IconDownload class="w-3.5 h-3.5" />
+      <IconDownload class="w-4 h-4" />
     </div>
   </VButton>
 </template>
