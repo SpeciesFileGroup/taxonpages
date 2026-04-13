@@ -88,7 +88,11 @@ function parseOtuId(otuId) {
 }
 
 .distinguish-app-container {
-  font-family: var(--font-main);
+  @apply font-main shadow-2xl border border-base-border;
+
+  & > .distinguish-title-section {
+    @apply bg-base-foreground px-4 border-b border-base-border;
+  }
 }
 
 .interactive-key-container {
@@ -124,7 +128,11 @@ function parseOtuId(otuId) {
 }
 
 .distinguish-title {
-  @apply text-xl my-4;
+  @apply text-lg font-medium my-4;
+}
+
+.distinguish-title-citation {
+  @apply text-sm  mb-4;
 }
 
 .distinguish-row-filter-buttons {
