@@ -4,6 +4,12 @@
   >
     <ClientOnly>
       <VueInteractiveKey v-bind="options">
+        <template #remaining-row-filter="{ selectedIds, rows }">
+          <ImageMatrixButton
+            :rows="rows"
+            :selectedIds="selectedIds"
+          />
+        </template>
         <template #remaining-item="{ item }">
           <RouterLink
             v-if="item.observationObjectType === OTU"
@@ -36,17 +42,32 @@ import { useRoute } from 'vue-router'
 import { ref } from 'vue'
 import { OTU } from '@/constants/objectTypes.js'
 import { VueInteractiveKey } from '@sfgrp/distinguish'
+import ImageMatrixButton from '../components/ImageMatrixButton.vue'
 import '@sfgrp/distinguish/dist/distinguish.css'
 
 const route = useRoute()
+const query = route.query
+const { url, project_token } = __APP_ENV__
 
 const options = ref({
-  observationMatrixId: route.params.id,
+  observationMatrixId: Number(route.params.id),
+  otuId: parseOtuId(query.otu_filter),
   apiConfig: {
-    baseURL: __APP_ENV__.url,
-    projectToken: __APP_ENV__.project_token
+    baseURL: url,
+    projectToken: project_token
   }
 })
+
+function parseOtuId(otuId) {
+  if (!otuId) {
+    return []
+  }
+
+  return otuId
+    .split('|')
+    .map((id) => Number(id.trim()))
+    .filter((id) => !isNaN(id))
+}
 </script>
 
 <style>
@@ -66,25 +87,27 @@ const options = ref({
   --distinguish-btn-medium-size: 20px;
 }
 
+.distinguish-app-container {
+  font-family: var(--font-main);
+}
+
 .interactive-key-container {
   max-height: calc(100vh - 12rem);
+  height: calc(100vh - 12rem);
 
   hr {
     @apply my-4;
   }
 }
 
-.distinguish-grid {
-  @apply shadow-md rounded border-base-muted;
-}
-
 .distinguish-header-bar {
-  @apply rounded-t-md;
+  @apply rounded-t-lg;
 }
 
-.distinguish-app-container {
+.distinguish-panel {
   h2 {
-    @apply text-lg my-2;
+    @apply text-base font-medium mb-2;
+    font-weight: var(--font-weight-medium) !important;
   }
 }
 
@@ -97,7 +120,7 @@ const options = ref({
 }
 
 .distinguish-btn {
-  @apply px-4 py-1 rounded-none text-sm;
+  @apply px-2 py-1.25 rounded-md;
 }
 
 .distinguish-title {
@@ -106,5 +129,10 @@ const options = ref({
 
 .distinguish-row-filter-buttons {
   @apply my-4;
+}
+
+.distinguish-grid-icon {
+  @apply rounded-none w-3 h-3 border-0;
+  background-color: var(--tp-primary);
 }
 </style>

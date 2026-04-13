@@ -1,6 +1,6 @@
 {
   "name": "@sfgrp/taxonpages",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "CLI tool for building taxon pages powered by SpeciesFileGroup",
   "type": "module",
   "private": false,
@@ -32,7 +32,7 @@
   "dependencies": {
     "@geoman-io/leaflet-geoman-free": "^2.19.2",
     "@nuxt/devalue": "^2.0.2",
-    "@sfgrp/distinguish": "^0.4.2",
+    "@sfgrp/distinguish": "^0.4.5",
     "@sfgrp/pinpoint": "^0.0.12",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.2.2",
