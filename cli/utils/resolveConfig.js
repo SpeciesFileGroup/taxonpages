@@ -8,7 +8,7 @@ import { VitePluginRadar } from 'vite-plugin-radar'
 import Vue from '@vitejs/plugin-vue'
 import Markdown from 'unplugin-vue-markdown/vite'
 import markdownAnchor from 'markdown-it-anchor'
-import Pages from 'vite-plugin-pages'
+import VueRouter from 'vue-router/vite'
 import tailwindcss from '@tailwindcss/vite'
 import {
   relativeToRouterPlugin,
@@ -97,9 +97,7 @@ export async function getViteConfig({ packageRoot, projectRoot }) {
       //projectStylesPlugin(projectRoot),
 
       ViteRestart({
-        dir: [
-          resolve(projectRoot, 'config/**/*.yml'),
-        ],
+        dir: [resolve(projectRoot, 'config/**/*.yml')],
         projectRoot
       }),
 
@@ -118,15 +116,14 @@ export async function getViteConfig({ packageRoot, projectRoot }) {
         }
       }),
 
-      Pages({
-        dirs: resolve(projectRoot, 'pages'),
+      VueRouter({
+        routesFolder: [resolve(projectRoot, 'pages')],
         exclude: ['**/components/*.vue', 'components/**/*.vue'],
-        extensions: ['vue', 'md'],
-        extendRoute(route) {
+        extensions: ['.vue', '.md'],
+        async extendRoute(route) {
           if (route.path === '/home') {
-            route.alias = '/home'
             route.path = '/'
-            return route
+            route.addAlias('/home')
           }
         }
       }),
