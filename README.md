@@ -8,7 +8,7 @@ TaxonPages is distributed as an NPM package. Use the `taxonpages` CLI to scaffol
 
 ### Requirements
 
-- [Node.js](https://nodejs.org/en/download/) >= 18.0.0
+- [Node.js](https://nodejs.org/en/download/) >= 20.19.0 or >=22.12.0
 
 ### Quick start
 
