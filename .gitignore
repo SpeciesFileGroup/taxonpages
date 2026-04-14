@@ -8,7 +8,6 @@ dist-ssr
 /panels
 /layouts
 public
-README.md
 *.local
 .env
 .vite
