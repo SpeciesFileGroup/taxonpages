@@ -1,6 +1,7 @@
 <template>
-  <div class="relative inline">
+  <div class="relative inline-flex">
     <button
+      class="cursor-pointer"
       title="Menu"
       aria-label="Open panel options"
       aria-haspopup="true"
@@ -14,11 +15,11 @@
       v-if="isVisible"
       ref="element"
       role="menu"
-      class="bg-base-foreground absolute font-normal text-sm text-base-lighter right-0 z-10 mt-2 w-56 origin-top-right rounded-md shadow-lg ring-1 ring-black/5"
+      class="bg-base-foreground absolute top-full font-normal text-sm text-base-lighter right-0 z-10 mt-2 w-56 origin-top-right rounded-md shadow-lg ring-1 ring-black/5"
       @keydown="handleMenuKeydown"
     >
       <li
-        v-for="(item, index) in items"
+        v-for="item in items"
         :key="item.label"
         role="menuitem"
         tabindex="0"
