@@ -17,6 +17,10 @@ taxa_page:
           - panel:statistics
           - panel:sounds
 
+  references:
+    panels:
+      - - - panel:references-cited
+
   biological_associations:
     panels:
       - - - panel:biological-associations
