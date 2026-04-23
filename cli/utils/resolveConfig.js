@@ -28,8 +28,9 @@ import { pluginInjectionPlugin } from '../../src/plugins/vite/pluginInjection.js
  * @param {object} options
  * @param {string} options.packageRoot - Absolute path to the taxonpages package
  * @param {string} options.projectRoot - Absolute path to the user's project (CWD)
+ * @param {boolean} [options.ssr] - Whether this config is for an SSR build/server
  */
-export async function getViteConfig({ packageRoot, projectRoot }) {
+export async function getViteConfig({ packageRoot, projectRoot, ssr = false }) {
   const configuration = loadConfiguration(projectRoot)
 
   writeTailwindSources(packageRoot, projectRoot, {
@@ -98,7 +99,8 @@ export async function getViteConfig({ packageRoot, projectRoot }) {
 
       ViteRestart({
         dir: [resolve(projectRoot, 'config/**/*.yml')],
-        projectRoot
+        projectRoot,
+        ssr
       }),
 
       Vue({

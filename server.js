@@ -7,6 +7,15 @@ import express from 'express'
 import { generateConsoleMessage } from './src/ssr/utils/generateConsoleMessage.js'
 import { loadApiRoutes } from './src/server/loadApiRoutes.js'
 import { loadPlugins } from './cli/utils/loadPlugins.js'
+import { loadConfiguration } from './src/utils/loadConfiguration.js'
+
+function stripBase(url, base) {
+  if (!base || base === '/') return url
+  const normalized = base.endsWith('/') ? base.slice(0, -1) : base
+  if (url === normalized) return '/'
+  if (url.startsWith(normalized + '/')) return url.slice(normalized.length)
+  return url
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -41,6 +50,8 @@ export async function createServer({
       )
     : {}
 
+  const { base_url } = loadConfiguration(projectRoot)
+
   const app = express()
   const httpServer = http.createServer(app)
   let vite
@@ -49,7 +60,7 @@ export async function createServer({
     const { getViteConfig } = await import(
       './cli/utils/resolveConfig.js'
     )
-    const viteConfig = await getViteConfig({ packageRoot, projectRoot })
+    const viteConfig = await getViteConfig({ packageRoot, projectRoot, ssr: true })
 
     vite = await (
       await import('vite')
@@ -147,7 +158,7 @@ export async function createServer({
 
   app.use(/(.*)/, async (req, res) => {
     try {
-      const url = req.originalUrl
+      const url = stripBase(req.originalUrl, base_url)
       const origin = req.protocol + '://' + req.get('host')
 
       let template, render

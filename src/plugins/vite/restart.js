@@ -28,7 +28,7 @@ function getWatchTarget(pattern) {
   return isAbsolute && !result.startsWith('/') ? '/' + result : result
 }
 
-export function ViteRestart({ dir, projectRoot }) {
+export function ViteRestart({ dir, projectRoot, ssr = false }) {
   const patterns = (Array.isArray(dir) ? dir : [dir]).map(toForwardSlash)
   const isMatch = picomatch(patterns, { dot: true })
   const watchTargets = [...new Set(patterns.map(getWatchTarget))]
@@ -38,6 +38,13 @@ export function ViteRestart({ dir, projectRoot }) {
 
     config() {
       const configuration = loadConfiguration(projectRoot)
+
+      if (ssr && configuration.hash_mode) {
+        console.warn(
+          '[taxonpages] hash_mode is not compatible with SSR (the URL fragment is never sent to the server). Forcing hash_mode=false for this run.'
+        )
+        configuration.hash_mode = false
+      }
 
       return {
         define: {

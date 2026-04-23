@@ -5,7 +5,11 @@ import { getViteConfig } from '../utils/resolveConfig.js'
 export async function runBuild({ packageRoot, projectRoot, mode }) {
   setGlobalVars(packageRoot, projectRoot)
 
-  const config = await getViteConfig({ packageRoot, projectRoot })
+  const config = await getViteConfig({
+    packageRoot,
+    projectRoot,
+    ssr: mode === 'ssr'
+  })
 
   if (mode === 'spa') {
     await viteBuild({
