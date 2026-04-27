@@ -23,13 +23,13 @@
   --tp-map-asserted-absent: rgb(106, 81, 163);
   --tp-map-type-material: rgb(51, 136, 255);
   --tp-map-collection-object: rgb(219, 39, 119);
-  --tp-map-field-occurrence: rgb(49, 163, 84);
+  --tp-map-field-occurrence: rgb(64, 176, 166);
 
   --tp-scrollbar-thumb: rgb(156, 174, 188);
   --tp-scrollbar-track: rgb(230, 238, 245);
 
   --tp-card-shadow: rgba(8, 47, 73, 0.08);
-  --tp-card-border: rgba(52, 68, 83, 0.10);
+  --tp-card-border: rgba(52, 68, 83, 0.1);
   --tp-shadow-sm: rgba(0, 0, 0, 0.2);
   --tp-tree-line: rgb(156, 174, 188);
 
@@ -62,7 +62,7 @@
   --tp-base-border: rgb(36, 56, 76);
   --tp-base-content: rgb(230, 242, 250);
 
-  --tp-card-shadow: rgba(0, 0, 0, 0.30);
+  --tp-card-shadow: rgba(0, 0, 0, 0.3);
   --tp-card-border: rgba(148, 168, 184, 0.1);
   --tp-shadow-sm: rgba(0, 0, 0, 0.4);
   --tp-tree-line: rgb(148, 168, 184);
