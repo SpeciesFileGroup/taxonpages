@@ -13,6 +13,7 @@
       :aria-checked="!!modelValue"
       :disabled="disabled"
       :class="[
+        'cursor-pointer',
         'relative inline-flex shrink-0 rounded-full transition-colors duration-200',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2',
         track.size,
