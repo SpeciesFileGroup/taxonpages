@@ -4,13 +4,13 @@
     @close="() => (isModalVisible = false)"
   >
     <template #header>
-      <h3 class="font-medium">{{ title }}</h3>
+      <h3 class="text-sm font-medium">{{ title }}</h3>
     </template>
     <div class="px-4 pt-0 min-h-72">
       <VSpinner v-if="isLoading" />
       <template v-else-if="hasData">
         <div
-          v-for="(group, index) in groupedEntries"
+          v-for="group in groupedEntries"
           :key="group.category"
           class="pb-4"
         >

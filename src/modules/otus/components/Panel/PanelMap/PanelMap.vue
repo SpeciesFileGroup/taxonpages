@@ -1,8 +1,8 @@
 <template>
   <VCard>
-    <div class="relative">
-      <ClientOnly>
-        <VSpinner v-if="isLoading" />
+    <ClientOnly>
+      <VSpinner v-if="isLoading" />
+      <div class="relative">
         <VMap
           class="h-96 max-h-96"
           dragging
@@ -23,7 +23,7 @@
         </div>
         <VButton
           size="sm"
-          class="absolute right-3 top-3 z-[400]"
+          class="absolute right-3 top-3 z-400"
           @click="() => (isOtuSearchVisible = true)"
         >
           Search
@@ -40,35 +40,53 @@
           v-if="store.distribution.cachedMap"
           :cached-map="store.distribution.cachedMap"
         />
-      </ClientOnly>
-    </div>
-    <div
-      v-if="store.distribution.errorMessage"
-      class="flex flex-row p-2 text-xs italic"
-    >
-      * {{ store.distribution.errorMessage }}
-    </div>
-    <div
-      class="flex flex-row p-2 gap-2 text-xs"
-      v-if="store.distribution.currentShapeTypes.length"
-    >
+      </div>
+
       <div
-        v-for="type in store.distribution.currentShapeTypes"
-        :key="type"
-        class="flex flex-row items-center"
+        v-if="store.distribution.errorMessage"
+        class="flex flex-row p-2 text-xs italic"
+      >
+        * {{ store.distribution.errorMessage }}
+      </div>
+      <div
+        class="flex flex-row p-2 gap-2 text-xs items-center"
+        v-if="store.distribution.currentShapeTypes.length || absences !== 'off'"
       >
         <div
-          :class="['w-3', 'h-3', 'm-1', 'rounded-sm', LEGEND[type].background]"
-        />
-        <span>{{ LEGEND[type].label }}</span>
+          v-for="type in store.distribution.currentShapeTypes"
+          :key="type"
+          class="flex flex-row items-center"
+        >
+          <div
+            :class="[
+              'w-3',
+              'h-3',
+              'm-1',
+              'rounded-sm',
+              LEGEND[type].background
+            ]"
+          />
+          <span>{{ LEGEND[type].label }}</span>
+        </div>
+        <VToggle
+          v-if="absences !== 'off'"
+          v-model="showAbsences"
+          size="sm"
+          class="ml-auto"
+          :disabled="isLoadingAbsent"
+        >
+          <span class="text-xs">{{
+            isLoadingAbsent ? 'Loading...' : 'Absences'
+          }}</span>
+        </VToggle>
       </div>
-    </div>
+    </ClientOnly>
     <DwcTable ref="dwcTableRef" />
   </VCard>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useDistributionStore } from './store/useDistributionStore.js'
 import { makeClusterIconFor } from './clusters'
 import { useGeojsonOptions } from './composables/useGeojsonOptions.js'
@@ -97,6 +115,12 @@ const props = defineProps({
   cluster: {
     type: Boolean,
     default: true
+  },
+
+  absences: {
+    type: String,
+    default: 'auto',
+    validator: (v) => ['off', 'manual', 'auto'].includes(v)
   }
 })
 
@@ -107,13 +131,49 @@ const dwcTableRef = ref(null)
 const store = useDistributionStore()
 const popupElement = ref(null)
 const { popupItem, geojsonOptions } = useGeojsonOptions({ popupElement })
+const SHOW_ABSENCES_KEY = 'panel:map:show-absences'
+
+function readStoredShowAbsences() {
+  if (typeof sessionStorage === 'undefined') return null
+  const value = sessionStorage.getItem(SHOW_ABSENCES_KEY)
+  return value === null ? null : value === 'true'
+}
+
+const stored = readStoredShowAbsences()
+const showAbsences = ref(
+  props.absences === 'off'
+    ? false
+    : stored !== null
+      ? stored
+      : props.absences === 'auto'
+)
+const isLoadingAbsent = ref(false)
+
+watch(showAbsences, async (visible) => {
+  if (typeof sessionStorage !== 'undefined') {
+    sessionStorage.setItem(SHOW_ABSENCES_KEY, String(visible))
+  }
+
+  if (!visible) {
+    store.hideAbsences()
+    return
+  }
+
+  isLoadingAbsent.value = true
+  try {
+    await store.showAbsences(props.otuId)
+  } finally {
+    isLoadingAbsent.value = false
+  }
+})
 
 onMounted(() => {
   isLoading.value = true
 
   store.loadDistribution({
     otuId: props.otuId,
-    rankString: props.taxon.rank_string
+    rankString: props.taxon.rank_string,
+    withAbsences: showAbsences.value
   })
 })
 

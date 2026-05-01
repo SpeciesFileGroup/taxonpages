@@ -27,6 +27,10 @@ function getRelevantType(base) {
   return types[0]
 }
 
+function isAllAbsent(base) {
+  return Array.isArray(base) && base.length > 0 && base.every((b) => b.is_absent)
+}
+
 export default ({ L }) => ({
   onEachFeature: (feature, layer) => {
     layer.pm.setOptions(DISABLE_LAYER_OPTIONS)
@@ -58,9 +62,10 @@ export default ({ L }) => ({
   },
 
   style: (feature) => {
-    const type = getRelevantType(feature.properties?.base)
-    const shapeStyle = Shape[type]
+    const base = feature.properties?.base
 
-    return shapeStyle
+    if (isAllAbsent(base)) return Shape.AssertedAbsent
+
+    return Shape[getRelevantType(base)]
   }
 })

@@ -4,7 +4,7 @@ export const LEGEND = {
     background: 'bg-map-aggregate'
   },
   AssertedAbsent: {
-    label: 'Asserted absent',
+    label: 'Absent',
     background: 'bg-map-asserted-absent'
   },
   AssertedDistribution: {
