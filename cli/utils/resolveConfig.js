@@ -16,6 +16,7 @@ import {
 } from '../../src/plugins/markdown/index.js'
 import {
   ViteRestart,
+  ViteRestartOnRouteDelete,
   projectStylesPlugin,
   componentRegistrationPlugin
 } from '../../src/plugins/vite/index.js'
@@ -41,6 +42,12 @@ export async function getViteConfig({ packageRoot, projectRoot, ssr = false }) {
   const root = existsSync(resolve(projectRoot, 'index.html'))
     ? projectRoot
     : packageRoot
+
+  const routesConfig = {
+    routesFolder: [resolve(projectRoot, 'pages')],
+    exclude: ['**/components/*.vue', 'components/**/*.vue'],
+    extensions: ['.vue', '.md']
+  }
 
   const config = {
     root,
@@ -103,6 +110,8 @@ export async function getViteConfig({ packageRoot, projectRoot, ssr = false }) {
         ssr
       }),
 
+      ViteRestartOnRouteDelete(routesConfig),
+
       Vue({
         include: [/\.vue$/, /\.md$/]
       }),
@@ -119,9 +128,7 @@ export async function getViteConfig({ packageRoot, projectRoot, ssr = false }) {
       }),
 
       VueRouter({
-        routesFolder: [resolve(projectRoot, 'pages')],
-        exclude: ['**/components/*.vue', 'components/**/*.vue'],
-        extensions: ['.vue', '.md'],
+        ...routesConfig,
         async extendRoute(route) {
           if (route.path === '/home') {
             route.path = '/'
