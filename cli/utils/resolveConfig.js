@@ -17,6 +17,7 @@ import {
 import {
   ViteRestart,
   ViteRestartOnRouteDelete,
+  ViteRestartOnEntryChange,
   projectStylesPlugin,
   componentRegistrationPlugin
 } from '../../src/plugins/vite/index.js'
@@ -111,6 +112,14 @@ export async function getViteConfig({ packageRoot, projectRoot, ssr = false }) {
       }),
 
       ViteRestartOnRouteDelete(routesConfig),
+
+      ViteRestartOnEntryChange({
+        entries: [
+          resolve(projectRoot, 'modules/**/router/*.js'),
+          resolve(projectRoot, 'panels/*/main.js')
+        ],
+        projectRoot
+      }),
 
       Vue({
         include: [/\.vue$/, /\.md$/]
