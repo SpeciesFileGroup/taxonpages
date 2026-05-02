@@ -50,7 +50,9 @@
       </div>
       <div
         class="flex flex-row p-2 gap-2 text-xs items-center"
-        v-if="store.distribution.currentShapeTypes.length || absences !== 'off'"
+        v-else-if="
+          store.distribution.currentShapeTypes.length || absences !== 'off'
+        "
       >
         <div
           v-for="type in store.distribution.currentShapeTypes"
