@@ -8,6 +8,8 @@
  * Modules can provide custom editors via setup.schema.json with editor: 'custom'
  */
 
+import { TILE_PRESETS } from './constants/tilePresets.js'
+
 export default {
   status: {
     label: 'Status',
@@ -325,18 +327,46 @@ export default {
       maps: {
         file: 'maps.yml',
         label: 'Map Tile Providers',
-        description: 'Map tile server configuration',
+        description:
+          'Tile servers used by the map. The first provider is the default; add more to expose a layer switcher. URL placeholders: {s} subdomain, {z}/{x}/{y} tile coords, {r} retina suffix.',
         fields: {
           map_tiles: {
             type: 'array',
             label: 'Tile Providers',
+            sortable: true,
+            presets: TILE_PRESETS,
             items: {
-              label: { type: 'string', label: 'Label' },
-              attribution: { type: 'string', label: 'Attribution' },
-              server: { type: 'string', label: 'Tile Server URL' },
+              label: {
+                type: 'string',
+                label: 'Label',
+                placeholder: 'OpenStreetMap'
+              },
+              attribution: {
+                type: 'string',
+                label: 'Attribution',
+                placeholder: '&copy; OpenStreetMap contributors'
+              },
+              server: {
+                type: 'string',
+                label: 'Tile Server URL',
+                placeholder: 'https://{s}.tile.example.org/{z}/{x}/{y}.png'
+              },
+              subdomains: {
+                type: 'string',
+                label: 'Subdomains',
+                description: 'Characters used to replace {s} in the URL (e.g. "abc").',
+                optional: true
+              },
               tileSize: {
                 type: 'number',
                 label: 'Tile Size',
+                description: 'Pixel size of a tile. Common values: 256, 512.',
+                optional: true
+              },
+              zoomOffset: {
+                type: 'number',
+                label: 'Zoom Offset',
+                description: 'Offset applied to zoom values when requesting tiles.',
                 optional: true
               },
               minZoom: {
@@ -347,6 +377,30 @@ export default {
               maxZoom: {
                 type: 'number',
                 label: 'Max Zoom',
+                optional: true
+              },
+              maxNativeZoom: {
+                type: 'number',
+                label: 'Max Native Zoom',
+                description: 'Highest zoom level the server provides; deeper zooms are upscaled.',
+                optional: true
+              },
+              opacity: {
+                type: 'number',
+                label: 'Opacity',
+                description: 'Layer opacity from 0 to 1.',
+                optional: true
+              },
+              detectRetina: {
+                type: 'boolean',
+                label: 'Detect Retina',
+                description: 'Request higher-resolution tiles on high-DPI screens.',
+                optional: true
+              },
+              noWrap: {
+                type: 'boolean',
+                label: 'No Wrap',
+                description: 'Disable horizontal world wrapping.',
                 optional: true
               }
             }

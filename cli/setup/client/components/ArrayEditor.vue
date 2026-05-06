@@ -182,25 +182,47 @@
       </div>
     </template>
 
-    <button
-      class="tp-btn tp-btn-outline tp-btn-sm"
-      @click="addItem"
-    >
-      <svg
-        class="w-3.5 h-3.5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
+    <div class="flex items-center gap-2">
+      <button
+        class="tp-btn tp-btn-outline tp-btn-sm"
+        @click="addItem"
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M12 4v16m8-8H4"
-        />
-      </svg>
-      Add item
-    </button>
+        <svg
+          class="w-3.5 h-3.5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 4v16m8-8H4"
+          />
+        </svg>
+        Add item
+      </button>
+      <select
+        v-if="field.presets?.length"
+        class="tp-select max-w-xs"
+        :value="''"
+        @change="onPresetSelect"
+      >
+        <option
+          value=""
+          disabled
+        >
+          Add from preset…
+        </option>
+        <option
+          v-for="(preset, i) in field.presets"
+          :key="i"
+          :value="i"
+        >
+          {{ preset.label }}
+        </option>
+      </select>
+    </div>
   </div>
 </template>
 
@@ -269,5 +291,16 @@ function updateSimpleItem(index, value) {
   const newItems = [...items.value]
   newItems[index] = props.field.items.type === 'number' ? Number(value) : value
   emit('update:modelValue', newItems)
+}
+
+function onPresetSelect(e) {
+  const index = Number(e.target.value)
+  const preset = props.field.presets?.[index]
+
+  e.target.value = ''
+  if (!preset) return
+
+  const value = JSON.parse(JSON.stringify(preset.value ?? {}))
+  emit('update:modelValue', [...items.value, value])
 }
 </script>

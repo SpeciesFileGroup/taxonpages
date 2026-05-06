@@ -125,7 +125,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { apiFetch } from '../composables/useApi.js'
 import { DEFAULTS, PRESETS, VARIABLE_GROUPS as variableGroups } from './styleConstants.js'
 
@@ -192,6 +192,16 @@ async function save() {
     console.error('Failed to save theme:', err)
   }
 }
+
+function onKeydown(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault()
+    if (dirty.value) save()
+  }
+}
+
+onMounted(() => window.addEventListener('keydown', onKeydown))
+onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
 onMounted(async () => {
   try {

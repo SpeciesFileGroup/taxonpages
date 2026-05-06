@@ -8,7 +8,7 @@ export const DEFAULTS = {
     '--tp-warning': 'rgb(245, 158, 11)',
     '--tp-danger': 'rgb(239, 68, 68)',
     '--tp-base-foreground': 'rgb(255, 255, 255)',
-    '--tp-base-background': 'rgb(248, 251, 253)',
+    '--tp-base-background': 'rgb(248, 250, 252)',
     '--tp-base-muted': 'rgb(230, 238, 245)',
     '--tp-base-soft': 'rgb(98, 113, 128)',
     '--tp-base-lighter': 'rgb(52, 68, 83)',
@@ -68,14 +68,14 @@ export const PRESETS = [
   {
     name: 'Default',
     description: 'The standard TaxonPages theme with cool ocean blues and clean neutrals.',
-    swatches: ['rgb(8, 47, 73)', 'rgb(2, 132, 199)', 'rgb(248, 251, 253)', 'rgb(12, 30, 48)'],
+    swatches: ['rgb(8, 47, 73)', 'rgb(2, 132, 199)', 'rgb(248, 250, 252)', 'rgb(12, 30, 48)'],
     light: { ...DEFAULTS.light },
     dark: { ...DEFAULTS.dark }
   },
   {
     name: 'Chitin',
     description: 'Earth tones inspired by beetle exoskeletons and entomological specimen drawers.',
-    swatches: ['rgb(62, 47, 35)', 'rgb(166, 94, 7)', 'rgb(249, 246, 240)', 'rgb(38, 30, 20)'],
+    swatches: ['rgb(62, 47, 35)', 'rgb(166, 94, 7)', 'rgb(250, 250, 250)', 'rgb(38, 30, 20)'],
     light: {
       '--tp-primary': 'rgb(62, 47, 35)',
       '--tp-primary-content': 'rgb(255, 248, 235)',
@@ -85,7 +85,7 @@ export const PRESETS = [
       '--tp-warning': 'rgb(202, 138, 4)',
       '--tp-danger': 'rgb(220, 53, 53)',
       '--tp-base-foreground': 'rgb(255, 255, 255)',
-      '--tp-base-background': 'rgb(249, 246, 240)',
+      '--tp-base-background': 'rgb(250, 250, 250)',
       '--tp-base-muted': 'rgb(235, 228, 216)',
       '--tp-base-soft': 'rgb(113, 103, 89)',
       '--tp-base-lighter': 'rgb(72, 63, 52)',
@@ -141,7 +141,7 @@ export const PRESETS = [
   {
     name: 'Bathyal',
     description: 'Deep ocean blues and bioluminescent accents from mesopelagic marine ecosystems.',
-    swatches: ['rgb(18, 32, 64)', 'rgb(0, 128, 140)', 'rgb(240, 245, 250)', 'rgb(14, 24, 42)'],
+    swatches: ['rgb(18, 32, 64)', 'rgb(0, 128, 140)', 'rgb(248, 250, 252)', 'rgb(14, 24, 42)'],
     light: {
       '--tp-primary': 'rgb(18, 32, 64)',
       '--tp-primary-content': 'rgb(224, 240, 255)',
@@ -151,7 +151,7 @@ export const PRESETS = [
       '--tp-warning': 'rgb(224, 148, 8)',
       '--tp-danger': 'rgb(210, 48, 62)',
       '--tp-base-foreground': 'rgb(255, 255, 255)',
-      '--tp-base-background': 'rgb(240, 245, 250)',
+      '--tp-base-background': 'rgb(248, 250, 252)',
       '--tp-base-muted': 'rgb(218, 228, 240)',
       '--tp-base-soft': 'rgb(90, 105, 124)',
       '--tp-base-lighter': 'rgb(52, 66, 86)',
@@ -207,7 +207,7 @@ export const PRESETS = [
   {
     name: 'Stipule',
     description: 'Muted sage greens and warm clay tones evoking pressed herbarium sheets.',
-    swatches: ['rgb(40, 56, 36)', 'rgb(164, 82, 42)', 'rgb(245, 245, 238)', 'rgb(28, 32, 24)'],
+    swatches: ['rgb(40, 56, 36)', 'rgb(164, 82, 42)', 'rgb(248, 250, 252)', 'rgb(28, 32, 24)'],
     light: {
       '--tp-primary': 'rgb(40, 56, 36)',
       '--tp-primary-content': 'rgb(238, 245, 233)',
@@ -217,7 +217,7 @@ export const PRESETS = [
       '--tp-warning': 'rgb(212, 148, 12)',
       '--tp-danger': 'rgb(200, 50, 50)',
       '--tp-base-foreground': 'rgb(255, 255, 255)',
-      '--tp-base-background': 'rgb(245, 245, 238)',
+      '--tp-base-background': 'rgb(248, 250, 252)',
       '--tp-base-muted': 'rgb(226, 228, 216)',
       '--tp-base-soft': 'rgb(104, 110, 96)',
       '--tp-base-lighter': 'rgb(62, 68, 56)',
@@ -273,7 +273,7 @@ export const PRESETS = [
   {
     name: 'Canopy',
     description: 'Deep canopy green and tropical red — the lush contrast of rainforest foliage and Heliconia blooms.',
-    swatches: ['rgb(16, 72, 52)', 'rgb(198, 58, 48)', 'rgb(250, 250, 250)', 'rgb(16, 24, 20)'],
+    swatches: ['rgb(16, 72, 52)', 'rgb(198, 58, 48)', 'rgb(248, 250, 252)', 'rgb(16, 24, 20)'],
     light: {
       '--tp-primary': 'rgb(16, 72, 52)',
       '--tp-primary-content': 'rgb(255, 255, 255)',
@@ -283,7 +283,7 @@ export const PRESETS = [
       '--tp-warning': 'rgb(204, 142, 16)',
       '--tp-danger': 'rgb(192, 48, 42)',
       '--tp-base-foreground': 'rgb(255, 255, 255)',
-      '--tp-base-background': 'rgb(250, 250, 250)',
+      '--tp-base-background': 'rgb(248, 250, 252)',
       '--tp-base-muted': 'rgb(238, 240, 238)',
       '--tp-base-soft': 'rgb(106, 112, 108)',
       '--tp-base-lighter': 'rgb(58, 64, 60)',
@@ -341,7 +341,7 @@ export const PRESETS = [
   {
     name: 'Morpho',
     description: 'Deep teal and warm coral — Morpho menelaus wings against tropical Heliconia flowers.',
-    swatches: ['rgb(0, 88, 96)', 'rgb(216, 88, 58)', 'rgb(250, 250, 250)', 'rgb(14, 28, 30)'],
+    swatches: ['rgb(0, 88, 96)', 'rgb(216, 88, 58)', 'rgb(248, 250, 252)', 'rgb(14, 28, 30)'],
     light: {
       '--tp-primary': 'rgb(0, 88, 96)',
       '--tp-primary-content': 'rgb(255, 255, 255)',
@@ -351,7 +351,7 @@ export const PRESETS = [
       '--tp-warning': 'rgb(214, 148, 18)',
       '--tp-danger': 'rgb(198, 48, 48)',
       '--tp-base-foreground': 'rgb(255, 255, 255)',
-      '--tp-base-background': 'rgb(250, 250, 250)',
+      '--tp-base-background': 'rgb(248, 250, 252)',
       '--tp-base-muted': 'rgb(238, 240, 240)',
       '--tp-base-soft': 'rgb(104, 112, 114)',
       '--tp-base-lighter': 'rgb(58, 66, 68)',
