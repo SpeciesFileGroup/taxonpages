@@ -14,13 +14,16 @@ function resolveTileUrl(urlTemplate, dprRules) {
 }
 
 export function makeTileFromConfiguration(L, opts) {
-  const tiles = map_tiles || [
-    {
-      label: 'tile',
-      server: map_tile_server,
-      attribution: map_tile_attribution
-    }
-  ]
+  const tiles =
+    Array.isArray(map_tiles) && map_tiles.length
+      ? map_tiles
+      : [
+          {
+            label: 'tile',
+            server: map_tile_server,
+            attribution: map_tile_attribution
+          }
+        ]
 
   return Object.fromEntries(
     tiles.map(({ server, label, dpr, ...userOpts }) => [
