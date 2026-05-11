@@ -15,24 +15,9 @@
     <div class="bg-black/25 absolute h-full w-full">
       <slot />
     </div>
-    <VButton
-      v-if="interval && depictions.length > 1"
-      circle
-      :aria-label="isPaused ? 'Play slideshow' : 'Pause slideshow'"
-      @click="togglePause"
-    >
-      <IconPlay
-        v-if="isPaused"
-        class="w-4 h-4"
-      />
-      <IconPause
-        v-else
-        class="w-4 h-4"
-      />
-    </VButton>
     <span
       v-if="currentDepiction.objectId"
-      class="z-10 text-white text-sm drop-shadow absolute bottom-2 right-0 px-4"
+      class="z-10 text-white text-sm drop-shadow-sm absolute bottom-2 right-0 px-4"
     >
       <RouterLink
         v-if="isOtu"
