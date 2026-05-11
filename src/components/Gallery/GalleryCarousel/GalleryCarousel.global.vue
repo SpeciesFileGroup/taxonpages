@@ -17,11 +17,11 @@
     </div>
     <span
       v-if="currentDepiction.objectId"
-      class="z-10 text-white text-sm drop-shadow-sm absolute bottom-2 right-0 px-4"
+      class="z-10 text-white! text-sm drop-shadow-sm absolute bottom-2 right-0 px-4"
     >
       <RouterLink
         v-if="isOtu"
-        class="text-white decoration-transparent"
+        class="text-white! decoration-transparent"
         :to="{
           name: 'otus-id',
           params: { id: currentDepiction.objectId }
