@@ -7,7 +7,7 @@
       <img
         v-if="currentDepiction.imageOriginal"
         :key="currentDepiction.imageOriginal"
-        class="object-cover overflow-hidden h-full w-full absolute top-0 my-0"
+        class="object-cover overflow-hidden h-full w-full absolute top-0 my-0!"
         :src="currentDepiction.imageOriginal"
         :alt="currentDepiction.label"
       />
