@@ -1,6 +1,6 @@
 <template>
   <div class="container mx-auto box-border">
-    <h1 class="text-4xl px-4 md:px-0 mt-4 mb-6 font-bold">Bibliography</h1>
+    <h1 class="text-4xl px-4 md:px-0 mt-6 mb-6 font-bold">Bibliography</h1>
     <ClientOnly>
       <VSpinner
         v-if="isLoading"
