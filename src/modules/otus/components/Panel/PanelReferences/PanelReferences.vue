@@ -6,10 +6,10 @@
       legend=""
     />
     <VCardHeader class="flex justify-between">
-      <h2 class="text-md">References cited ({{ list.length }})</h2>
+      <h2 class="text-md">{{ title }} ({{ list.length }})</h2>
       <PanelDropdown
         :menu-options="menuOptions"
-        panel-key="taxonomy"
+        panel-key="panel:citations"
       />
     </VCardHeader>
     <ul class="text-sm">
@@ -78,6 +78,11 @@ const props = defineProps({
   otu: {
     type: Object,
     default: undefined
+  },
+
+  title: {
+    type: String,
+    default: 'References cited'
   }
 })
 

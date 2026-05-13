@@ -1,0 +1,11 @@
+{
+  "label": "References Panel Settings",
+  "fields": {
+    "title": {
+      "type": "string",
+      "label": "Title",
+      "description": "The title for the references panel",
+      "default": "References cited"
+    }
+  }
+}

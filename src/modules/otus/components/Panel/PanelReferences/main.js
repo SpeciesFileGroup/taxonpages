@@ -1,4 +1,4 @@
-import PanelCitations from './PanelCitations.vue'
+import PanelCitations from './PanelReferences.vue'
 
 export default {
   id: 'panel:references-cited',
