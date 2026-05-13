@@ -21,7 +21,14 @@ const DEFAULT_ENTRIES = {
 }
 
 /**
- * Scan node_modules for packages with a `taxonpages` manifest field.
+ * Discover NPM packages with a `taxonpages` manifest field.
+ *
+ * For security, only packages declared as direct dependencies in the project's
+ * root package.json (dependencies, devDependencies, optionalDependencies) are
+ * considered. Transitive dependencies are ignored even if they declare a
+ * `taxonpages` manifest — this prevents a compromised transitive dep from
+ * registering itself as a plugin. A warning is logged when a transitive
+ * dependency declares the manifest, to surface potential supply chain attempts.
  *
  * @param {string} projectRoot - Absolute path to the user's project
  * @param {object} [options]
@@ -32,50 +39,26 @@ export function discoverNpmPackages(projectRoot, options = {}) {
   const nodeModulesDir = resolve(projectRoot, 'node_modules')
   if (!existsSync(nodeModulesDir)) return []
 
+  const allowlist = readDirectDependencies(projectRoot)
+  if (allowlist.size === 0) return []
+
   const disabled = new Set(options.disabled || [])
   const packages = []
-  let entries
 
-  try {
-    entries = readdirSync(nodeModulesDir)
-  } catch {
-    return []
+  for (const pkgName of allowlist) {
+    if (disabled.has(pkgName)) continue
+
+    const pkgDir = pkgName.startsWith('@')
+      ? join(nodeModulesDir, ...pkgName.split('/'))
+      : join(nodeModulesDir, pkgName)
+
+    if (!existsSync(pkgDir)) continue
+
+    const descriptor = tryReadDescriptor(pkgDir, pkgName)
+    if (descriptor) packages.push(descriptor)
   }
 
-  for (const entry of entries) {
-    if (entry.startsWith('.')) continue
-
-    if (entry.startsWith('@')) {
-      // Scoped packages: scan @scope/*
-      const scopeDir = join(nodeModulesDir, entry)
-      let scopedEntries
-
-      try {
-        scopedEntries = readdirSync(scopeDir)
-      } catch {
-        continue
-      }
-
-      for (const scopedPkg of scopedEntries) {
-        const fullName = `${entry}/${scopedPkg}`
-        if (disabled.has(fullName)) continue
-
-        const descriptor = tryReadDescriptor(
-          join(scopeDir, scopedPkg),
-          fullName
-        )
-        if (descriptor) packages.push(descriptor)
-      }
-    } else {
-      if (disabled.has(entry)) continue
-
-      const descriptor = tryReadDescriptor(
-        join(nodeModulesDir, entry),
-        entry
-      )
-      if (descriptor) packages.push(descriptor)
-    }
-  }
+  auditTransitiveManifests(nodeModulesDir, allowlist)
 
   return packages
 }
@@ -374,5 +357,86 @@ function safeReaddir(dir) {
     return readdirSync(dir, { withFileTypes: true })
   } catch {
     return []
+  }
+}
+
+const _auditedPackages = new Set()
+
+function readDirectDependencies(projectRoot) {
+  const pkgJsonPath = join(projectRoot, 'package.json')
+  if (!existsSync(pkgJsonPath)) {
+    console.error(
+      `[taxonpages] No package.json found at ${pkgJsonPath}. No NPM packages will be discovered.`
+    )
+    return new Set()
+  }
+
+  let pkgJson
+  try {
+    pkgJson = JSON.parse(readFileSync(pkgJsonPath, 'utf-8'))
+  } catch (err) {
+    console.error(
+      `[taxonpages] Failed to parse ${pkgJsonPath}: ${err.message}. No NPM packages will be discovered.`
+    )
+    return new Set()
+  }
+
+  return new Set([
+    ...Object.keys(pkgJson.dependencies || {}),
+    ...Object.keys(pkgJson.devDependencies || {}),
+    ...Object.keys(pkgJson.optionalDependencies || {})
+  ])
+}
+
+function auditTransitiveManifests(nodeModulesDir, allowlist) {
+  let entries
+  try {
+    entries = readdirSync(nodeModulesDir)
+  } catch {
+    return
+  }
+
+  for (const entry of entries) {
+    if (entry.startsWith('.')) continue
+
+    if (entry.startsWith('@')) {
+      const scopeDir = join(nodeModulesDir, entry)
+      let scopedEntries
+      try {
+        scopedEntries = readdirSync(scopeDir)
+      } catch {
+        continue
+      }
+      for (const scopedPkg of scopedEntries) {
+        const fullName = `${entry}/${scopedPkg}`
+        if (allowlist.has(fullName)) continue
+        warnIfManifest(join(scopeDir, scopedPkg), fullName)
+      }
+    } else {
+      if (allowlist.has(entry)) continue
+      warnIfManifest(join(nodeModulesDir, entry), entry)
+    }
+  }
+}
+
+function warnIfManifest(pkgDir, pkgName) {
+  if (_auditedPackages.has(pkgName)) return
+  _auditedPackages.add(pkgName)
+
+  const pkgJsonPath = join(pkgDir, 'package.json')
+  if (!existsSync(pkgJsonPath)) return
+
+  let pkgJson
+  try {
+    pkgJson = JSON.parse(readFileSync(pkgJsonPath, 'utf-8'))
+  } catch {
+    return
+  }
+
+  if (pkgJson.taxonpages && typeof pkgJson.taxonpages === 'object') {
+    console.warn(
+      `[taxonpages] Package "${pkgName}" declares a "taxonpages" manifest field but is not a direct dependency. ` +
+        `Ignoring for security. To load it, add it to your project's package.json dependencies.`
+    )
   }
 }

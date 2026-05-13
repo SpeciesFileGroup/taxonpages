@@ -601,6 +601,8 @@ The `taxonpages` field in `package.json` is required. It tells TaxonPages what t
 | `entry`       | `string`                             | No       | Relative path to the entry file. Defaults to `./src/main.js` for panels, `./src/router/index.js` for modules, `./src/plugin.js` for plugins.        |
 | `setupSchema` | `string`                             | No       | Relative path to the setup schema file. Defaults to `./setup.schema.json`. See [Panel bind configuration schema](#panel-bind-configuration-schema). |
 
+> **Security:** TaxonPages only loads packages declared as direct dependencies in the project's root `package.json` (`dependencies`, `devDependencies`, or `optionalDependencies`). Transitive dependencies are ignored even if they declare a `taxonpages` manifest. This prevents a compromised transitive dependency from registering itself as a plugin. If a transitive dependency declares the manifest, a warning is logged so you can investigate.
+
 ### Entry point (main.js)
 
 The entry point uses the same contract as local panels:
