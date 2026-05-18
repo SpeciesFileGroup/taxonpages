@@ -381,13 +381,13 @@ Plugins extend TaxonPages at the framework level — they can modify the Vite bu
 ### Installing a plugin
 
 ```bash
-taxonpages package add @vendor/taxonpages-plugin-react
+taxonpages package add @vendor/taxonpages-plugin-sitemap
 ```
 
 Or install manually:
 
 ```bash
-npm install @vendor/taxonpages-plugin-react
+npm install @vendor/taxonpages-plugin-sitemap
 ```
 
 Plugins are discovered automatically at startup from `node_modules` using the same mechanism as panels and modules. Restart the dev server after installing.
@@ -411,7 +411,7 @@ Same as panels and modules — add the package name to the `disabled` list:
 ```yaml
 packages:
   disabled:
-    - '@vendor/taxonpages-plugin-react'
+    - '@vendor/taxonpages-plugin-sitemap'
 ```
 
 ### Creating a plugin
@@ -420,7 +420,7 @@ A plugin is an NPM package with `"type": "plugin"` in the `taxonpages` manifest:
 
 ```json
 {
-  "name": "@vendor/taxonpages-plugin-react",
+  "name": "@vendor/taxonpages-plugin-sitemap",
   "version": "1.0.0",
   "taxonpages": {
     "type": "plugin",
@@ -526,31 +526,32 @@ taxonpages-plugin-<name>              # unscoped
 @<vendor>/taxonpages-plugin-<name>    # scoped
 ```
 
-### Example: React support plugin
+### Example: Sitemap plugin
 
-A minimal plugin that adds React/JSX compilation support:
+A minimal plugin that generates a `sitemap.xml` at build time by wrapping an existing Vite plugin:
 
 ```javascript
 // src/plugin.js
-import react from '@vitejs/plugin-react'
+import Sitemap from 'vite-plugin-sitemap'
 
 export default function ({ configuration }) {
   return {
-    name: 'react',
+    name: 'sitemap',
 
     vite() {
       return {
-        plugins: [react()],
-        optimizeDeps: {
-          include: ['react', 'react-dom']
-        }
+        plugins: [
+          Sitemap({
+            hostname: configuration.site_url || 'https://example.com'
+          })
+        ]
       }
     }
   }
 }
 ```
 
-Once installed, `.jsx` and `.tsx` files compile anywhere in the project. React-based panels would use a Vue wrapper component to mount a React root inside the existing panel system.
+Once installed, `sitemap.xml` is emitted to the build output alongside the rest of the assets. This pattern — wrapping a third-party Vite plugin behind the `vite()` hook — is the most common shape for build-time plugins.
 
 ## Creating NPM panels
 
