@@ -2,6 +2,12 @@
 
 TaxonPages is a tool to serve taxon pages. At present it draws data from TaxonWorks' API, however we seek to keep the TaxonPages platform agnostic therefor facilitating the modular addition of functionality that may reference data from any biodiversity data-serving API.
 
+> ### Already running TaxonPages? Read this first
+>
+> TaxonPages used to be installed by **forking** this repository and editing the `setup` branch. That workflow is **no longer supported**, TaxonPages is now distributed as an NPM package and existing sites need a one-time migration.
+>
+> **If you already have a TaxonPages site, do not create a new fork.** Follow the [**Migration Guide**](docs/migration.md) instead. It explains exactly which files to add, remove, and rewrite on your existing `setup` branch, the whole process can be done from the GitHub website without any local tooling.
+
 ## Installation
 
 TaxonPages is distributed as an NPM package. Use the `taxonpages` CLI to scaffold and manage your project.
@@ -11,6 +17,21 @@ TaxonPages is distributed as an NPM package. Use the `taxonpages` CLI to scaffol
 - [Node.js](https://nodejs.org/en/download/) >= 20.19.0 or >=22.12.0
 
 ### Quick start
+
+There are two ways to create a new TaxonPages site, pick whichever fits your situation.
+
+#### Option 1 — From the GitHub template (recommended, no local setup)
+
+Use the [**taxonpages-config**](https://github.com/SpeciesFileGroup/taxonpages-config) template if you want to publish a site to GitHub Pages without installing anything locally. Most users should start here.
+
+1. Open [SpeciesFileGroup/taxonpages-config](https://github.com/SpeciesFileGroup/taxonpages-config) and click **Use this template → Create a new repository**.
+2. In your new repository, go to **Settings → Pages** and set **Source** to **GitHub Actions**.
+3. Edit `config/api.yml` from the GitHub web interface and fill in your TaxonWorks API URL and project token.
+4. Commit. GitHub Actions builds and publishes your site automatically at `https://<your-user>.github.io/<your-repo>/`.
+
+See the template's [README](https://github.com/SpeciesFileGroup/taxonpages-config#readme) for the full step-by-step.
+
+#### Option 2 — From the CLI (for local development)
 
 Create a new project using `npx` (no global install needed):
 
@@ -77,6 +98,7 @@ npm run dev
 
 - **[User Guide](docs/user-guide.md)** — Configure your site: pages, theme, analytics, layout, taxa page panels, and installing extensions from NPM.
 - **[Developer Guide](docs/developer-guide.md)** — Build and publish your own panels, modules, and plugins for the TaxonPages ecosystem.
+- **[Migration Guide](docs/migration.md)** — Upgrade an existing TaxonPages site (legacy fork-based setup) to the new NPM-based version.
 
 ## License
 
