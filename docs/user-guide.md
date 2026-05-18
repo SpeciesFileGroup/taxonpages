@@ -1,5 +1,7 @@
 # User Guide
 
+> Documents `@sfgrp/taxonpages` **v0.5.4**. Component names, props, and configuration keys may differ on other versions, check the version installed in your project with `npm ls @sfgrp/taxonpages`.
+
 This guide covers everything a site operator needs to configure, customize, and run a TaxonPages instance. For creating your own panels, modules, or plugins, see the [Developer Guide](developer-guide.md).
 
 ## Pages
@@ -332,53 +334,91 @@ packages:
 
 ## Global components reference
 
-TaxonPages provides a set of global components that could be used in your markdown pages, custom layouts, and panels without importing them. Here is the complete list:
+TaxonPages registers a set of components globally, so you can use them in any markdown page, custom layout, panel, or module without importing them. Every `.vue` file matching `src/components/**/*.global.vue` in the core, plus the same pattern under your project's `components/` and `modules/*/components/` folders, is auto-registered using the filename (minus the `.global` suffix) as the tag name.
 
-| Component             | Description                                    | Props                                                                                                                    |
-| --------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `<AnimationOpacity/>` | Add an opacity animation for a child component |                                                                                                                          |
-| `<Autocomplete/>`     | Used to perform searches in TaxonWorks         | [Link](https://github.com/SpeciesFileGroup/taxonpages/blob/main/src/components/Autocomplete/Autocomplete.global.vue#L42) |
-| `<AutocompleteOtu/>`  | A specific autocomplete for OTU search         |                                                                                                                          |
-| `<ClientOnly/>`       | Render child components only from client side  |                                                                                                                          |
-| `<VButton/>`          | Button component                               |                                                                                                                          |
-| `<VCard/>`            | Card component style                           |                                                                                                                          |
-| `<VCardContent/>`     | Card content body                               |                                                                                                                          |
-| `<VCardHeader/>`      | Card Header                                    |                                                                                                                          |
-| `<VClipboard/>`       | Copy a text to clipboard                       |                                                                                                                          |
-| `<Dropdown/>`         | Dropdown menu                                  |                                                                                                                          |
-| `<GalleryImage/>`     |                                                | [Link](https://github.com/SpeciesFileGroup/taxonpages/blob/main/src/components/Gallery/GalleryImage.global.vue#L40)      |
-| `<ImageViewer/>`      |                                                |                                                                                                                          |
-| `<TrackerReport/>`    | Show trackers to report issues                 | [Link](https://github.com/SpeciesFileGroup/taxonpages/blob/main/src/components/TrackerReport.global.vue#L47)             |
-| `<TabMenu/>`          |                                                |                                                                                                                          |
-| `<TabItem/>`          |                                                |                                                                                                                          |
-| `<VMap/>`             | Interactive map that use Leaflet library       |                                                                                                                          |
-| `<VModal/>`           | Create lightboxes                              |                                                                                                                          |
-| `<VSkeleton/>`        | Content loading placeholder                    |                                                                                                                          |
-| `<VSpinner/>`         | Loading spinner                                |                                                                                                                          |
-| `<VTable/>`           |                                                |                                                                                                                          |
-| `<VTableBody/>`       |                                                |                                                                                                                          |
-| `<VTableBodyCell/>`   |                                                |                                                                                                                          |
-| `<VTableBodyRow/>`    |                                                |                                                                                                                          |
-| `<VTableHeader/>`     |                                                |                                                                                                                          |
-| `<VTableHeaderCell/>` |                                                |                                                                                                                          |
-| `<VTableHeaderRow/>`  |                                                |                                                                                                                          |
+**Local overrides.** If you create a component file in your project with the same name as a core component (for example `components/VButton.global.vue`), it replaces the core one application-wide. This is the recommended way to customize a built-in component's look without forking TaxonPages.
+
+**SSR.** Components with the `.client.vue` suffix (currently `<VMap/>`) are registered only on the client and rendered as async components, so they will not appear in the server-rendered HTML. Wrap them in `<ClientOnly/>` if you also need to render placeholders during SSR.
+
+### Layout & structure
+
+| Component           | Description                                                                                                       | Key props / slots                                                                          |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `<VCard/>`          | Outer container for a card. Applies the theme's border, shadow, and rounded corners.                              | Default slot.                                                                              |
+| `<VCardHeader/>`    | Header row inside a card, with a divider beneath it.                                                              | Default slot.                                                                              |
+| `<VCardContent/>`   | Padded body inside a card. Place after `<VCardHeader/>`.                                                          | Default slot.                                                                              |
+| `<TabMenu/>`        | Horizontal tab bar. Wraps a list of `<TabItem/>` elements.                                                        | Default slot.                                                                              |
+| `<TabItem/>`        | Single tab. Uses Vue Router under the hood and gets the active state automatically.                               | `to` (String\|Object, required) — route target, same shape as `<RouterLink :to>`.          |
+| `<MarkdownLayout/>` | Internal wrapper that applies the theme's typography (`prose`) styles to a markdown page. Selects between `fullwidth`, `blank`, and the default layout based on the page's frontmatter. You generally don't need to use it directly. | `tag` (String, default `'div'`), `frontmatter` (Object, required). |
+
+### Form controls
+
+| Component           | Description                                                                                       | Key props / events                                                                                                                                                                                                          |
+| ------------------- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `<VButton/>`        | Theme-aware button with solid, outline, and ghost styles.                                          | `variant` (`'primary'\|'secondary'\|'danger'\|'success'\|'warning'`, default `'primary'`), `size` (`'xs'\|'sm'\|'md'\|'lg'\|'xl'`), `outline` (Boolean), `ghost` (Boolean), `circle` (Boolean). Default slot for the label. |
+| `<ButtonExpand/>`   | Toggle button rendered as a plus/minus icon. Two-way binds to a boolean.                          | `v-model` (Boolean, required).                                                                                                                                                                                              |
+| `<VToggle/>`        | Switch-style on/off control.                                                                       | `v-model` (Boolean), `size` (`'sm'\|'md'\|'lg'`, default `'md'`), `disabled` (Boolean). Default slot for the label.                                                                                                         |
+| `<InputText/>`      | Theme-styled text input. Two-way binds to a string/number.                                         | `v-model` (String\|Number), `value` (String\|Number — uncontrolled alternative).                                                                                                                                            |
+| `<SelectInput/>`    | Theme-styled `<select>`. Place `<option>` elements in the default slot.                            | `v-model` (String\|Number), `value` (String\|Number). Default slot.                                                                                                                                                         |
+| `<Autocomplete/>`   | Generic autocomplete bound to a TaxonWorks endpoint. Emits `select` with the chosen item.          | `url` (String, required), `queryParam` (String, default `'term'`), `params` (Object), `label` (String — property to render), `placeholder` (String), `autofocus` (Boolean), `retainInput` (Boolean). Emits: `select`.       |
+| `<AutocompleteOtu/>`| OTU-specific autocomplete. Searches `/otus/autocomplete` and, on selection, navigates to the OTU's default tab. | `autofocus` (Boolean).                                                                                                                                                                                                      |
+| `<VClipboard/>`     | Circular icon button that copies a string to the clipboard, with a check-mark confirmation state.  | `text` (String, required), `delay` (Number, default `2000` ms).                                                                                                                                                             |
+| `<VPagination/>`    | Page-number pager with first/previous/next/last controls.                                          | `v-model` (Number — current page, required), `total` (Number, required), `per` (Number, required), `rangePages` (Number, default `5`). Emits: `select`.                                                                     |
+| `<VPaginationInfo/>`| Compact "X – Y of N records" text, designed to sit next to `<VPagination/>`.                       | `pagination` (Object: `{ page, per, total }`, required).                                                                                                                                                                    |
+
+### Feedback & state
+
+| Component             | Description                                                                                                  | Key props / slots                                                                                                                                                  |
+| --------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `<VBadge/>`           | Small pill/chip used to tag values (counts, status…).                                                        | `color` (`'primary'\|'secondary'\|'gray'\|'red'\|'yellow'\|'green'\|'blue'\|'indigo'\|'purple'\|'pink'`), `shape` (`'rounded'\|'pill'\|'square'`), `size` (`'xs'\|'sm'\|'md'\|'lg'\|'xl'`), `weight` (`'normal'\|'medium'\|'semibold'`). Default slot. |
+| `<VSpinner/>`         | Animated loading overlay positioned over its parent (or full-screen).                                        | `fullScreen` (Boolean), `target` (String — CSS selector to overlay), `legend` (String), `showLegend` (Boolean), `showSpinner` (Boolean), `spinnerPosition` (`'top'\|'right'\|'bottom'\|'left'`), `logoSize` (Object), `logoClass` (String), `legendClass` (String), `legendStyle` (Object), `resize` (Boolean). |
+| `<VSkeleton/>`        | Loading placeholder. Renders shimmering bars whenever its default slot is empty.                             | `lines` (Number, default `1`), `class` (String).                                                                                                                   |
+| `<AnimationOpacity/>` | Transition wrapper that fades and scales a child in/out on mount/unmount.                                    | Wraps a single child in the default slot.                                                                                                                          |
+| `<VModal/>`           | Centered dialog with backdrop, focus trap, Esc-to-close, and body-scroll lock.                                | `ariaLabel` (String, default `'Dialog'`), `containerClass` (String). Slots: default body, `#header`, `#footer`. Emits: `close`.                                    |
+
+### Data display
+
+| Component             | Description                                                                          | Key props / slots                                  |
+| --------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------- |
+| `<VTable/>`           | Themed wrapper around a native `<table>`. Compose with the cell components below.    | Default slot.                                      |
+| `<VTableHeader/>`     | Themed `<thead>`.                                                                    | Default slot.                                      |
+| `<VTableHeaderRow/>`  | `<tr>` inside the header.                                                            | Default slot.                                      |
+| `<VTableHeaderCell/>` | Themed `<th>` with padding.                                                          | Default slot.                                      |
+| `<VTableBody/>`       | Themed `<tbody>`.                                                                    | Default slot.                                      |
+| `<VTableBodyRow/>`    | `<tr>` inside the body, with hover and bottom-border styles.                         | Default slot.                                      |
+| `<VTableBodyCell/>`   | `<td>` with consistent padding.                                                      | Default slot.                                      |
+| `<Dropdown/>`         | Click-to-open menu with full keyboard navigation (arrows, Esc) and click-outside support. | `items` (Array of `{ label, action }`, default `[]`). Slot: `#button` for the trigger. |
+
+### Media
+
+| Component             | Description                                                                                                              | Key props / events                                                                                                                                              |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `<GalleryImage/>`     | Two-pane gallery: main image plus thumbnail strip. Opens `<ImageViewer/>` on click.                                      | `images` (Array of image objects).                                                                                                                              |
+| `<GalleryCarousel/>`  | Auto-rotating depiction viewer. Fetches depictions by ID and cycles through them.                                        | `depictionId` (Array), `interval` (Number, ms, default `10000`), `height` (String, default `'550px'`). Default slot rendered as an overlay on top of the image. |
+| `<GalleryMosaic/>`    | Responsive grid of depictions linked to their OTUs.                                                                      | `depictionId` (Array), `imageHeight` (String, default `'112px'`), `imageWidth` (String, default `'200px'`), `wrap` (Boolean), `label` (Boolean).                |
+| `<ImageGroupPreview/>`| Preview row of up to N images with a "+more" overlay; emits `select` with the clicked item.                              | `images` (Array, required), `maxVisible` (Number, default `4`), `imageClass` (String). Emits: `select` (`{ image, index }`).                                    |
+| `<ImageViewer/>`      | Full-screen image viewer with keyboard navigation, thumbnail strip, and attribution metadata.                            | `index` (Number, required), `images` (Array), `next` (Boolean), `previous` (Boolean). Emits: `close`, `next`, `previous`, `selectIndex`.                        |
+| `<VMap/>`             | Interactive Leaflet map with optional clustering, GeoJSON layers, and editing tools (Geoman). **Client-only**, wrap in `<ClientOnly/>` if used inside SSR-rendered content. | `geojson` (Object), `center` (Array `[lat, lng]`), `zoom` (Number, default `18`), `maxZoom`/`minZoom` (Number), `cluster` (Boolean), `controls` (Boolean), `dragging` (Boolean), `width`/`height` (String), `geojsonOptions` (Function). Emits: `add:layer`, `edit:layer`, `layer:drag`, `layer:update`, `draw:start`, `geojson`, `geojson:ready`, `zoom:change`, `zoom:start`. Exposes: `clearDrawLayers()`, `getMapObject()`, `resizeMap()`. |
+
+### Utilities
+
+| Component          | Description                                                                                                                                                                                | Key props / slots                                                                                                                                            |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `<AddressMaker/>`  | Spam-resistant `mailto:` link. Pass the username, host, and TLD as separate strings; the component renders the address with visual separators and assembles `mailto:` only on click.       | `items` (Array of strings, required, e.g. `['alice', 'example', 'org']`).                                                                                    |
+| `<ProjectStats/>`  | Pulls `/stats` from the configured TaxonWorks API and renders the requested counters (taxon_names, otus, …).                                                                               | `data` (Array of stat keys), `tag` (String, default `'span'`). Default slot is scoped with `{ type, value }` per stat.                                       |
+| `<TrackerReport/>` | Opens a modal listing the trackers from `config/tracker.yml`. If no trackers are configured, falls back to opening the TaxonPages GitHub issue tracker.                                   | `label` (String), `icon` (Boolean — show GitHub icon), `iconClass` (Array), `buttonClass` (String), `tag` (String, default `'button'`).                       |
+| `<ClientOnly/>`    | Renders its slot only after the component has mounted in the browser. Use to wrap code that depends on `window`/`document` or to defer client-only libraries from SSR.                     | Default slot.                                                                                                                                                |
 
 ### Icons
 
-| Icons                |
-| -------------------- |
-| `<IconArrowDown/>`   |
-| `<IconArrowLeft/>`   |
-| `<IconArrowRight/>`  |
-| `<IconCheck/>`       |
-| `<IconClipboard/>`   |
-| `<IconClose/>`       |
-| `<IconDocument/>`    |
-| `<IconDownload/>`    |
-| `<IconHamburger/>`   |
-| `<IconJson/>`        |
-| `<IconMinusCircle/>` |
-| `<IconPlusCircle/>`  |
-| `<IconSearch/>`      |
-| `<IconTrash/>`       |
-| `<IconWarning/>`     |
+All icons accept any SVG-compatible attribute (`class`, `aria-hidden`, …). Pick a size with Tailwind utilities such as `class="w-5 h-5"`.
+
+| Navigation             | Status / feedback     | Media controls          | Misc                  |
+| ---------------------- | --------------------- | ----------------------- | --------------------- |
+| `<IconArrowUp/>`       | `<IconCheck/>`        | `<IconPlay/>`           | `<IconClipboard/>`    |
+| `<IconArrowDown/>`     | `<IconClose/>`        | `<IconPause/>`          | `<IconDocument/>`     |
+| `<IconArrowLeft/>`     | `<IconWarning/>`      | `<IconSpeakerWave/>`    | `<IconDownload/>`     |
+| `<IconArrowRight/>`    | `<IconInformation/>`  | `<IconSpeakerX/>`       | `<IconFiles/>`        |
+| `<IconHamburger/>`     | `<IconMinusCircle/>`  |                         | `<IconGithub/>`       |
+| `<IconSearch/>`        | `<IconPlusCircle/>`   |                         | `<IconJson/>`         |
+|                        | `<IconTrash/>`        |                         | `<IconCalendar/>`     |
