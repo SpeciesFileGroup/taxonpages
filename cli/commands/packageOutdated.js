@@ -127,7 +127,7 @@ export async function packageOutdated({ projectRoot }) {
   if (updateCount > 0) {
     console.log(
       `  ${updateCount} update${updateCount > 1 ? 's' : ''} available. ` +
-        'Run `taxonpages package add <name>` to update.'
+        'Run `taxonpages package update [name]` to update.'
     )
   } else if (unknownCount === 0) {
     console.log('  All packages are up to date.')

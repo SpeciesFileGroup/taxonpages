@@ -1,7 +1,8 @@
 import { execFileSync } from 'node:child_process'
-import { resolve, join } from 'node:path'
+import { resolve } from 'node:path'
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import yaml from 'js-yaml'
+import { readPackageManifest } from '../utils/readPackageManifest.js'
 
 const NPM_OPTIONS = process.platform === 'win32' ? { shell: true } : {}
 
@@ -19,7 +20,7 @@ function notifyViteRestart(projectRoot) {
  */
 export function packageRemove({ projectRoot, name }) {
   // 1. Read manifest before uninstalling (need it for panel ID)
-  const manifest = readManifest(projectRoot, name)
+  const manifest = readPackageManifest(projectRoot, name)
   let panelId = null
 
   if (manifest?.type === 'panel') {
@@ -53,41 +54,6 @@ export function packageRemove({ projectRoot, name }) {
 }
 
 /**
- * Read the taxonpages manifest from an installed package.
- */
-function readManifest(projectRoot, pkgName) {
-  const pkgDir = resolve(projectRoot, 'node_modules', ...pkgName.split('/'))
-  const pkgJsonPath = join(pkgDir, 'package.json')
-
-  if (!existsSync(pkgJsonPath)) return null
-
-  let pkgJson
-  try {
-    pkgJson = JSON.parse(readFileSync(pkgJsonPath, 'utf-8'))
-  } catch {
-    return null
-  }
-
-  const manifest = pkgJson.taxonpages
-  if (!manifest || typeof manifest !== 'object' || !manifest.type) return null
-
-  const DEFAULT_ENTRIES = {
-    panel: './src/main.js',
-    module: './src/router/index.js'
-  }
-
-  const entry = manifest.entry || DEFAULT_ENTRIES[manifest.type]
-  const entryPath = resolve(pkgDir, entry)
-
-  return {
-    type: manifest.type,
-    entry,
-    entryPath,
-    pkgDir
-  }
-}
-
-/**
  * Extract the panel ID from the entry file using a regex.
  */
 function extractPanelId(entryPath) {
@@ -109,7 +75,7 @@ function extractPanelId(entryPath) {
  * @returns {{ message: string }}
  */
 export function packageRemoveCore({ projectRoot, name }) {
-  const manifest = readManifest(projectRoot, name)
+  const manifest = readPackageManifest(projectRoot, name)
   let panelId = null
 
   if (manifest?.type === 'panel') {

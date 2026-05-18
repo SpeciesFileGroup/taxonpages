@@ -24,6 +24,42 @@
       </button>
     </div>
 
+    <!-- Update-all banner -->
+    <div
+      v-if="outdatedCount > 0"
+      class="flex items-center gap-3 px-3.5 py-2.5 mb-4 rounded-lg bg-warning-light text-warning"
+    >
+      <svg
+        class="w-4 h-4 shrink-0"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M5 10l7-7m0 0l7 7m-7-7v18"
+        />
+      </svg>
+      <span class="flex-1 text-sm">
+        {{ outdatedCount }} package{{ outdatedCount > 1 ? 's' : '' }} can be
+        updated.
+      </span>
+      <button
+        class="tp-btn tp-btn-sm tp-btn-primary shrink-0"
+        :disabled="busy"
+        @click="updateAllPackages"
+      >
+        <div
+          v-if="busy && busyAction === 'update-all'"
+          class="tp-spinner-sm"
+          style="width: 0.75rem; height: 0.75rem"
+        />
+        <template v-else>Update all</template>
+      </button>
+    </div>
+
     <!-- Status message -->
     <div
       v-if="statusMessage"
@@ -150,6 +186,7 @@
                 v-if="getUpdate(pkg.name)?.hasUpdate"
                 class="tp-btn tp-btn-sm tp-btn-outline"
                 :disabled="busy"
+                aria-label="Update package"
                 @click="updatePackage(pkg.name)"
               >
                 <div
@@ -159,11 +196,25 @@
                   class="tp-spinner-sm"
                   style="width: 0.75rem; height: 0.75rem"
                 />
-                <template v-else>Update</template>
+                <svg
+                  v-else
+                  class="w-3.5 h-3.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M5 10l7-7m0 0l7 7m-7-7v18"
+                  />
+                </svg>
               </button>
               <button
                 class="tp-btn tp-btn-sm tp-btn-danger"
                 :disabled="busy"
+                aria-label="Uninstall package"
                 @click="uninstallPackage(pkg.name)"
               >
                 <div
@@ -248,6 +299,7 @@
                 v-if="getUpdate(pkg.name)?.hasUpdate"
                 class="tp-btn tp-btn-sm tp-btn-outline"
                 :disabled="busy"
+                aria-label="Update package"
                 @click="updatePackage(pkg.name)"
               >
                 <div
@@ -257,11 +309,25 @@
                   class="tp-spinner-sm"
                   style="width: 0.75rem; height: 0.75rem"
                 />
-                <template v-else>Update</template>
+                <svg
+                  v-else
+                  class="w-3.5 h-3.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M5 10l7-7m0 0l7 7m-7-7v18"
+                  />
+                </svg>
               </button>
               <button
                 class="tp-btn tp-btn-sm tp-btn-danger"
                 :disabled="busy"
+                aria-label="Uninstall package"
                 @click="uninstallPackage(pkg.name)"
               >
                 <div
@@ -316,6 +382,10 @@ const installName = ref('')
 function getUpdate(name) {
   return updates.value.find((u) => u.name === name) || null
 }
+
+const outdatedCount = computed(
+  () => updates.value.filter((u) => u.hasUpdate).length
+)
 
 function showStatus(message, isError = false) {
   statusMessage.value = message
@@ -445,6 +515,52 @@ async function updatePackage(name) {
     busyPackage.value = null
     busyAction.value = null
   }
+}
+
+async function updateAllPackages() {
+  if (busy.value) return
+  const targets = updates.value.filter((u) => u.hasUpdate).map((u) => u.name)
+  if (targets.length === 0) return
+
+  busy.value = true
+  busyAction.value = 'update-all'
+  statusMessage.value = ''
+
+  let succeeded = 0
+  let failed = 0
+  let lastError = ''
+
+  for (const name of targets) {
+    busyPackage.value = name
+    try {
+      const res = await apiFetch('/api/packages/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name })
+      })
+      const data = await res.json()
+      if (!data.ok) throw new Error(data.error)
+      succeeded++
+    } catch (err) {
+      failed++
+      lastError = err.message
+    }
+  }
+
+  if (failed === 0) {
+    showStatus(`Updated ${succeeded} package${succeeded > 1 ? 's' : ''}.`)
+  } else {
+    showStatus(
+      `Updated ${succeeded} of ${targets.length}. ${failed} failed: ${lastError}`,
+      true
+    )
+  }
+
+  await refreshPackages()
+
+  busy.value = false
+  busyPackage.value = null
+  busyAction.value = null
 }
 
 onMounted(async () => {

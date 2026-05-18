@@ -81,6 +81,7 @@ All commands are available through `npm run` scripts in your project or directly
 | `taxonpages package remove <name>` | —                   | Uninstall a package and clean up config            |
 | `taxonpages package unpack <name>` | —                   | Unpack an NPM package into a local directory       |
 | `taxonpages package outdated`      | —                   | Check installed packages for available updates     |
+| `taxonpages package update [name]` | —                   | Update one package, or all outdated packages       |
 | `taxonpages update`                | —                   | Update TaxonPages to the latest version            |
 | `taxonpages setup`                 | —                   | Start the web-based configuration interface        |
 

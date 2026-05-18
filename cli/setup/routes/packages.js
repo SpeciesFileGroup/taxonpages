@@ -9,6 +9,7 @@ import {
 import { checkPackageUpdates } from '../../commands/packageOutdated.js'
 import { packageAddCore } from '../../commands/packageAdd.js'
 import { packageRemoveCore } from '../../commands/packageRemove.js'
+import { packageUpdateCore } from '../../commands/packageUpdate.js'
 
 const VALID_PKG_NAME = /^(@[\w.-]+\/)?[\w.-]+$/
 
@@ -115,7 +116,7 @@ export function createPackageRoutes(packageRoot, projectRoot, hooks = {}) {
     }
 
     try {
-      const result = packageAddCore({ packageRoot, projectRoot, name })
+      const result = packageUpdateCore({ projectRoot, name })
       if (result.type === 'module') hooks.onPackagesChanged?.()
       res.json({ ok: true, ...result })
     } catch (err) {

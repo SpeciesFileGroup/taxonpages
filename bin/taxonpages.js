@@ -112,6 +112,15 @@ pkg
     await packageOutdated({ projectRoot: process.cwd() })
   })
 
+pkg
+  .command('update [name]')
+  .description('Update a TaxonPages package (or all outdated ones) to the latest version')
+  .action(async (name) => {
+    const { packageUpdate } =
+      await import('../cli/commands/packageUpdate.js')
+    await packageUpdate({ projectRoot: process.cwd(), name })
+  })
+
 program
   .command('update')
   .description('Update TaxonPages to the latest version')
