@@ -29,9 +29,9 @@ const typeDesignation = computed(
 )
 const typeDesignationLabel = computed(() =>
   [
-    typeDesignation.value.subject_object_tag || '',
+    typeDesignation.value.subject_name || '',
     typeDesignation.value.subject_status_tag || '',
-    typeDesignation.value.object_object_tag || ''
+    typeDesignation.value.object_name || ''
   ].join(' ')
 )
 </script>
