@@ -14,9 +14,9 @@
     </VCardHeader>
     <ul class="text-sm">
       <CitationRow
-        v-for="citation in citationList.first"
-        :key="citation.id"
-        :citation="citation"
+        v-for="reference in citationList.first"
+        :key="reference.id"
+        :reference="reference"
       />
 
       <ShowMore
@@ -31,17 +31,17 @@
         v-show="showAll"
       >
         <CitationRow
-          v-for="citation in citationList.middle"
-          :key="citation.id"
-          :citation="citation"
+          v-for="reference in citationList.middle"
+          :key="reference.id"
+          :reference="reference"
         />
       </ul>
     </AnimationOpacity>
     <ul class="text-sm">
       <CitationRow
-        v-for="citation in citationList.last"
-        :key="citation.id"
-        :citation="citation"
+        v-for="reference in citationList.last"
+        :key="reference.id"
+        :reference="reference"
       />
     </ul>
   </VCard>
@@ -99,9 +99,24 @@ const menuOptions = computed(() => [
 ])
 
 function makeCitationList(items) {
-  const citations = items.map((item) => item.citations).flat()
+  const citations = items.flatMap((item) => item.citations)
+  const references = new Map()
 
-  return citations
+  for (const citation of citations) {
+    const sourceId = citation.source.id
+
+    if (!references.has(sourceId)) {
+      references.set(sourceId, {
+        id: sourceId,
+        source: citation.source,
+        citations: []
+      })
+    }
+
+    references.get(sourceId).citations.push(citation)
+  }
+
+  return [...references.values()]
 }
 
 onMounted(() => {
