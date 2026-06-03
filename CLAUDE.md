@@ -33,6 +33,39 @@ Use `text-secondary`, `bg-secondary`, `border-secondary` (maps to `--color-secon
 
 Other useful tokens: `text-base-content`, `bg-base-foreground`, `border-base-muted`, `text-secondary-content`.
 
+## Vue whitespace condensing — rendering spaces between elements
+
+Vite compiles Vue templates with `whitespace: 'condense'`. This silently strips:
+- whitespace-only text nodes between elements
+- leading/trailing whitespace in text nodes adjacent to block/virtual elements (`<template>`, `<em>`, `<RouterLink>`, etc.)
+
+**Symptom**: "WordAuthor, Year" runs together with no space — most common when splitting a name into an `<em>` part and an authorship plain-text suffix.
+
+**Wrong approaches** (both fail):
+```html
+<!-- space stripped between </template> and text node -->
+<template v-if="plain"> {{ plain }}</template>
+
+<!-- leading space stripped from text interpolation adjacent to element -->
+{{ plain ? ' ' + plain : '' }}
+```
+
+**Correct fix**: move anything after a Vue element into a `<span v-html>`. Build the suffix as a computed HTML string (starting with `' '`) and escape user data with a small `escHtml` helper:
+```js
+function escHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+const labelSuffix = computed(() => {
+  // … build HTML string starting with ' ' …
+  return parts.length ? ' ' + parts.join(' ') : ''
+})
+```
+```html
+<template v-else>{{ name.italic }}</template><span v-html="labelSuffix" />
+```
+
+Note the `<template>` closing tag and `<span>` opening tag are on the **same line** with no whitespace between them — that ensures the italic part and the span touch at exactly one boundary, which Vue condense does not strip.
+
 ## makeAPIRequest
 
 Axios instance pre-configured with TaxonWorks base URL and `project_token`. Imported from `@/utils/request` or `@/utils`.
@@ -50,8 +83,8 @@ makeAPIRequest.get(`/citations?${params}`)
 
 **Use only for the TaxonWorks API.** For external APIs (iNaturalist, GRSciColl) use `axios` directly or `fetch`.
 
-### Known non-existent endpoint
-`/repositories` → `{"success": false, "message": "Invalid route"}` — does not exist.
+### Known API gap — institution names
+TaxonWorks stores repositories internally (collection objects have a `repository_id`) but does **not** expose them via the public API. There is no `/repositories` endpoint and no `extend[]=repository` option on collection objects. The DWC endpoint only returns `institutionCode` (abbreviation, e.g. `"ZMUH"`) and `institutionID` (a GRBio URL). To resolve a full institution name, use GRSciColl (see DwcTable.vue for the lookup implementation).
 
 ## Global components (no import needed)
 
@@ -85,11 +118,16 @@ When inside a fixed overlay (like GalleryViewer), wrap in `<Teleport to="body">`
 
 ## DwcTable component
 
-Two copies (identical except BA copy has an extra OTU link):
+**Deliberately duplicated** — two identical copies, kept in their respective panel folders for independence:
 - `panels/PanelMapV2/components/DwcTable.vue` — used by PanelMapV2 and GalleryViewer
 - `panels/PanelBiologicalAssociationsV2/DwcTable.vue` — used by BA panel
 
+**If you change one copy, you must change the other.** Both files carry a `<!-- SYNC: ... -->` comment at the top as a reminder.
+
+Features: institution full name lookup via GRSciColl (GBIF API), OTU link on scientific name derived from `data.otu_id`, media thumbnails fetched from `associatedMedia` URLs.
 Exposes: `show({ id, type })` where `type` is `'CollectionObject'` or `'FieldOccurrence'`.
+
+**`associatedMedia` URL format**: pipe-separated absolute URLs like `https://sfg.taxonworks.org/api/v1/images/aa7639596f6a04744668dbec7c7493a3` (hex fingerprint, not numeric ID). To fetch via `makeAPIRequest`, extract the path with `/\/api\/v1(.+)/` and call `makeAPIRequest.get(m[1])`. The response has `{ id, thumb, original, medium, ... }` at the top level.
 Import example: `import DwcTable from '../PanelMapV2/components/DwcTable.vue'`
 
 ## Institution name lookup
