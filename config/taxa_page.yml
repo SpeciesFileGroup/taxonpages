@@ -1,7 +1,9 @@
 taxa_page:
   overview:
     panels:
-      - - - panel:gallery-v2
+      - - - id: panel:gallery-v2
+            bind:
+              subMaxImages: 11
           - panel:nomenclature
           - panel:nomenclature-references
           - panel:type
