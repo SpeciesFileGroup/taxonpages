@@ -33,7 +33,7 @@
   --tp-shadow-sm: rgba(0, 0, 0, 0.18);
   --tp-tree-line: rgb(212, 212, 216);
 
-  --tp-footer-background: rgb(24, 24, 27);
+  --tp-footer-background: rgb(39, 39, 42);
   --tp-footer-content: rgb(250, 250, 250);
   --tp-footer-link: rgb(161, 161, 170);
   --tp-footer-link-hover: rgb(255, 255, 255);
@@ -67,7 +67,7 @@
   --tp-shadow-sm: rgba(0, 0, 0, 0.4);
   --tp-tree-line: rgb(82, 82, 91);
 
-  --tp-footer-background: rgb(9, 9, 11);
+  --tp-footer-background: rgb(24, 24, 27);
   --tp-footer-content: rgb(244, 244, 245);
   --tp-footer-link: rgb(161, 161, 170);
   --tp-footer-link-hover: rgb(244, 244, 245);
