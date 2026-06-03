@@ -16,10 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- Unified reference rendering across the References panel and citation rows.
+- Panel References: Unified reference rendering across the References panel and citation rows. [#361]
 - Updated the default theme styles.
 - Updated the plugin example in the developer guide.
 - Updated dependencies.
+
+[#361]: https://github.com/SpeciesFileGroup/taxonpages/issues/361
 
 ## [0.5.4] - 2026-05-13
 
