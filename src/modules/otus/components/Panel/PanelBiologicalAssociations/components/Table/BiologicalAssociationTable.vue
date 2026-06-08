@@ -128,7 +128,7 @@
           v-text="ba.subjectGenus"
         />
         <VTableBodyCell>
-          <template v-if="ba.subjectType === 'Otu'">
+          <template v-if="ba.subjectId">
             <RouterLink
               :to="{
                 name: 'otus-id',
@@ -166,7 +166,7 @@
           v-text="ba.objectGenus"
         />
         <VTableBodyCell>
-          <template v-if="ba.objectType === 'Otu'">
+          <template v-if="ba.objectId">
             <RouterLink
               :to="{
                 name: 'otus-id',

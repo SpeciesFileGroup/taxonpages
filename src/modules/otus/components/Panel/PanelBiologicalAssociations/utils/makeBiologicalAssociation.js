@@ -1,7 +1,7 @@
 export function makeBiologicalAssociation(data) {
   return {
     id: data.id,
-    subjectId: data.subject.id,
+    subjectId: data.subject_otu_id,
     subjectType: data.subject.type,
     subjectOrder: data.subject.order,
     subjectFamily: data.subject.family,
@@ -10,7 +10,7 @@ export function makeBiologicalAssociation(data) {
     biologicalPropertySubject: data.subject.properties,
     biologicalRelationship: data.relationship,
     biologicalPropertyObject: data.object.properties,
-    objectId: data.object.id,
+    objectId: data.object_otu_id,
     objectType: data.object.type,
     objectOrder: data.object.order,
     objectFamily: data.object.family,

@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Updated the plugin example in the developer guide.
 - Updated dependencies.
 
+### Fixed
+
+- Panel Biological associations: Added missing links for anatomical parts and collection objects with taxon determinations.
+
 [#361]: https://github.com/SpeciesFileGroup/taxonpages/issues/361
 
 ## [0.5.4] - 2026-05-13
