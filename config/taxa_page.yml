@@ -4,6 +4,7 @@ taxa_page:
       - - - id: panel:gallery-v2
             bind:
               subMaxImages: 11
+          - panel:descendants
           - panel:nomenclature
           - panel:nomenclature-references
           - panel:type
@@ -11,7 +12,8 @@ taxa_page:
 
         - - panel:map-v2
 #         - panel:map
-          - panel:descendants
+          - id: panel:asserted-distributions
+            rankGroup: ['SpeciesGroup']
           - panel:content
           - panel:keys
           - panel:statistics
@@ -38,10 +40,4 @@ taxa_page:
           - panel:gbif-images
           - panel:gbif-map
           - panel:gbif-type-specimens
-
-  asserted_distributions:
-    label: 'Asserted Distributions (List)'
-    rank_group: ['SpeciesGroup']
-    panels:
-      - - - id: panel:asserted-distributions
 
