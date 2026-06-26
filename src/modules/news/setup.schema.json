@@ -8,6 +8,29 @@
       "type": "object",
       "label": "News Module",
       "fields": {
+        "announcements": {
+          "type": "array",
+          "label": "Announcement Bar",
+          "description": "Messages displayed in a bar above the main navigation.",
+          "sortable": true,
+          "items": {
+            "id": {
+              "type": "string",
+              "label": "ID",
+              "placeholder": "Optional stable identifier"
+            },
+            "message": {
+              "type": "string",
+              "label": "Message",
+              "placeholder": "Announcement text"
+            },
+            "url": {
+              "type": "string",
+              "label": "URL",
+              "placeholder": "https://example.com"
+            }
+          }
+        },
         "index_page": {
           "type": "object",
           "label": "Index Page",

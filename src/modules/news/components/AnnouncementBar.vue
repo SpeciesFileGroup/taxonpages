@@ -1,33 +1,51 @@
 <template>
-  <div
-    v-if="annoucements.length"
-    class="relative z-10 h-8 flex px-4 bg-linear-to-r from-primary via-green-800/80 to-primary"
-  >
+  <ClientOnly>
     <div
-      v-for="annoucement in annoucements"
-      :key="annoucement.message"
-      class="flex items-center gap-2 justify-between mx-auto container px-4"
+      v-if="visibleAnnouncements.length"
+      class="relative z-10 flex px-4 py-2 bg-secondary"
     >
-      <a
-        class="text-xs font-medium font-mono leading-snug tracking-wide uppercase whitespace-nowrap overflow-hidden text-ellipsis text-shadow-md/50 text-white"
-        :href="annoucement.url"
-        >{{ annoucement.message }}</a
+      <div
+        v-for="announcement in visibleAnnouncements"
+        :key="getAnnouncementKey(announcement)"
+        class="flex items-center gap-2 justify-between mx-auto container px-4"
       >
-      <button
-        type="button"
-        title="Close"
-      >
-        <IconClose class="text-white size-4! cursor-pointer" />
-      </button>
+        <component
+          :is="announcement.url ? 'a' : 'span'"
+          class="text-xs font-medium font-mono leading-snug tracking-wide uppercase text-secondary-content"
+          :href="announcement.url"
+          >{{ announcement.message }}</component
+        >
+        <button
+          type="button"
+          title="Close"
+          @click="dismiss(getAnnouncementKey(announcement))"
+        >
+          <IconClose class="text-secondary-content size-4! cursor-pointer" />
+        </button>
+      </div>
     </div>
-  </div>
+  </ClientOnly>
 </template>
 
 <script setup>
-const props = defineProps({
-  annoucements: {
-    type: Array,
-    default: () => []
-  }
+import { computed, onMounted } from 'vue'
+import {
+  useDismissedAnnouncements,
+  getAnnouncementKey
+} from '../composables/useDismissedAnnouncements'
+
+const { news_module = {} } = __APP_ENV__
+const { announcements = [] } = news_module
+
+const { isDismissed, dismiss, prune } = useDismissedAnnouncements()
+
+const visibleAnnouncements = computed(() =>
+  announcements.filter(
+    (announcement) => !isDismissed(getAnnouncementKey(announcement))
+  )
+)
+
+onMounted(() => {
+  prune(announcements.map(getAnnouncementKey))
 })
 </script>

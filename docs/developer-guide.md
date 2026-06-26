@@ -271,6 +271,53 @@ const PanelConfigEditor = inject('tp:PanelConfigEditor')
 
 The Tailwind CSS utility classes used in the setup wizard are available in custom editor components.
 
+## Injecting into the layout
+
+Modules can render their own components in named regions of the main application layout — for example, an announcement bar above the navigation — without editing any core file.
+
+### How it works
+
+A package contributes to the layout by adding a `layout.js` file at its root that default-exports a map of region names to components:
+
+```javascript
+// modules/my-feature/layout.js
+import AnnouncementBar from './components/AnnouncementBar.vue'
+
+export default {
+  'header:before': AnnouncementBar
+}
+```
+
+These files are discovered automatically from local modules (`modules/*/layout.js`), NPM packages (`layout.js` at the package root), and the project root (`layout.js` in your project). Every component contributed to a region is rendered, so multiple packages can target the same region.
+
+### Available regions
+
+| Region          | Position                      |
+| --------------- | ----------------------------- |
+| `header:before` | Above the main navigation bar |
+| `header:after`  | Below the main navigation bar |
+| `main:before`   | Top of the main content area  |
+| `footer:before` | Above the footer              |
+
+### Ordering and multiple components
+
+A region can also receive an array, and each entry can set an `order` (lower renders first) to control placement when several packages contribute to the same region:
+
+```javascript
+import AnnouncementBar from './components/AnnouncementBar.vue'
+
+export default {
+  'header:before': [{ component: AnnouncementBar, order: 10 }]
+}
+```
+
+A bare component is treated as `{ component, order: 0 }`.
+
+### Notes
+
+- Contributed components receive no props. They should read their own configuration (e.g. from `__APP_ENV__`) and manage their own state.
+- For browser-only behavior such as reading `localStorage`, wrap the markup in `<ClientOnly>` to avoid SSR hydration mismatches, the same way core components do.
+
 ## Server Routes (API Proxy)
 
 TaxonPages supports user-defined server-side API routes, useful for proxying external APIs that require tokens or sensitive credentials. This keeps secrets on the server and avoids exposing them to the browser.

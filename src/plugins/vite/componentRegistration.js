@@ -91,6 +91,13 @@ export function componentRegistrationPlugin({
       }
     }
 
+    if (patternsStr.includes('layout.js')) {
+      for (const pkg of [..._resolvedPanels, ..._resolvedModules]) {
+        const candidate = resolve(pkg.path, 'layout.js')
+        if (existsSync(candidate)) extra.push(candidate)
+      }
+    }
+
     // Global components: patterns like "*.global.vue"
     if (patternsStr.includes('.global.vue')) {
       for (const pkg of [..._resolvedPanels, ..._resolvedModules]) {

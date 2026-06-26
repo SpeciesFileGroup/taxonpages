@@ -7,15 +7,20 @@
       Skip to main content
     </a>
     <div class="flex flex-col flex-grow">
+      <LayoutOutlet region="header:before" />
       <LayoutHeader />
+      <LayoutOutlet region="header:after" />
       <main id="main-content">
+        <LayoutOutlet region="main:before" />
         <slot />
       </main>
     </div>
+    <LayoutOutlet region="footer:before" />
     <LayoutFooter />
   </div>
 </template>
 <script setup>
 import LayoutHeader from '@/components/Layout/LayoutHeader.vue'
 import LayoutFooter from '@/components/Layout/LayoutFooter.vue'
+import LayoutOutlet from '@/components/Layout/LayoutOutlet.vue'
 </script>

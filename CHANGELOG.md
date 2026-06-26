@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Layout regions: modules and the project root can inject components into named regions of the main layout (`header:before`, `header:after`, `main:before`, `footer:before`) through a `layout.js` file. See the developer guide.
+- News module: a dismissible announcement bar above the main navigation, configured in `news.yml`. Dismissed announcements are remembered per browser.
+
 ## [0.5.5] - 2026-06-03
 
 ### Added
