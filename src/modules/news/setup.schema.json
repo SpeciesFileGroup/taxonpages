@@ -31,6 +31,12 @@
             }
           }
         },
+        "announcement_interval": {
+          "type": "number",
+          "label": "Announcement Rotation Interval (seconds)",
+          "description": "Time each announcement is shown before rotating to the next one.",
+          "default": 6
+        },
         "index_page": {
           "type": "object",
           "label": "Index Page",

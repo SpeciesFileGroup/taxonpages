@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-06-26
+
 ### Added
 
 - Layout regions: modules and the project root can inject components into named regions of the main layout (`header:before`, `header:after`, `main:before`, `footer:before`) through a `layout.js` file. See the developer guide.

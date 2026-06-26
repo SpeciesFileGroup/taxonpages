@@ -24,7 +24,9 @@ function writeStorage(value) {
 const dismissed = ref(readStorage())
 
 export function getAnnouncementKey(announcement) {
-  if (announcement.id != null) return String(announcement.id)
+  if (announcement.id != null && String(announcement.id).trim() !== '') {
+    return String(announcement.id)
+  }
 
   const input = `${announcement.message}|${announcement.url || ''}`
   let hash = 0
