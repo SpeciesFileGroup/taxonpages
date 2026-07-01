@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Loading a config `.yml` file that only contains comments no longer throws with js-yaml 5. Empty, whitespace-only, and comment-only config files are now treated as having no overrides.
+
 ## [0.6.0] - 2026-06-26
 
 ### Added

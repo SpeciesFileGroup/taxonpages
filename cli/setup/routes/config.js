@@ -4,6 +4,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
 import { glob } from 'glob'
 import * as yaml from 'js-yaml'
 import { toForwardSlash } from '../../../src/utils/paths.js'
+import { loadYaml } from '../../../src/utils/loadYaml.js'
 
 /**
  * Create config API routes.
@@ -30,7 +31,7 @@ export function createConfigRoutes(projectRoot) {
         const content = readFileSync(filePath, 'utf-8')
         result[filename] = {
           filename,
-          content: content.trim() ? yaml.load(content) || {} : {},
+          content: loadYaml(content) || {},
           raw: content
         }
       } catch (err) {
@@ -69,7 +70,7 @@ export function createConfigRoutes(projectRoot) {
 
     try {
       const raw = readFileSync(filePath, 'utf-8')
-      res.json({ filename, content: raw.trim() ? yaml.load(raw) || {} : {}, raw })
+      res.json({ filename, content: loadYaml(raw) || {}, raw })
     } catch (err) {
       res.status(500).json({ error: err.message })
     }

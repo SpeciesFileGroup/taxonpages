@@ -1,7 +1,7 @@
 import { glob } from 'glob'
 import fs from 'fs'
-import * as yaml from 'js-yaml'
 import { join } from 'node:path'
+import { loadYaml } from './loadYaml.js'
 import defaultConfig from '../constants/defaultConfig.js'
 import { toForwardSlash } from './paths.js'
 
@@ -15,7 +15,7 @@ export const loadConfiguration = (appPath) => {
     ...(!isProd ? configurationPaths.dev : [])
   ].map((filepath) => {
     const content = fs.readFileSync(filepath, 'utf8')
-    return content.trim() ? yaml.load(content) : {}
+    return loadYaml(content)
   })
 
   return Object.assign({}, defaultConfig, ...jsonConfig)

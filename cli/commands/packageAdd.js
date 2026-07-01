@@ -4,6 +4,7 @@ import { readFileSync, writeFileSync, existsSync, copyFileSync } from 'node:fs'
 import { createInterface } from 'node:readline'
 import * as yaml from 'js-yaml'
 import { readPackageManifest } from '../utils/readPackageManifest.js'
+import { loadYaml } from '../../src/utils/loadYaml.js'
 
 const NPM_OPTIONS = process.platform === 'win32' ? { shell: true } : {}
 
@@ -153,7 +154,7 @@ function extractPanelId(entryPath) {
  */
 function addPanelToConfig(configPath, panelId) {
   const content = readFileSync(configPath, 'utf-8')
-  const config = content.trim() ? yaml.load(content) : null
+  const config = loadYaml(content, null)
 
   if (!config?.taxa_page) return
 

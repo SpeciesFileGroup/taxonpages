@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import * as yaml from 'js-yaml'
 import { readPackageManifest } from '../utils/readPackageManifest.js'
+import { loadYaml } from '../../src/utils/loadYaml.js'
 
 const NPM_OPTIONS = process.platform === 'win32' ? { shell: true } : {}
 
@@ -110,7 +111,7 @@ export function packageRemoveCore({ projectRoot, name }) {
  */
 function removePanelFromConfig(configPath, panelId) {
   const content = readFileSync(configPath, 'utf-8')
-  const config = content.trim() ? yaml.load(content) : null
+  const config = loadYaml(content, null)
 
   if (!config?.taxa_page) return false
 
