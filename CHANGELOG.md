@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-07-02
+
+### Fixed
+
+- Missing taxon names in panel type designation.
+
+## [0.6.1] - 2026-07-01
+
 ### Fixed
 
 - Loading a config `.yml` file that only contains comments no longer throws with js-yaml 5. Empty, whitespace-only, and comment-only config files are now treated as having no overrides.

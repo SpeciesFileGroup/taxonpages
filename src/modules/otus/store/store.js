@@ -26,10 +26,13 @@ export const useOtuStore = defineStore('otuStore', {
     async loadTaxon(id, { signal }) {
       const footerStore = useFooterStore()
       const responses = await Promise.all([
-        TaxonWorks.getTaxon(id, {
-          params: { extend: ['type_taxon_name_relationship'] }
-        }),
-        useOtuPageRequest('summary', () => TaxonWorks.summary(id, { signal }))
+        TaxonWorks.getTaxon(id),
+        useOtuPageRequest('summary', () =>
+          TaxonWorks.summary(id, {
+            signal,
+            params: { extend: ['type_taxon_name_relationship'] }
+          })
+        )
       ])
 
       this.taxon = Object.assign({}, ...responses.map((r) => r.data))
@@ -66,9 +69,7 @@ export const useOtuStore = defineStore('otuStore', {
       this.catalog = {
         ...response.data,
         sources: response.data.sources.map(({ cached, url }) =>
-          url 
-            ? cached.replace(url, `<a href="${url}">${url}</a>`) 
-            : cached
+          url ? cached.replace(url, `<a href="${url}">${url}</a>`) : cached
         ),
         isLoading: false
       }
