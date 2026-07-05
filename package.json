@@ -12,6 +12,6 @@
     "setup": "taxonpages setup"
   },
   "dependencies": {
-    "@sfgrp/taxonpages": "^0.5.5"
+    "@sfgrp/taxonpages": "^0.6.2"
   }
 }
