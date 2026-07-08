@@ -54,10 +54,15 @@ const props = defineProps({
   height: {
     type: String,
     default: '550px'
+  },
+
+  citations: {
+    type: Boolean,
+    default: false
   }
 })
 
-const { depictions } = useGallery({ props })
+const { depictions, citations } = useGallery({ props })
 
 const currentIndex = ref(0)
 const isPaused = ref(false)
@@ -68,11 +73,23 @@ const currentDepiction = computed(
 )
 const isOtu = computed(() => currentDepiction.value.objectType === 'Otu')
 
-const label = computed(() =>
-  [currentDepiction.value.objectLabel, currentDepiction.value.attribution].join(
-    ' '
+const currentCitation = computed(() =>
+  citations.value.find(
+    (citation) =>
+      citation.citation_object_id === currentDepiction.value.imageId &&
+      citation.is_original
   )
 )
+
+const label = computed(() => {
+  const { objectLabel, attribution } = currentDepiction.value
+  const citationBody = currentCitation.value?.citation_source_body
+  const citation = citationBody
+    ? `<i>Depicted in:</i> ${citationBody}${attribution ? '.' : ''}`
+    : null
+
+  return [objectLabel, citation, attribution].filter(Boolean).join(' ')
+})
 let timeout = null
 
 function updateIndex() {

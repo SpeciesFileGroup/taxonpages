@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.3] - 2026-07-08
+
+### Added
+
+- Gallery carousel: optional `citations` prop that fetches image citations and shows the original citation (`Depicted in:`) in the carousel label.
+
 ## [0.6.2] - 2026-07-02
 
 ### Fixed
