@@ -2,7 +2,9 @@
   <VTable>
     <VTableHeader>
       <VTableHeaderRow>
-        <VTableHeaderCell> Descriptor </VTableHeaderCell>
+        <VTableHeaderCell>
+          {{ $t('panel.sounds.descriptor') }}
+        </VTableHeaderCell>
         <VTableHeaderCell> </VTableHeaderCell>
       </VTableHeaderRow>
     </VTableHeader>

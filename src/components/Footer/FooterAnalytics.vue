@@ -1,5 +1,7 @@
 <template>
-  <span v-if="analytics">This site uses {{ analytics }}.</span>
+  <span v-if="analytics">
+    {{ $t('component.footer.analytics', { service: analytics }) }}
+  </span>
 </template>
 
 <script setup>

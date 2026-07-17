@@ -1,14 +1,14 @@
 <template>
   <ul
     aria-disabled="false"
-    aria-label="Pagination"
+    :aria-label="$t('component.pagination.label')"
     class="flex flex-row text-sm tp-pagination"
   >
     <li>
       <button
         type="button"
         :disabled="currentPage < 2 || !pages"
-        aria-label="Go to first page"
+        :aria-label="$t('component.pagination.first')"
         class="border border-r-0 cursor-pointer border-base-border rounded-l-md px-2 py-1.5"
         @click="currentPage = 1"
       >
@@ -22,7 +22,7 @@
       <button
         type="button"
         :disabled="currentPage < 2 || !pages"
-        aria-label="Go to previous page"
+        :aria-label="$t('component.pagination.previous')"
         class="border border-r-0 cursor-pointer border-base-border px-2 py-1.5 min-w-2"
         @click="currentPage--"
       >
@@ -79,7 +79,7 @@
     <li class="page-item">
       <button
         type="button"
-        aria-label="Go to next page"
+        :aria-label="$t('component.pagination.next')"
         class="border border-base-border border-r-0 px-2 py-1.5 cursor-pointer min-w-2"
         :disabled="currentPage === pages || !pages"
         @click="() => currentPage++"
@@ -91,7 +91,7 @@
       <button
         type="button"
         :disabled="currentPage === pages || !pages"
-        aria-label="Go to last page"
+        :aria-label="$t('component.pagination.last')"
         class="border border-base-border rounded-r-md px-2 py-1.5 cursor-pointer"
         @click="() => (currentPage = pages)"
       >

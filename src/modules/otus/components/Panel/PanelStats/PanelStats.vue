@@ -6,7 +6,7 @@
       legend=""
     />
     <VCardHeader class="flex justify-between">
-      <h2 class="text-md">Stats</h2>
+      <h2 class="text-md">{{ $t('panel.stats.title') }}</h2>
       <PanelDropdown
         panel-key="taxonomy"
         :menu-options="menuOptions"
@@ -18,28 +18,29 @@
     >
       <VTable>
         <caption class="sr-only">
-          Summary of taxonomic names by rank, showing valid extant names, fossil
-          names, invalid names, and total counts.
+          {{ $t('panel.stats.caption') }}
         </caption>
 
         <VTableHeader>
           <VTableHeaderRow>
-            <VTableHeaderCell scope="col"> Taxon </VTableHeaderCell>
+            <VTableHeaderCell scope="col">
+              {{ $t('panel.stats.taxon') }}
+            </VTableHeaderCell>
             <VTableHeaderCell
               v-if="isAdvancedView"
               scope="col"
-              title="OTUs linked to valid protonyms"
+              :title="$t('panel.stats.otus_linked')"
             >
-              Taxa
+              {{ $t('panel.stats.taxa') }}
             </VTableHeaderCell>
 
             <VTableHeaderCell
-              title="Taxon names"
+              :title="$t('panel.stats.taxon_names')"
               class="border-l border-r border-base-border"
               colspan="2"
               scope="colgroup"
             >
-              Valid names
+              {{ $t('panel.stats.valid_names') }}
             </VTableHeaderCell>
 
             <VTableHeaderCell
@@ -51,34 +52,38 @@
           </VTableHeaderRow>
 
           <VTableHeaderRow>
-            <VTableHeaderCell scope="col"> Rank </VTableHeaderCell>
+            <VTableHeaderCell scope="col">
+              {{ $t('panel.stats.rank') }}
+            </VTableHeaderCell>
             <VTableHeaderCell
               v-if="isAdvancedView"
-              title="OTUs linked to valid protonyms"
+              :title="$t('panel.stats.otus_linked')"
               scope="col"
             >
-              Total
+              {{ $t('common.total') }}
             </VTableHeaderCell>
             <VTableHeaderCell
               class="border-l border-base-border"
               scope="col"
             >
-              Extant
+              {{ $t('panel.stats.extant') }}
             </VTableHeaderCell>
-            <VTableHeaderCell scope="col"> Fossil </VTableHeaderCell>
+            <VTableHeaderCell scope="col">
+              {{ $t('panel.stats.fossil') }}
+            </VTableHeaderCell>
             <VTableHeaderCell
               class="border-l border-base-border"
               scope="col"
             >
-              Invalid
+              {{ $t('panel.stats.invalid') }}
             </VTableHeaderCell>
 
             <VTableHeaderCell
-              title="Taxon names"
+              :title="$t('panel.stats.taxon_names')"
               class="border-l border-base-border"
               scope="col"
             >
-              Total
+              {{ $t('common.total') }}
             </VTableHeaderCell>
           </VTableHeaderRow>
         </VTableHeader>
@@ -123,6 +128,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useOtuStore } from '@/modules/otus/store/store'
 import PanelDropdown from '../PanelDropdown.vue'
 
@@ -148,12 +154,15 @@ const props = defineProps({
   }
 })
 
+const { t } = useI18n()
 const store = useOtuStore()
 const isAdvancedView = ref(false)
 
 const menuOptions = computed(() => [
   {
-    label: isAdvancedView.value ? 'Hide taxa' : 'Show taxa',
+    label: isAdvancedView.value
+      ? t('panel.stats.hide_taxa')
+      : t('panel.stats.show_taxa'),
     action: () => (isAdvancedView.value = !isAdvancedView.value)
   }
 ])

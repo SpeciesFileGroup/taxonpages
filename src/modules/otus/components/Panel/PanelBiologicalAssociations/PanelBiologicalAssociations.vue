@@ -1,7 +1,7 @@
 <template>
   <VCard>
     <VCardHeader>
-      Biological associations ({{ pagination.total }})
+      {{ $t('panel.biological_associations.title') }} ({{ pagination.total }})
     </VCardHeader>
     <VCardContent class="min-h-28">
       <ClientOnly>

@@ -1,7 +1,7 @@
 <template>
   <button
     type="button"
-    :title="isExpanded ? 'Close' : 'Expand'"
+    :title="isExpanded ? $t('common.close') : $t('common.expand')"
     class="button-expand bg-base-foreground text-secondary w-5 h-5"
     @click="isExpanded = !isExpanded"
   >

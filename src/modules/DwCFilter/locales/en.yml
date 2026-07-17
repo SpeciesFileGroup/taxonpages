@@ -1,0 +1,31 @@
+---
+# Message catalog for the Darwin Core filter module.
+#
+# Darwin Core term names and the type-status vocabulary come from the API and
+# are controlled vocabulary — they are not translated here.
+
+dwc_filter:
+  title: Search the Darwin Core
+  scientific_name: Scientific name
+  scientific_name_placeholder: Type name...
+  author: Author
+  author_placeholder: Type author...
+  search: Search
+  reset: Reset
+  more_filters: More filters
+  specimen_records: Specimen records
+  otu: OTU
+
+  classification: Classification
+  classification_placeholder: Type name...
+
+  type: Type
+  type_none: None
+
+  distribution: Distribution
+  country_placeholder: Country...
+  state_placeholder: State/Province...
+  county_placeholder: County...
+
+  institution_code: Institution code
+  institution_code_placeholder: Type...

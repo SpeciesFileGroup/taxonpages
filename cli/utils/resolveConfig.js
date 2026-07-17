@@ -19,9 +19,18 @@ import {
   ViteRestartOnRouteDelete,
   ViteRestartOnEntryChange,
   projectStylesPlugin,
-  componentRegistrationPlugin
+  componentRegistrationPlugin,
+  localeDiscoveryPlugin
 } from '../../src/plugins/vite/index.js'
 import { pluginInjectionPlugin } from '../../src/plugins/vite/pluginInjection.js'
+import {
+  pageTranslationsPlugin,
+  translatedPagePatterns,
+  findTranslations,
+  warnOrphanTranslations,
+  pageVirtualId
+} from '../../src/plugins/vite/pageTranslations.js'
+import { resolveI18nConfig } from '../../src/i18n/config.js'
 
 /**
  * Build the full Vite configuration, resolving paths correctly
@@ -44,16 +53,35 @@ export async function getViteConfig({ packageRoot, projectRoot, ssr = false }) {
     ? projectRoot
     : packageRoot
 
+  const { locales, defaultLocale } = resolveI18nConfig(configuration)
+  const translatableLocales = locales.filter((code) => code !== defaultLocale)
+
   const routesConfig = {
     routesFolder: [resolve(projectRoot, 'pages')],
-    exclude: ['**/components/*.vue', 'components/**/*.vue'],
+    exclude: [
+      '**/components/*.vue',
+      'components/**/*.vue',
+      // about.es.md is a variant of about.md, not a route of its own
+      ...translatedPagePatterns(translatableLocales)
+    ],
     extensions: ['.vue', '.md']
   }
+
+  warnOrphanTranslations(resolve(projectRoot, 'pages'), translatableLocales)
 
   const config = {
     root,
     publicDir: resolve(projectRoot, 'public'),
     base: configuration.base_url,
+
+    define: {
+      // vue-i18n build flags. We only use the Composition API, so the legacy
+      // Options API runtime and the production devtools hooks are dead code —
+      // these let the bundler drop them.
+      __VUE_I18N_FULL_INSTALL__: false,
+      __VUE_I18N_LEGACY_API__: false,
+      __INTLIFY_PROD_DEVTOOLS__: false
+    },
 
     server: {
       fs: {
@@ -103,6 +131,13 @@ export async function getViteConfig({ packageRoot, projectRoot, ssr = false }) {
         packageRoot,
         disabled: configuration.packages?.disabled
       }),
+
+      localeDiscoveryPlugin({
+        packageRoot,
+        projectRoot,
+        locales: resolveI18nConfig(configuration).locales,
+        disabled: configuration.packages?.disabled
+      }),
       //projectStylesPlugin(projectRoot),
 
       ViteRestart({
@@ -136,12 +171,27 @@ export async function getViteConfig({ packageRoot, projectRoot, ssr = false }) {
         }
       }),
 
+      pageTranslationsPlugin(),
+
       VueRouter({
         ...routesConfig,
         async extendRoute(route) {
           if (route.path === '/home') {
             route.path = '/'
             route.addAlias('/home')
+          }
+
+          // Swap any page that has locale variants for a wrapper holding all of
+          // them. Pages without variants — every page on a single-locale site —
+          // keep their component untouched.
+          if (translatableLocales.length === 0) return
+
+          for (const [name, file] of route.components) {
+            const translations = findTranslations(file, translatableLocales)
+
+            if (Object.keys(translations).length === 0) continue
+
+            route.components.set(name, pageVirtualId(file, translations))
           }
         }
       }),

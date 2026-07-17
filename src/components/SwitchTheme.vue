@@ -42,6 +42,7 @@
 
 <script setup>
 import { computed, watch, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const themeModes = {
   dark: 'dark',
@@ -71,10 +72,12 @@ if (window !== undefined) {
   )
 }
 
+const { t } = useI18n()
+
 const title = computed(() =>
   themeMode.value === themeModes.light
-    ? 'Change to dark mode'
-    : 'Change to light mode'
+    ? t('component.theme.to_dark')
+    : t('component.theme.to_light')
 )
 
 const toggleTheme = () => {

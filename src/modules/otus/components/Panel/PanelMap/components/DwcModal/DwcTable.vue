@@ -17,7 +17,7 @@
           <h4
             class="text-xs font-semibold uppercase tracking-wide text-base-soft mb-3 px-4 rounded-lg bg-base-background py-2"
           >
-            {{ group.category }}
+            {{ $t(group.categoryKey) }}
           </h4>
           <dl class="grid grid-cols-[12rem_1fr] gap-x-4 gap-y-1.5 px-6">
             <template
@@ -25,7 +25,7 @@
               :key="entry.key"
             >
               <dt class="text-sm text-base-soft">
-                {{ getLabel(entry.key) }}
+                {{ label(entry.key) }}
               </dt>
               <dd class="text-sm text-base-content">
                 <component
@@ -43,6 +43,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { makeAPIRequest } from '@/utils'
 import { FIELD_OCCURRENCE, COLLECTION_OBJECT } from '@/constants/objectTypes'
 import {
@@ -53,11 +54,16 @@ import {
 } from './DwcCategories.js'
 import DwcFieldText from './DwcFieldText.vue'
 import DwcFieldImages from './DwcFieldImages.vue'
+import DwcFieldDate from './DwcFieldDate.vue'
 
 const fieldComponents = {
   text: DwcFieldText,
-  images: DwcFieldImages
+  images: DwcFieldImages,
+  date: DwcFieldDate
 }
+
+const i18n = useI18n()
+const label = (field) => getLabel(field, i18n)
 
 const isLoading = ref(false)
 const isModalVisible = ref(false)

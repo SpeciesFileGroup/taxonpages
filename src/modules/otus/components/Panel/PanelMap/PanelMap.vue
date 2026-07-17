@@ -68,7 +68,7 @@
               LEGEND[type].background
             ]"
           />
-          <span>{{ LEGEND[type].label }}</span>
+          <span>{{ $t(LEGEND[type].labelKey) }}</span>
         </div>
         <VToggle
           v-if="absences !== 'off'"
@@ -78,7 +78,7 @@
           :disabled="isLoadingAbsent"
         >
           <span class="text-xs">{{
-            isLoadingAbsent ? 'Loading...' : 'Absences'
+            isLoadingAbsent ? $t('panel.map.loading') : $t('panel.map.absences')
           }}</span>
         </VToggle>
       </div>

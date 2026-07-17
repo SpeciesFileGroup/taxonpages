@@ -1,0 +1,12 @@
+---
+# Message catalog for the news module.
+#
+# News titles and bodies are not here: they are authored in TaxonWorks and
+# served by the API, so they carry whatever language they were written in.
+
+news:
+  title: News
+  no_news: No news found.
+  read_more: Read more →
+  back_to_news: Back to news
+  close_announcement: Close

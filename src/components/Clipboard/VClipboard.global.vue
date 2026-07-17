@@ -1,7 +1,7 @@
 <template>
   <VButton
     circle
-    :aria-label="isCopied ? 'Copied to clipboard' : 'Copy to clipboard'"
+    :aria-label="isCopied ? $t('component.clipboard.copied') : $t('component.clipboard.copy')"
     @click="copyText"
   >
     <IconCheck

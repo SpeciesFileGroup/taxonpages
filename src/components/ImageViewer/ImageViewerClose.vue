@@ -1,7 +1,7 @@
 <template>
   <button
     type="button"
-    aria-label="Close image viewer"
+    :aria-label="$t('component.image_viewer.close')"
     class="p-2 cursor-pointer opacity-50 text-base-content"
   >
     <IconClose />

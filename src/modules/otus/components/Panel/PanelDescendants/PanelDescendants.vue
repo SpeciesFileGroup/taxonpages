@@ -8,7 +8,7 @@
       />
     </ClientOnly>
     <VCardHeader class="flex justify-between">
-      <h2 class="text-md">Descendants and synonyms</h2>
+      <h2 class="text-md">{{ $t('panel.descendants.title') }}</h2>
       <PanelDropdown panel-key="panel:descendants" />
     </VCardHeader>
     <VCardContent class="text-sm">
@@ -20,7 +20,7 @@
           />
         </AnimationOpacity>
       </ul>
-      <span v-if="!hasRecords && !isLoading">No records found.</span>
+      <span v-if="!hasRecords && !isLoading">{{ $t('common.no_records') }}</span>
     </VCardContent>
   </VCard>
 </template>

@@ -16,7 +16,9 @@
                 <span class="text-sm">
                   <template v-if="show_author">{{ news.creator }}</template>
                   <template v-if="show_author && show_date"> — </template>
-                  <template v-if="show_date">{{ news.createdAt }}</template>
+                  <template v-if="show_date">
+                    {{ $d(news.createdAt, 'long') }}
+                  </template>
                 </span>
               </div>
               <div
@@ -42,7 +44,7 @@
                   d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
                 ></path>
               </svg>
-              Back to news
+              {{ $t('news.back_to_news') }}
             </RouterLink>
           </div>
         </div>

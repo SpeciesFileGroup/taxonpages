@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <label>Distribution</label>
+    <label>{{ $t('dwc_filter.distribution') }}</label>
     <div class="flex flex-col md:flex-row gap-2 w-full">
       <Autocomplete
         class="w-full"
@@ -11,7 +11,7 @@
         :params="{
           target: 'country'
         }"
-        placeholder="Country..."
+        :placeholder="$t('dwc_filter.country_placeholder')"
       />
       <Autocomplete
         class="w-full"
@@ -22,7 +22,7 @@
         :params="{
           target: 'stateProvince'
         }"
-        placeholder="State/Province..."
+        :placeholder="$t('dwc_filter.state_placeholder')"
       />
       <Autocomplete
         class="w-full"
@@ -33,7 +33,7 @@
         :params="{
           target: 'county'
         }"
-        placeholder="County..."
+        :placeholder="$t('dwc_filter.county_placeholder')"
       />
     </div>
   </div>

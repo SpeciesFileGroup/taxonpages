@@ -6,21 +6,21 @@
           class="flex flex-col lg:flex-row justify-center items-center gap-4 lg:gap-2 text-sm"
         >
           <div class="text-sm w-full">
-            <label>Scientific name</label>
+            <label>{{ $t('dwc_filter.scientific_name') }}</label>
             <InputText
               class="block w-full"
               type="text"
-              placeholder="Type name..."
+              :placeholder="$t('dwc_filter.scientific_name_placeholder')"
               v-model="parameters.scientificName"
               @keypress.enter="() => emit('search')"
             />
           </div>
           <div class="w-full lg:w-96">
-            <label>Author</label>
+            <label>{{ $t('dwc_filter.author') }}</label>
             <InputText
               class="block w-full"
               type="text"
-              placeholder="Type author..."
+              :placeholder="$t('dwc_filter.author_placeholder')"
               v-model="parameters.scientificNameAuthorship"
               @keypress.enter="() => emit('search')"
             />
@@ -33,9 +33,9 @@
               size="md"
               @click="() => emit('search')"
             >
-              Search
+              {{ $t('dwc_filter.search') }}
             </VButton>
-            <VButton @click="() => emit('reset')"> Reset </VButton>
+            <VButton @click="() => emit('reset')">{{ $t('dwc_filter.reset') }}</VButton>
           </div>
         </div>
 
@@ -57,7 +57,7 @@
                 v-else
                 class="w-5 h-5"
               />
-              <span>More filters</span>
+              <span>{{ $t('dwc_filter.more_filters') }}</span>
             </div>
           </div>
         </div>
@@ -67,7 +67,7 @@
         >
           <FacetOrder v-model="parameters" />
           <div class="flex flex-col gap-2">
-            <h3 class="text-base font-medium">Specimen records</h3>
+            <h3 class="text-base font-medium">{{ $t('dwc_filter.specimen_records') }}</h3>
             <FacetInstitutionCode v-model="parameters" />
             <FacetTypeStatus v-model="parameters" />
           </div>

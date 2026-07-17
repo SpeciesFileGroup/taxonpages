@@ -7,7 +7,7 @@
     />
     <VCardHeader class="flex justify-between">
       <h2 class="text-md">
-        Nomenclature references ({{ store.catalog.sources.length }})
+        {{ $t('panel.nomenclature_references.title') }} ({{ store.catalog.sources.length }})
       </h2>
       <PanelDropdown
         :menu-options="menuOptions"
@@ -47,6 +47,7 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { computed, ref } from 'vue'
 import { splitList } from '../PanelNomenclature/splitList'
 import { useOtuStore } from '@/modules/otus/store/store'
@@ -56,6 +57,7 @@ import PanelDropdown from '../PanelDropdown.vue'
 
 const MAX_REFERENCES = 2
 
+const { t } = useI18n()
 const store = useOtuStore()
 
 const showAll = ref(false)
@@ -65,7 +67,7 @@ const referenceList = computed(() =>
 
 const menuOptions = computed(() => [
   {
-    label: showAll.value ? 'Show less' : 'Show all',
+    label: showAll.value ? t('otus.show_less') : t('otus.show_all_menu'),
     action: () => (showAll.value = !showAll.value)
   }
 ])

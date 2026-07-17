@@ -1,6 +1,6 @@
 <template>
   <div class="container mx-auto box-border">
-    <h1 class="text-4xl px-4 md:px-0 mt-6 mb-6 font-bold">Bibliography</h1>
+    <h1 class="text-4xl px-4 md:px-0 mt-6 mb-6 font-bold">{{ $t('bibliography.title') }}</h1>
     <ClientOnly>
       <VSpinner
         v-if="isLoading"
@@ -13,27 +13,27 @@
           class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-2 text-sm"
         >
           <div class="flex flex-col w-full">
-            <label>In citation</label>
+            <label>{{ $t('bibliography.in_citation') }}</label>
             <InputText
               class="w-full"
               type="text"
-              placeholder='Search anywhere in the citation... for example: "Charles Darwin Archives"'
+              :placeholder="$t('bibliography.in_citation_placeholder')"
               v-model="parameters.query_term"
               @keypress.enter="() => loadList()"
             />
           </div>
           <div class="flex flex-col w-full md:w-96">
-            <label>Author(s)</label>
+            <label>{{ $t('bibliography.authors') }}</label>
             <InputText
               class="w-full"
               type="text"
-              placeholder="Type..."
+              :placeholder="$t('bibliography.authors_placeholder')"
               v-model="parameters.author"
               @keypress.enter="() => loadList()"
             />
           </div>
           <div class="w-full md:w-auto">
-            <span>Published between:</span>
+            <span>{{ $t('bibliography.published_between') }}</span>
             <div class="flex flex-row gap-2">
               <YearPicker
                 v-model="parameters.year_start"
@@ -57,12 +57,12 @@
           <div class="flex flex-row gap-2 md:self-end">
             <VButton
               @click="() => loadList()"
-              >Search</VButton
+              >{{ $t('bibliography.search') }}</VButton
             >
             <VButton
               @click="() => reset()"
             >
-              Reset
+              {{ $t('bibliography.reset') }}
             </VButton>
           </div>
         </div>
@@ -91,7 +91,7 @@
           <VTableHeader>
             <VTableHeaderRow>
               <VTableHeaderCell class="w-2" />
-              <VTableHeaderCell> Sources </VTableHeaderCell>
+              <VTableHeaderCell>{{ $t('bibliography.sources') }}</VTableHeaderCell>
             </VTableHeaderRow>
           </VTableHeader>
           <VTableBody>
@@ -101,7 +101,7 @@
             >
               <VTableBodyCell
                 class="pr-1"
-                title="Show OTUs"
+                :title="$t('bibliography.show_otus')"
               >
                 <OtuModal
                   :source-id="item.id"

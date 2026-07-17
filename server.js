@@ -8,13 +8,29 @@ import { generateConsoleMessage } from './src/ssr/utils/generateConsoleMessage.j
 import { loadApiRoutes } from './src/server/loadApiRoutes.js'
 import { loadPlugins } from './cli/utils/loadPlugins.js'
 import { loadConfiguration } from './src/utils/loadConfiguration.js'
+import { stripBase } from './src/utils/url.js'
+import {
+  extractLocale,
+  localePath,
+  prefixedLocales
+} from './src/i18n/locale.js'
+import { resolveI18nConfig } from './src/i18n/config.js'
 
-function stripBase(url, base) {
-  if (!base || base === '/') return url
-  const normalized = base.endsWith('/') ? base.slice(0, -1) : base
-  if (url === normalized) return '/'
-  if (url.startsWith(normalized + '/')) return url.slice(normalized.length)
-  return url
+/**
+ * Set the lang attribute on the <html> tag of a rendered page.
+ *
+ * Done with a rewrite rather than a template placeholder because a project may
+ * ship its own index.html, and those already exist without the placeholder.
+ *
+ * @param {string} html - Full rendered document
+ * @param {string} locale
+ * @returns {string}
+ */
+function setHtmlLang(html, locale) {
+  return html.replace(/<html\b([^>]*)>/i, (match, attrs) => {
+    const withoutLang = attrs.replace(/\slang="[^"]*"/i, '')
+    return `<html${withoutLang} lang="${locale}">`
+  })
 }
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -50,7 +66,8 @@ export async function createServer({
       )
     : {}
 
-  const { base_url } = loadConfiguration(projectRoot)
+  const configuration = loadConfiguration(projectRoot)
+  const { base_url } = configuration
 
   const app = express()
   const httpServer = http.createServer(app)
@@ -156,6 +173,36 @@ export async function createServer({
     res.status(200).end('')
   })
 
+  // With prefix_default_locale, every locale owns a prefix and unprefixed URLs
+  // belong to none. Serving them would publish every page at two addresses and
+  // hand crawlers duplicate content, so they are redirected to the default
+  // locale. Reached only after static assets and /api, which mount earlier.
+  //
+  // This never fires under the default prefix_default_locale: false, where
+  // unprefixed URLs *are* the default locale's and must keep resolving as-is.
+  const { prefixDefaultLocale, defaultLocale } = resolveI18nConfig(configuration)
+
+  if (prefixDefaultLocale) {
+    const prefixes = prefixedLocales(configuration)
+
+    // req.originalUrl, not req.path: inside app.use() Express rewrites req.url
+    // relative to the mount point, which would drop the segment being tested.
+    app.use(/(.*)/, (req, res, next) => {
+      const url = stripBase(req.originalUrl, base_url)
+      const suffixAt = url.search(/[?#]/)
+      const pathname = suffixAt === -1 ? url : url.slice(0, suffixAt)
+      const suffix = suffixAt === -1 ? '' : url.slice(suffixAt)
+      const [, first] = pathname.split('/')
+
+      if (prefixes.includes(first)) return next()
+
+      res.redirect(
+        301,
+        localePath(pathname, defaultLocale, configuration) + suffix
+      )
+    })
+  }
+
   app.use(/(.*)/, async (req, res) => {
     try {
       const url = stripBase(req.originalUrl, base_url)
@@ -173,15 +220,22 @@ export async function createServer({
           .render
       }
 
+      // The URL decides the locale. The router is built with the locale's
+      // prefix as its history base, so it is given the path without it.
+      const { locale, path: routePath } = extractLocale(url, configuration)
+
       const [appHtml, appState, preloadLinks, tagMeta, statusCode] =
-        await render(url, manifest, origin)
-      const html = template
-        .replace(`<!--preload-links-->`, preloadLinks)
-        .replace(`<!--app-state-->`, appState)
-        .replace(`<!--head-tags-->`, tagMeta.headTags)
-        .replace(`<!--body-tags-open-->`, tagMeta.bodyTagsOpen)
-        .replace(`<!--body-tags-->`, tagMeta.bodyTags)
-        .replace(makeAppContainer(), makeAppContainer(appHtml))
+        await render(routePath, manifest, origin, locale)
+      const html = setHtmlLang(
+        template
+          .replace(`<!--preload-links-->`, preloadLinks)
+          .replace(`<!--app-state-->`, appState)
+          .replace(`<!--head-tags-->`, tagMeta.headTags)
+          .replace(`<!--body-tags-open-->`, tagMeta.bodyTagsOpen)
+          .replace(`<!--body-tags-->`, tagMeta.bodyTags)
+          .replace(makeAppContainer(), makeAppContainer(appHtml)),
+        locale
+      )
 
       res.status(statusCode).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (e) {

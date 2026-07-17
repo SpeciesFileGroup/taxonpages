@@ -3,7 +3,7 @@
     ref="viewerRef"
     role="dialog"
     aria-modal="true"
-    aria-label="Image viewer"
+    :aria-label="$t('component.image_viewer.label')"
     class="fixed z-[10000] h-full overflow-y-hidden overflow-x-hidden w-full top-0 left-0 flex flex-col items-center justify-center backdrop-blur-md bg-base-foreground"
   >
     <div

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <label class="text-base font-medium">Classification</label>
+    <label class="text-base font-medium">{{ $t('dwc_filter.classification') }}</label>
 
     <div class="flex flex-col flex-wrap gap-2 mt-2">
       <div
@@ -10,7 +10,7 @@
       >
         <label class="capitalize">{{ rank }}</label>
         <InputText
-          placeholder="Type name..."
+          :placeholder="$t('dwc_filter.classification_placeholder')"
           v-model="parameters[rank]"
         />
       </div>

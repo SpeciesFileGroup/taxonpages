@@ -38,6 +38,7 @@
 
 <script setup>
 import { ref, computed, watch, onBeforeUnmount } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useGallery } from '../useGallery.js'
 
 const props = defineProps({
@@ -67,6 +68,7 @@ const { depictions, citations } = useGallery({ props })
 const currentIndex = ref(0)
 const isPaused = ref(false)
 
+const { t } = useI18n()
 const containerStyle = computed(() => ({ height: props.height }))
 const currentDepiction = computed(
   () => depictions.value[currentIndex.value] || {}
@@ -85,7 +87,7 @@ const label = computed(() => {
   const { objectLabel, attribution } = currentDepiction.value
   const citationBody = currentCitation.value?.citation_source_body
   const citation = citationBody
-    ? `<i>Depicted in:</i> ${citationBody}${attribution ? '.' : ''}`
+    ? `<i>${t('component.gallery.depicted_in')}</i> ${citationBody}${attribution ? '.' : ''}`
     : null
 
   return [objectLabel, citation, attribution].filter(Boolean).join(' ')

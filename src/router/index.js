@@ -6,6 +6,8 @@ import {
 } from 'vue-router'
 
 import { routes as dynamicRoutes } from 'vue-router/auto-routes'
+import { localeBase } from '@/i18n/locale.js'
+import { resolveI18nConfig } from '@/i18n/config.js'
 
 const coreModuleRoutes = import.meta.glob('@/modules/**/router/*.js', {
   import: 'default',
@@ -16,7 +18,7 @@ const userModuleRoutes = import.meta.glob('~/modules/**/router/*.js', {
   eager: true
 })
 
-const { base_url, hash_mode } = __APP_ENV__
+const { hash_mode } = __APP_ENV__
 
 const moduleRoutes = [].concat(
   ...Object.values(coreModuleRoutes),
@@ -25,19 +27,27 @@ const moduleRoutes = [].concat(
 
 export const routes = [...dynamicRoutes, ...moduleRoutes]
 
-function getHistory() {
+function getHistory(base) {
   if (import.meta.env.SSR) {
-    return createMemoryHistory(base_url)
+    return createMemoryHistory(base)
   } else if (hash_mode) {
-    return createWebHashHistory(base_url)
+    return createWebHashHistory(base)
   } else {
-    return createWebHistory(base_url)
+    return createWebHistory(base)
   }
 }
 
-export function createRouter() {
+/**
+ * @param {object} [options]
+ * @param {string} [options.locale] - Active locale. Its prefix (if any) becomes
+ *   part of the history base, so the route table itself is locale-agnostic and
+ *   every RouterLink stays inside the active locale.
+ */
+export function createRouter({ locale } = {}) {
+  const base = localeBase(locale || resolveI18nConfig(__APP_ENV__).defaultLocale, __APP_ENV__)
+
   return _createRouter({
-    history: getHistory(),
+    history: getHistory(base),
     routes,
     scrollBehavior(to, from, savedPosition) {
       return to.hash ? { el: to.hash } : { top: 0 }

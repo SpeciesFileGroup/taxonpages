@@ -20,7 +20,7 @@
         >
           <component
             :is="currentAnnouncement.url ? 'a' : 'span'"
-            :key="getAnnouncementKey(currentAnnouncement)"
+            :key="currentAnnouncement.key"
             class="text-xs font-medium font-mono leading-snug tracking-wide uppercase text-secondary-content"
             :href="currentAnnouncement.url"
             >{{ currentAnnouncement.message }}</component
@@ -63,8 +63,8 @@
           </div>
           <button
             type="button"
-            title="Close"
-            @click="dismiss(getAnnouncementKey(currentAnnouncement))"
+            :title="$t('news.close_announcement')"
+            @click="dismiss(currentAnnouncement.key)"
           >
             <IconClose class="text-secondary-content size-4! cursor-pointer" />
           </button>
@@ -76,6 +76,8 @@
 
 <script setup>
 import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { localizeDeep } from '@/i18n/localize'
 import {
   useDismissedAnnouncements,
   getAnnouncementKey
@@ -86,7 +88,22 @@ const PROGRESS_RADIUS = 9
 const PROGRESS_CIRCUMFERENCE = 2 * Math.PI * PROGRESS_RADIUS
 
 const { news_module = {} } = __APP_ENV__
-const { announcements = [], announcement_interval } = news_module
+const { announcements: rawAnnouncements = [], announcement_interval } =
+  news_module
+
+const { locale } = useI18n()
+
+// An announcement's identity must not depend on the reader's language: when it
+// has no id, its key is hashed from the message, so keying off the translated
+// text would both re-show announcements after a locale switch and make prune()
+// discard the dismissals belonging to the other locale. The key is therefore
+// taken from the raw config; only the message and url are localized.
+const announcements = computed(() =>
+  rawAnnouncements.map((announcement) => ({
+    ...localizeDeep(announcement, locale.value, __APP_ENV__),
+    key: getAnnouncementKey(announcement)
+  }))
+)
 
 const rotationInterval =
   (Number(announcement_interval) > 0
@@ -96,9 +113,7 @@ const rotationInterval =
 const { isDismissed, dismiss, prune } = useDismissedAnnouncements()
 
 const visibleAnnouncements = computed(() =>
-  announcements.filter(
-    (announcement) => !isDismissed(getAnnouncementKey(announcement))
-  )
+  announcements.value.filter((announcement) => !isDismissed(announcement.key))
 )
 
 const currentIndex = ref(0)
@@ -158,7 +173,7 @@ watch(visibleAnnouncements, (list) => {
 })
 
 onMounted(() => {
-  prune(announcements.map(getAnnouncementKey))
+  prune(announcements.value.map((a) => a.key))
   startRotation()
 })
 

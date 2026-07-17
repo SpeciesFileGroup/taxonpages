@@ -1,8 +1,8 @@
 <template>
   <button
     class="h-8 w-8 flex items-center justify-center rounded-full text-primary-content bg-primary"
-    title="Observations"
-    aria-label="View observations"
+    :title="$t('panel.sounds.observations')"
+    :aria-label="$t('panel.sounds.view_observations')"
     @click="() => (isVisible = true)"
   >
     <IconFiles class="size-4" />
@@ -13,7 +13,7 @@
     @close="() => (isVisible = false)"
   >
     <template #header>
-      <h3 class="font-medium">Observations</h3>
+      <h3 class="font-medium">{{ $t('panel.sounds.observations') }}</h3>
     </template>
     <VSpinner v-if="isLoading" />
     <div :class="['px-4 pb-6 min-w-80', isLoading && 'min-h-32']">
@@ -21,7 +21,7 @@
         v-if="isLoading === false && !observations.length"
         class="text-center text-lg pt-4 pb-6"
       >
-        No records found
+        {{ $t('panel.sounds.no_records') }}
       </div>
       <TableObservations
         v-else

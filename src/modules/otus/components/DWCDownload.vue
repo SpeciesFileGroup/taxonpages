@@ -1,7 +1,7 @@
 <template>
   <VButton
     class="flex items-center"
-    title="Download DwC Occurrences"
+    :title="$t('otus.dwc_download')"
     size="sm"
     @click="
       () => {

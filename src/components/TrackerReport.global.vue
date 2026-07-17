@@ -2,9 +2,9 @@
   <component
     :is="tag"
     type="button"
-    title="Report a problem"
+    :title="$t('component.tracker.title')"
     :class="[buttonClass, 'cursor-pointer']"
-    aria-label="Report a problem"
+    :aria-label="$t('component.tracker.title')"
     @click="openTracker"
   >
     <IconGithub
@@ -16,14 +16,14 @@
   <VModal
     v-if="isModalVisible"
     class="tp-tracker-report-modal text-base-content"
-    aria-label="Report a problem"
+    :aria-label="$t('component.tracker.title')"
     @close="isModalVisible = false"
   >
     <template #header>
-      <h1 class="font-medium text-base px-1">Report a problem</h1>
+      <h1 class="font-medium text-base px-1">{{ $t('component.tracker.title') }}</h1>
     </template>
     <div class="font-normal p-5 pt-0 text-base">
-      <span>My issue is with:</span>
+      <span>{{ $t('component.tracker.issue_with') }}</span>
       <ul class="mx-5 my-2">
         <li v-for="item in issue_trackers">
           <a
@@ -32,7 +32,7 @@
             rel="noopener"
           >
             {{ item.label }}
-            <span class="sr-only">(opens in new window)</span>
+            <span class="sr-only">{{ $t('component.tracker.opens_new_window') }}</span>
           </a>
           <span
             v-if="item.description"

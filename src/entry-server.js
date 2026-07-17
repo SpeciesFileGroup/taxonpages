@@ -8,8 +8,15 @@ import { registerFakeClientComponents } from '@/ssr/utils/registerFakeClientComp
 import { schemaOrgPlugin } from '@/plugins/schemaOrg'
 import devalue from '@nuxt/devalue'
 
-export async function render(url, manifest, originUrl) {
-  const { app, router, store } = createApp({ originUrl })
+/**
+ * @param {string} url - Path to render, with base_url and any locale prefix
+ *   already stripped: the router's history base carries the prefix.
+ * @param {object} manifest
+ * @param {string} originUrl
+ * @param {string} [locale] - Resolved by the caller from the URL.
+ */
+export async function render(url, manifest, originUrl, locale) {
+  const { app, router, store } = createApp({ originUrl, locale })
   const head = createHead({
     plugins: [
       schemaOrgPlugin(

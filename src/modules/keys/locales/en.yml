@@ -1,0 +1,8 @@
+---
+# Message catalog for the interactive keys module.
+
+keys:
+  metadata: Metadata
+  data: Data
+  back: Back
+  next: Next

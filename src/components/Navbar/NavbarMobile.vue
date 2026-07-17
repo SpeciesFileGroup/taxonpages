@@ -2,13 +2,13 @@
   <button
     type="button"
     class="tp-mobile-navbar-button inline-flex items-center p-2 z-50 ml-3 text-sm text-primary-content rounded-lg md:hidden print:hidden"
-    title="Menu"
+    :title="$t('component.navbar.menu')"
     aria-controls="mobile-menu"
-    aria-label="Open navigation menu"
+    :aria-label="$t('component.navbar.open_menu')"
     :aria-expanded="isMenuVisible"
     @click="toggleMenu"
   >
-    <span class="sr-only">Open main menu</span>
+    <span class="sr-only">{{ $t('component.navbar.open_main_menu') }}</span>
     <IconClose v-if="isMenuVisible" />
     <IconHamburger
       class="w-6 h-6"
@@ -60,6 +60,28 @@
               {{ item.label }}
             </RouterLink>
           </li>
+          <!-- Flat rows rather than the header's dropdown: a menu inside an
+               open menu is poor on a phone, and there are only ever a handful. -->
+          <li
+            v-for="item in localeOptions"
+            v-show="isMultiLocale"
+            :key="item.code"
+            class="border-b border-base-border"
+          >
+            <a
+              :href="item.href"
+              :hreflang="item.code"
+              :lang="item.code"
+              :aria-current="item.isCurrent ? 'true' : undefined"
+              :class="[
+                'text-base-content w-full p-4 py-3 flex items-center gap-2 box-border',
+                item.isCurrent && 'font-medium'
+              ]"
+            >
+              <IconLanguage class="size-5" />
+              {{ item.label }}
+            </a>
+          </li>
           <li>
             <ClientOnly>
               <SwitchTheme
@@ -83,8 +105,12 @@
 <script setup>
 import { ref } from 'vue'
 import SwitchTheme from '../SwitchTheme.vue'
+import { useLocalizedConfig } from '@/i18n/useLocalizedConfig'
+import { useLocaleOptions } from '@/i18n/useLocaleOptions'
 
-const { header_links } = __APP_ENV__
+const { cDeep } = useLocalizedConfig()
+const { options: localeOptions, isMultiLocale } = useLocaleOptions()
+const header_links = cDeep(__APP_ENV__.header_links)
 const isMenuVisible = ref(false)
 
 const toggleMenu = () => {

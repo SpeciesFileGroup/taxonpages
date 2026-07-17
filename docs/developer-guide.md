@@ -531,10 +531,11 @@ The `vite()` hook merges returned config additively. Protected keys (`root`, `ba
 
 ### Vue app setup
 
-Plugins that need to extend the Vue app (e.g., register a Vue plugin like i18n) should provide a `vueSetup.js` file in the plugin directory:
+Plugins that need to extend the Vue app (e.g., register a Vue plugin or a
+global directive) should provide a `vueSetup.js` file in the plugin directory:
 
 ```
-taxonpages-plugin-i18n/
+taxonpages-plugin-tooltip/
 ├── package.json
 └── src/
     ├── plugin.js       # Plugin factory (vite hook, etc.)
@@ -543,17 +544,20 @@ taxonpages-plugin-i18n/
 
 ```javascript
 // src/vueSetup.js — note: this file is NOT inside the plugin.js factory
-import { createI18n } from 'vue-i18n'
+import TooltipDirective from './TooltipDirective.js'
 
-export default function (app, { router, store }) {
-  const i18n = createI18n({
-    /* ... */
-  })
-  app.use(i18n)
+export default function (app, { router, store, i18n }) {
+  app.directive('tooltip', TooltipDirective)
 }
 ```
 
-The `vueSetup.js` file is discovered automatically if it exists in the plugin's root directory. It exports a default function that receives the Vue app instance and `{ router, store }`.
+The `vueSetup.js` file is discovered automatically if it exists in the plugin's root directory. It exports a default function that receives the Vue app instance and `{ router, store, i18n }`.
+
+> **Do not install your own i18n instance here.** TaxonPages creates one in
+> core and passes it as `i18n`, so a second instance would shadow it and
+> detach your strings from the site's locale. To translate a plugin's own
+> strings, ship a `locales/<locale>.yml` catalog instead — it is merged into
+> the core catalog automatically.
 
 ### Plugin context
 
@@ -943,3 +947,145 @@ Example: `MyAmazingComponent.global.vue`
 Both `.global.vue` and `.client.vue` files declared inside an NPM panel or module package are auto-registered the same way as local ones — they become usable across the entire application (other panels, modules, markdown pages, custom layouts) without manual imports.
 
 Unlike local projects, where global components must live under a `components/` folder, an NPM package can place `.global.vue` / `.client.vue` files in **any subdirectory** of the package. Discovery is recursive from the package root.
+
+## Internationalization
+
+i18n is part of the core, not a plugin. A site with no `config/i18n.yml` runs
+single-locale in English with no locale prefix and no extra JavaScript, so
+nothing below is mandatory.
+
+### Translating your own strings
+
+Ship a `locales/<locale>.yml` catalog in your panel, module, or plugin. It is
+discovered and merged automatically — there is nothing to register:
+
+```
+panels/PanelTest/
+├── main.js
+├── PanelTest.vue
+└── locales/
+    ├── en.yml
+    └── es.yml
+```
+
+Namespace keys by your package id so they cannot collide:
+
+```yaml
+# panels/PanelTest/locales/en.yml
+panel:
+  test:
+    title: Test panel
+    empty: Nothing to show
+```
+
+```vue
+<h2>{{ $t('panel.test.title') }}</h2>
+```
+
+Use `$t` in templates. In `<script setup>`, get it from `useI18n()`:
+
+```javascript
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
+```
+
+Catalogs merge in ascending priority: core, then NPM packages, then local
+`panels/` and `modules/`, then the site's own `~/locales/<locale>.yml`. A site
+can therefore override any string a package ships by redefining its key —
+the same local-wins-over-npm rule that applies to components.
+
+A key missing from the active locale falls back to the fallback locale, then to
+the default. **A missing translation never blocks a feature** — ship the English
+key and translate later.
+
+### Dates
+
+Do not format dates yourself: a component cannot know the reader's locale, and
+a formatter pinned to one is a bug. Keep `Date` objects in your data and render
+them with `$d(value, 'long')`.
+
+### Linking across locales
+
+`<RouterLink>` always stays inside the active locale — the locale prefix is the
+router's history base, so every link is prefixed for you and no existing link
+needs changing. To point *at another* locale (a language switcher), build the
+path with `localePath()` and use a plain `<a>`, since crossing locales is a
+document navigation, not a route change:
+
+```javascript
+import { localePath } from '@/i18n/locale.js'
+
+localePath('/about', 'es', __APP_ENV__) // -> '/es/about'
+```
+
+### Translating site content
+
+Two things a site maintainer owns can be translated, both opt-in.
+
+**Config values.** Replace a string with a map of locales. A plain string stays
+a plain string, so existing config needs no migration:
+
+```yaml
+# config/header.yml
+header_links:
+  - label: Home                        # untranslated, still fine
+    link: /
+  - label:
+      en: News
+      es: Noticias
+    link: /news
+```
+
+This works for `header_links` labels (including submenus), `header_logo_text`,
+`copyright_text`, `project_name`, `metadata` entries, `news_module.announcements`
+messages, and in `taxa_page.yml` for tab `label`s and panel `bind` values.
+
+A map is read as a translation only when *every* key is a locale you configured
+in `config/i18n.yml`. That is deliberate: `bind: { id: 5 }` must not be mistaken
+for a translation into Indonesian.
+
+`project_citation` and `project_authors` are **not** localized — they are how
+the site is cited in the literature.
+
+**Pages.** Add a sibling file with the locale in its name:
+
+```
+pages/
+├── about.md         # default locale
+├── about.es.md      # Spanish
+└── grants.md        # no translation — /es/grants serves this
+```
+
+The suffix is opt-in per page and the fallback is simply the absence of a file:
+nothing to configure, nothing to keep in sync.
+
+The extension does not have to match: `home.vue` is translated by `home.es.md`
+just as well, which is usually what you want — a translator writes markdown, not
+a component. A translated file whose base page does not exist (a typo, or a page
+since renamed) is reported at startup rather than silently ignored.
+
+### What is not translated
+
+Scientific names, authorships, and citations are nomenclature: they are
+language-independent by rule and must never be run through `t()`. The same goes
+for slugs and URLs — a taxon page is `/es/otus/761985`, never a translated
+slug. Its identity is the id.
+
+### Common names
+
+Common names are the one piece of remote data that is genuinely multilingual:
+TaxonWorks tags each with a language. Names in the reader's language are shown
+first; the rest stay visible, with the language as a tooltip.
+
+Note the API reports the language as an ISO 639-2 *English name* — `"English"`,
+`"Japanese"`, `"Spanish; Castilian"` — or `null`, never a code.
+`src/i18n/languageTags.js` maps those to BCP-47 tags for the languages that have
+an ISO 639-1 code, which are the ones a site can configure as a locale. A
+language outside that list is not an error: its name still labels the value, it
+simply never matches a locale. Add entries there if you need more.
+
+### Adding a locale
+
+List it in `config/i18n.yml` and add `<locale>.yml` catalogs. Routes for the new
+prefix appear on their own; anything untranslated falls back. A locale that is
+10% translated is useful on day one.

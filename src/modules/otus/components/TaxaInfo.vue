@@ -12,7 +12,7 @@
         <span
           v-if="!store.taxon.is_valid"
           class="ml-1 text-danger"
-          title="Invalid"
+          :title="$t('otus.invalid')"
         >
           &#10005;
         </span>

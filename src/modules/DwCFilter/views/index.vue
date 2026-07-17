@@ -1,7 +1,7 @@
 <template>
   <div class="container mx-auto box-border">
     <div class="px-4 md:px-0 mt-6 mb-6">
-      <h1 class="text-4xl font-bold">Search the Darwin Core</h1>
+      <h1 class="text-4xl font-bold">{{ $t('dwc_filter.title') }}</h1>
       <h2>
         Filter OTUs by scientific name, author, and distribution (Darwin Core)
       </h2>
@@ -44,7 +44,7 @@
           <VTableHeader>
             <VTableHeaderRow>
               <VTableHeaderCell class="w-2" />
-              <VTableHeaderCell>OTU</VTableHeaderCell>
+              <VTableHeaderCell>{{ $t('dwc_filter.otu') }}</VTableHeaderCell>
             </VTableHeaderRow>
           </VTableHeader>
           <VTableBody>

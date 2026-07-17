@@ -9,7 +9,7 @@
     @close="isModalVisible = false"
   >
     <template #header>
-      <h3>JSON Data</h3>
+      <h3>{{ $t('common.json_data') }}</h3>
     </template>
     <div
       v-if="request"

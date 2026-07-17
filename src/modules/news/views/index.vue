@@ -1,6 +1,6 @@
 <template>
   <div class="container mx-auto px-4 md:px-0 box-border py-6">
-    <h1 class="font-bold text-4xl mb-6">News</h1>
+    <h1 class="font-bold text-4xl mb-6">{{ $t('news.title') }}</h1>
 
     <PinnedNews
       v-if="store.pinnedNews.length"
@@ -22,7 +22,7 @@
       v-else-if="!store.isLoading && !store.pinnedNews.length"
       class="text-center text-xl text-base-content/60 py-12"
     >
-      No news found.
+      {{ $t('news.no_news') }}
     </p>
 
     <div v-if="store.news.length" class="flex justify-center items-center gap-2 mt-8">

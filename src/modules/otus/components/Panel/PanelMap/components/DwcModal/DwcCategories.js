@@ -1,118 +1,5 @@
 import { makeAPIRequest } from '@/utils'
 
-const DWC_LABELS = {
-  // Taxon
-  kingdom: 'Kingdom',
-  phylum: 'Phylum',
-  class: 'Class',
-  order: 'Order',
-  superfamily: 'Superfamily',
-  family: 'Family',
-  subfamily: 'Subfamily',
-  tribe: 'Tribe',
-  genus: 'Genus',
-  species: 'Species',
-  scientificName: 'Scientific name',
-  scientificNameAuthorship: 'Authorship',
-  taxonRank: 'Rank',
-  taxonID: 'Taxon ID',
-  taxonomicStatus: 'Taxonomic status',
-  nomenclaturalCode: 'Nomenclatural code',
-  specificEpithet: 'Specific epithet',
-  infraspecificEpithet: 'Infraspecific epithet',
-  higherClassification: 'Higher classification',
-  vernacularName: 'Common name',
-  nameAccordingTo: 'Name according to',
-  namePublishedIn: 'Name published in',
-  acceptedNameUsage: 'Accepted name',
-  parentNameUsage: 'Parent name',
-  originalNameUsage: 'Original name',
-  taxonRemarks: 'Taxon remarks',
-
-  // Location
-  decimalLatitude: 'Latitude',
-  decimalLongitude: 'Longitude',
-  coordinateUncertaintyInMeters: 'Coordinate uncertainty (m)',
-  geodeticDatum: 'Geodetic datum',
-  country: 'Country',
-  countryCode: 'Country code',
-  stateProvince: 'State/Province',
-  county: 'County',
-  municipality: 'Municipality',
-  locality: 'Locality',
-  verbatimLocality: 'Verbatim locality',
-  minimumElevationInMeters: 'Min. elevation (m)',
-  maximumElevationInMeters: 'Max. elevation (m)',
-  verbatimElevation: 'Verbatim elevation',
-  continent: 'Continent',
-  waterBody: 'Water body',
-  island: 'Island',
-  islandGroup: 'Island group',
-  minimumDepthInMeters: 'Min. depth (m)',
-  maximumDepthInMeters: 'Max. depth (m)',
-  verbatimDepth: 'Verbatim depth',
-  locationRemarks: 'Location remarks',
-  georeferencedBy: 'Georeferenced by',
-  georeferencedDate: 'Georeferenced date',
-  georeferenceProtocol: 'Georeference protocol',
-  georeferenceSources: 'Georeference sources',
-  georeferenceRemarks: 'Georeference remarks',
-
-  // Event
-  eventDate: 'Date',
-  eventTime: 'Time',
-  year: 'Year',
-  month: 'Month',
-  day: 'Day',
-  verbatimEventDate: 'Verbatim date',
-  habitat: 'Habitat',
-  samplingProtocol: 'Sampling protocol',
-  samplingEffort: 'Sampling effort',
-  fieldNotes: 'Field notes',
-  eventRemarks: 'Event remarks',
-  fieldNumber: 'Field number',
-
-  // Occurrence
-  occurrenceID: 'Occurrence ID',
-  catalogNumber: 'Catalog number',
-  recordNumber: 'Record number',
-  recordedBy: 'Recorded by',
-  individualCount: 'Individual count',
-  sex: 'Sex',
-  lifeStage: 'Life stage',
-  reproductiveCondition: 'Reproductive condition',
-  behavior: 'Behavior',
-  occurrenceRemarks: 'Occurrence remarks',
-  occurrenceStatus: 'Occurrence status',
-  preparations: 'Preparations',
-  disposition: 'Disposition',
-  associatedMedia: 'Associated media',
-  associatedReferences: 'Associated references',
-  associatedTaxa: 'Associated taxa',
-  otherCatalogNumbers: 'Other catalog numbers',
-  typeStatus: 'Type status',
-
-  // Identification
-  identifiedBy: 'Identified by',
-  dateIdentified: 'Date identified',
-  identificationRemarks: 'Identification remarks',
-  identificationQualifier: 'Identification qualifier',
-  institutionID: 'Institution ID',
-
-  // Record-level
-  modified: 'Last modified',
-  language: 'Language',
-  license: 'License',
-  rightsHolder: 'Rights holder',
-  bibliographicCitation: 'Citation',
-  references: 'References',
-  institutionCode: 'Institution code',
-  collectionCode: 'Collection code',
-  datasetName: 'Dataset',
-  basisOfRecord: 'Basis of record',
-  informationWithheld: 'Information withheld'
-}
-
 const DWC_CATEGORIES = {
   Taxon: [
     'scientificName',
@@ -226,19 +113,14 @@ const DWC_CATEGORIES = {
   ]
 }
 
+// Unparseable values are passed through as raw text: the API sometimes sends
+// verbatim dates that are not dates at all.
 function formatDate(value) {
   const date = new Date(value)
 
   if (isNaN(date.getTime())) return { type: 'text', value }
 
-  return {
-    type: 'text',
-    value: new Intl.DateTimeFormat('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric'
-    }).format(date)
-  }
+  return { type: 'date', value: date }
 }
 
 async function splitMediaUrls(value) {
@@ -291,11 +173,23 @@ export const HIDDEN_FIELDS = new Set([
   'project_id'
 ])
 
-export function getLabel(field) {
-  return (
-    DWC_LABELS[field] ||
-    field.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase())
-  )
+/**
+ * Human label for a Darwin Core term.
+ *
+ * Terms the catalog knows are translated; anything else (the API may send
+ * terms this version has never heard of) falls back to humanizing the term
+ * name, which is language-independent and better than showing a raw key.
+ *
+ * @param {string} field - Darwin Core term name
+ * @param {{ t: Function, te: Function }} i18n - from useI18n()
+ * @returns {string}
+ */
+export function getLabel(field, { t, te }) {
+  const key = `dwc.labels.${field}`
+
+  return te(key)
+    ? t(key)
+    : field.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase())
 }
 
 const fieldToCategory = new Map()
@@ -309,6 +203,18 @@ for (const [category, fields] of Object.entries(DWC_CATEGORIES)) {
 }
 
 const CATEGORY_ORDER = Object.keys(DWC_CATEGORIES).concat('Other')
+
+// Category names double as internal ids, so their labels live behind a key map
+// rather than being translated in place.
+const CATEGORY_LABEL_KEYS = {
+  Taxon: 'dwc.categories.taxon',
+  Location: 'dwc.categories.location',
+  Event: 'dwc.categories.event',
+  Occurrence: 'dwc.categories.occurrence',
+  Identification: 'dwc.categories.identification',
+  'Record-level': 'dwc.categories.record_level',
+  Other: 'dwc.categories.other'
+}
 
 export function groupEntries(entries) {
   const groups = {}
@@ -327,6 +233,7 @@ export function groupEntries(entries) {
   return CATEGORY_ORDER.filter((cat) => groups[cat]?.length).map(
     (category) => ({
       category,
+      categoryKey: CATEGORY_LABEL_KEYS[category] ?? 'dwc.categories.other',
       entries: groups[category].sort((a, b) => {
         const keyA = Array.isArray(a) ? a[0] : a.key
         const keyB = Array.isArray(b) ? b[0] : b.key

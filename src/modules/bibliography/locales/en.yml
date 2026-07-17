@@ -1,0 +1,20 @@
+---
+# Message catalog for the bibliography module.
+#
+# Source citations themselves come from TaxonWorks and are rendered as
+# published — they are never translated.
+
+bibliography:
+  title: Bibliography
+  in_citation: In citation
+  in_citation_placeholder: 'Search anywhere in the citation... for example: "Charles Darwin Archives"'
+  authors: Author(s)
+  authors_placeholder: Type...
+  published_between: 'Published between:'
+  search: Search
+  reset: Reset
+  sources: Sources
+  show_otus: Show OTUs
+  # Operational Taxonomic Unit. The acronym is used untranslated across the
+  # field, but it is a key so a translation can adapt it if a language does.
+  otu: OTU

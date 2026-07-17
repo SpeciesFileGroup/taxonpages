@@ -1,0 +1,256 @@
+---
+# Message catalog for the otus module.
+#
+# `otus.*`  — module-level UI (views, breadcrumb, shared otu components)
+# `panel.*` — panels shipped by this module, keyed by their panel id
+#             (`panel:references-cited` -> `panel.references_cited`), so a
+#             site or NPM package overriding a panel can override its strings
+#             by redefining the same key.
+
+otus:
+  search_placeholder: Search name...
+  invalid: Invalid
+  breadcrumb: Breadcrumb
+  external_resources: External resources
+  dwc_download: Download DwC Occurrences
+  show_all: '... Show all ... ({count})'
+  show_less: Show less
+  show_all_menu: Show all
+
+  datamap:
+    button_title: Links used to obtain the information present on this page in JSON format.
+    title: Datamap
+    description: The following links provide the information present on this page in JSON format.
+    request_key: Request Key
+    url: URL
+
+panel:
+  stats:
+    title: Stats
+    caption: Summary of taxonomic names by rank, showing valid extant names, fossil names, invalid names, and total counts.
+    taxon: Taxon
+    taxa: Taxa
+    rank: Rank
+    valid_names: Valid names
+    extant: Extant
+    fossil: Fossil
+    invalid: Invalid
+    otus_linked: OTUs linked to valid protonyms
+    taxon_names: Taxon names
+    show_taxa: Show taxa
+    hide_taxa: Hide taxa
+
+  type:
+    title: Type
+
+  type_specimen:
+    title: Type specimen
+
+  descendants:
+    title: Descendants and synonyms
+
+  references_cited:
+    title: References cited
+
+  nomenclature:
+    title: Nomenclature
+
+  nomenclature_references:
+    title: Nomenclature references
+
+  keys:
+    title: Keys
+
+  map:
+    absences: Absences
+    loading: Loading...
+    search_otu: OTU
+
+    legend:
+      aggregate: Aggregate (Asserted distribution & Georeference)
+      asserted_absent: Absent
+      asserted_distribution: Asserted distribution
+      georeference: Georeference
+      collection_object: Collection object
+      field_occurrence: Field occurrence
+      type_material: Primary type
+    cached_map:
+      title: Cached map
+      data: Data
+      is_synced: Is synced
+      last_update: Last update
+      synced: Map is synchronized with the latest changes
+      not_synced: Map is not synchronized with the latest changes
+      note: >-
+        * Aggregate maps are generated from georeference and asserted
+        distribution data. Map computation takes time, and as such they are
+        re-calculated periodically rather than when individual georeferences
+        and asserted distributions are created, destroyed, or updated. When a
+        warning notice is present then the map is not syncronized with the
+        latest changes to the underlying data.
+
+  sounds:
+    title: Sounds
+    observations: Observations
+    view_observations: View observations
+    descriptor: Descriptor
+    no_records: No records found
+    audio_recording: 'Audio recording: {title}'
+    download: Download
+    seek: Seek time
+    volume: Volume
+    play: Play
+    pause: Pause
+    mute: Mute
+    unmute: Unmute
+
+  biological_associations:
+    title: Biological associations
+    subject: Subject
+    object: Object
+    citations: Citations
+    reference: Reference
+    pages: Pages
+    biological: Biological
+    asserted: Asserted
+    annotations: Annotations
+    relationship: Relationship
+    properties: Properties
+    distribution: Distribution
+    images: Images
+    label: Label
+    # Column headers naming a taxonomic rank. These label the column, so they
+    # are UI text — distinct from a rank value returned by the API, which is
+    # controlled vocabulary and is not translated here.
+    order: Order
+    family: Family
+    genus: Genus
+
+# Darwin Core vocabulary, rendered by the DwC modal in PanelMap.
+#
+# The keys are the Darwin Core term names themselves — those are the standard's
+# controlled vocabulary and never change. The values are field labels, which
+# are UI text and do translate. A term with no entry here falls back to a
+# humanized version of the term name.
+dwc:
+  categories:
+    taxon: Taxon
+    location: Location
+    event: Event
+    occurrence: Occurrence
+    identification: Identification
+    record_level: Record-level
+    other: Other
+
+  labels:
+
+    # Taxon
+    kingdom: Kingdom
+    phylum: Phylum
+    class: Class
+    order: Order
+    superfamily: Superfamily
+    family: Family
+    subfamily: Subfamily
+    tribe: Tribe
+    genus: Genus
+    species: Species
+    scientificName: Scientific name
+    scientificNameAuthorship: Authorship
+    taxonRank: Rank
+    taxonID: Taxon ID
+    taxonomicStatus: Taxonomic status
+    nomenclaturalCode: Nomenclatural code
+    specificEpithet: Specific epithet
+    infraspecificEpithet: Infraspecific epithet
+    higherClassification: Higher classification
+    vernacularName: Common name
+    nameAccordingTo: Name according to
+    namePublishedIn: Name published in
+    acceptedNameUsage: Accepted name
+    parentNameUsage: Parent name
+    originalNameUsage: Original name
+    taxonRemarks: Taxon remarks
+
+    # Location
+    decimalLatitude: Latitude
+    decimalLongitude: Longitude
+    coordinateUncertaintyInMeters: Coordinate uncertainty (m)
+    geodeticDatum: Geodetic datum
+    country: Country
+    countryCode: Country code
+    stateProvince: State/Province
+    county: County
+    municipality: Municipality
+    locality: Locality
+    verbatimLocality: Verbatim locality
+    minimumElevationInMeters: Min. elevation (m)
+    maximumElevationInMeters: Max. elevation (m)
+    verbatimElevation: Verbatim elevation
+    continent: Continent
+    waterBody: Water body
+    island: Island
+    islandGroup: Island group
+    minimumDepthInMeters: Min. depth (m)
+    maximumDepthInMeters: Max. depth (m)
+    verbatimDepth: Verbatim depth
+    locationRemarks: Location remarks
+    georeferencedBy: Georeferenced by
+    georeferencedDate: Georeferenced date
+    georeferenceProtocol: Georeference protocol
+    georeferenceSources: Georeference sources
+    georeferenceRemarks: Georeference remarks
+
+    # Event
+    eventDate: Date
+    eventTime: Time
+    year: Year
+    month: Month
+    day: Day
+    verbatimEventDate: Verbatim date
+    habitat: Habitat
+    samplingProtocol: Sampling protocol
+    samplingEffort: Sampling effort
+    fieldNotes: Field notes
+    eventRemarks: Event remarks
+    fieldNumber: Field number
+
+    # Occurrence
+    occurrenceID: Occurrence ID
+    catalogNumber: Catalog number
+    recordNumber: Record number
+    recordedBy: Recorded by
+    individualCount: Individual count
+    sex: Sex
+    lifeStage: Life stage
+    reproductiveCondition: Reproductive condition
+    behavior: Behavior
+    occurrenceRemarks: Occurrence remarks
+    occurrenceStatus: Occurrence status
+    preparations: Preparations
+    disposition: Disposition
+    associatedMedia: Associated media
+    associatedReferences: Associated references
+    associatedTaxa: Associated taxa
+    otherCatalogNumbers: Other catalog numbers
+    typeStatus: Type status
+
+    # Identification
+    identifiedBy: Identified by
+    dateIdentified: Date identified
+    identificationRemarks: Identification remarks
+    identificationQualifier: Identification qualifier
+    institutionID: Institution ID
+
+    # Record-level
+    modified: Last modified
+    language: Language
+    license: License
+    rightsHolder: Rights holder
+    bibliographicCitation: Citation
+    references: References
+    institutionCode: Institution code
+    collectionCode: Collection code
+    datasetName: Dataset
+    basisOfRecord: Basis of record
+    informationWithheld: Information withheld

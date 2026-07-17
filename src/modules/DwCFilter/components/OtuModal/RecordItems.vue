@@ -3,7 +3,7 @@
     v-if="!items.length"
     class="text-xl text-center flex flex-col justify-center h-36"
   >
-    No records found.
+    {{ $t('common.no_records') }}
   </div>
   <div
     v-for="item in items"

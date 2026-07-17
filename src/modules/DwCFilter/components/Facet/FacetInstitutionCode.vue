@@ -1,10 +1,10 @@
 <template>
   <div>
-    <label class="block">Institution code</label>
+    <label class="block">{{ $t('dwc_filter.institution_code') }}</label>
     <InputText
       type="text"
       v-model="parameters.institutionCode"
-      placeholder="Type..."
+      :placeholder="$t('dwc_filter.institution_code_placeholder')"
     />
   </div>
 </template>

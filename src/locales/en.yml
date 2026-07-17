@@ -1,0 +1,97 @@
+---
+# Framework-wide message catalog.
+#
+# `common.*`    — strings shared across modules and panels
+# `component.*` — strings belonging to a shared component in src/components
+#
+# Anything specific to a module or panel belongs in that package's own
+# catalog (e.g. src/modules/otus/locales/en.yml), namespaced by its id.
+#
+# Keep `common` for short, context-free strings whose translation does not
+# depend on where they appear. When in doubt, duplicate into the module's own
+# catalog instead — one shared key that needs two different translations is
+# worse than two keys.
+#
+# A site can override any key here by redefining it in ~/locales/en.yml.
+common:
+  no_records: No records found.
+  json_data: JSON Data
+  total: Total
+  source: Source
+  close: Close
+  expand: Expand
+
+component:
+  spinner:
+    # Visually hidden; read by screen readers while the spinner shows.
+    loading: Loading...
+    legend: Loading, please wait.
+
+  pagination:
+    label: Pagination
+    first: Go to first page
+    previous: Go to previous page
+    next: Go to next page
+    last: Go to last page
+
+  autocomplete:
+    placeholder: Search...
+
+  clipboard:
+    copy: Copy to clipboard
+    copied: Copied to clipboard
+
+  image_viewer:
+    label: Image viewer
+    previous: Previous image
+    next: Next image
+    close: Close image viewer
+
+  gallery:
+    image_error: Image was not found or format is not supported
+    depiction_alt: Depiction image
+    depicted_in: 'Depicted in:'
+
+  dropdown:
+    menu: Menu
+    options: Open panel options
+
+  modal:
+    label: Dialog
+    close: Close dialog
+
+  navbar:
+    menu: Menu
+    open_menu: Open navigation menu
+    open_main_menu: Open main menu
+    section_navigation: Section navigation
+
+  footer_copyright:
+    logo_alt: Copyright holder logo
+
+  theme:
+    to_dark: Change to dark mode
+    to_light: Change to light mode
+
+  locale:
+    switch: Change language
+
+  address:
+    send_email: Send email
+
+  tracker:
+    title: Report a problem
+    issue_with: 'My issue is with:'
+    opens_new_window: (opens in new window)
+
+  pagination_info:
+    records: '{from} - {to} of {total} records.'
+    no_records: 0 records.
+
+  footer:
+    # The citation reads "<authors> <citation>. Retrieved on <date> at <url>".
+    # It is assembled from fragments because the URL is a link element, so a
+    # translation cannot reorder the date and the URL relative to each other.
+    retrieved_on: Retrieved on {date}
+    at: at
+    analytics: This site uses {service}.

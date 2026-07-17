@@ -18,7 +18,8 @@
       <img
         :src="item.imageMedium"
         :alt="
-          item.depictions?.map((d) => d.label).join('; ') || 'Depiction image'
+          item.depictions?.map((d) => d.label).join('; ') ||
+          $t('component.gallery.depiction_alt')
         "
         :style="imageStyle"
         class="max-w-full my-0 object-cover w-full"

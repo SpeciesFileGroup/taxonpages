@@ -19,7 +19,7 @@
               url="/otus/autocomplete"
               query-param="term"
               label="label_html"
-              placeholder="Search name..."
+              :placeholder="$t('otus.search_placeholder')"
               :params="{ having_taxon_name_only: true }"
               @select="loadOtu"
             />

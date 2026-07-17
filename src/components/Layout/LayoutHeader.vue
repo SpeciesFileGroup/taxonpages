@@ -27,6 +27,9 @@
         <div class="h-6 w-px ml-[1px] bg-primary-content/25"></div>
         <div class="flex flex-row gap-4">
           <div class="flex items-center">
+            <SwitchLocale class="text-primary-content" />
+          </div>
+          <div class="flex items-center">
             <ClientOnly>
               <SwitchTheme class="text-primary-content" />
             </ClientOnly>
@@ -45,17 +48,26 @@
 
 <script setup>
 import SwitchTheme from '../SwitchTheme.vue'
+import SwitchLocale from '../SwitchLocale.vue'
 import NavbarMenu from '../Navbar/NavbarMenu.vue'
 import NavbarMobile from '../Navbar/NavbarMobile.vue'
 import { isValidUrl } from '@/utils/url'
+import { useLocalizedConfig } from '@/i18n/useLocalizedConfig'
 
 const {
-  header_links,
-  header_logo_text,
+  header_links: rawHeaderLinks,
+  header_logo_text: rawLogoText,
   header_logo_url,
   base_url,
-  project_name
+  project_name: rawProjectName
 } = __APP_ENV__
+
+const { c, cDeep } = useLocalizedConfig()
+
+// Deep: labels may sit inside nested submenus.
+const header_links = cDeep(rawHeaderLinks)
+const header_logo_text = c(rawLogoText)
+const project_name = c(rawProjectName)
 
 const logoUrl = isValidUrl(header_logo_url)
   ? header_logo_url

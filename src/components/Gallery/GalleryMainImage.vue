@@ -22,6 +22,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   image: {
@@ -31,6 +32,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['open:viewer'])
 
+const { t } = useI18n()
 const isLoading = ref(false)
 const imageElement = ref(null)
 const errorMessage = ref(null)
@@ -49,7 +51,7 @@ function handleError(e) {
   e.preventDefault()
 
   isLoading.value = false
-  errorMessage.value = 'Image was not found or format is not supported'
+  errorMessage.value = t('component.gallery.image_error')
 }
 
 function handleLoad() {

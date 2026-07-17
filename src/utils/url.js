@@ -1,3 +1,24 @@
+/**
+ * Remove the app's base_url from the start of a path.
+ *
+ * Shared by the SSR server and the browser entry so both reduce a URL to the
+ * same app-relative path before resolving the locale from it.
+ *
+ * @param {string} url - Path, possibly prefixed with base_url
+ * @param {string} base - Configured base_url
+ * @returns {string} Path relative to the base, always starting with '/'
+ */
+export function stripBase(url, base) {
+  if (!base || base === '/') return url
+
+  const normalized = base.endsWith('/') ? base.slice(0, -1) : base
+
+  if (url === normalized) return '/'
+  if (url.startsWith(normalized + '/')) return url.slice(normalized.length)
+
+  return url
+}
+
 export function isValidUrl(string) {
   try {
     new URL(string)

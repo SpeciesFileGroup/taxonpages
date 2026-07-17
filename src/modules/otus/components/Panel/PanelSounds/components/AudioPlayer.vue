@@ -16,8 +16,8 @@
       <div class="flex items-center gap-2">
         <a
           class="h-8 w-8 flex items-center justify-center rounded-full text-primary-content bg-primary"
-          aria-label="Download"
-          title="Download"
+          :aria-label="$t('panel.sounds.download')"
+          :title="$t('panel.sounds.download')"
           :href="src"
           download
         >
@@ -26,7 +26,7 @@
         <SoundObservations :sound-id="soundId" />
         <button
           class="h-8 w-8 flex items-center justify-center rounded-full text-primary-content bg-primary"
-          :aria-label="isPlaying ? 'Pause' : 'Play'"
+          :aria-label="isPlaying ? $t('panel.sounds.pause') : $t('panel.sounds.play')"
           @click="togglePlay"
         >
           <IconPause
@@ -47,14 +47,14 @@
             step="0.1"
             :style="sliderStyle"
             class="w-full h-2 text-base-lighter rounded-lg cursor-pointer appearance-none"
-            aria-label="Seek time"
+            :aria-label="$t('panel.sounds.seek')"
             @input="handleSeek"
           />
         </div>
 
         <button
           class="h-8 w-8 flex items-center justify-center rounded-full bg-primary text-primary-content"
-          :aria-label="isMuted ? 'Unmute' : 'Mute'"
+          :aria-label="isMuted ? $t('panel.sounds.unmute') : $t('panel.sounds.mute')"
           @click="toggleMute"
         >
           <IconSpeakerX
@@ -76,7 +76,7 @@
             @input="handleVolumeChange"
             class="w-full h-2 text-base-lighter rounded-lg appearance-none cursor-pointer"
             :style="volumeSliderStyle"
-            aria-label="Volume"
+            :aria-label="$t('panel.sounds.volume')"
           />
         </div>
       </div>
@@ -102,7 +102,7 @@
       class="sr-only"
       :id="`sound-${soundId}-desc`"
     >
-      Audio recording: {{ title }}
+      {{ $t('panel.sounds.audio_recording', { title }) }}
     </div>
   </div>
 </template>
