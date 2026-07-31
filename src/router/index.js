@@ -5,7 +5,7 @@ import {
   createMemoryHistory
 } from 'vue-router'
 
-import dynamicRoutes from '~pages'
+import { routes as dynamicRoutes } from 'vue-router/auto-routes'
 
 const coreModuleRoutes = import.meta.glob('@/modules/**/router/*.js', {
   import: 'default',

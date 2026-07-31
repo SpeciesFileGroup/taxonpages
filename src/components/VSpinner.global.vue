@@ -11,7 +11,7 @@
         aria-hidden="true"
         :class="[
           'text-base-lighter',
-          'animate-spin fill-primary-color',
+          'animate-spin fill-primary',
           logoClass
         ]"
         viewBox="0 0 100 101"

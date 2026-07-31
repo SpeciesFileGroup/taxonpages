@@ -1,7 +1,7 @@
 <template>
   <div>
     <InputText
-      class="w-14 max-w-14 text-sm"
+      class="w-15 max-w-15 text-sm"
       :value="inputValue"
       @change="setValue"
     />

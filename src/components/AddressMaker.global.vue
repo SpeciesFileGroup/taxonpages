@@ -1,7 +1,7 @@
 <template>
   <button
     type="button"
-    class="text-secondary-color cursor-pointer whitespace-nowrap inline bg-transparent border-0 p-0 font-inherit text-inherit"
+    class="text-secondary cursor-pointer whitespace-nowrap inline bg-transparent border-0 p-0 font-inherit text-inherit"
     aria-label="Send email"
     @click="openClient"
   >

@@ -30,11 +30,7 @@ export const useBiologicalAssociationsStore = defineStore(
         this.controller = new AbortController()
 
         try {
-          const result = await useOtuPageRequest(
-            'panel:biological-associations',
-            () => fetchBiologicalAssociations(otuId, { page, per })
-          )
-
+          const result = await fetchBiologicalAssociations(otuId, { page, per })
           const baIds = result.biologicalAssociations.map((ba) => ba.id)
 
           const [depictions, ads] = await Promise.all([
@@ -47,9 +43,7 @@ export const useBiologicalAssociationsStore = defineStore(
               ...ba,
               images: depictions.filter((d) => d.objectId == ba.id),
               assertedDistributions: ads
-                .filter(
-                  (ad) => ad.asserted_distribution_object_id === ba.id
-                )
+                .filter((ad) => ad.asserted_distribution_object_id === ba.id)
                 .map((ad) => ad.asserted_distribution_shape.name)
             })
           )

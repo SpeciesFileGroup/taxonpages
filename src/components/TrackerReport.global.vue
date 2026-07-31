@@ -3,7 +3,7 @@
     :is="tag"
     type="button"
     title="Report a problem"
-    :class="buttonClass"
+    :class="[buttonClass, 'cursor-pointer']"
     aria-label="Report a problem"
     @click="openTracker"
   >
@@ -71,12 +71,12 @@ defineProps({
 
   iconClass: {
     type: Array,
-    default: () => ['w-5 h-5']
+    default: () => ['w-5.5 h-5.5']
   },
 
   tag: {
     type: String,
-    default: 'VButton'
+    default: 'button'
   }
 })
 

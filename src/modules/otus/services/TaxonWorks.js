@@ -5,6 +5,10 @@ export default class TaxonWorks {
     return makeAPIRequest.get(`/taxon_names/${taxonId}/inventory/catalog`, opt)
   }
 
+  static getOtuCitations(otuId) {
+    return makeAPIRequest.get(`/otus/${otuId}/inventory/citations`)
+  }
+
   static getOtu(id) {
     return makeAPIRequest.get(`/otus/${id}`, {
       params: { extend: ['parents'] }

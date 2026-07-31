@@ -4,7 +4,7 @@ export const LEGEND = {
     background: 'bg-map-aggregate'
   },
   AssertedAbsent: {
-    label: 'Asserted absent',
+    label: 'Absent',
     background: 'bg-map-asserted-absent'
   },
   AssertedDistribution: {
@@ -19,12 +19,12 @@ export const LEGEND = {
     label: 'Collection object',
     background: 'bg-map-collection-object'
   },
-  TypeMaterial: {
-    label: 'Primary type',
-    background: 'bg-map-type-material'
-  },
   FieldOccurrence: {
     label: 'Field occurrence',
     background: 'bg-map-field-occurrence'
+  },
+  TypeMaterial: {
+    label: 'Primary type',
+    background: 'bg-map-type-material'
   }
 }

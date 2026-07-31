@@ -1,0 +1,50 @@
+@import '@/assets/css/tailwind.css';
+
+/*
+ * User Tailwind CSS overrides
+ *
+ * Add your custom @theme overrides or additional styles below.
+ * The base TaxonPages theme is imported above.
+ *
+ * Example — override theme colors:
+ *
+ * @theme {
+ *   --color-primary-color: rgb(25, 100, 200);
+ * }
+ *
+ * Example — customize typography prose styles:
+ *
+ * .prose li {
+ *   margin-top: 0.1428571em;
+ *   margin-bottom: 0.1428571em;
+ * }
+ *
+ * .prose h1 {
+ *   margin-bottom: 0.7777778em;
+ * }
+ *
+ * .prose h2 {
+ *   margin-top: 1em;
+ *   margin-bottom: 1em;
+ * }
+ *
+ * .prose h3 {
+ *   margin-top: 0.6em;
+ *   margin-bottom: 0.6em;
+ * }
+ *
+ * .prose h4 {
+ *   margin-top: 1.5em;
+ *   margin-bottom: 0.5em;
+ * }
+ *
+ * .prose p {
+ *   margin-top: 0.5em;
+ *   margin-bottom: 0.5em;
+ *   line-height: 1.5;
+ * }
+ *
+ * .prose ul {
+ *   margin-top: 0;
+ * }
+ */

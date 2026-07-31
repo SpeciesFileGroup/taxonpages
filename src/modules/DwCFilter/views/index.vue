@@ -1,6 +1,6 @@
 <template>
   <div class="container mx-auto box-border">
-    <div class="px-4 md:px-0 mt-4 mb-6">
+    <div class="px-4 md:px-0 mt-6 mb-6">
       <h1 class="text-4xl font-bold">Search the Darwin Core</h1>
       <h2>
         Filter OTUs by scientific name, author, and distribution (Darwin Core)

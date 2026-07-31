@@ -1,47 +1,69 @@
-import path from 'node:path'
 import picomatch from 'picomatch'
+import { loadConfiguration } from '../../utils/loadConfiguration.js'
+
+const toForwardSlash = (p) => p.replace(/\\/g, '/')
 
 const GLOB_CHARS = /[*?[\]{}()!+]/
 
 function getWatchTarget(pattern) {
-  const normalizedPattern = pattern.replace(/\\/g, '/')
+  const normalizedPattern = toForwardSlash(pattern)
+  const isAbsolute = normalizedPattern.startsWith('/')
   const segments = normalizedPattern.split('/')
   const staticSegments = []
 
   for (const segment of segments) {
-    if (!segment || GLOB_CHARS.test(segment)) {
+    if (GLOB_CHARS.test(segment)) {
       break
     }
 
     staticSegments.push(segment)
   }
 
-  if (staticSegments.length === 0) {
+  if (staticSegments.length === 0 || (staticSegments.length === 1 && staticSegments[0] === '')) {
     return '.'
   }
 
-  return staticSegments.join('/')
+  const result = staticSegments.join('/')
+
+  return isAbsolute && !result.startsWith('/') ? '/' + result : result
 }
 
-export default function ViteRestart({ dir }) {
-  const root = process.cwd()
-  const patterns = Array.isArray(dir) ? dir : [dir]
+export function ViteRestart({ dir, projectRoot, ssr = false }) {
+  const patterns = (Array.isArray(dir) ? dir : [dir]).map(toForwardSlash)
   const isMatch = picomatch(patterns, { dot: true })
   const watchTargets = [...new Set(patterns.map(getWatchTarget))]
 
   return {
     name: 'vite-restart',
 
-    configureServer(server) {
-      function handleChange(filePath) {
-        const relativePath = path.relative(root, filePath)
+    config() {
+      const configuration = loadConfiguration(projectRoot)
 
-        if (isMatch(relativePath)) {
+      if (ssr && configuration.hash_mode) {
+        console.warn(
+          '[taxonpages] hash_mode is not compatible with SSR (the URL fragment is never sent to the server). Forcing hash_mode=false for this run.'
+        )
+        configuration.hash_mode = false
+      }
+
+      return {
+        define: {
+          __APP_ENV__: configuration
+        }
+      }
+    },
+
+    configureServer(server) {
+      const restart = (filePath) => {
+        if (isMatch(toForwardSlash(filePath))) {
           server.restart()
         }
       }
+
       server.watcher.add(watchTargets)
-      server.watcher.on('change', handleChange)
+      server.watcher.on('change', restart)
+      server.watcher.on('add', restart)
+      server.watcher.on('unlink', restart)
     }
   }
 }

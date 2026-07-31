@@ -6,7 +6,7 @@
       :class="[
         'px-4 py-2 rounded-lg text-sm font-medium border border-base-border',
         value === item
-          ? 'bg-primary-color text-primary-content'
+          ? 'bg-primary text-primary-content'
           : 'text-base-content bg-base-foreground'
       ]"
       @click="() => (value = item)"

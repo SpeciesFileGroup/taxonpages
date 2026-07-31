@@ -1,7 +1,7 @@
 export const AssertedDistribution = {
-  color: 'rgb(var(--color-map-asserted))',
+  color: 'var(--tp-map-asserted)',
   weight: 1,
   dashArray: '3',
   dashOffset: '3',
-  fillOpacity: 'var(--color-map-shape-opacity)'
+  fillOpacity: 'var(--tp-map-shape-opacity)'
 }

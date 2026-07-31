@@ -1,13 +1,12 @@
 <template>
   <div>
     <VButton
-      primary
-      class="text-sm md:flex items-center gap-1 hidden"
+      class="md:block hidden"
+      size="sm"
       title="Links used to obtain the information present on this page in JSON format."
       @click="isModalVisible = true"
     >
       <IconJson class="w-4 h-4" />
-      Datamap
     </VButton>
     <VModal
       v-if="isModalVisible"

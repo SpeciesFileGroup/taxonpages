@@ -7,37 +7,21 @@
       <img
         v-if="currentDepiction.imageOriginal"
         :key="currentDepiction.imageOriginal"
-        class="object-cover overflow-hidden h-full w-full absolute top-0 my-0"
+        class="object-cover overflow-hidden h-full w-full absolute top-0 my-0!"
         :src="currentDepiction.imageOriginal"
         :alt="currentDepiction.label"
       />
     </Transition>
-    <div class="bg-black bg-opacity-25 absolute h-full w-full">
+    <div class="bg-black/25 absolute h-full w-full">
       <slot />
     </div>
-    <VButton
-      v-if="interval && depictions.length > 1"
-      primary
-      circle
-      :aria-label="isPaused ? 'Play slideshow' : 'Pause slideshow'"
-      @click="togglePause"
-    >
-      <IconPlay
-        v-if="isPaused"
-        class="w-4 h-4"
-      />
-      <IconPause
-        v-else
-        class="w-4 h-4"
-      />
-    </VButton>
     <span
       v-if="currentDepiction.objectId"
-      class="z-10 text-white text-sm drop-shadow absolute bottom-2 right-0 px-4"
+      class="z-10 text-white! text-sm drop-shadow-sm absolute bottom-2 right-0 px-4"
     >
       <RouterLink
         v-if="isOtu"
-        class="text-white decoration-transparent"
+        class="text-white! decoration-transparent"
         :to="{
           name: 'otus-id',
           params: { id: currentDepiction.objectId }
@@ -70,10 +54,15 @@ const props = defineProps({
   height: {
     type: String,
     default: '550px'
+  },
+
+  citations: {
+    type: Boolean,
+    default: false
   }
 })
 
-const { depictions } = useGallery({ props })
+const { depictions, citations } = useGallery({ props })
 
 const currentIndex = ref(0)
 const isPaused = ref(false)
@@ -84,11 +73,23 @@ const currentDepiction = computed(
 )
 const isOtu = computed(() => currentDepiction.value.objectType === 'Otu')
 
-const label = computed(() =>
-  [currentDepiction.value.objectLabel, currentDepiction.value.attribution].join(
-    ' '
+const currentCitation = computed(() =>
+  citations.value.find(
+    (citation) =>
+      citation.citation_object_id === currentDepiction.value.imageId &&
+      citation.is_original
   )
 )
+
+const label = computed(() => {
+  const { objectLabel, attribution } = currentDepiction.value
+  const citationBody = currentCitation.value?.citation_source_body
+  const citation = citationBody
+    ? `<i>Depicted in:</i> ${citationBody}${attribution ? '.' : ''}`
+    : null
+
+  return [objectLabel, citation, attribution].filter(Boolean).join(' ')
+})
 let timeout = null
 
 function updateIndex() {

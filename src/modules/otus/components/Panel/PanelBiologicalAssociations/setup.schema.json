@@ -1,0 +1,29 @@
+{
+  "label": "Biological Associations Settings",
+  "fields": {
+    "per": {
+      "type": "number",
+      "label": "Records per page",
+      "description": "Number of biological associations to display per page",
+      "default": 50
+    },
+    "citations": {
+      "type": "boolean",
+      "label": "Show citations",
+      "description": "Display citation information for each association",
+      "default": true
+    },
+    "images": {
+      "type": "boolean",
+      "label": "Show images",
+      "description": "Display images associated with biological associations",
+      "default": true
+    },
+    "assertedDistribution": {
+      "type": "boolean",
+      "label": "Show asserted distribution",
+      "description": "Display asserted distribution data for associations",
+      "default": true
+    }
+  }
+}

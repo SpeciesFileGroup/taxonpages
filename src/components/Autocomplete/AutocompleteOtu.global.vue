@@ -12,6 +12,7 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import Autocomplete from '@/components/Autocomplete/Autocomplete.global.vue'
+import { defaultTabRouteName } from '@/modules/otus/router/index.js'
 
 const router = useRouter()
 
@@ -24,7 +25,7 @@ const props = defineProps({
 
 const loadOtu = ({ id, otu_valid_id }) => {
   router.push({
-    name: 'otus-id-overview',
+    name: defaultTabRouteName,
     params: {
       id: otu_valid_id || id
     }

@@ -6,9 +6,13 @@ function makeOriginalImageUrl(imagePath) {
 
 export function makeImageObject(item) {
   return {
-    depiction: {
-      label: item.figure_label
-    },
+    depictions: [
+      {
+        label: [item.figure_label, item.caption].filter(Boolean).join(' - ')
+      }
+    ],
+
+    attribution: { label: item.attribution },
     ...item.image,
     original: makeOriginalImageUrl(item.image.original_png)
   }

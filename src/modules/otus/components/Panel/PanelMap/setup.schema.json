@@ -1,0 +1,18 @@
+{
+  "label": "Map Settings",
+  "fields": {
+    "cluster": {
+      "type": "boolean",
+      "label": "Enable Clustering",
+      "description": "Group nearby markers into clusters",
+      "default": true
+    },
+    "absences": {
+      "type": "select",
+      "label": "Absences",
+      "description": "Show locations where this OTU or its ancestors were searched and explicitly not found. 'off' hides them, 'manual' adds a button to load them on demand, 'auto' loads them with the distribution.",
+      "options": ["off", "manual", "auto"],
+      "default": "auto"
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import { makeSegmentedCircle } from '../utils/makeSegmentedCircle.js'
 import {
+  ASSERTED_DISTRIBUTION,
   COLLECTION_OBJECT,
   FIELD_OCCURRENCE,
   TYPE_MATERIAL
@@ -7,6 +8,7 @@ import {
 
 export function Mixed(cluster) {
   const sliceColor = {
+    [ASSERTED_DISTRIBUTION]: 'fill-map-asserted',
     [FIELD_OCCURRENCE]: 'fill-map-field-occurrence',
     [COLLECTION_OBJECT]: 'fill-map-collection-object',
     [TYPE_MATERIAL]: 'fill-map-type-material'

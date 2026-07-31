@@ -7,8 +7,7 @@ module.exports = {
     defineEmits: true,
     defineProps: true,
     __APP_ENV__: true,
-    __basedir: true,
-    __tailwindCSSTaxonPagesConfigPath: true
+    __basedir: true
   },
   rules: {
     'vue/no-v-html': 'off'

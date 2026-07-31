@@ -1,7 +1,6 @@
 <template>
   <VButton
-    class="px-2 py-2 rounded-full"
-    primary
+    circle
     :aria-label="isCopied ? 'Copied to clipboard' : 'Copy to clipboard'"
     @click="copyText"
   >

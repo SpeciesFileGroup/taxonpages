@@ -5,7 +5,22 @@
       <PanelDropdown panel-key="panel:type" />
     </VCardHeader>
     <VCardContent class="text-sm">
-      <p v-html="typeDesignationLabel" />
+      <p>
+        <RouterLink
+          v-if="typeDesignation.valid_subject_otu_id"
+          :to="{
+            name: 'otus-id',
+            params: { id: typeDesignation.valid_subject_otu_id }
+          }"
+          v-html="typeDesignation.subject_taxon_name"
+        />
+        <span
+          v-else
+          v-html="typeDesignation.subject_taxon_name"
+        />
+        {{ typeDesignation.subject_status }}
+        <span v-html="typeDesignation.object_taxon_name" />
+      </p>
     </VCardContent>
   </VCard>
 </template>
@@ -26,12 +41,5 @@ const store = useOtuStore()
 
 const typeDesignation = computed(
   () => store.taxon?.type_taxon_name_relationship || {}
-)
-const typeDesignationLabel = computed(() =>
-  [
-    typeDesignation.value.subject_object_tag || '',
-    typeDesignation.value.subject_status_tag || '',
-    typeDesignation.value.object_object_tag || ''
-  ].join(' ')
 )
 </script>

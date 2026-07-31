@@ -24,7 +24,7 @@
       v-if="isOpen"
       ref="submenu"
       role="menu"
-      class="absolute top-full left-0 bg-base-background break-keep text-nowrap mt-2 z-50 shadow min-w-full leading-5"
+      class="absolute top-full left-0 bg-base-foreground break-keep text-nowrap mt-2 z-50 shadow-lg rounded-md ring-1 ring-black/5 min-w-full leading-5 overflow-hidden"
       @keydown="handleSubmenuKeydown"
     >
       <div
@@ -35,7 +35,7 @@
         <RouterLink
           :to="item.link"
           role="menuitem"
-          class="block px-4 py-2 text-base-content focus-visible:bg-base-foreground focus-visible:outline-none"
+          class="block px-4 py-2 text-base-content hover:bg-secondary/5 focus-visible:bg-secondary/5 focus-visible:outline-none transition-colors duration-100"
         >
           {{ item.label }}
         </RouterLink>

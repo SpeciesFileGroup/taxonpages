@@ -3,7 +3,7 @@
     <span class="text-1xl capitalize">
       {{ store.taxon.rank || 'Combination' }}
     </span>
-    <h1 class="text-xl dark:text-gray-100">
+    <h1 class="text-xl text-base-content">
       <span>
         <span
           :title="store.taxon.short_status"
@@ -11,7 +11,7 @@
         />
         <span
           v-if="!store.taxon.is_valid"
-          class="ml-1 text-red-600"
+          class="ml-1 text-danger"
           title="Invalid"
         >
           &#10005;

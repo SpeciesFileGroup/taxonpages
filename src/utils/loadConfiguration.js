@@ -1,17 +1,22 @@
 import { glob } from 'glob'
 import fs from 'fs'
-import yaml from 'js-yaml'
-import defaultConfig from '../constants/defaultConfig'
+import { join } from 'node:path'
+import { loadYaml } from './loadYaml.js'
+import defaultConfig from '../constants/defaultConfig.js'
+import { toForwardSlash } from './paths.js'
 
 export const loadConfiguration = (appPath) => {
   const isProd = process.env.NODE_ENV === 'production'
-  const filePaths = glob.sync(appPath + '/config/*.yml')
+  const filePaths = glob.sync(toForwardSlash(join(appPath, 'config', '*.yml')))
   const configurationPaths = splitFilePathsByEnv(filePaths)
 
   const jsonConfig = [
     ...configurationPaths.prod,
     ...(!isProd ? configurationPaths.dev : [])
-  ].map((filepath) => yaml.load(fs.readFileSync(filepath, 'utf8')))
+  ].map((filepath) => {
+    const content = fs.readFileSync(filepath, 'utf8')
+    return loadYaml(content)
+  })
 
   return Object.assign({}, defaultConfig, ...jsonConfig)
 }

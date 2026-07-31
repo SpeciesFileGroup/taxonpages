@@ -4,7 +4,7 @@
       class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none"
     >
       <IconSearch
-        class="w-4 h-4 text-gray-500"
+        class="w-4 h-4 text-base-soft"
         aria-hidden="true"
       />
     </div>
@@ -19,7 +19,7 @@
       :aria-expanded="list.length > 0"
       aria-controls="autocomplete-listbox"
       :aria-activedescendant="activeDescendant"
-      class="tp-autocomplete__input block box-border w-full p-1.5 pl-10"
+      class="tp-autocomplete__input bg-base-foreground block box-border w-full pl-10"
       :placeholder="placeholder"
       @input="trigger"
       @keydown="handleKeydown"
@@ -32,15 +32,15 @@
     <ul
       v-if="list.length"
       id="autocomplete-listbox"
-      class="tp-autocomplete__list list absolute z-[500] max-h-52 w-full overflow-y-auto border bg-base-foreground border-base-border !m-0 shadow-md"
+      class="tp-autocomplete__list list absolute z-[500] max-h-52 w-full overflow-y-auto border bg-base-foreground border-base-border !m-0 rounded-md shadow-lg mt-1"
       role="listbox"
     >
       <li
         v-for="(item, index) in list"
         :id="`autocomplete-option-${index}`"
         :key="item.id"
-        class="tp-autocomplete__item px-3 py-2 border-b text-xs text-base-content cursor-pointer hover:bg-secondary-color hover:bg-opacity-5 border-base-border truncate"
-        :class="{ 'bg-secondary-color bg-opacity-10': index === activeIndex }"
+        class="tp-autocomplete__item px-3 py-2 border-b text-xs text-base-content cursor-pointer hover:bg-secondary/5 border-base-border truncate"
+        :class="{ 'bg-secondary/10': index === activeIndex }"
         role="option"
         :aria-selected="index === activeIndex"
         @mousedown.prevent="selectItem(item)"

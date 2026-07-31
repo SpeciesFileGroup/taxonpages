@@ -1,51 +1,85 @@
 {
-  "name": "taxonpages",
-  "version": "0.0.0",
+  "name": "@sfgrp/taxonpages",
+  "version": "0.6.3",
+  "description": "CLI tool for building taxon pages powered by SpeciesFileGroup",
   "type": "module",
+  "private": false,
+  "bin": {
+    "taxonpages": "./bin/taxonpages.js"
+  },
+  "files": [
+    "bin/",
+    "cli/",
+    "src/",
+    "templates/",
+    "server.js",
+    "index.html"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
   "scripts": {
-    "dev:ssr": "node server",
-    "dev": "vite dev",
-    "build": "vite build",
-    "build:ssr": "npm run build:client && npm run build:server",
-    "build:client": "vite build --ssrManifest --outDir dist/client",
-    "build:server": "vite build --ssr src/entry-server.js --outDir dist/server",
-    "serve": "NODE_ENV=production node server",
+    "dev": "node bin/taxonpages.js dev",
+    "dev:ssr": "node bin/taxonpages.js dev:ssr",
+    "build": "node bin/taxonpages.js build",
+    "build:ssr": "node bin/taxonpages.js build:ssr",
+    "serve": "node bin/taxonpages.js serve",
     "debug": "node --inspect-brk server",
-    "preview": "vite preview",
+    "preview": "node bin/taxonpages.js preview",
+    "setup": "node bin/taxonpages.js setup",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
   },
   "dependencies": {
-    "@geoman-io/leaflet-geoman-free": "^2.19.2",
+    "@geoman-io/leaflet-geoman-free": "^2.20.0",
     "@nuxt/devalue": "^2.0.2",
-    "@sfgrp/distinguish": "^0.4.2",
+    "@sfgrp/distinguish": "^0.4.6",
     "@sfgrp/pinpoint": "^0.0.12",
-    "@unhead/ssr": "^2.1.4",
-    "@unhead/vue": "^2.1.4",
-    "axios": "^1.13.5",
-    "glob": "^13.0.3",
-    "js-yaml": "^4.1.1",
+    "@tailwindcss/typography": "^0.5.20",
+    "@tailwindcss/vite": "^4.3.2",
+    "@unhead/ssr": "^3.1.7",
+    "@unhead/vue": "^3.1.7",
+    "@vitejs/plugin-vue": "^6.0.7",
+    "axios": "^1.18.1",
+    "commander": "^15.0.0",
+    "compression": "^1.8.1",
+    "express": "^5.2.1",
+    "glob": "^13.0.6",
+    "js-yaml": "^5.2.1",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
     "markdown-it-anchor": "^9.2.0",
+    "minimist": "^1.2.8",
     "pinia": "^3.0.4",
-    "unplugin-vue-markdown": "^29.2.0",
-    "vue": "^3.5.28",
-    "vue-router": "^5.0.2"
+    "sass": "^1.101.0",
+    "serve-static": "^2.2.1",
+    "tailwindcss": "^4.3.2",
+    "unhead": "^3.1.7",
+    "unplugin-vue-markdown": "^32.0.0",
+    "vite": "^8.1.3",
+    "vite-plugin-radar": "^0.11.0",
+    "vue": "^3.5.39",
+    "vue-router": "^5.1.0"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.19",
-    "@vitejs/plugin-vue": "^6.0.4",
-    "autoprefixer": "^10.4.24",
-    "compression": "^1.8.1",
-    "eslint": "^9.39.2",
-    "eslint-plugin-vue": "^10.7.0",
-    "express": "^5.2.1",
-    "minimist": "^1.2.8",
-    "postcss": "^8.5.6",
-    "sass": "^1.97.3",
-    "tailwindcss": "^3.4.17",
-    "vite": "^7.3.1",
-    "vite-plugin-pages": "^0.33.3",
-    "vite-plugin-radar": "^0.10.1"
+    "eslint": "^10.6.0",
+    "eslint-plugin-vue": "^10.9.2"
+  },
+  "overrides": {
+    "vite-plugin-radar": {
+      "vite": "$vite"
+    }
+  },
+  "keywords": [
+    "taxonworks",
+    "biodiversity",
+    "taxonomy",
+    "vue",
+    "ssr",
+    "cli"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SpeciesFileGroup/taxonpages.git"
   }
 }

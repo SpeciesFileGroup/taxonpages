@@ -1,49 +1,82 @@
 // @ts-check
 import fs from 'node:fs'
+import http from 'node:http'
 import path from 'node:path'
-import minimist from 'minimist'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import express from 'express'
 import { generateConsoleMessage } from './src/ssr/utils/generateConsoleMessage.js'
+import { loadApiRoutes } from './src/server/loadApiRoutes.js'
+import { loadPlugins } from './cli/utils/loadPlugins.js'
+import { loadConfiguration } from './src/utils/loadConfiguration.js'
 
-const { port = 6173 } = minimist(process.argv.slice(2))
+function stripBase(url, base) {
+  if (!base || base === '/') return url
+  const normalized = base.endsWith('/') ? base.slice(0, -1) : base
+  if (url === normalized) return '/'
+  if (url.startsWith(normalized + '/')) return url.slice(normalized.length)
+  return url
+}
 
-export async function createServer(
-  root = process.cwd(),
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+/**
+ * Create the Express SSR server.
+ *
+ * @param {object} [options]
+ * @param {string} [options.projectRoot] - User's project directory (where config/, dist/ live). Defaults to CWD.
+ * @param {string} [options.packageRoot] - The taxonpages package directory (where src/, index.html live). Defaults to this file's directory.
+ * @param {boolean} [options.isProd] - Whether to run in production mode. Defaults to NODE_ENV === 'production'.
+ * @param {number} [options.hmrPort] - HMR port for development mode.
+ */
+export async function createServer({
+  projectRoot = process.cwd(),
+  packageRoot = __dirname,
   isProd = process.env.NODE_ENV === 'production',
   hmrPort
-) {
-  const __dirname = path.dirname(fileURLToPath(import.meta.url))
-  const resolve = (p) => path.resolve(__dirname, p)
+} = {}) {
+  const resolveProject = (p) => path.resolve(projectRoot, p)
+  const resolvePackage = (p) => path.resolve(packageRoot, p)
 
   const templateHtml = isProd
-    ? fs.readFileSync(resolve('dist/client/index.html'), 'utf-8')
+    ? fs.readFileSync(resolveProject('dist/client/index.html'), 'utf-8')
     : ''
 
   const manifest = isProd
     ? JSON.parse(
-        fs.readFileSync(resolve('dist/client/.vite/ssr-manifest.json'), 'utf-8')
+        fs.readFileSync(
+          resolveProject('dist/client/.vite/ssr-manifest.json'),
+          'utf-8'
+        )
       )
     : {}
 
+  const { base_url } = loadConfiguration(projectRoot)
+
   const app = express()
+  const httpServer = http.createServer(app)
   let vite
 
   if (!isProd) {
+    const { getViteConfig } = await import(
+      './cli/utils/resolveConfig.js'
+    )
+    const viteConfig = await getViteConfig({ packageRoot, projectRoot, ssr: true })
+
     vite = await (
       await import('vite')
     ).createServer({
-      base: '/',
-      root,
+      configFile: false,
+      ...viteConfig,
       logLevel: 'info',
       server: {
+        ...viteConfig.server,
         middlewareMode: true,
         watch: {
           usePolling: true,
           interval: 100
         },
         hmr: {
-          port: hmrPort
+          server: httpServer
         }
       },
       appType: 'custom'
@@ -54,10 +87,69 @@ export async function createServer(
     app.use((await import('compression')).default())
     app.use(
       '/',
-      (await import('serve-static')).default(resolve('dist/client'), {
-        index: false
-      })
+      (await import('serve-static')).default(
+        resolveProject('dist/client'),
+        { index: false }
+      )
     )
+  }
+
+  // User-defined API routes from ~/server/routes/*.js
+  const apiRouter = express.Router()
+  app.use('/api', apiRouter)
+
+  async function mountApiRoutes() {
+    apiRouter.stack.length = 0
+    const routes = await loadApiRoutes(projectRoot)
+
+    for (const { name, handler } of routes) {
+      apiRouter.use(`/${name}`, handler)
+    }
+  }
+
+  await mountApiRoutes()
+
+  if (!isProd) {
+    const { watch } = await import('node:fs')
+    const routesDir = path.resolve(projectRoot, 'server', 'routes')
+
+    try {
+      watch(routesDir, { recursive: true }, async (eventType, filename) => {
+        if (!filename) return
+
+        // Bust the module cache so re-import picks up changes
+        const filePath = path.resolve(routesDir, filename)
+        const fileUrl = pathToFileURL(filePath).href
+
+        // For ESM we append a query param to force re-import
+        if (!globalThis.__apiRouteVersions) {
+          globalThis.__apiRouteVersions = {}
+        }
+        globalThis.__apiRouteVersions[fileUrl] =
+          (globalThis.__apiRouteVersions[fileUrl] || 0) + 1
+
+        console.log(`[taxonpages] API route changed: ${filename}. Reloading...`)
+        await mountApiRoutes()
+      })
+    } catch {
+      // routesDir doesn't exist yet — that's fine
+    }
+  }
+
+  // Apply server() hooks from discovered plugins
+  const plugins = await loadPlugins({ projectRoot, packageRoot })
+
+  for (const plugin of plugins) {
+    if (typeof plugin.server !== 'function') continue
+
+    try {
+      plugin.server(app, { isProd })
+    } catch (err) {
+      console.error(
+        `[taxonpages] Plugin "${plugin.name}" server() hook failed:`,
+        err.message
+      )
+    }
   }
 
   app.use('/ping', async (req, res) => {
@@ -66,18 +158,19 @@ export async function createServer(
 
   app.use(/(.*)/, async (req, res) => {
     try {
-      const url = req.originalUrl
+      const url = stripBase(req.originalUrl, base_url)
       const origin = req.protocol + '://' + req.get('host')
 
       let template, render
       if (!isProd) {
         // always read fresh template in dev
-        template = fs.readFileSync(resolve('index.html'), 'utf-8')
+        template = fs.readFileSync(resolvePackage('index.html'), 'utf-8')
         template = await vite.transformIndexHtml(url, template)
         render = (await vite.ssrLoadModule('/src/entry-server.js')).render
       } else {
         template = templateHtml
-        render = (await import('./dist/server/entry-server.js')).render
+        render = (await import(pathToFileURL(resolveProject('dist/server/entry-server.js')).href))
+          .render
       }
 
       const [appHtml, appState, preloadLinks, tagMeta, statusCode] =
@@ -93,20 +186,31 @@ export async function createServer(
       res.status(statusCode).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (e) {
       vite && vite.ssrFixStacktrace(e)
-      console.log(e.stack)
-      res.status(500).end(e.stack)
+      console.error(e.stack)
+      res.status(500).end(isProd ? 'Internal Server Error' : e.stack)
     }
   })
 
-  return { app, vite }
+  return { app, httpServer, vite }
 }
 
 function makeAppContainer(app = '') {
   return `<div id="app">${app}</div>`
 }
 
-createServer().then(({ app }) =>
-  app.listen(port, () => {
-    generateConsoleMessage({ port, url: 'http://localhost' })
-  })
-)
+// Standalone execution: when run directly (not imported by CLI)
+const isDirectRun =
+  process.argv[1] &&
+  (process.argv[1].endsWith('server.js') ||
+    process.argv[1].endsWith('server'))
+
+if (isDirectRun) {
+  const minimist = (await import('minimist')).default
+  const { port = 6173 } = minimist(process.argv.slice(2))
+
+  createServer().then(({ httpServer }) =>
+    httpServer.listen(port, () => {
+      generateConsoleMessage({ port, url: 'http://localhost' })
+    })
+  )
+}

@@ -1,12 +1,12 @@
 <template>
-  <div class="grid gap-3">
+  <div class="grid gap-4">
     <div
       v-for="row in pageLayout.panels"
-      :class="['grid', 'grid-cols-1', 'gap-3', columnClasses[row.length]]"
+      :class="['grid', 'grid-cols-1', 'gap-4', columnClasses[row.length]]"
     >
       <div
         v-for="(column, index) in row"
-        class="grid grid-cols-1 gap-3 auto-rows-min"
+        class="grid grid-cols-1 gap-4 auto-rows-min"
         :key="index"
       >
         <template
@@ -32,6 +32,7 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { isAvailableForRank } from '../utils'
+import { defaultTabRouteName } from '../router/index.js'
 import layouts from '../constants/layouts.js'
 
 const props = defineProps({
@@ -71,8 +72,9 @@ const columnClasses = {
 
 if (
   pageLayout.rankGroup?.length &&
-  !isAvailableForRank(pageLayout.rankGroup, props.taxonRank)
+  !isAvailableForRank(pageLayout.rankGroup, props.taxonRank) &&
+  defaultTabRouteName
 ) {
-  router.replace({ name: 'otus-id-overview' })
+  router.replace({ name: defaultTabRouteName })
 }
 </script>

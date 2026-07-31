@@ -3,10 +3,12 @@ import { makeAPIRequest } from '@/utils'
 
 export function useGallery({ props }) {
   const depictions = ref([])
+  const citations = ref([])
 
   function makeGalleryImage(depiction) {
     return {
       id: depiction.id,
+      imageId: depiction.image_id,
       objectId: depiction.depiction_object_id,
       objectType: depiction.depiction_object_type,
       objectLabel: depiction.depiction_object.label,
@@ -19,6 +21,25 @@ export function useGallery({ props }) {
         depiction.attribution?.label || ''
       ].join(' ')
     }
+  }
+
+  function loadCitations(imageIds) {
+    if (!imageIds.length) {
+      citations.value = []
+      return
+    }
+
+    makeAPIRequest
+      .get('/citations', {
+        params: {
+          citation_object_id: imageIds,
+          citation_object_type: 'Image'
+        }
+      })
+      .then(({ data }) => {
+        citations.value = data
+      })
+      .catch(() => {})
   }
 
   watch(
@@ -37,6 +58,10 @@ export function useGallery({ props }) {
                   props.depictionId.indexOf(a.id) -
                   props.depictionId.indexOf(b.id)
               )
+
+            if (props.citations) {
+              loadCitations(depictions.value.map((image) => image.imageId))
+            }
           })
           .catch(() => {})
       }
@@ -45,6 +70,7 @@ export function useGallery({ props }) {
   )
 
   return {
-    depictions
+    depictions,
+    citations
   }
 }

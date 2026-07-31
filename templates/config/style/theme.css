@@ -1,0 +1,80 @@
+/*
+:root {
+  --tp-primary: rgb(24, 24, 27);
+  --tp-primary-content: rgb(250, 250, 250);
+
+  --tp-secondary: rgb(2, 132, 199);
+  --tp-secondary-content: rgb(255, 255, 255);
+
+  --tp-success: rgb(34, 197, 94);
+  --tp-warning: rgb(245, 158, 11);
+  --tp-danger: rgb(239, 68, 68);
+
+  --tp-base-foreground: rgb(255, 255, 255);
+  --tp-base-background: rgb(248, 250, 252);
+  --tp-base-muted: rgb(244, 244, 245);
+  --tp-base-soft: rgb(113, 113, 122);
+  --tp-base-lighter: rgb(63, 63, 70);
+  --tp-base-border: rgb(228, 228, 231);
+  --tp-base-content: rgb(24, 24, 27);
+
+  --tp-map-georeference: rgb(239, 68, 68);
+  --tp-map-aggregate: rgb(22, 130, 50);
+  --tp-map-asserted: rgb(249, 115, 22);
+  --tp-map-asserted-absent: rgb(106, 81, 163);
+  --tp-map-type-material: rgb(51, 136, 255);
+  --tp-map-collection-object: rgb(219, 39, 119);
+  --tp-map-field-occurrence: rgb(64, 176, 166);
+
+  --tp-scrollbar-thumb: rgb(212, 212, 216);
+  --tp-scrollbar-track: rgb(244, 244, 245);
+
+  --tp-card-shadow: rgba(24, 24, 27, 0.06);
+  --tp-card-border: rgba(24, 24, 27, 0.08);
+  --tp-shadow-sm: rgba(0, 0, 0, 0.18);
+  --tp-tree-line: rgb(212, 212, 216);
+
+  --tp-footer-background: rgb(39, 39, 42);
+  --tp-footer-content: rgb(250, 250, 250);
+  --tp-footer-link: rgb(161, 161, 170);
+  --tp-footer-link-hover: rgb(255, 255, 255);
+  --tp-footer-border: rgb(63, 63, 70);
+
+  --tp-map-shape-opacity: 0.5;
+  --tp-map-marker-opacity: 0.75;
+}
+
+.dark {
+  --tp-primary: rgb(9, 9, 11);
+  --tp-primary-content: rgb(244, 244, 245);
+
+  --tp-secondary: rgb(14, 165, 233);
+  --tp-secondary-content: rgb(9, 9, 11);
+
+  --tp-success: rgb(34, 197, 94);
+  --tp-warning: rgb(245, 158, 11);
+  --tp-danger: rgb(248, 113, 113);
+
+  --tp-base-background: rgb(9, 9, 11);
+  --tp-base-foreground: rgb(24, 24, 27);
+  --tp-base-muted: rgb(39, 39, 42);
+  --tp-base-soft: rgb(161, 161, 170);
+  --tp-base-lighter: rgb(212, 212, 216);
+  --tp-base-border: rgb(39, 39, 42);
+  --tp-base-content: rgb(244, 244, 245);
+
+  --tp-card-shadow: rgba(0, 0, 0, 0.3);
+  --tp-card-border: rgba(244, 244, 245, 0.08);
+  --tp-shadow-sm: rgba(0, 0, 0, 0.4);
+  --tp-tree-line: rgb(82, 82, 91);
+
+  --tp-footer-background: rgb(24, 24, 27);
+  --tp-footer-content: rgb(244, 244, 245);
+  --tp-footer-link: rgb(161, 161, 170);
+  --tp-footer-link-hover: rgb(244, 244, 245);
+  --tp-footer-border: rgb(39, 39, 42);
+
+  --tp-scrollbar-thumb: rgb(63, 63, 70);
+  --tp-scrollbar-track: rgb(24, 24, 27);
+}
+ */

@@ -1,6 +1,6 @@
 <template>
   <IconPlusCircle
-    class="size-6 text-secondary-color cursor-pointer"
+    class="size-6 text-secondary cursor-pointer"
     @click="() => (isModalVisible = true)"
   />
   <VModal
@@ -20,7 +20,7 @@
     </template>
     <VSpinner v-if="isLoading" />
     <div class="mx-4 min-h-48">
-      <div class="border-b">
+      <div class="border-b border-base-border">
         <TabList
           :tabs="tabs"
           v-model="activeIndex"

@@ -3,7 +3,7 @@ import { renderToString } from 'vue/server-renderer'
 import { createApp } from './main'
 import { registerGlobalComponents } from '@/components/globalComponents'
 import { createHead } from '@unhead/vue/server'
-import { renderSSRHead } from '@unhead/ssr'
+import { renderSSRHead } from 'unhead/server'
 import { registerFakeClientComponents } from '@/ssr/utils/registerFakeClientComponents'
 import { schemaOrgPlugin } from '@/plugins/schemaOrg'
 import devalue from '@nuxt/devalue'
@@ -55,7 +55,7 @@ export async function render(url, manifest, originUrl) {
   const ctx = {}
 
   const html = await renderToString(app, ctx)
-  const headPayload = await renderSSRHead(head)
+  const headPayload = renderSSRHead(head)
   const renderState = `
   <script>
     window.initialState = ${devalue(store.state.value)}

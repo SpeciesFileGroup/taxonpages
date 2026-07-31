@@ -1,6 +1,6 @@
 <template>
   <div class="container mx-auto box-border">
-    <h1 class="text-4xl px-4 md:px-0 mt-4 mb-6 font-bold">Bibliography</h1>
+    <h1 class="text-4xl px-4 md:px-0 mt-6 mb-6 font-bold">Bibliography</h1>
     <ClientOnly>
       <VSpinner
         v-if="isLoading"
@@ -56,14 +56,10 @@
           </div>
           <div class="flex flex-row gap-2 md:self-end">
             <VButton
-              class="text-sm py-1.5 border border-primary-color"
-              primary
               @click="() => loadList()"
               >Search</VButton
             >
             <VButton
-              class="text-sm py-1.5 border border-primary-color"
-              primary
               @click="() => reset()"
             >
               Reset
@@ -114,7 +110,7 @@
               </VTableBodyCell>
               <VTableBodyCell
                 class="break-all"
-                v-html="convertUrlsToLinks(item.cached)"
+                v-html="sanitizeAndLinkifyHtml(item.cached)"
               />
             </VTableBodyRow>
           </VTableBody>
@@ -140,8 +136,8 @@
 <script setup>
 import { ref, onBeforeMount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { makeAPIRequest } from '@/utils'
-import { getPagination, convertUrlsToLinks } from '../utils'
+import { getPagination } from '../utils'
+import { makeAPIRequest, sanitizeAndLinkifyHtml } from '@/utils'
 import DropdownMenu from '../components/DropdownMenu.vue'
 import YearPicker from '../components/YearPicker.vue'
 import VSlider from '../components/VSlider.vue'
