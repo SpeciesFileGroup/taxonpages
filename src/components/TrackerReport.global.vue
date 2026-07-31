@@ -20,7 +20,9 @@
     @close="isModalVisible = false"
   >
     <template #header>
-      <h1 class="font-medium text-base px-1">{{ $t('component.tracker.title') }}</h1>
+      <h1 class="font-medium text-base px-1">
+        {{ $t('component.tracker.title') }}
+      </h1>
     </template>
     <div class="font-normal p-5 pt-0 text-base">
       <span>{{ $t('component.tracker.issue_with') }}</span>
@@ -32,7 +34,9 @@
             rel="noopener"
           >
             {{ item.label }}
-            <span class="sr-only">{{ $t('component.tracker.opens_new_window') }}</span>
+            <span class="sr-only">{{
+              $t('component.tracker.opens_new_window')
+            }}</span>
           </a>
           <span
             v-if="item.description"
@@ -48,8 +52,14 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useLocalizedConfig } from '@/i18n/useLocalizedConfig'
 
-const { issue_trackers } = __APP_ENV__
+const { issue_trackers: rawIssueTrackers } = __APP_ENV__
+
+const { cDeep } = useLocalizedConfig()
+
+const issue_trackers = cDeep(rawIssueTrackers)
+
 const TAXONPAGES_ISSUE_TRACKER =
   'https://github.com/SpeciesFileGroup/taxonpages/issues/new/choose'
 
@@ -83,7 +93,7 @@ defineProps({
 const isModalVisible = ref(false)
 
 function openTracker() {
-  if (issue_trackers) {
+  if (rawIssueTrackers) {
     isModalVisible.value = true
   } else {
     window.open(TAXONPAGES_ISSUE_TRACKER, '_blank')

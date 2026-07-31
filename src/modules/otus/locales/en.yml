@@ -65,6 +65,7 @@ panel:
     absences: Absences
     loading: Loading...
     search_otu: OTU
+    search_button: Search
 
     legend:
       aggregate: Aggregate (Asserted distribution & Georeference)
@@ -143,7 +144,6 @@ dwc:
     other: Other
 
   labels:
-
     # Taxon
     kingdom: Kingdom
     phylum: Phylum

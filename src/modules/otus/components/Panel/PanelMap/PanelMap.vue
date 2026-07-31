@@ -26,7 +26,7 @@
           class="absolute right-3 top-3 z-400"
           @click="() => (isOtuSearchVisible = true)"
         >
-          Search
+          {{ $t('panel.map.search_button') }}
         </VButton>
 
         <OtuSearch
