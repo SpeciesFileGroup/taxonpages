@@ -93,11 +93,8 @@
             v-for="{ rank, taxa, names } in store.catalog.stats"
             :key="rank"
           >
-            <VTableHeaderCell
-              class="capitalize"
-              scope="row"
-            >
-              {{ rank }}
+            <VTableHeaderCell scope="row">
+              {{ rankLabel(rank, i18n) }}
             </VTableHeaderCell>
 
             <VTableBodyCell v-if="isAdvancedView">
@@ -130,6 +127,7 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useOtuStore } from '@/modules/otus/store/store'
+import { rankLabel } from '@/i18n/vocabulary'
 import PanelDropdown from '../PanelDropdown.vue'
 
 const props = defineProps({
@@ -154,7 +152,8 @@ const props = defineProps({
   }
 })
 
-const { t } = useI18n()
+const i18n = useI18n()
+const { t } = i18n
 const store = useOtuStore()
 const isAdvancedView = ref(false)
 

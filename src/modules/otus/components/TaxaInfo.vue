@@ -1,7 +1,7 @@
 <template>
   <div>
-    <span class="text-1xl capitalize">
-      {{ store.taxon.rank || 'Combination' }}
+    <span class="text-1xl">
+      {{ rankLabel(store.taxon.rank, i18n) || $t('otus.combination') }}
     </span>
     <h1 class="text-xl text-base-content">
       <span>
@@ -31,8 +31,11 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { useOtuStore } from '../store/store'
+import { rankLabel } from '@/i18n/vocabulary'
 import CommonNames from './CommonNames.vue'
 
 const store = useOtuStore()
+const i18n = useI18n()
 </script>

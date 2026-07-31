@@ -11,7 +11,7 @@
     :key="item.id"
   >
     <div class="flex flex-col">
-      <span class="font-medium">{{ item.typeStatus }}</span>
+      <span class="font-medium">{{ typeStatusLabel(item.typeStatus, i18n) }}</span>
       <span v-html="makeSpecimenLabel(item)" />
     </div>
     <GalleryThumbnailList
@@ -24,7 +24,11 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+import { typeStatusLabel } from '@/i18n/vocabulary'
 import GalleryThumbnailList from '@/components/Gallery/GalleryThumbnailList.vue'
+
+const i18n = useI18n()
 
 const props = defineProps({
   items: {

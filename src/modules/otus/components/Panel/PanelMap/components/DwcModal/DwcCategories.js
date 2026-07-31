@@ -173,25 +173,6 @@ export const HIDDEN_FIELDS = new Set([
   'project_id'
 ])
 
-/**
- * Human label for a Darwin Core term.
- *
- * Terms the catalog knows are translated; anything else (the API may send
- * terms this version has never heard of) falls back to humanizing the term
- * name, which is language-independent and better than showing a raw key.
- *
- * @param {string} field - Darwin Core term name
- * @param {{ t: Function, te: Function }} i18n - from useI18n()
- * @returns {string}
- */
-export function getLabel(field, { t, te }) {
-  const key = `dwc.labels.${field}`
-
-  return te(key)
-    ? t(key)
-    : field.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase())
-}
-
 const fieldToCategory = new Map()
 const fieldOrder = new Map()
 

@@ -46,9 +46,9 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { makeAPIRequest } from '@/utils'
 import { FIELD_OCCURRENCE, COLLECTION_OBJECT } from '@/constants/objectTypes'
+import { dwcTermLabel } from '@/i18n/vocabulary'
 import {
   groupEntries,
-  getLabel,
   transformEntries,
   HIDDEN_FIELDS
 } from './DwcCategories.js'
@@ -63,7 +63,7 @@ const fieldComponents = {
 }
 
 const i18n = useI18n()
-const label = (field) => getLabel(field, i18n)
+const label = (field) => dwcTermLabel(field, i18n)
 
 const isLoading = ref(false)
 const isModalVisible = ref(false)
