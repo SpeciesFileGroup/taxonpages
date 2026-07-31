@@ -9,6 +9,7 @@ import { createServer as createViteServer } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 import { createConfigRoutes } from './routes/config.js'
+import { createI18nRoutes } from './routes/i18n.js'
 import { createPackageRoutes } from './routes/packages.js'
 import { createPanelRoutes } from './routes/panels.js'
 import { createProxyRoutes } from './routes/proxy.js'
@@ -20,6 +21,8 @@ import {
 } from './plugins/customEditorPlugin.js'
 import { writeSetupTailwindSources } from './plugins/tailwindCustomSources.js'
 import schema from './schema.js'
+import { loadConfiguration } from '../../src/utils/loadConfiguration.js'
+import { resolveI18nConfig } from '../../src/i18n/config.js'
 import {
   discoverNpmPackages,
   extractBaseName,
@@ -182,6 +185,7 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
 
   // API routes (before Vite middleware so they take priority)
   app.use('/api/config', createConfigRoutes(projectRoot))
+  app.use('/api/i18n', createI18nRoutes(projectRoot))
   app.use(
     '/api/packages',
     createPackageRoutes(packageRoot, projectRoot, {
@@ -195,7 +199,7 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
 
   app.get('/api/schema', (_req, res) => {
     const mergedSchema = injectModuleSchemas(schema, packageRoot, projectRoot)
-    res.json(mergedSchema)
+    res.json(withTranslationsSection(mergedSchema, projectRoot))
   })
 
   app.use(vite.middlewares)
@@ -254,6 +258,47 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
  * Merge dynamically discovered module schemas into the base schema.
  * Hardcoded sections in schema.js take precedence over discovered ones.
  */
+/**
+ * Add the translations overview, but only to a site that has more than one
+ * locale.
+ *
+ * A single-locale site would see an empty section that can never fill up, so
+ * it is left out of the sidebar entirely rather than shown disabled. The
+ * Languages editor reloads the schema after saving, so the section appears and
+ * disappears as locales are added and removed.
+ *
+ * It carries no `file`: it edits nothing, it reports on every file.
+ *
+ * @param {object} schema
+ * @param {string} projectRoot
+ * @returns {object}
+ */
+function withTranslationsSection(schema, projectRoot) {
+  const { isMultiLocale } = resolveI18nConfig(loadConfiguration(projectRoot))
+
+  if (!isMultiLocale) return schema
+
+  const translations = {
+    label: 'Translations',
+    description:
+      'Every translatable value in your configuration, and what each language is still missing',
+    editor: 'translations'
+  }
+
+  // Placed directly after Languages rather than appended: the sidebar renders
+  // sections in key order, and the two are read together.
+  const sections = {}
+
+  for (const [key, section] of Object.entries(schema.core.sections)) {
+    sections[key] = section
+    if (key === 'i18n') sections.translations = translations
+  }
+
+  if (!sections.translations) sections.translations = translations
+
+  return { ...schema, core: { ...schema.core, sections } }
+}
+
 function injectModuleSchemas(baseSchema, packageRoot, projectRoot) {
   const merged = JSON.parse(JSON.stringify(baseSchema))
 

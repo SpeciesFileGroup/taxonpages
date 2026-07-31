@@ -186,6 +186,37 @@ For simple settings, define `fields` in your schema. The setup wizard auto-rende
 
 The configuration values are stored in `config/<file>` and accessible at runtime via the `__APP_ENV__` global object.
 
+##### Translatable fields
+
+A `string` field whose value is text the reader sees can be marked
+`translatable`. On a multi-locale site the setup wizard then offers one input
+per configured locale and writes the locale map described in
+[Translating site content](#translating-site-content):
+
+```json
+{
+  "title": {
+    "type": "string",
+    "label": "Title",
+    "translatable": true
+  }
+}
+```
+
+Mark a field only if your component resolves it through `localize` or
+`localizeDeep` — otherwise the wizard offers a translation that never renders.
+Leave identity unmarked: URLs, ids, and anything cited elsewhere.
+
+The flag changes nothing for a single-locale site. The wizard still shows one
+input and still writes a plain string, so a field can be marked before any
+locale is configured.
+
+You do not need the flag for the wizard to *recognise* an existing translation:
+a value that is already a locale map is edited as one either way, so config
+written by hand is never flattened. What the flag adds is the ability to create
+a translation from the UI, and it is also what lets the wizard recognise text
+left behind for a locale that has since been removed from `config/i18n.yml`.
+
 #### Custom editor component
 
 When the auto-generated form is not enough (e.g., drag-and-drop layout builders, visual editors, or complex interactive UIs), modules can provide a custom Vue component as the settings editor:
@@ -261,13 +292,39 @@ const configKey = computed(
 </script>
 ```
 
-Shared setup UI components like `PanelConfigEditor` are available via Vue's `inject`:
+Shared setup UI components are registered globally, so a custom editor can use
+them without importing anything:
 
-```javascript
-import { inject } from 'vue'
+| Component               | Purpose                                                        |
+| ----------------------- | -------------------------------------------------------------- |
+| `SwModal`               | Modal dialog                                                    |
+| `SwPanelConfigEditor`   | Form for a panel's `bind` values, driven by its `setup.schema.json` |
+| `SwTranslatableField`   | Text input with one value per locale (see [Translatable fields](#translatable-fields)) |
+| `SwTranslatedText`      | Read-only display of a value that may be translated             |
 
-const PanelConfigEditor = inject('tp:PanelConfigEditor')
+```vue
+<SwTranslatableField
+  :field="{ placeholder: 'Section heading' }"
+  :model-value="value"
+  @update:model-value="update($event)"
+/>
+
+<!-- Labelling something you are not editing here -->
+<SwTranslatedText :value="tab.label" :fallback="tabKey" />
 ```
+
+Both are safe to use unconditionally: on a single-locale site the field renders
+a single input and emits a plain string, so there is no need to branch on
+whether the site is translated. Reach for `SwTranslatedText` anywhere a config
+value is only being shown — a plain `{{ tab.label }}` renders a translated value
+as `[object Object]`.
+
+> **Do not import from the wizard client.** A custom editor lives in a module,
+> and a module is built by the main application as well as by the wizard —
+> Tailwind scans it either way. The `@setup` alias only exists while
+> `taxonpages setup` is running, so an import through it fails to resolve during
+> `taxonpages dev` and `taxonpages build`, taking the whole site's dependency
+> scan down with it. Use the globally registered components above instead.
 
 The Tailwind CSS utility classes used in the setup wizard are available in custom editor components.
 
@@ -1044,6 +1101,11 @@ A map is read as a translation only when *every* key is a locale you configured
 in `config/i18n.yml`. That is deliberate: `bind: { id: 5 }` must not be mistaken
 for a translation into Indonesian.
 
+These values can also be edited from `taxonpages setup`, which shows one input
+per locale and reports how many are filled. A field belonging to your own
+module or panel needs `"translatable": true` in its `setup.schema.json` to be
+offered there — see [Translatable fields](#translatable-fields).
+
 `project_citation` and `project_authors` are **not** localized — they are how
 the site is cited in the literature.
 
@@ -1089,3 +1151,26 @@ simply never matches a locale. Add entries there if you need more.
 List it in `config/i18n.yml` and add `<locale>.yml` catalogs. Routes for the new
 prefix appear on their own; anything untranslated falls back. A locale that is
 10% translated is useful on day one.
+
+`taxonpages setup` has a **Languages** section that writes this file: it picks
+locales, sets which one is served on unprefixed URLs, and warns before removing
+a locale by listing the config values, pages, and catalogs that would stop being
+shown. Removing a locale never deletes any of them — adding it back restores
+everything.
+
+A site with no `config/i18n.yml` is single-locale and pays nothing for i18n, so
+the section offers to remove the file rather than leaving a defaulted one
+behind.
+
+Alongside it, a **Translations** section lists every translatable value across
+all config files with its status in each language, filterable to what one
+language is still missing. It appears only once a site has more than one
+locale.
+
+It finds values two ways, and the difference is visible in what it can tell
+you. Fields a schema marks `translatable` are listed whether or not they have
+been translated, so they can be reported as missing. Everything else is found
+by looking for values that already *are* locale maps — which is how
+`taxa_page.yml` tab labels and panel `bind` values appear, since a custom
+editor declares no fields. The consequence is that a tab label that has never
+been translated cannot be listed as missing: nothing declares it ahead of time.

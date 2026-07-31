@@ -20,10 +20,10 @@ common:
   source: Source
   close: Close
   expand: Expand
+  opens_new_window: (opens in new window)
 
 component:
   spinner:
-    # Visually hidden; read by screen readers while the spinner shows.
     loading: Loading...
     legend: Loading, please wait.
 
@@ -82,16 +82,15 @@ component:
   tracker:
     title: Report a problem
     issue_with: 'My issue is with:'
-    opens_new_window: (opens in new window)
 
   pagination_info:
     records: '{from} - {to} of {total} records.'
     no_records: 0 records.
 
   footer:
-    # The citation reads "<authors> <citation>. Retrieved on <date> at <url>".
-    # It is assembled from fragments because the URL is a link element, so a
-    # translation cannot reorder the date and the URL relative to each other.
     retrieved_on: Retrieved on {date}
     at: at
     analytics: This site uses {service}.
+    data_provided_by: Data provided by
+    pages_by: Pages by
+    support_by: Support (Services) by

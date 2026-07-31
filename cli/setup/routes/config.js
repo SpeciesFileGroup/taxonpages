@@ -1,6 +1,12 @@
 import { Router } from 'express'
 import { resolve, join, basename } from 'node:path'
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
+import {
+  readFileSync,
+  writeFileSync,
+  existsSync,
+  mkdirSync,
+  rmSync
+} from 'node:fs'
 import { glob } from 'glob'
 import * as yaml from 'js-yaml'
 import { toForwardSlash } from '../../../src/utils/paths.js'
@@ -107,6 +113,40 @@ export function createConfigRoutes(projectRoot) {
 
       const yamlStr = yaml.dump(content, { lineWidth: -1, noRefs: true })
       writeFileSync(filePath, `---\n${yamlStr}`, 'utf-8')
+      res.json({ ok: true, filename })
+    } catch (err) {
+      res.status(500).json({ error: err.message })
+    }
+  })
+
+  /**
+   * DELETE /api/config/:filename
+   * Removes a config file.
+   *
+   * For settings whose absence is meaningful rather than merely empty: a site
+   * with no `i18n.yml` is single-locale and pays nothing for i18n, which an
+   * empty or defaulted file would not express.
+   */
+  router.delete('/:filename', (req, res) => {
+    const { filename } = req.params
+
+    if (!isValidFilename(filename)) {
+      return res.status(400).json({ error: 'Invalid filename' })
+    }
+
+    const filePath = resolve(configDir, filename)
+
+    if (!filePath.startsWith(configDir)) {
+      return res.status(403).json({ error: 'Path traversal not allowed' })
+    }
+
+    // Already gone is the requested state, not an error.
+    if (!existsSync(filePath)) {
+      return res.json({ ok: true, filename })
+    }
+
+    try {
+      rmSync(filePath)
       res.json({ ok: true, filename })
     } catch (err) {
       res.status(500).json({ error: err.message })

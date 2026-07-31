@@ -140,6 +140,8 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useConfig } from './composables/useConfig.js'
+import { useI18nConfig } from './composables/useI18nConfig.js'
+import { useNavigation } from './composables/useNavigation.js'
 import SectionEditor from './components/SectionEditor.vue'
 
 const {
@@ -152,9 +154,13 @@ const {
   hasUnsavedChanges
 } = useConfig()
 
+const { loadI18nConfig } = useI18nConfig()
+
 const loading = ref(true)
-const activeSection = ref('')
 const toast = ref(null)
+
+// Shared, so a section can send the reader to another one.
+const { activeSection } = useNavigation()
 
 const currentSection = computed(() => {
   if (!activeSection.value || !schema.value) return null
@@ -186,7 +192,9 @@ watch(status, (val) => {
 })
 
 onMounted(async () => {
-  await Promise.all([loadSchema(), loadAllConfig()])
+  // The i18n settings are loaded up front because every form field consults
+  // them to decide whether it holds one text or one per locale.
+  await Promise.all([loadSchema(), loadAllConfig(), loadI18nConfig()])
   loading.value = false
 
   if (schema.value) {

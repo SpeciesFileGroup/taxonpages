@@ -34,9 +34,7 @@
             rel="noopener"
           >
             {{ item.label }}
-            <span class="sr-only">{{
-              $t('component.tracker.opens_new_window')
-            }}</span>
+            <span class="sr-only">{{ $t('common.opens_new_window') }}</span>
           </a>
           <span
             v-if="item.description"

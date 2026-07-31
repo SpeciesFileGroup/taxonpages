@@ -6,10 +6,12 @@
     </ClientOnly>
     {{ project_citation }}.
     <ClientOnly>
-      <span>{{ $t('component.footer.retrieved_on', { date: currentDate }) }}</span>
+      <span>{{
+        $t('component.footer.retrieved_on', { date: currentDate })
+      }}</span>
     </ClientOnly>
     <span v-if="currentUrl">
-      {{ $t('component.footer.at') }}
+      {{ ' ' + $t('component.footer.at') }}
       <a
         class="text-footer-link underline"
         :href="currentUrl"

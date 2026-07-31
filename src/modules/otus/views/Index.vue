@@ -88,6 +88,7 @@ import { useOtuStore } from '../store/store'
 import { useFooterStore } from '@/store'
 import { useHead, injectHead } from '@unhead/vue'
 import { useSchemaOrg, defineTaxon } from '@/plugins/schemaOrg/composables'
+import { useLocalizedConfig } from '@/i18n/useLocalizedConfig'
 import { RESPONSE_ERROR } from '../constants'
 import { isAvailableForRank } from '../utils'
 import { useChildrenRoutes, useUserLifeCycles } from '../composables'
@@ -98,6 +99,9 @@ import TaxaInfo from '../components/TaxaInfo.vue'
 import DWCDownload from '../components/DWCDownload.vue'
 
 const head = injectHead()
+
+const { c } = useLocalizedConfig()
+const projectName = c(__APP_ENV__.project_name)
 const route = useRoute()
 const router = useRouter()
 const routeParams = ref(route.params)
@@ -181,7 +185,9 @@ function redirectOnError(error) {
 function updateMetadata() {
   useHead(
     {
-      title: `${__APP_ENV__.project_name} - ${taxon.value.full_name}`
+      // project_name may be translated, so it has to be resolved rather than
+      // interpolated — a locale map stringifies to "[object Object]".
+      title: `${projectName.value} - ${taxon.value.full_name}`
     },
     { head }
   )

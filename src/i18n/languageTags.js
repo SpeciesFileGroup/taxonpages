@@ -78,6 +78,18 @@ for (const [tag, names] of Object.entries(ISO_639_2_NAMES)) {
 }
 
 /**
+ * The language tags this file knows about, for offering a choice of locale.
+ *
+ * A convenience for building a picker, not a restriction: `config/i18n.yml`
+ * takes any BCP-47 tag, and a regional one like `pt-BR` works everywhere
+ * because comparison is on the base language. This is the list worth putting
+ * in front of someone, not the list of what is allowed.
+ *
+ * @type {readonly string[]}
+ */
+export const LANGUAGE_TAGS = Object.freeze(Object.keys(ISO_639_2_NAMES))
+
+/**
  * BCP-47 tag for a TaxonWorks language name.
  *
  * @param {string|null|undefined} languageName - e.g. "Spanish; Castilian"

@@ -56,6 +56,39 @@ export function useConfig() {
     }
   }
 
+  /**
+   * Remove a config file, for settings whose absence is meaningful.
+   *
+   * @param {string} filename
+   */
+  async function deleteConfig(filename) {
+    status.value = 'saving'
+
+    try {
+      const res = await apiFetch(`/api/config/${filename}`, {
+        method: 'DELETE'
+      })
+
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error || 'Delete failed')
+      }
+
+      configData[filename] = {}
+      dirty.value.delete(filename)
+      status.value = 'saved'
+      statusMessage.value = `Removed ${filename}`
+
+      setTimeout(() => {
+        if (status.value === 'saved') status.value = 'idle'
+      }, 2000)
+    } catch (err) {
+      status.value = 'error'
+      statusMessage.value = err.message
+      throw err
+    }
+  }
+
   function getConfigValue(filename, key) {
     return configData[filename]?.[key]
   }
@@ -92,6 +125,7 @@ export function useConfig() {
     loadAllConfig,
     loadConfig,
     saveConfig,
+    deleteConfig,
     getConfigValue,
     setConfigValue,
     setConfigContent,

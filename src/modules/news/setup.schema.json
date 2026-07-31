@@ -22,6 +22,7 @@
             "message": {
               "type": "string",
               "label": "Message",
+              "translatable": true,
               "placeholder": "Announcement text"
             },
             "url": {
