@@ -79,7 +79,7 @@ defineProps({
 
   iconClass: {
     type: Array,
-    default: () => ['w-5.5 h-5.5']
+    default: () => ['w-5 h-5']
   },
 
   tag: {

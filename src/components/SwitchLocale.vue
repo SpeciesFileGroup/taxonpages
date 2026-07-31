@@ -15,7 +15,7 @@
       @keydown.escape="closeMenu"
       @keydown.arrow-down.prevent="openAndFocusFirst"
     >
-      <IconLanguage class="h-6 w-6" />
+      <IconLanguage class="h-5 w-5" />
     </button>
 
     <div
