@@ -16,12 +16,15 @@ function parsePanelConfiguraion(panelLayout) {
     row.map((col) =>
       col.map((panel) => {
         const isPanelKey = typeof panel === 'string'
-        const panelObj = isPanelKey ? { id: panel } : { ...panel }
+        const { rank_group, ...panelObj } = isPanelKey
+          ? { id: panel }
+          : { ...panel }
         const entry = panelEntries.find((item) => item.id === panelObj.id)
 
         return {
           ...entry,
-          ...panelObj
+          ...panelObj,
+          ...(Array.isArray(rank_group) && { rankGroup: rank_group })
         }
       })
     )
