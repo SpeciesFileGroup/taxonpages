@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Internationalization. A site can be served in several languages by adding `config/i18n.yml`. Without that file a site stays single-locale and ships no extra JavaScript. See the developer guide.
+  - The default locale keeps its unprefixed URLs (`/about`) and the others are served under a prefix (`/es/about`), so links already published keep resolving.
+  - Interface strings come from message catalogs (`locales/<locale>.yml`), merged across core, NPM packages, local panels and modules, and the site itself. Panels, modules, and plugins can ship their own.
+  - Config values are translatable one value at a time: a string in `header.yml`, `copyright.yml`, `project.yml`, `metadata.yml`, `tracker.yml`, `news.yml`, or a tab label or panel `bind` value in `taxa_page.yml` may be replaced by a map of locales. Existing config files stay valid as they are.
+  - Pages are translated with a filename suffix (`about.es.md`). A page with no variant is served as it is.
+  - Common names are ordered by the reader's language, `<html lang>` follows the active locale, and `hreflang` alternates are emitted for every configured locale.
+- Setup wizard: a `Languages` section that writes `config/i18n.yml` and warns before removing a locale, one input per locale on every translatable field, and a `Translations` section listing every translatable value with its status in each language. Modules and panels opt a field in with `"translatable": true` in `setup.schema.json`.
+
+### Fixed
+
+- Taxa page: a panel's `rank_group` in `taxa_page.yml` had no effect and now applies, overriding the rank group a panel declares for itself. Config that previously did nothing will start hiding panels; tab-level `rank_group` is unchanged.
+
 ## [0.6.3] - 2026-07-08
 
 ### Added
