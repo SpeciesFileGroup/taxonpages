@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Panel Descendants: the expanded branches of the tree are kept when navigating back to a previously visited OTU page, and their already loaded children are no longer requested again.
+- Panel nomenclature references: made URLs clickable for DOI
+
+[#368]: https://github.com/SpeciesFileGroup/taxonpages/issues/368
+[#364]: https://github.com/SpeciesFileGroup/taxonpages/pull/364
+
 ## [0.6.3] - 2026-07-08
 
 ### Added
