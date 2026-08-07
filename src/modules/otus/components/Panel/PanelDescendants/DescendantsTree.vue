@@ -43,7 +43,11 @@
 import DescendantsTree from './DescendantsTree.vue'
 import DescendantsSynonymList from './DescendantsSynonymList.vue'
 import TaxonWorks from '../../../services/TaxonWorks'
-import { ref, watch } from 'vue'
+import {
+  DESCENDANTS_TREE_ROOT_ID,
+  useDescendantsTreeStore
+} from './store/useDescendantsTreeStore'
+import { inject, ref, watch } from 'vue'
 
 const props = defineProps({
   taxonomy: {
@@ -57,10 +61,20 @@ const props = defineProps({
   }
 })
 
-const isTreeVisible = ref(!!props.taxonomy.descendants.length)
-const descendants = ref([...props.taxonomy.descendants])
+const treeStore = useDescendantsTreeStore()
+const rootOtuId = inject(DESCENDANTS_TREE_ROOT_ID)
+const otuId = props.taxonomy.otu_id
+
+const isTreeVisible = ref(
+  treeStore.isExpanded(rootOtuId, otuId) ?? !!props.taxonomy.descendants.length
+)
+const descendants = ref(
+  treeStore.getDescendants(rootOtuId, otuId) ?? [...props.taxonomy.descendants]
+)
 
 watch(isTreeVisible, (newVal) => {
+  treeStore.setExpanded(rootOtuId, otuId, newVal)
+
   if (newVal) {
     loadDescendants()
   }
@@ -70,13 +84,14 @@ const loadDescendants = () => {
   if (descendants.value.length) {
     return
   }
-  TaxonWorks.getTaxonomy(props.taxonomy.otu_id, {
+  TaxonWorks.getTaxonomy(otuId, {
     params: {
       max_descendants_depth: 1
     }
   })
     .then(({ data }) => {
       descendants.value = data.descendants
+      treeStore.setDescendants(rootOtuId, otuId, data.descendants)
     })
     .catch(() => {})
 }
