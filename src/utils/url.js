@@ -7,6 +7,12 @@ export function isValidUrl(string) {
   }
 }
 
+export function resolveAssetUrl(path, baseUrl = '/') {
+  if (!path) return path
+
+  return isValidUrl(path) ? path : (baseUrl + path).replace('//', '/')
+}
+
 function sanitizeHtml(html = '') {
   const allowed = /^(i|em|b|strong|sub|sup|br|p|span)$/i
 

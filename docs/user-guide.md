@@ -95,6 +95,22 @@ Both parts matter: the `@import` (or an `@font-face` rule, if you self-host the 
 
 To use a font that is already available (a system font, or one you load elsewhere) you can set `--tp-font-main` in `config/style/theme.css` instead, alongside the colors, and skip this file entirely.
 
+### Favicon
+
+Favicons are picked up by convention — there is nothing to configure. Drop any of these files into your project's `public/` folder and they are linked from the document head:
+
+| File                    | Used for                                    |
+| ----------------------- | ------------------------------------------- |
+| `favicon.svg`           | Modern browsers, scales to any size         |
+| `favicon.ico`           | Fallback for older browsers                 |
+| `apple-touch-icon.png`  | iOS home screen shortcuts (180×180 px)      |
+
+You can ship more than one: browsers pick the format they support. Providing both `favicon.svg` and `favicon.ico` covers everything.
+
+The `<link>` tags are generated with your `base_url` applied, which matters when the site is deployed under a sub-path — a browser looking for a favicon on its own always asks for `/favicon.ico` at the domain root and would miss it.
+
+If you need an icon from a different location, such as a CDN, add your own `index.html` at the project root with the `<link>` tags you want; TaxonPages uses it in place of the built-in one.
+
 ## Analytics
 
 TaxonPages has out-of-the-box support for the following list of analytics services:

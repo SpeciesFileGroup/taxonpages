@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- Favicon: icons placed in the project's `public/` folder (`favicon.svg`, `favicon.ico`, `apple-touch-icon.png`) are now linked from the document head automatically, with no configuration. The generated tags apply `base_url`, so the icon is also found when the site is deployed under a sub-path — previously it relied on the browser's implicit request for `/favicon.ico`, which ignores the sub-path and produced no icon at all. See the theming section of the user guide.
+
 ## [0.6.4] - 2026-08-12
 
 - Panel priority: panels from the project's `panels/` folder and from NPM packages now override built-in panels that declare the same id, following the source priority described in the developer guide. Previously the built-in panel always won, so a local or NPM panel reusing a core id was silently ignored. This is what makes it possible to replace a built-in panel without writing a `taxa_page.yml`. Note that sites reusing a core panel id by accident will now render the overriding panel instead of the built-in one.

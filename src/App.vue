@@ -6,6 +6,7 @@
 
 <script setup>
 import { useHead } from '@unhead/vue'
+import favicons from 'virtual:taxonpages-favicons'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { loadUserLayouts } from './utils'
@@ -26,6 +27,7 @@ const currentLayout = computed(() => {
 
 useHead({
   title: __APP_ENV__.project_name,
-  meta: __APP_ENV__.metadata
+  meta: __APP_ENV__.metadata,
+  link: favicons
 })
 </script>

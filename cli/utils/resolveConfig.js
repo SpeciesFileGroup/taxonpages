@@ -22,6 +22,7 @@ import {
   componentRegistrationPlugin
 } from '../../src/plugins/vite/index.js'
 import { pluginInjectionPlugin } from '../../src/plugins/vite/pluginInjection.js'
+import { faviconInjectionPlugin } from '../../src/plugins/vite/faviconInjection.js'
 
 /**
  * Build the full Vite configuration, resolving paths correctly
@@ -110,8 +111,14 @@ export async function getViteConfig({ packageRoot, projectRoot, ssr = false }) {
       }),
       //projectStylesPlugin(projectRoot),
 
+      faviconInjectionPlugin({ projectRoot }),
+
       ViteRestart({
-        dir: [resolve(projectRoot, 'config/**/*.yml')],
+        dir: [
+          resolve(projectRoot, 'config/**/*.yml'),
+          resolve(projectRoot, 'public/favicon.*'),
+          resolve(projectRoot, 'public/apple-touch-icon.*')
+        ],
         projectRoot,
         ssr
       }),

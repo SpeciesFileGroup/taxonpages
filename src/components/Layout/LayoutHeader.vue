@@ -47,7 +47,7 @@
 import SwitchTheme from '../SwitchTheme.vue'
 import NavbarMenu from '../Navbar/NavbarMenu.vue'
 import NavbarMobile from '../Navbar/NavbarMobile.vue'
-import { isValidUrl } from '@/utils/url'
+import { resolveAssetUrl } from '@/utils/url'
 
 const {
   header_links,
@@ -57,7 +57,5 @@ const {
   project_name
 } = __APP_ENV__
 
-const logoUrl = isValidUrl(header_logo_url)
-  ? header_logo_url
-  : (base_url + header_logo_url).replace('//', '/')
+const logoUrl = resolveAssetUrl(header_logo_url, base_url)
 </script>
