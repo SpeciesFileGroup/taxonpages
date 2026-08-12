@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- Panel priority: panels from the project's `panels/` folder and from NPM packages now override built-in panels that declare the same id, following the source priority described in the developer guide. Previously the built-in panel always won, so a local or NPM panel reusing a core id was silently ignored. This is what makes it possible to replace a built-in panel without writing a `taxa_page.yml`. Note that sites reusing a core panel id by accident will now render the overriding panel instead of the built-in one.
+- Taxa page layout: a panel id listed in `taxa_page.yml` that no panel declares is now reported in the console and skipped, instead of rendering an empty component.
+
+## [0.6.3] - 2026-07-07
+
 ### Fixed
 
 - Panel Descendants: the expanded branches of the tree are kept when navigating back to a previously visited OTU page, and their already loaded children are no longer requested again.
