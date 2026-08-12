@@ -79,6 +79,22 @@ TaxonPages uses [Tailwind CSS v4](https://tailwindcss.com/docs) for styling. The
 }
 ```
 
+### Fonts
+
+The default typeface is [Inter](https://fonts.google.com/specimen/Inter), loaded from Google Fonts. To use a different one, create a `config/vendor/fonts.css` file. It **replaces** the built-in font stylesheet, so Inter is no longer requested at all:
+
+```css
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400..700&display=swap');
+
+:root {
+  --tp-font-main: 'Lora', Georgia, serif;
+}
+```
+
+Both parts matter: the `@import` (or an `@font-face` rule, if you self-host the files in `public/`) loads the typeface, and `--tp-font-main` tells the theme to use it. Keep the `@import` as the first line — CSS requires `@import` rules to precede every other rule, and a misplaced one is silently dropped.
+
+To use a font that is already available (a system font, or one you load elsewhere) you can set `--tp-font-main` in `config/style/theme.css` instead, alongside the colors, and skip this file entirely.
+
 ## Analytics
 
 TaxonPages has out-of-the-box support for the following list of analytics services:
