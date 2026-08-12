@@ -69,7 +69,12 @@ export async function getViteConfig({ packageRoot, projectRoot, ssr = false }) {
           resolve(projectRoot, 'config/vendor/tailwind.css')
         )
           ? resolve(projectRoot, 'config/vendor/tailwind.css')
-          : resolve(packageRoot, 'src/assets/css/tailwind.css')
+          : resolve(packageRoot, 'src/assets/css/tailwind.css'),
+        '@fonts-config': existsSync(
+          resolve(projectRoot, 'config/vendor/fonts.css')
+        )
+          ? resolve(projectRoot, 'config/vendor/fonts.css')
+          : resolve(packageRoot, 'src/assets/css/fonts.css')
       }
     },
 
