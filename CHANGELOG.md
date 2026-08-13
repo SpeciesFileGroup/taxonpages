@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.7] - 2026-08-13
+
 ### Added
 
 - Header navigation: a `link` in `header.yml` can now be an external URL. Links open in the same tab by default, an entry can set `target: _blank`.
