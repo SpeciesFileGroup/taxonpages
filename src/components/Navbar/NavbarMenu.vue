@@ -6,13 +6,14 @@
         :key="index"
       >
         <div v-if="item.label">
-          <RouterLink
+          <NavbarLink
             v-if="item.link"
-            :to="item.link"
+            :link="item.link"
+            :target="item.target"
             class="hover:text-primary-content text-primary-content"
           >
             {{ item.label }}
-          </RouterLink>
+          </NavbarLink>
           <NavbarSubmenu
             v-else-if="item.submenu"
             :menu="item.submenu"
@@ -26,6 +27,7 @@
 
 <script setup>
 import NavbarSubmenu from './NavbarSubmenu.vue'
+import NavbarLink from './NavbarLink.vue'
 
 defineProps({
   menu: {

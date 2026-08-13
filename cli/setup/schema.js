@@ -239,14 +239,22 @@ export default {
             sortable: true,
             items: {
               label: { type: 'string', label: 'Label' },
-              link: { type: 'string', label: 'URL' },
+              link: {
+                type: 'string',
+                label: 'URL',
+                placeholder: '/page or https://example.com'
+              },
               submenu: {
                 type: 'array',
                 label: 'Submenu',
                 optional: true,
                 items: {
                   label: { type: 'string', label: 'Label' },
-                  link: { type: 'string', label: 'URL' }
+                  link: {
+                    type: 'string',
+                    label: 'URL',
+                    placeholder: '/page or https://example.com'
+                  }
                 }
               }
             }

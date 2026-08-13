@@ -41,24 +41,26 @@
                   v-for="item in item.submenu"
                   class="border-b last:border-b-2 border-b-base-border"
                 >
-                  <RouterLink
+                  <NavbarLink
                     class="cursor-pointer text-base-content w-full py-3 px-4 box-border block"
-                    :to="item.link"
+                    :link="item.link"
+                    :target="item.target"
                     @click="() => (isMenuVisible = false)"
                   >
                     {{ item.label }}
-                  </RouterLink>
+                  </NavbarLink>
                 </div>
               </div>
             </div>
-            <RouterLink
+            <NavbarLink
               v-else
-              :to="item.link"
+              :link="item.link"
+              :target="item.target"
               class="text-base-content w-full p-4 py-3 block box-border"
               @click="() => (isMenuVisible = false)"
             >
               {{ item.label }}
-            </RouterLink>
+            </NavbarLink>
           </li>
           <li>
             <ClientOnly>
@@ -83,6 +85,7 @@
 <script setup>
 import { ref } from 'vue'
 import SwitchTheme from '../SwitchTheme.vue'
+import NavbarLink from './NavbarLink.vue'
 
 const { header_links } = __APP_ENV__
 const isMenuVisible = ref(false)

@@ -7,6 +7,12 @@ export function isValidUrl(string) {
   }
 }
 
+const EXTERNAL_LINK_REGEX = /^([a-z][a-z0-9+.-]*:|\/\/)/i
+
+export function isExternalLink(link) {
+  return typeof link === 'string' && EXTERNAL_LINK_REGEX.test(link)
+}
+
 export function resolveAssetUrl(path, baseUrl = '/') {
   if (!path) return path
 
