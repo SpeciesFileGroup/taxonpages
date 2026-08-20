@@ -37,6 +37,52 @@ import ListTypeSpecimens from './components/ListTypeSpecimens.vue'
 // Module-level cache: institutionCode → full name
 const instNameCache = new Map()
 
+const UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i
+
+// Type material labels look like "Holotype; adult; <identifier>; deposited at: <institution>; <verbatim>"
+// <identifier> is the catalogNumber, or (when none was entered) the specimen's occurrenceID UUID.
+// The "deposited at:" segment is sometimes absent (no repository recorded), so look for a bare
+// UUID first — it's unambiguous regardless of label shape — before falling back to position.
+function extractTypeIdentifier(label) {
+  const uuidMatch = label.match(UUID_RE)
+  if (uuidMatch) return uuidMatch[0]
+
+  const parts = label.split('; ')
+  const depositedIndex = parts.findIndex((p) => p.startsWith('deposited at:'))
+  return depositedIndex > 0 ? parts[depositedIndex - 1].trim() : null
+}
+
+// Type specimens are only found by the OTU dwc.json endpoint when they carry a current
+// determination to this OTU. Specimens whose determination was never updated (e.g. after
+// a name change) are known to TaxonWorks only via type_material.json, so fetch those
+// individually and merge them in.
+async function fetchMissingTypeSpecimens(typeLabels, existingRecords) {
+  const known = new Set(existingRecords.map((r) => r.occurrenceID).filter(Boolean))
+  const queued = new Set()
+  const found = []
+
+  await Promise.all(
+    typeLabels.map(async ({ label }) => {
+      const identifier = extractTypeIdentifier(label)
+      if (!identifier || queued.has(identifier)) return
+      queued.add(identifier)
+
+      const isUuid = UUID_RE.test(identifier)
+      if (isUuid && known.has(identifier)) return
+      if (!isUuid && existingRecords.some((r) => r.catalogNumber === identifier)) return
+
+      try {
+        const { data } = await makeAPIRequest.get('/dwc_occurrences.json', {
+          params: isUuid ? { occurrenceID: identifier } : { catalogNumber: identifier }
+        })
+        if (data?.length === 1) found.push(data[0])
+      } catch {}
+    })
+  )
+
+  return found
+}
+
 async function resolveInstitutionName(code, institutionID) {
   if (!code) return null
   if (instNameCache.has(code)) return instNameCache.get(code)
@@ -95,9 +141,19 @@ const typeSpecimenRecords = computed(() =>
 
 function loadDwc() {
   isLoading.value = true
-  makeAPIRequest
-    .get(`/otus/${props.otuId}/inventory/dwc.json`)
-    .then(async ({ headers, data }) => {
+  Promise.all([
+    makeAPIRequest.get(`/otus/${props.otuId}/inventory/dwc.json`),
+    makeAPIRequest
+      .get(`/otus/${props.otuId}/inventory/type_material.json`)
+      .catch(() => ({ data: { type_materials_catalog_labels: [] } }))
+  ])
+    .then(async ([{ data }, { data: typeMaterialData }]) => {
+      const missingTypeSpecimens = await fetchMissingTypeSpecimens(
+        typeMaterialData.type_materials_catalog_labels || [],
+        data
+      )
+      data.push(...missingTypeSpecimens)
+
       data.sort((a, b) => {
         if (a.associatedMedia && !b.associatedMedia) {
           return -1

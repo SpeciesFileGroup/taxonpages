@@ -12,8 +12,6 @@ taxa_page:
 
         - - panel:map-v2
 #         - panel:map
-          - id: panel:asserted-distributions
-            rankGroup: ['SpeciesGroup']
           - panel:content
           - panel:keys
           - panel:statistics
@@ -27,6 +25,12 @@ taxa_page:
     panels:
       - - - panel:specimen-records
       - - - panel:field-occurrences
+
+  asserted_distributions:
+      label: 'Asserted Distributions'
+      rank_group: ['SpeciesGroup']
+      panels:
+      - - - panel:asserted-distributions
 
   inaturalist:
     label: 'iNaturalist'
