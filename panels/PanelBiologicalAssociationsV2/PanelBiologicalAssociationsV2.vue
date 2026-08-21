@@ -4,9 +4,94 @@
       <VSpinner v-if="isLoading" />
     </ClientOnly>
     <VCardHeader>
-      Biological associations ({{ pagination.total }})
+      Biological associations ({{ headerCount }})
     </VCardHeader>
     <VCardContent class="min-h-[6rem] overflow-x-auto">
+
+      <!-- Summary: higher-rank pages (genus and above), before drilling into a group.
+           Two directions, since this taxon can appear as subject or object of an
+           association (or both) — grouping always by "object" would be degenerate
+           on a page whose taxon is itself the object side (e.g. a host plant page). -->
+      <template v-if="showSummary">
+        <div
+          v-if="summaryTruncated"
+          class="mb-4 text-sm text-warning"
+        >Showing a partial summary — this taxon has more associations than can be summarized at once.</div>
+        <div class="mb-4 flex items-center gap-2 text-sm">
+          <span class="opacity-60">Group by:</span>
+          <button
+            class="px-2 py-1 rounded cursor-pointer"
+            :class="groupBy === 'family' ? 'bg-secondary text-secondary-content' : 'hover:underline'"
+            @click="groupBy = 'family'"
+          >Family</button>
+          <button
+            class="px-2 py-1 rounded cursor-pointer"
+            :class="groupBy === 'genus' ? 'bg-secondary text-secondary-content' : 'hover:underline'"
+            @click="groupBy = 'genus'"
+          >Genus</button>
+        </div>
+
+        <template v-if="summaryAsSubjectGroups.length">
+          <h3 class="text-sm font-semibold opacity-70 mb-2">As subject — objects by {{ groupBy }}</h3>
+          <VTable class="mb-6">
+            <VTableHeader class="normal-case">
+              <VTableHeaderRow>
+                <VTableHeaderCell>{{ groupBy === 'family' ? 'Family' : 'Genus' }}</VTableHeaderCell>
+                <VTableHeaderCell>Associations</VTableHeaderCell>
+              </VTableHeaderRow>
+            </VTableHeader>
+            <VTableBody>
+              <VTableBodyRow
+                v-for="group in summaryAsSubjectGroups"
+                :key="group.key"
+                class="cursor-pointer hover:bg-base-foreground"
+                @click="selectGroup(group)"
+              >
+                <VTableBodyCell>{{ group.key }}</VTableBodyCell>
+                <VTableBodyCell>{{ group.count }}</VTableBodyCell>
+              </VTableBodyRow>
+            </VTableBody>
+          </VTable>
+        </template>
+
+        <template v-if="summaryAsObjectGroups.length">
+          <h3 class="text-sm font-semibold opacity-70 mb-2">As object — subjects by {{ groupBy }}</h3>
+          <VTable>
+            <VTableHeader class="normal-case">
+              <VTableHeaderRow>
+                <VTableHeaderCell>{{ groupBy === 'family' ? 'Family' : 'Genus' }}</VTableHeaderCell>
+                <VTableHeaderCell>Associations</VTableHeaderCell>
+              </VTableHeaderRow>
+            </VTableHeader>
+            <VTableBody>
+              <VTableBodyRow
+                v-for="group in summaryAsObjectGroups"
+                :key="group.key"
+                class="cursor-pointer hover:bg-base-foreground"
+                @click="selectGroup(group)"
+              >
+                <VTableBodyCell>{{ group.key }}</VTableBodyCell>
+                <VTableBodyCell>{{ group.count }}</VTableBodyCell>
+              </VTableBodyRow>
+            </VTableBody>
+          </VTable>
+        </template>
+
+        <div
+          v-if="!isLoading && !summaryAsSubjectGroups.length && !summaryAsObjectGroups.length"
+          class="text-xl text-center my-8 w-full"
+        >
+          No records found.
+        </div>
+      </template>
+
+      <template v-else>
+      <button
+        v-if="selectedGroup"
+        class="mb-4 text-sm text-secondary hover:underline cursor-pointer"
+        @click="clearGroupSelection"
+      >&larr; Back to summary ({{ selectedGroup.key }})</button>
+
       <VPagination
         v-if="biologicalAssociations.length"
         class="mb-4"
@@ -18,17 +103,15 @@
       <VTable v-if="biologicalAssociations.length">
         <VTableHeader class="normal-case">
           <VTableHeaderRow>
-            <VTableHeaderCell colspan="3">Subject</VTableHeaderCell>
+            <VTableHeaderCell colspan="2">Subject</VTableHeaderCell>
             <VTableHeaderCell class="border-l-2 border-r-2">Biological</VTableHeaderCell>
-            <VTableHeaderCell colspan="3">Object</VTableHeaderCell>
+            <VTableHeaderCell colspan="2">Object</VTableHeaderCell>
             <VTableHeaderCell class="border-l-2" colspan="3">Metadata</VTableHeaderCell>
           </VTableHeaderRow>
           <VTableHeaderRow>
             <VTableHeaderCell>Family</VTableHeaderCell>
             <VTableHeaderCell>Label</VTableHeaderCell>
-            <VTableHeaderCell>Properties</VTableHeaderCell>
             <VTableHeaderCell class="border-l-2 border-r-2">Relationship</VTableHeaderCell>
-            <VTableHeaderCell>Properties</VTableHeaderCell>
             <VTableHeaderCell>Family</VTableHeaderCell>
             <VTableHeaderCell>Label</VTableHeaderCell>
             <VTableHeaderCell class="border-l-2">Depictions</VTableHeaderCell>
@@ -70,9 +153,7 @@
               </div>
             </VTableBodyCell>
 
-            <VTableBodyCell>{{ ba.biologicalPropertySubject }}</VTableBodyCell>
             <VTableBodyCell class="border-l-2 border-r-2">{{ ba.biologicalRelationship }}</VTableBodyCell>
-            <VTableBodyCell>{{ ba.biologicalPropertyObject }}</VTableBodyCell>
 
             <VTableBodyCell>{{ ba.objectFamily }}</VTableBodyCell>
 
@@ -215,6 +296,7 @@
       >
         No records found.
       </div>
+      </template>
     </VCardContent>
   </VCard>
 </template>
@@ -223,35 +305,107 @@
 /**
  * PanelBiologicalAssociationsV2.vue
  *
- * Fetches /biological_associations with extend[]=object,subject,biological_relationship,
- * taxonomy,biological_relationship_types in one call. Subject/object properties are
- * extracted inline from biological_relationship_types[].
+ * Fetches /biological_associations with extend[]=object,subject,biological_relationship
+ * for object_tag/label HTML, in parallel with /biological_associations/basic
+ * (matched by id) for subject_otu_id/object_otu_id, family, and citations —
+ * all pre-computed on the biological_association_indices table, so this stays
+ * cheap regardless of page size. Deliberately no extend[]=taxonomy: that path
+ * recomputes ancestry per row on the live model (see TaxonWorks'
+ * Shared::Taxonomy#set_taxonomy) and is dramatically slower at scale.
  *
- * OTU IDs for non-OTU entities (CO, FO, AnatomicalPart) are resolved by extracting
- * taxon_name_id from the otu_tag_taxon_name span and batch-fetching /otus.
+ * Scoped by otu_query[taxon_name_id]+descendants (not otu_id): this is what
+ * makes the panel show data on genus/tribe/subfamily/etc. pages, not just
+ * species — taxon_name_id+descendants joins against TaxonWorks' indexed
+ * taxon_name_hierarchies closure table, so it stays fast (~2s) regardless of
+ * how many descendant taxa are in scope. taxonId/taxon come for free from
+ * PageLayout.vue (package), which passes the current taxon down to every
+ * panel — note it does NOT forward a separate taxon-rank prop (only uses it
+ * internally for its own panel-visibility check), so rank comes from
+ * taxon.rank_string, not a taxonRank prop.
+ *
+ * Above species rank, a flat row list doesn't scale (a subfamily can have
+ * ~1000 associations), so instead a summary view groups the *object* side
+ * (usually the host/interaction partner) by family or genus — toggle is
+ * client-side only, both fields already come from the one /basic fetch.
+ * Grouping by genus (rather than always family) matters when several genera
+ * in one family are actually clustered on a single host genus — collapsing
+ * straight to family would hide that. Clicking a group drills into the flat,
+ * fully-detailed table (images/citations/distributions) scoped to just that
+ * group's association ids.
  */
 
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { makeAPIRequest } from '@/utils'
 import { useOtuPageRequest } from '@/modules/otus/helpers/useOtuPageRequest.js'
+import { isAvailableForRank } from '@/modules/otus/utils'
+import { SPECIES_GROUP, SPECIES_AND_INFRASPECIES_GROUP } from '@/modules/otus/constants'
 import DwcTable from './DwcTable.vue'
 import {
   makeBiologicalAssociation,
-  isSpecimenType,
-  extractTaxonNameId
+  isSpecimenType
 } from './makeBiologicalAssociation.js'
 
-const fullExtend = ['object', 'subject', 'biological_relationship', 'taxonomy', 'biological_relationship_types']
+const fullExtend = ['object', 'subject', 'biological_relationship']
 
 const props = defineProps({
   otuId: {
     type: Number,
     required: true
   },
+  taxonId: {
+    type: [Number, String],
+    required: true
+  },
+  taxon: {
+    type: Object,
+    default: () => ({})
+  },
   per: {
     type: Number,
     default: 50
   }
+})
+
+// PageLayout.vue (package) only forwards taxon-rank into its own internal
+// v-if for whether to render a panel at all — it does NOT pass it down as a
+// prop. The full taxon object *is* passed down, and carries rank_string, so
+// read rank off that instead.
+const isSpeciesLevel = computed(() =>
+  isAvailableForRank([SPECIES_GROUP, SPECIES_AND_INFRASPECIES_GROUP], props.taxon?.rank_string)
+)
+
+// Higher-rank (above species) summary state — two directions, fetched
+// separately via subject_taxon_name_id/object_taxon_name_id (not the
+// ambiguous otu_query[taxon_name_id], which matches either side). Raw rows
+// are kept so groupBy can be switched client-side with no re-fetch.
+const summaryAsSubjectRows = ref([]) // this taxon (or descendants) is the subject
+const summaryAsObjectRows  = ref([]) // this taxon (or descendants) is the object
+const summaryTruncated = ref(false) // true if either direction hit SUMMARY_FETCH_CAP
+const groupBy = ref('family') // 'family' | 'genus'
+const selectedGroup = ref(null) // { key, count, ids } while drilled into one group
+
+const showSummary = computed(() => !isSpeciesLevel.value && !selectedGroup.value)
+
+function groupRows(rows, side) {
+  const groups = new Map()
+  for (const row of rows) {
+    const key = row[side]?.[groupBy.value] || 'Unclassified'
+    if (!groups.has(key)) groups.set(key, [])
+    groups.get(key).push(row.id)
+  }
+  return [...groups.entries()]
+    .map(([key, ids]) => ({ key, count: ids.length, ids }))
+    .sort((a, b) => b.count - a.count)
+}
+
+// This taxon is the subject → the interesting summary is the object side, and vice versa.
+const summaryAsSubjectGroups = computed(() => groupRows(summaryAsSubjectRows.value, 'object'))
+const summaryAsObjectGroups  = computed(() => groupRows(summaryAsObjectRows.value, 'subject'))
+
+const headerCount = computed(() => {
+  if (!showSummary.value) return pagination.value.total
+  const ids = new Set([...summaryAsSubjectRows.value, ...summaryAsObjectRows.value].map((r) => r.id))
+  return ids.size
 })
 
 const biologicalAssociations = ref([])
@@ -292,8 +446,59 @@ function linkify(html) {
 }
 
 onMounted(() => {
-  loadBiologicalAssociations()
+  if (isSpeciesLevel.value) {
+    loadBiologicalAssociations()
+  } else {
+    loadSummary()
+  }
 })
+
+/**
+ * Fetches every matching /basic row for the whole higher-taxon scope, split
+ * by direction (capped at 3000 each — this project's entire dataset is
+ * currently ~3000 associations total, and /basic stays flat even at that
+ * scale, unlike the live extend[]=taxonomy path). subject_taxon_name_id and
+ * object_taxon_name_id are independent top-level filter params on
+ * BiologicalAssociation::Filter (unlike otu_query[taxon_name_id], which
+ * matches either side and can't tell you which). Grouping itself is the
+ * summaryAsSubjectGroups/summaryAsObjectGroups computeds, so switching
+ * groupBy needs no re-fetch.
+ */
+const SUMMARY_FETCH_CAP = 3000
+
+async function loadSummary() {
+  isLoading.value = true
+  try {
+    const [asSubject, asObject] = await Promise.all([
+      makeAPIRequest.get('/biological_associations/basic', {
+        params: { 'subject_taxon_name_id[]': props.taxonId, descendants: true, per: SUMMARY_FETCH_CAP }
+      }),
+      makeAPIRequest.get('/biological_associations/basic', {
+        params: { 'object_taxon_name_id[]': props.taxonId, descendants: true, per: SUMMARY_FETCH_CAP }
+      })
+    ])
+    summaryAsSubjectRows.value = asSubject.data
+    summaryAsObjectRows.value = asObject.data
+    summaryTruncated.value =
+      Number(asSubject.headers['pagination-total']) > SUMMARY_FETCH_CAP ||
+      Number(asObject.headers['pagination-total']) > SUMMARY_FETCH_CAP
+  } catch (e) {
+    // silently fail
+  } finally {
+    isLoading.value = false
+  }
+}
+
+function selectGroup(group) {
+  selectedGroup.value = group
+  pagination.value = { page: 1, per: props.per, total: group.count }
+  loadBiologicalAssociations(1)
+}
+
+function clearGroupSelection() {
+  selectedGroup.value = null
+  biologicalAssociations.value = []
+}
 
 function makeGalleryImage(depiction) {
   return {
@@ -395,73 +600,75 @@ async function fetchDistributions(associationIds) {
 }
 
 /**
- * Batch-fetches OTU IDs for a list of taxon_name_ids.
- * The taxon_name_id is extracted from the otu_tag_taxon_name span title
- * attribute in each subject/object's object_tag HTML.
- * Returns Map<taxonNameId, otuId>.
+ * Query-string prefix scoping the request to either the taxon (default) or
+ * a specific group's association ids (once drilled in from the summary).
+ * Built as a literal query string, not an axios params object — id lists
+ * need repeated `biological_association_id[]=` entries the same way every
+ * other multi-id filter in this file does (see fetchDepictions etc.), which
+ * an object passed to axios `params` isn't guaranteed to serialize as.
  */
-async function fetchOtuIds(taxonNameIds) {
-  if (!taxonNameIds.length) return new Map()
+function scopeQueryString() {
   const params = new URLSearchParams()
-  taxonNameIds.forEach((id) => params.append('taxon_name_id[]', id))
-  try {
-    const { data } = await makeAPIRequest.get(`/otus?${params.toString()}`)
-    return new Map(data.map((otu) => [otu.taxon_name_id, otu.id]))
-  } catch {
-    return new Map()
+  if (selectedGroup.value) {
+    selectedGroup.value.ids.forEach((id) => params.append('biological_association_id[]', id))
+  } else {
+    params.append('otu_query[coordinatify]', 'true')
+    params.append('otu_query[taxon_name_id][]', props.taxonId)
+    params.append('otu_query[descendants]', 'true')
   }
+  return params.toString()
 }
 
+/**
+ * Fetches the same page from /biological_associations/basic (same scope/
+ * page/per params, so it lines up 1:1 with the full-endpoint page by id).
+ * Reads from biological_association_indices — cheap even at large per,
+ * unlike extend[]=taxonomy on the live model. Returns Map<associationId, basicRow>.
+ */
+async function fetchBasic(url, params) {
+  const { data } = await makeAPIRequest.get(url, { params })
+  return new Map(data.map((row) => [row.id, row]))
+}
+
+// Guards against a slow request finishing after a newer one (e.g. switching
+// summary groups faster than the previous group's fetch resolves) and
+// overwriting fresher results with stale ones.
+let loadRequestId = 0
+
 async function loadBiologicalAssociations(page = 1) {
+  const requestId = ++loadRequestId
   isLoading.value = true
 
-  const baseParams = {
-    'otu_query[coordinatify]': true,
-    'otu_query[otu_id][]': props.otuId,
-    per: pagination.value.per,
-    page
-  }
+  const scope = scopeQueryString()
+  const params = { per: pagination.value.per, page }
 
   try {
     const { data, headers } = await useOtuPageRequest(
       'panel:biological-associations-v2',
-      () => makeAPIRequest.get('/biological_associations', {
-        params: { ...baseParams, extend: fullExtend }
+      () => makeAPIRequest.get(`/biological_associations?${scope}`, {
+        params: { ...params, extend: fullExtend }
       })
     )
 
-    pagination.value = {
-      page: Number(headers['pagination-page']),
-      per: Number(headers['pagination-per-page']),
-      total: Number(headers['pagination-total'])
-    }
-
     const associationIds = data.map((d) => d.id)
 
-    // Collect taxon_name_ids from all non-OTU entities (CO, FO, AnatomicalPart, …)
-    const taxonNameIds = new Set()
-    for (const item of data) {
-      for (const entity of [item.subject, item.object]) {
-        if (!entity || entity.base_class === 'Otu') continue
-        const id = extractTaxonNameId(entity.object_tag)
-        if (id) taxonNameIds.add(id)
-      }
-    }
-
-    const [depictionsMap, distributionsMap, citationsMap, otuByTaxonName] = await Promise.all([
+    const [depictionsMap, distributionsMap, citationsMap, basicMap] = await Promise.all([
       fetchDepictions(associationIds),
       fetchDistributions(associationIds),
       fetchCitations(associationIds),
-      fetchOtuIds([...taxonNameIds])
+      fetchBasic(`/biological_associations/basic?${scope}`, params)
     ])
 
     // Pre-fetch DWC locality for CO/FO subjects (grouped by OTU to avoid duplicate fetches)
     const cosByOtuId = new Map()
     for (const item of data) {
-      for (const entity of [item.subject, item.object]) {
+      const basic = basicMap.get(item.id)
+      if (!basic) continue
+      for (const [entity, otuId] of [
+        [item.subject, basic.subject_otu_id],
+        [item.object, basic.object_otu_id]
+      ]) {
         if (!entity || !isSpecimenType(entity.base_class)) continue
-        const taxonNameId = extractTaxonNameId(entity.object_tag)
-        const otuId = otuByTaxonName.get(taxonNameId)
         if (otuId && entity.id) {
           if (!cosByOtuId.has(otuId)) cosByOtuId.set(otuId, [])
           cosByOtuId.get(otuId).push(entity.id)
@@ -486,31 +693,33 @@ async function loadBiologicalAssociations(page = 1) {
       })
     )
 
-    biologicalAssociations.value = data.map((item) => {
-      const types = item.biological_relationship_types || []
-      const subjectProperties = types
-        .filter((t) => t.target === 'subject' && t.biological_property?.name)
-        .map((t) => t.biological_property.name)
-        .join(' | ') || null
-      const objectProperties = types
-        .filter((t) => t.target === 'object' && t.biological_property?.name)
-        .map((t) => t.biological_property.name)
-        .join(' | ') || null
-      return makeBiologicalAssociation(
+    const associations = data.map((item) =>
+      makeBiologicalAssociation(
         item,
         depictionsMap.get(item.id)    || [],
         distributionsMap.get(item.id) || [],
         citationsMap.get(item.id)     || [],
-        otuByTaxonName,
-        localityByCoId,
-        { subjectProperties, objectProperties }
+        basicMap.get(item.id)         || null,
+        localityByCoId
       )
-    })
+    )
+
+    if (requestId !== loadRequestId) return // superseded by a newer request
+
+    pagination.value = {
+      page: Number(headers['pagination-page']),
+      per: Number(headers['pagination-per-page']),
+      total: Number(headers['pagination-total'])
+    }
+    biologicalAssociations.value = associations
 
   } catch (e) {
-    // silently fail
+    if (requestId === loadRequestId) {
+      biologicalAssociations.value = []
+      pagination.value = { ...pagination.value, total: 0 }
+    }
   } finally {
-    isLoading.value = false
+    if (requestId === loadRequestId) isLoading.value = false
   }
 }
 </script>

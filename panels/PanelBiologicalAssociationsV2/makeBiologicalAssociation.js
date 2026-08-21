@@ -1,38 +1,17 @@
 /**
  * makeBiologicalAssociation.js
  *
- * Transforms a merged full+basic /biological_associations response into a flat
- * object for display in PanelBiologicalAssociationsV2.
+ * Transforms a /biological_associations response (extend[]=object,subject,
+ * biological_relationship) into a flat object for display in
+ * PanelBiologicalAssociationsV2. Species name HTML comes from the object_tag
+ * span (no taxonomy extend needed — see extractNameHtml).
  *
- * Full endpoint  → subject/object taxonomy, object_tag (CO/FO/AnatomicalPart labels)
- * Basic endpoint → subject.properties / object.properties (pre-formatted strings)
- *
- * otuByTaxonName: Map<taxonNameId, otuId>
- *   Batch-fetched from /otus?taxon_name_id[]=X for all non-OTU entities.
- *
- * basicProps: { subjectProperties, objectProperties } from the basic endpoint.
+ * basic: the matching row from /biological_associations/basic for this
+ *   association (same id). Supplies subject_otu_id/object_otu_id,
+ *   subject.family/object.family and citations from the pre-computed
+ *   biological_association_indices table — cheap even at large page sizes,
+ *   unlike the live extend[]=taxonomy path.
  */
-
-/**
- * Extracts the taxon_name_id from a TaxonWorks otu_tag_taxon_name span.
- * e.g. <span class="otu_tag_taxon_name" title="829664">...</span> → 829664
- */
-export function extractTaxonNameId(objectTag) {
-  if (!objectTag) return null
-  const match = objectTag.match(/otu_tag_taxon_name[^>]*?title="(\d+)"/)
-  return match ? Number(match[1]) : null
-}
-
-/**
- * Extracts the OTU ID directly from a TaxonWorks otu_tag_otu_name span.
- * Used for OTUs that have no taxon name — the span title IS the OTU ID.
- * e.g. <span class="otu_tag_otu_name" title="1373587">Libanotis pyrenaica</span> → 1373587
- */
-export function extractOtuId(objectTag) {
-  if (!objectTag) return null
-  const match = objectTag.match(/otu_tag_otu_name[^>]*?title="(\d+)"/)
-  return match ? Number(match[1]) : null
-}
 
 /**
  * Returns true for physical specimen types (not taxa, not anatomical parts).
@@ -42,15 +21,30 @@ export function isSpecimenType(type) {
 }
 
 /**
- * Extracts the inner HTML of an otu_tag_taxon_name or otu_tag_otu_name span.
- * Used as a fallback when taxonomy is not extended in the full endpoint.
+ * Extracts the inner HTML of an otu_tag_taxon_name or otu_tag_otu_name span
+ * from object_tag — already italicized by TaxonWorks, no taxonomy extend needed.
+ *
+ * A name can carry multiple separately-italicized runs, e.g. a subgenus:
+ * "<i>Hypera</i> (<i>Hypera</i>) <i>miles</i> (Paykull, 1792)" — so the match
+ * must be greedy (first <i> to *last* </i>) to keep the whole construct, not
+ * just the first run.
+ *
+ * A taxon-name-linked determination reaching only genus rank (no species
+ * epithet) renders as a single italicized word, e.g. "<i>Promecops</i>
+ * Sahlberg, 1823" — TaxonWorks' own tag omits any "sp." qualifier, so add
+ * one back. Detected by stripping tags/parens from the matched run and
+ * counting words, not by naively checking for whitespace in a single
+ * capture (which the subgenus case would misread as "has a species").
  */
 function extractNameHtml(objectTag) {
   if (!objectTag) return null
   const span = objectTag.match(/otu_tag_(?:taxon_name|otu_name)[^>]*>([\s\S]*?)<\/span>/)
   if (!span) return null
-  const italics = span[1].match(/(<i>[\s\S]*<\/i>)/)
-  return italics ? italics[1] : (span[1].trim() || null)
+  const italics = span[1].match(/<i>[\s\S]*<\/i>/)
+  if (!italics) return span[1].trim() || null
+  const html = italics[0]
+  const words = html.replace(/<[^>]+>/g, '').replace(/[()]/g, '').trim().split(/\s+/).filter(Boolean)
+  return words.length > 1 ? html : `${html} sp.`
 }
 
 /**
@@ -64,16 +58,7 @@ function extractNameHtml(objectTag) {
  * Keeping prefix separate lets the template wrap only the species name in a RouterLink.
  */
 function buildLabelParts(entity) {
-  const genus   = entity.taxonomy?.genus?.[1]
-  const species = entity.taxonomy?.species?.[1]
-  let speciesHtml = genus && species ? `<i>${genus} ${species}</i>`
-    : genus ? `<i>${genus}</i> sp.` : null
-
-  // CO/FO/AnatomicalPart: taxonomy may not be extended — fall back to
-  // the name HTML already present in the otu_tag_taxon_name span.
-  if (!speciesHtml) {
-    speciesHtml = extractNameHtml(entity.object_tag)
-  }
+  const speciesHtml = extractNameHtml(entity.object_tag)
 
   if (speciesHtml) {
     if (entity.base_class !== 'Otu' && !isSpecimenType(entity.base_class)) {
@@ -97,16 +82,12 @@ export function makeBiologicalAssociation(
   images         = [],
   distributions  = [],
   citationList   = [],
-  otuByTaxonName = new Map(),
-  localityByCoId = new Map(),
-  basicProps     = {}         // { subjectProperties, objectProperties } from /basic endpoint
+  basic          = null,
+  localityByCoId = new Map()
 ) {
   const subj = data.subject || {}
   const obj  = data.object  || {}
   const rel  = data.biological_relationship || {}
-
-  const subjTaxonNameId = subj.base_class !== 'Otu' ? extractTaxonNameId(subj.object_tag) : null
-  const objTaxonNameId  = obj.base_class  !== 'Otu' ? extractTaxonNameId(obj.object_tag)  : null
 
   const subjLabel = buildLabelParts(subj)
   const objLabel  = buildLabelParts(obj)
@@ -116,33 +97,27 @@ export function makeBiologicalAssociation(
 
     subjectId:           subj.id,
     subjectType:         subj.base_class,
-    subjectFamily:       subj.taxonomy?.family || null,
+    subjectFamily:       basic?.subject?.family || null,
     subjectLabelPrefix:  subjLabel.prefix,
     subjectSpeciesHtml:  subjLabel.html,
-    subjectOtuId:        subj.base_class === 'Otu'
-                          ? subj.id
-                          : (otuByTaxonName.get(subjTaxonNameId) || extractOtuId(subj.object_tag) || null),
+    subjectOtuId:        basic?.subject_otu_id || null,
     subjectDetail:      subj.object_tag || null,
     subjectLocality:    isSpecimenType(subj.base_class) ? (localityByCoId.get(subj.id) || null) : null,
     subjectCollector:   isSpecimenType(subj.base_class) ? (localityByCoId.get(subj.id)?.recordedBy || null) : null,
 
-    biologicalPropertySubject: basicProps.subjectProperties || null,
     biologicalRelationship:    rel.name || '',
-    biologicalPropertyObject:  basicProps.objectProperties  || null,
 
     objectId:           obj.id,
     objectType:         obj.base_class,
-    objectFamily:       obj.taxonomy?.family || null,
+    objectFamily:       basic?.object?.family || null,
     objectLabelPrefix:  objLabel.prefix,
     objectSpeciesHtml:  objLabel.html,
-    objectOtuId:       obj.base_class === 'Otu'
-                         ? obj.id
-                         : (otuByTaxonName.get(objTaxonNameId) || extractOtuId(obj.object_tag) || null),
+    objectOtuId:        basic?.object_otu_id || null,
     objectDetail:      obj.object_tag || null,
     objectLocality:    isSpecimenType(obj.base_class) ? (localityByCoId.get(obj.id) || null) : null,
     objectCollector:   isSpecimenType(obj.base_class) ? (localityByCoId.get(obj.id)?.recordedBy || null) : null,
 
-    citations:    data.citations,
+    citations:    basic?.citations || null,
     citationList,
     images,
     distributions
