@@ -100,7 +100,7 @@ import { LEGEND } from './constants'
 import MapPopup from './components/MapPopup.vue'
 import CachedMap from './components/CachedMap.vue'
 import OtuSearch from './components/Search/OtuSearch.vue'
-import DwcTable from './components/DwcTable.vue'
+import DwcTable from '../_shared/DwcTable.vue'
 
 const props = defineProps({
   otuId: {

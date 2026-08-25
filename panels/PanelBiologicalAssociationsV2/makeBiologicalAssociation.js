@@ -21,6 +21,27 @@ export function isSpecimenType(type) {
 }
 
 /**
+ * Resolves the physical specimen (CollectionObject/FieldOccurrence) an
+ * entity refers to, so locality/collector lookup and the DWC info button
+ * work the same for a direct CO/FO and for an AnatomicalPart attached to
+ * one.
+ *
+ * An AnatomicalPart's own id (e.g. 99) is not the specimen id — the API
+ * doesn't expose the wrapped specimen as a structured field, only baked
+ * into object_label as "nidus: FieldOccurrence 4996; <uuid>; ...", the same
+ * catalog-string format CO depiction labels use. Parse it out from there.
+ */
+export function resolveSpecimenRef(entity) {
+  if (!entity) return null
+  if (isSpecimenType(entity.base_class)) return { type: entity.base_class, id: entity.id }
+  if (entity.base_class === 'AnatomicalPart') {
+    const m = (entity.object_label || '').match(/\b(CollectionObject|FieldOccurrence)\s+(\d+)/)
+    if (m) return { type: m[1], id: Number(m[2]) }
+  }
+  return null
+}
+
+/**
  * Extracts the inner HTML of an otu_tag_taxon_name or otu_tag_otu_name span
  * from object_tag — already italicized by TaxonWorks, no taxonomy extend needed.
  *
@@ -92,30 +113,33 @@ export function makeBiologicalAssociation(
   const subjLabel = buildLabelParts(subj)
   const objLabel  = buildLabelParts(obj)
 
+  const subjSpecimen = resolveSpecimenRef(subj)
+  const objSpecimen  = resolveSpecimenRef(obj)
+
   return {
     id: data.id,
 
-    subjectId:           subj.id,
-    subjectType:         subj.base_class,
     subjectFamily:       basic?.subject?.family || null,
     subjectLabelPrefix:  subjLabel.prefix,
     subjectSpeciesHtml:  subjLabel.html,
     subjectOtuId:        basic?.subject_otu_id || null,
     subjectDetail:      subj.object_tag || null,
-    subjectLocality:    isSpecimenType(subj.base_class) ? (localityByCoId.get(subj.id) || null) : null,
-    subjectCollector:   isSpecimenType(subj.base_class) ? (localityByCoId.get(subj.id)?.recordedBy || null) : null,
+    subjectSpecimenType: subjSpecimen?.type || null,
+    subjectSpecimenId:   subjSpecimen?.id || null,
+    subjectLocality:    subjSpecimen ? (localityByCoId.get(subjSpecimen.id) || null) : null,
+    subjectCollector:   subjSpecimen ? (localityByCoId.get(subjSpecimen.id)?.recordedBy || null) : null,
 
     biologicalRelationship:    rel.name || '',
 
-    objectId:           obj.id,
-    objectType:         obj.base_class,
     objectFamily:       basic?.object?.family || null,
     objectLabelPrefix:  objLabel.prefix,
     objectSpeciesHtml:  objLabel.html,
     objectOtuId:        basic?.object_otu_id || null,
     objectDetail:      obj.object_tag || null,
-    objectLocality:    isSpecimenType(obj.base_class) ? (localityByCoId.get(obj.id) || null) : null,
-    objectCollector:   isSpecimenType(obj.base_class) ? (localityByCoId.get(obj.id)?.recordedBy || null) : null,
+    objectSpecimenType: objSpecimen?.type || null,
+    objectSpecimenId:   objSpecimen?.id || null,
+    objectLocality:    objSpecimen ? (localityByCoId.get(objSpecimen.id) || null) : null,
+    objectCollector:   objSpecimen ? (localityByCoId.get(objSpecimen.id)?.recordedBy || null) : null,
 
     citations:    basic?.citations || null,
     citationList,

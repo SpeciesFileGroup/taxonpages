@@ -84,7 +84,7 @@ makeAPIRequest.get(`/citations?${params}`)
 **Use only for the TaxonWorks API.** For external APIs (iNaturalist, GRSciColl) use `axios` directly or `fetch`.
 
 ### Known API gap — institution names
-TaxonWorks stores repositories internally (collection objects have a `repository_id`) but does **not** expose them via the public API. There is no `/repositories` endpoint and no `extend[]=repository` option on collection objects. The DWC endpoint only returns `institutionCode` (abbreviation, e.g. `"ZMUH"`) and `institutionID` (a GRBio URL). To resolve a full institution name, use GRSciColl (see DwcTable.vue for the lookup implementation).
+TaxonWorks stores repositories internally (collection objects have a `repository_id`) but does **not** expose them via the public API. There is no `/repositories` endpoint and no `extend[]=repository` option on collection objects. The DWC endpoint only returns `institutionCode` (abbreviation, e.g. `"ZMUH"`) and `institutionID` (a GRBio URL). To resolve a full institution name, use GRSciColl (see `panels/_shared/DwcTable.vue` for the lookup implementation).
 
 ## Global components (no import needed)
 
@@ -118,17 +118,21 @@ When inside a fixed overlay (like GalleryViewer), wrap in `<Teleport to="body">`
 
 ## DwcTable component
 
-**Deliberately duplicated** — two identical copies, kept in their respective panel folders for independence:
-- `panels/PanelMapV2/components/DwcTable.vue` — used by PanelMapV2 and GalleryViewer
-- `panels/PanelBiologicalAssociationsV2/DwcTable.vue` — used by BA panel
+Lives in `panels/_shared/DwcTable.vue` — shared across panels (same pattern as `panels/_gbifShared/`: a `_`-prefixed folder with no `main.js`, so the panel loader ignores it; plain relative imports pull it into whichever panel needs it).
 
-**If you change one copy, you must change the other.** Both files carry a `<!-- SYNC: ... -->` comment at the top as a reminder.
+**Depended on by:**
+- `panels/PanelMapV2/PanelMapV2.vue` — marker/list-row "show details"
+- `panels/PanelMapV2/components/Search/OtuSearch.vue` — search result rows
+- `panels/PanelGallery/GalleryViewer.vue` — image viewer overlay; wrap in `<Teleport to="body">` since GalleryViewer itself renders inside a fixed-position overlay
+- `panels/PanelBiologicalAssociationsV2/PanelBiologicalAssociationsV2.vue` — subject/object "ⓘ" button
+
+If you change this file, check all four call sites — none of them keep their own copy.
 
 Features: institution full name lookup via GRSciColl (GBIF API), OTU link on scientific name derived from `data.otu_id`, media thumbnails fetched from `associatedMedia` URLs.
 Exposes: `show({ id, type })` where `type` is `'CollectionObject'` or `'FieldOccurrence'`.
 
 **`associatedMedia` URL format**: pipe-separated absolute URLs like `https://sfg.taxonworks.org/api/v1/images/aa7639596f6a04744668dbec7c7493a3` (hex fingerprint, not numeric ID). To fetch via `makeAPIRequest`, extract the path with `/\/api\/v1(.+)/` and call `makeAPIRequest.get(m[1])`. The response has `{ id, thumb, original, medium, ... }` at the top level.
-Import example: `import DwcTable from '../PanelMapV2/components/DwcTable.vue'`
+Import example (from `panels/PanelBiologicalAssociationsV2/`): `import DwcTable from '../_shared/DwcTable.vue'`
 
 ## Institution name lookup
 

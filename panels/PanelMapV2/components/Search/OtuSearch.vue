@@ -75,7 +75,7 @@ import TaxonWorks from '@/modules/otus/services/TaxonWorks.js'
 import SearchBar from './SearchBar.vue'
 import ListResults from './ListResults.vue'
 import MapPopup from '../MapPopup.vue'
-import DwcTable from '../DwcTable.vue'
+import DwcTable from '../../../_shared/DwcTable.vue'
 
 const props = defineProps({
   shapes: {

@@ -1,5 +1,22 @@
-<!-- SYNC: This file is intentionally duplicated in PanelMapV2/components/DwcTable.vue.
-     Both copies must be kept identical. If you change one, change the other. -->
+<!--
+  Shared DWC detail modal for CollectionObject / FieldOccurrence records.
+  Exposes show({ id, type }) via defineExpose — type is 'CollectionObject'
+  or 'FieldOccurrence' (see @/constants/objectTypes). Fetches
+  /collection_objects/:id/dwc or /field_occurrences/:id/dwc and renders it,
+  plus a GRSciColl institution-name lookup and associatedMedia thumbnails.
+
+  Depended on by (relative import paths from panels/_shared/):
+    - ../PanelMapV2/PanelMapV2.vue                        — marker/list-row "show details"
+    - ../PanelMapV2/components/Search/OtuSearch.vue       — search result rows
+    - ../PanelGallery/GalleryViewer.vue                    — image viewer overlay;
+        wrap the ref's parent in <Teleport to="body"> since GalleryViewer itself
+        renders inside a fixed-position overlay
+    - ../PanelBiologicalAssociationsV2/PanelBiologicalAssociationsV2.vue
+        — subject/object "ⓘ" button
+
+  If you change this file, sanity-check all four call sites — none of them
+  keep their own copy anymore.
+-->
 <template>
   <VModal
     v-if="isModalVisible"
@@ -530,6 +547,7 @@ async function loadMediaImages(associatedMedia) {
   )
   mediaImages.value = results.filter(Boolean)
 }
+
 
 function show({ id, type }) {
   isModalVisible.value = true

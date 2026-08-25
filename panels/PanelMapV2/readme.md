@@ -23,7 +23,7 @@ The original popup showed bare item labels for all feature types. This version r
 - Clicking a citation opens the full reference in a modal overlay
 - Citations are cached at the module level so repeated opens are instant
 
-### Full DarwinCore record modal (`components/DwcTable.vue`)
+### Full DarwinCore record modal (`../_shared/DwcTable.vue`)
 
 Clicking a Collection Object or Field Occurrence row in the popup opens a structured modal with all available DwC fields, grouped into sections:
 
@@ -38,6 +38,8 @@ Clicking a Collection Object or Field Occurrence row in the popup opens a struct
 
 Empty fields are hidden. All labels share a single grid column so values align cleanly across sections.
 
+> This component moved to `panels/_shared/DwcTable.vue` so `PanelGallery`, `PanelBiologicalAssociationsV2`, and this panel's `Search/OtuSearch.vue` can all use the same modal instead of keeping duplicate copies. See [`../_shared/readme.md`](../_shared/readme.md) for the full list of dependents.
+
 ## Directory layout
 
 ```
@@ -47,7 +49,6 @@ PanelMapV2/
   clusters/               # Leaflet cluster icon logic
   components/
     CachedMap.vue         # Fallback cached-map image
-    DwcTable.vue          # Grouped DarwinCore record modal
     MapPopup.vue          # Popup rendered into the Leaflet popup element
     Search/               # OTU search overlay
   composables/

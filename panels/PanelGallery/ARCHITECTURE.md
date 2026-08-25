@@ -14,7 +14,7 @@ PanelGallery.vue
 ├── thumbnail strip         (inline <div> loop)
 └── GalleryViewer.vue       (local fork)
     ├── ControlImagePrevious / ControlImageNext   (package)
-    ├── DwcTable            (shared from panels/PanelMapV2/components/DwcTable.vue)
+    ├── DwcTable            (shared from panels/_shared/DwcTable.vue)
     └── VModal (Teleport)   (citation detail popup)
 ```
 

@@ -53,3 +53,4 @@ The lightbox reuses the global `ImageViewer` component. Images are shaped to mat
 
 - `useOtuPageRequest` is called with key `panel:biological-associations-v2` to avoid cache collisions with the built-in panel
 - The `citations` plain string from the basic endpoint is kept as a fallback for rows where no structured citations are found via `/citations`
+- The subject/object "ⓘ" button opens `../_shared/DwcTable.vue` (shared with PanelMapV2 and PanelGallery — see `../_shared/readme.md`). A subject/object can be an `AnatomicalPart` wrapping a CollectionObject/FieldOccurrence (e.g. a nidus) rather than the specimen directly; `resolveSpecimenRef()` in `makeBiologicalAssociation.js` parses the wrapped specimen's type+id out of `object_label` so locality/collector lookup and the info button still work for those rows

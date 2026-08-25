@@ -130,14 +130,14 @@
             <VTableBodyCell>
               <div class="flex flex-col gap-0.5">
                 <div
-                  v-if="isSpecimenType(ba.subjectType)"
+                  v-if="ba.subjectSpecimenType"
                   class="flex items-center gap-1"
                 >
-                  <span class="text-xs opacity-50">{{ ba.subjectType === 'CollectionObject' ? 'Collection Object' : 'Field Occurrence' }}</span>
+                  <span class="text-xs opacity-50">{{ ba.subjectSpecimenType === 'CollectionObject' ? 'Collection Object' : 'Field Occurrence' }}</span>
                   <button
                     class="shrink-0 opacity-40 hover:opacity-100 cursor-pointer leading-none text-xs"
                     title="Show details"
-                    @click="dwcTableRef.show({ id: ba.subjectId, type: ba.subjectType })"
+                    @click="dwcTableRef.show({ id: ba.subjectSpecimenId, type: ba.subjectSpecimenType })"
                   >ⓘ</button>
                 </div>
                 <span>
@@ -161,14 +161,14 @@
             <VTableBodyCell>
               <div class="flex flex-col gap-0.5">
                 <div
-                  v-if="isSpecimenType(ba.objectType)"
+                  v-if="ba.objectSpecimenType"
                   class="flex items-center gap-1"
                 >
-                  <span class="text-xs opacity-50">{{ ba.objectType === 'CollectionObject' ? 'Collection Object' : 'Field Occurrence' }}</span>
+                  <span class="text-xs opacity-50">{{ ba.objectSpecimenType === 'CollectionObject' ? 'Collection Object' : 'Field Occurrence' }}</span>
                   <button
                     class="shrink-0 opacity-40 hover:opacity-100 cursor-pointer leading-none text-xs"
                     title="Show details"
-                    @click="dwcTableRef.show({ id: ba.objectId, type: ba.objectType })"
+                    @click="dwcTableRef.show({ id: ba.objectSpecimenId, type: ba.objectSpecimenType })"
                   >ⓘ</button>
                 </div>
                 <span>
@@ -339,10 +339,10 @@ import { makeAPIRequest } from '@/utils'
 import { useOtuPageRequest } from '@/modules/otus/helpers/useOtuPageRequest.js'
 import { isAvailableForRank } from '@/modules/otus/utils'
 import { SPECIES_GROUP, SPECIES_AND_INFRASPECIES_GROUP } from '@/modules/otus/constants'
-import DwcTable from './DwcTable.vue'
+import DwcTable from '../_shared/DwcTable.vue'
 import {
   makeBiologicalAssociation,
-  isSpecimenType
+  resolveSpecimenRef
 } from './makeBiologicalAssociation.js'
 
 const fullExtend = ['object', 'subject', 'biological_relationship']
@@ -668,11 +668,10 @@ async function loadBiologicalAssociations(page = 1) {
         [item.subject, basic.subject_otu_id],
         [item.object, basic.object_otu_id]
       ]) {
-        if (!entity || !isSpecimenType(entity.base_class)) continue
-        if (otuId && entity.id) {
-          if (!cosByOtuId.has(otuId)) cosByOtuId.set(otuId, [])
-          cosByOtuId.get(otuId).push(entity.id)
-        }
+        const specimen = resolveSpecimenRef(entity)
+        if (!specimen || !otuId) continue
+        if (!cosByOtuId.has(otuId)) cosByOtuId.set(otuId, [])
+        cosByOtuId.get(otuId).push(specimen.id)
       }
     }
     const localityByCoId = new Map()
