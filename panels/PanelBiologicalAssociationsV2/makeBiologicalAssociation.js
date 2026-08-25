@@ -13,33 +13,8 @@
  *   unlike the live extend[]=taxonomy path.
  */
 
-/**
- * Returns true for physical specimen types (not taxa, not anatomical parts).
- */
-export function isSpecimenType(type) {
-  return type === 'CollectionObject' || type === 'FieldOccurrence'
-}
-
-/**
- * Resolves the physical specimen (CollectionObject/FieldOccurrence) an
- * entity refers to, so locality/collector lookup and the DWC info button
- * work the same for a direct CO/FO and for an AnatomicalPart attached to
- * one.
- *
- * An AnatomicalPart's own id (e.g. 99) is not the specimen id — the API
- * doesn't expose the wrapped specimen as a structured field, only baked
- * into object_label as "nidus: FieldOccurrence 4996; <uuid>; ...", the same
- * catalog-string format CO depiction labels use. Parse it out from there.
- */
-export function resolveSpecimenRef(entity) {
-  if (!entity) return null
-  if (isSpecimenType(entity.base_class)) return { type: entity.base_class, id: entity.id }
-  if (entity.base_class === 'AnatomicalPart') {
-    const m = (entity.object_label || '').match(/\b(CollectionObject|FieldOccurrence)\s+(\d+)/)
-    if (m) return { type: m[1], id: Number(m[2]) }
-  }
-  return null
-}
+import { isSpecimenType, resolveSpecimenRef } from '../_shared/specimenRef.js'
+export { isSpecimenType, resolveSpecimenRef }
 
 /**
  * Extracts the inner HTML of an otu_tag_taxon_name or otu_tag_otu_name span

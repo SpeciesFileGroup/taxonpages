@@ -128,11 +128,24 @@ Lives in `panels/_shared/DwcTable.vue` — shared across panels (same pattern as
 
 If you change this file, check all four call sites — none of them keep their own copy.
 
-Features: institution full name lookup via GRSciColl (GBIF API), OTU link on scientific name derived from `data.otu_id`, media thumbnails fetched from `associatedMedia` URLs.
 Exposes: `show({ id, type })` where `type` is `'CollectionObject'` or `'FieldOccurrence'`.
+
+**Layout** (redesigned 2026-08-25 — "specimen label" reading order, not a flat field list): identity block right under the header — name (linked, italic), type-status badge, "Identified by", "Held at" (repository), prior-determination history, media thumbnails, in that order. Then an always-visible `Location` section that also carries `Recorded by`/`Date` (collection-event fields live there, not in the identity block — locality must never be duplicated or misattributed by sitting next to a bare place name). Then `Biological associations` (see below). Everything else — catalog provenance, secondary ID paperwork, georeference protocol, morphology — is behind a single `<details>` "More details" disclosure.
+
+**Contrast rule:** only `<dt>` labels / section headers may be faint gray (`opacity-40/50`, `text-base-soft`). Actual field values are always full-contrast text — this was an explicit correction from the user after values were originally styled too faint.
+
+**Repository/"Held at" resolution:** `institutionCode` and `collectionCode` are resolved separately via GRSciColl (GBIF API) — they're different record types (e.g. code `"NHRS"` resolves to institution "Swedish Museum of Natural History" *and*, confusingly, a collection called "Department of Entomology"). Falls back to the raw code when GRSciColl has no single unambiguous match (private/unregistered collections, e.g. a personal collection code, will never resolve this way — there is no public API for TaxonWorks' own `repository_id`/`/repositories` records, confirmed 404 on both the API and the web app without login).
+
+**Biological associations section:** shows associations this specific CO/FO participates in, *including* ones only reachable through a wrapping `AnatomicalPart` (a nidus, an egg, ...) — flagged by the user as important, easy to miss otherwise. No server-side filter exists for "associations of the specimen an AnatomicalPart wraps", so it fetches every association for the specimen's OTU (`otu_query[otu_id][]=X`, usually a handful of records) and matches client-side using `resolveSpecimenRef()` from `panels/_shared/specimenRef.js` — the same helper the BA panel uses to go the other direction (AnatomicalPart → wrapped specimen). When our side is an AnatomicalPart, its part name prefixes the relationship reading, e.g. **"egg collected from *Corylus avellana*"**, not just "collected from ...".
+
+**For database maintainers:** "More details → Record" always shows the TaxonWorks numeric ID as a single clickable row linking to `{TW_BASE}/collection_objects/:id` or `/field_occurrences/:id` (verified this route pattern against the app's own known-working `/otus/:id` convention — same redirect-to-login signature when unauthenticated). `TW_BASE` is derived from `__APP_ENV__.url` (strip the `/api/v1` suffix) — same global used elsewhere (e.g. `PanelGallery.vue`), no import needed.
 
 **`associatedMedia` URL format**: pipe-separated absolute URLs like `https://sfg.taxonworks.org/api/v1/images/aa7639596f6a04744668dbec7c7493a3` (hex fingerprint, not numeric ID). To fetch via `makeAPIRequest`, extract the path with `/\/api\/v1(.+)/` and call `makeAPIRequest.get(m[1])`. The response has `{ id, thumb, original, medium, ... }` at the top level.
 Import example (from `panels/PanelBiologicalAssociationsV2/`): `import DwcTable from '../_shared/DwcTable.vue'`
+
+## specimenRef.js
+
+`panels/_shared/specimenRef.js` — exports `isSpecimenType(type)` and `resolveSpecimenRef(entity)`. Resolves a biological-association subject/object entity to the physical CollectionObject/FieldOccurrence it refers to, even when the entity is an `AnatomicalPart` wrapping one (parses `"nidus: FieldOccurrence 4996; <uuid>; ..."`-style `object_label` text — TaxonWorks never exposes the wrapped specimen as a structured field). Depended on by `PanelBiologicalAssociationsV2/makeBiologicalAssociation.js` (locality/collector lookup, the "ⓘ" button) and `_shared/DwcTable.vue` (finding associations reachable via a wrapping AnatomicalPart). If you change it, check both call sites.
 
 ## Institution name lookup
 
