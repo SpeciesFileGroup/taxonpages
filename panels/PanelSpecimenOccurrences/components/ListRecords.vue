@@ -1,22 +1,29 @@
 <template>
   <VCard>
-    <VCardHeader>Type specimens</VCardHeader>
+    <VCardHeader>Specimen records</VCardHeader>
     <VCardContent :class="isLoading && 'min-h-[6rem]'">
       <VSpinner v-if="isLoading" />
       <ul>
         <li
           v-for="item in items"
-          :key="item.id"
-          class="flex flex-col gap-2 text-sm px-2 py-4 border-b border-base-muted last:border-none first:pt-0 last:pb-0"
+          :key="item.key"
+          class="flex flex-col text-sm px-2 py-4 gap-2 border-b first:pt-0 last:pb-0 last:border-none"
         >
           <div class="flex flex-col">
-            <span class="font-medium">{{ item.typeStatus }}</span>
+            <span v-if="item.typeStatus" class="font-medium">{{ item.typeStatus }}</span>
             <span v-html="item.label" />
           </div>
+          <div v-if="item.catalogNumbers" class="text-xs">
+            <span
+              class="text-secondary opacity-60 cursor-pointer"
+              @click="toggleExpand(item.key)"
+            >{{ expanded.has(item.key) ? 'Hide' : 'Show' }} catalog numbers ({{ item.catalogNumbers.length }})</span>
+            <div v-if="expanded.has(item.key)" class="mt-1">{{ item.catalogNumbers.join(', ') }}</div>
+          </div>
           <GalleryThumbnailList
-            v-if="item.associatedMedia"
+            v-if="item.associatedMedia?.length"
             :images="item.associatedMedia"
-            class="flex-row flex-wrap gap-2"
+            class="lg:flex-row gap-2 flex-wrap"
             @select-index="
               (index) => emit('select', { images: item.associatedMedia, index })
             "
@@ -28,7 +35,7 @@
         >
           <div
             class="h-5 w-5 text-secondary opacity-60 mr-2 cursor-pointer"
-            @click="() => (isExpanded = !isExpanded)"
+            @click="() => (showAll = true)"
           >
             <IconPlusCircle class="h-5 w-5" />
           </div>
@@ -51,6 +58,11 @@ const props = defineProps({
     default: () => []
   },
 
+  isLoading: {
+    type: Boolean,
+    default: false
+  },
+
   max: {
     type: Number,
     default: 2
@@ -60,8 +72,15 @@ const props = defineProps({
 const emit = defineEmits(['select'])
 
 const showAll = ref(false)
+const expanded = ref(new Set())
 
 const items = computed(() =>
   showAll.value ? props.list : props.list.slice(0, props.max)
 )
+
+function toggleExpand(key) {
+  const next = new Set(expanded.value)
+  next.has(key) ? next.delete(key) : next.add(key)
+  expanded.value = next
+}
 </script>

@@ -1,14 +1,7 @@
 <template>
   <div class="flex flex-col gap-3">
-    <ListTypeSpecimens
-      v-if="typeSpecimenRecords.length"
-      :list="typeSpecimenRecords"
-      :max="MAX"
-      @select="setCurrentImages"
-    />
-
-    <ListSpecimens
-      :list="specimenRecords"
+    <ListRecords
+      :list="listItems"
       :is-loading="isLoading"
       :max="MAX"
       @select="setCurrentImages"
@@ -31,8 +24,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { makeAPIRequest } from '@/utils'
-import ListSpecimens from './components/ListSpecimens.vue'
-import ListTypeSpecimens from './components/ListTypeSpecimens.vue'
+import ListRecords from './components/ListRecords.vue'
+import { groupRecords, groupCountLabel } from './lib/groupRecords'
 
 // Module-level cache: institutionCode → full name
 const instNameCache = new Map()
@@ -125,19 +118,6 @@ const isViewerVisible = ref(false)
 const isLoading = ref(false)
 
 const dwcRecords = ref([])
-const specimenRecords = computed(() =>
-  dwcRecords.value.filter(
-    (item) =>
-      item.dwc_occurrence_object_type === 'CollectionObject' && !item.typeStatus
-  )
-)
-
-const typeSpecimenRecords = computed(() =>
-  dwcRecords.value.filter(
-    (item) =>
-      item.dwc_occurrence_object_type === 'CollectionObject' && item.typeStatus
-  )
-)
 
 function loadDwc() {
   isLoading.value = true
@@ -153,17 +133,6 @@ function loadDwc() {
         data
       )
       data.push(...missingTypeSpecimens)
-
-      data.sort((a, b) => {
-        if (a.associatedMedia && !b.associatedMedia) {
-          return -1
-        }
-        if (!a.associatedMedia && b.associatedMedia) {
-          return 1
-        }
-
-        return 0
-      })
 
       await Promise.all(
         data.map(async (item) => {
@@ -183,7 +152,7 @@ function loadDwc() {
 
       dwcRecords.value = data.map((d) => ({
         ...d,
-        label: makeSpecimenLabel(d)
+        label: makeLabel(d)
       }))
     })
     .finally(() => {
@@ -204,6 +173,12 @@ function getLocalityData(data) {
   return area
 }
 
+function makeLabel(item) {
+  return item.dwc_occurrence_object_type === 'FieldOccurrence'
+    ? makeFieldOccurrenceLabel(item)
+    : makeSpecimenLabel(item)
+}
+
 function makeSpecimenLabel(item) {
   return [
     getCountAndSex(item),
@@ -215,6 +190,32 @@ function makeSpecimenLabel(item) {
   ]
     .filter(Boolean)
     .join('; ')
+}
+
+function makeFieldOccurrenceLabel(item) {
+  return [
+    getCountAndSex(item),
+    getLocalityData(item),
+    getCoordinates(item),
+    getCollector(item)
+  ]
+    .filter(Boolean)
+    .join('; ')
+}
+
+// Shared label for a collapsed group of 2+ records: same pieces as
+// makeSpecimenLabel/makeFieldOccurrenceLabel, but the per-record count+sex
+// is replaced by the group's aggregated count (groupCountLabel) and the
+// single catalogNumber is dropped (the list component renders a "show
+// catalog numbers" disclosure for CO groups with more than one instead).
+function makeGroupLabel(group) {
+  const first = group.records[0]
+  const parts = [groupCountLabel(group)]
+  if (first.dwc_occurrence_object_type === 'CollectionObject') {
+    parts.push(getDepositoryData(first))
+  }
+  parts.push(getLocalityData(first), getCoordinates(first), getCollector(first))
+  return parts.filter(Boolean).join('; ')
 }
 
 function getDepositoryData(data) {
@@ -242,6 +243,37 @@ function getCoordinates({ verbatimCoordinates }) {
 
   return coordinates ? `(${coordinates})` : ''
 }
+
+function toListItem(group) {
+  const first = group.records[0]
+  const key = group.records.map((r) => r.id).join('-')
+  const media = group.records.flatMap((r) => r.associatedMedia || [])
+
+  if (!group.isGroup) {
+    return {
+      key,
+      typeStatus: first.typeStatus,
+      label: first.label,
+      associatedMedia: media,
+      catalogNumbers: null
+    }
+  }
+
+  const catalogNumbers =
+    first.dwc_occurrence_object_type === 'CollectionObject'
+      ? [...new Set(group.records.map((r) => r.catalogNumber).filter(Boolean))]
+      : []
+
+  return {
+    key,
+    typeStatus: first.typeStatus,
+    label: makeGroupLabel(group),
+    associatedMedia: media,
+    catalogNumbers: catalogNumbers.length > 1 ? catalogNumbers : null
+  }
+}
+
+const listItems = computed(() => groupRecords(dwcRecords.value).map(toListItem))
 
 onMounted(loadDwc)
 

@@ -23,8 +23,7 @@ taxa_page:
     label: 'Specimen Records'
     rank_group: ['SpeciesGroup']
     panels:
-      - - - panel:specimen-records
-      - - - panel:field-occurrences
+      - - - panel:specimen-occurrences
 
   asserted_distributions:
       label: 'Asserted Distributions'
