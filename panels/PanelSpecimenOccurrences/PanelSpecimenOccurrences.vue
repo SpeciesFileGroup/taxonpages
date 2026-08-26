@@ -4,6 +4,14 @@
       :list="listItems"
       :is-loading="isLoading"
       :max="MAX"
+      :countries="availableCountries"
+      :collectors="availableCollectors"
+      :month-counts="monthCounts"
+      v-model:filter-countries="filterCountries"
+      v-model:filter-collectors="filterCollectors"
+      v-model:filter-type-only="filterTypeOnly"
+      v-model:filter-media-only="filterMediaOnly"
+      v-model:filter-month="filterMonth"
       @select="setCurrentImages"
       @show-detail="showDetail"
     />
@@ -125,6 +133,70 @@ const dwcTableRef = ref(null)
 
 const dwcRecords = ref([])
 
+// Basic client-side filters — all data for this OTU is already fetched, so
+// filtering/re-grouping is instant with no extra API calls.
+const filterCountries = ref([])
+const filterCollectors = ref([])
+const filterTypeOnly = ref(false)
+const filterMediaOnly = ref(false)
+// Set by clicking a phenology bar — kept separate from the other filters
+// below so the chart itself can keep showing every month's count (filtered
+// by everything else) rather than collapsing to just the selected month
+// once one is picked.
+const filterMonth = ref(null)
+
+const availableCountries = computed(() =>
+  [...new Set(dwcRecords.value.map((r) => r.country).filter(Boolean))].sort()
+)
+
+const availableCollectors = computed(() =>
+  [...new Set(dwcRecords.value.map((r) => r.recordedBy).filter(Boolean))].sort()
+)
+
+function matchesNonMonthFilters(r) {
+  if (filterCountries.value.length && !filterCountries.value.includes(r.country)) return false
+  if (filterCollectors.value.length && !filterCollectors.value.includes(r.recordedBy)) return false
+  if (filterTypeOnly.value && !r.typeStatus) return false
+  if (filterMediaOnly.value && !(r.associatedMedia && r.associatedMedia.length)) return false
+  return true
+}
+
+const recordsBeforeMonthFilter = computed(() => dwcRecords.value.filter(matchesNonMonthFilters))
+
+const filteredRecords = computed(() =>
+  recordsBeforeMonthFilter.value.filter(
+    (r) => filterMonth.value == null || Number(r.month) === filterMonth.value
+  )
+)
+
+// Collecting-date histogram (1 count per month, 1-12), filtered by
+// everything except the month click itself — dwc.json already returns
+// `month` per record, no separate fetch needed.
+const monthCounts = computed(() => {
+  const counts = Array(12).fill(0)
+  recordsBeforeMonthFilter.value.forEach((r) => {
+    const month = Number(r.month)
+    if (month >= 1 && month <= 12) counts[month - 1]++
+  })
+  return counts
+})
+
+// Specimens-collected-per-year — only years that actually have a record,
+// sorted ascending. Matches the same choice CollectionDatabase's own
+// "Specimens over time" chart makes: a filled-in continuous timeline back
+// to whatever year the first specimen was collected would mostly be empty
+// bars for a typical museum series with real gaps.
+const yearCounts = computed(() => {
+  const counts = new Map()
+  recordsBeforeMonthFilter.value.forEach((r) => {
+    const year = Number(r.year)
+    if (year) counts.set(year, (counts.get(year) || 0) + 1)
+  })
+  return [...counts.entries()]
+    .sort(([a], [b]) => a - b)
+    .map(([year, count]) => ({ year, count }))
+})
+
 function loadDwc() {
   isLoading.value = true
   Promise.all([
@@ -168,7 +240,8 @@ function loadDwc() {
 
       dwcRecords.value = data.map((d) => ({
         ...d,
-        label: makeLabel(d)
+        headline: getHeadline(d),
+        summary: makeSummary(d)
       }))
     })
     .finally(() => {
@@ -176,62 +249,95 @@ function loadDwc() {
     })
 }
 
-function getLocalityData(data) {
-  const area = [
-    data.country,
-    data.stateProvince,
-    data.county,
-    data.verbatimLocality
-  ]
-    .filter(Boolean)
-    .join(', ')
-
-  return area
+// One ordered list of every populated locality field (country/state first,
+// down to the most specific verbatim text), computed once so the headline
+// and detail line can split it without either duplicating or dropping a
+// field. Earlier versions checked country/stateProvince for the headline
+// and a *different*, non-overlapping field set for the detail line — a
+// record with only e.g. `county` populated (no country) fell through both
+// checks and showed a wrong "No locality data" headline despite having a
+// real locality one field over.
+function localityParts(data) {
+  const parts = []
+  const primary = [data.country, data.stateProvince].filter(Boolean).join(', ')
+  if (primary) parts.push(primary)
+  if (data.waterBody) parts.push(data.waterBody)
+  const islands = [data.islandGroup, data.island].filter(Boolean).join(', ')
+  if (islands) parts.push(islands)
+  if (data.county) parts.push(data.county)
+  if (data.municipality) parts.push(data.municipality)
+  if (data.locality) parts.push(data.locality)
+  // verbatimLocality duplicates the geocoded `locality` field often enough
+  // to skip it when they match — same dedup DwcTable.vue's Location section
+  // already does.
+  if (data.verbatimLocality && data.verbatimLocality !== data.locality) {
+    parts.push(data.verbatimLocality)
+  }
+  return parts
 }
 
-function makeLabel(item) {
+// The headline (bold, scanned first) is whichever locality piece is most
+// general/available — country/state when present, otherwise whatever the
+// first non-empty field in localityParts() turns out to be. Only genuinely
+// empty records (nothing in any locality field) show "No locality data".
+function getHeadline(data) {
+  return localityParts(data)[0] || 'No locality data'
+}
+
+// Everything localityParts() found beyond whatever became the headline.
+function getLocalityDetail(data) {
+  return localityParts(data).slice(1).join(', ')
+}
+
+function makeSummary(item) {
   return item.dwc_occurrence_object_type === 'FieldOccurrence'
-    ? makeFieldOccurrenceLabel(item)
-    : makeSpecimenLabel(item)
+    ? makeFieldOccurrenceSummary(item)
+    : makeSpecimenSummary(item)
 }
 
-function makeSpecimenLabel(item) {
+function makeSpecimenSummary(item) {
   return [
     getCountAndSex(item),
     getDepositoryData(item),
-    item.catalogNumber,
-    getLocalityData(item),
+    getCatalogNumberHtml(item),
+    getLocalityDetail(item),
+    getDate(item),
     getCoordinates(item),
     getCollector(item)
   ]
     .filter(Boolean)
-    .join('; ')
+    .join(' · ')
 }
 
-function makeFieldOccurrenceLabel(item) {
+function makeFieldOccurrenceSummary(item) {
   return [
     getCountAndSex(item),
-    getLocalityData(item),
+    getLocalityDetail(item),
+    getDate(item),
     getCoordinates(item),
     getCollector(item)
   ]
     .filter(Boolean)
-    .join('; ')
+    .join(' · ')
 }
 
-// Shared label for a collapsed group of 2+ records: same pieces as
-// makeSpecimenLabel/makeFieldOccurrenceLabel, but the per-record count+sex
-// is replaced by the group's aggregated count (groupCountLabel) and the
-// single catalogNumber is dropped (the list component renders a "show
-// catalog numbers" disclosure for CO groups with more than one instead).
-function makeGroupLabel(group) {
+// Shared summary for a collapsed group of 2+ records: same pieces as
+// makeSpecimenSummary/makeFieldOccurrenceSummary, but the per-record
+// count+sex is replaced by the group's aggregated count (groupCountLabel)
+// and the single catalogNumber is dropped (the list component renders an
+// "Individual records" disclosure for groups instead).
+function makeGroupSummary(group) {
   const first = group.records[0]
   const parts = [groupCountLabel(group)]
   if (first.dwc_occurrence_object_type === 'CollectionObject') {
     parts.push(getDepositoryData(first))
   }
-  parts.push(getLocalityData(first), getCoordinates(first), getCollector(first))
-  return parts.filter(Boolean).join('; ')
+  parts.push(getLocalityDetail(first), getDate(first), getCoordinates(first), getCollector(first))
+  return parts.filter(Boolean).join(' · ')
+}
+
+function getCatalogNumberHtml({ catalogNumber }) {
+  return catalogNumber ? `<span class="font-mono text-secondary">${catalogNumber}</span>` : ''
 }
 
 function getDepositoryData(data) {
@@ -254,10 +360,68 @@ function getCollector({ recordedBy }) {
   return recordedBy ? `Col. ${recordedBy}` : ''
 }
 
-function getCoordinates({ verbatimCoordinates }) {
-  const coordinates = verbatimCoordinates?.split(' ').join(', ')
+function getDate({ eventDate, year, month, day }) {
+  return eventDate || [year, month, day].filter(Boolean).join('-')
+}
 
-  return coordinates ? `(${coordinates})` : ''
+// Matches the ±250m / ±2.5km convention already established for this exact
+// field elsewhere (CollectionDatabase's format_coordinates): meters below
+// 1000, one-decimal km at or above.
+function formatUncertainty(meters) {
+  const m = Number(meters)
+  if (!m) return ''
+  return m < 1000 ? ` ±${Math.round(m)}m` : ` ±${(m / 1000).toFixed(1)}km`
+}
+
+function getCoordinates({ verbatimCoordinates, coordinateUncertaintyInMeters }) {
+  const coordinates = verbatimCoordinates?.split(' ').join(', ')
+  if (!coordinates) return ''
+
+  return `(${coordinates}${formatUncertainty(coordinateUncertaintyInMeters)})`
+}
+
+// Mirrors DwcTable.vue's typeStatusHtml logic exactly (kept as a local
+// duplicate rather than a _shared/ export, so this panel doesn't add a
+// fifth dependent to that file): italicize the scientific name embedded in
+// a typeStatus string like "lectotype of Bothynoderus communis Motschulsky,
+// 1860", keeping the "lectotype of " prefix and trailing author/year roman.
+function escHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+function splitScientificName(name) {
+  const words = (name || '').trim().split(/\s+/)
+  let i = 1
+  while (i < words.length) {
+    const w = words[i]
+    if (/^[a-z]/.test(w)) {
+      i++
+      continue
+    }
+    if (/^\(/.test(w) && /^[a-z]/.test(words[i + 1] || '')) {
+      i++
+      continue
+    }
+    if (/^\[/.test(w)) {
+      i++
+      continue
+    }
+    break
+  }
+  return { italic: words.slice(0, i).join(' '), plain: words.slice(i).join(' ') }
+}
+
+function typeStatusHtml(typeStatus) {
+  if (!typeStatus) return ''
+  const idx = typeStatus.indexOf(' of ')
+  if (idx === -1) return escHtml(typeStatus)
+  const prefix = typeStatus.slice(0, idx + 4)
+  const { italic, plain } = splitScientificName(typeStatus.slice(idx + 4))
+  return (
+    escHtml(prefix) +
+    (italic ? `<em>${escHtml(italic)}</em>` : '') +
+    (plain ? ` ${escHtml(plain)}` : '')
+  )
 }
 
 // The only place raw dwc_occurrence_object_id/dwc_occurrence_object_type are
@@ -278,6 +442,36 @@ function toRecordEntry(record, index) {
   }
 }
 
+// Specimens on an OTU page are usually all determined to the same name, so
+// showing that name on every row is redundant — but a subspecies or a
+// synonym can slip in with a different scientificName. Flag whichever name
+// is the minority on this page rather than assuming the OTU's own canonical
+// name matches DWC's scientificName formatting (author/year placement
+// differs enough between the two that a naive string compare would false-
+// positive on nearly every row).
+const majorityScientificName = computed(() => {
+  const counts = new Map()
+  dwcRecords.value.forEach((r) => {
+    if (!r.scientificName) return
+    counts.set(r.scientificName, (counts.get(r.scientificName) || 0) + 1)
+  })
+  let best = null
+  let bestCount = 0
+  counts.forEach((count, name) => {
+    if (count > bestCount) {
+      best = name
+      bestCount = count
+    }
+  })
+  return best
+})
+
+function nameNoteFor(record) {
+  return record.scientificName && record.scientificName !== majorityScientificName.value
+    ? record.scientificName
+    : null
+}
+
 function toListItem(group) {
   const first = group.records[0]
   const key = group.records.map((r) => r.id).join('-')
@@ -287,7 +481,10 @@ function toListItem(group) {
     return {
       key,
       typeStatus: first.typeStatus,
-      label: first.label,
+      typeStatusHtml: typeStatusHtml(first.typeStatus),
+      headline: first.headline,
+      summary: first.summary,
+      nameNote: nameNoteFor(first),
       associatedMedia: media,
       recordEntries: null,
       detail: toDetailRef(first)
@@ -300,14 +497,17 @@ function toListItem(group) {
   return {
     key,
     typeStatus: first.typeStatus,
-    label: makeGroupLabel(group),
+    typeStatusHtml: typeStatusHtml(first.typeStatus),
+    headline: first.headline,
+    summary: makeGroupSummary(group),
+    nameNote: nameNoteFor(first),
     associatedMedia: media,
     recordEntries: group.records.map(toRecordEntry),
     detail: null
   }
 }
 
-const listItems = computed(() => groupRecords(dwcRecords.value).map(toListItem))
+const listItems = computed(() => groupRecords(filteredRecords.value).map(toListItem))
 
 onMounted(loadDwc)
 

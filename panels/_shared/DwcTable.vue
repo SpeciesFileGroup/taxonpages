@@ -63,7 +63,7 @@
           </div>
           <div
             v-if="dwc.typeStatus"
-            class="mt-1.5 inline-block text-xs font-medium bg-secondary text-secondary-content rounded px-1.5 py-0.5"
+            class="mt-1.5 inline-block text-xs font-medium bg-red-500 text-white rounded px-1.5 py-0.5"
             v-html="typeStatusHtml"
           />
 
