@@ -22,20 +22,22 @@
               @click="emit('show-detail', item.detail)"
             >ⓘ</button>
           </div>
-          <div v-if="item.recordEntries" class="text-xs">
-            <span
-              class="text-secondary opacity-60 cursor-pointer"
-              @click="toggleExpand(item.key)"
-            >{{ expanded.has(item.key) ? 'Hide' : 'Show' }} individual records ({{ item.recordEntries.length }})</span>
-            <ul v-if="expanded.has(item.key)" class="mt-1 flex flex-col gap-0.5">
+          <details v-if="item.recordEntries" class="text-xs group">
+            <summary class="cursor-pointer text-secondary opacity-60 hover:opacity-100 select-none list-none flex items-center gap-1.5">
+              <span class="inline-block motion-safe:transition-transform group-open:rotate-90">›</span>
+              Individual records
+              <span class="inline-block text-xs font-medium bg-secondary text-secondary-content rounded px-1.5 py-0.5">{{ item.recordEntries.length }}</span>
+            </summary>
+            <ul class="mt-1 flex flex-col gap-0.5">
               <li
                 v-for="entry in item.recordEntries"
                 :key="entry.key"
-                :class="entry.detail ? 'cursor-pointer text-secondary hover:underline' : ''"
+                class="rounded px-1 py-0.5 -mx-1"
+                :class="entry.detail ? 'cursor-pointer text-secondary hover:bg-base-foreground' : ''"
                 @click="entry.detail && emit('show-detail', entry.detail)"
               >{{ entry.label }}</li>
             </ul>
-          </div>
+          </details>
           <GalleryThumbnailList
             v-if="item.associatedMedia?.length"
             :images="item.associatedMedia"
@@ -92,15 +94,8 @@ const props = defineProps({
 const emit = defineEmits(['select', 'show-detail'])
 
 const showAll = ref(false)
-const expanded = ref(new Set())
 
 const items = computed(() =>
   showAll.value ? props.list : props.list.slice(0, props.max)
 )
-
-function toggleExpand(key) {
-  const next = new Set(expanded.value)
-  next.has(key) ? next.delete(key) : next.add(key)
-  expanded.value = next
-}
 </script>
