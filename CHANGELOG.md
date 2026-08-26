@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.8] - 2026-08-26
+
+### Added
+
+- Panel nomenclature references: `title` configuration setting
+
+### Changed
+
+- Updated dependencies
+
 ## [0.6.7] - 2026-08-13
 
 ### Added

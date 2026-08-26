@@ -6,9 +6,7 @@
       legend=""
     />
     <VCardHeader class="flex justify-between">
-      <h2 class="text-md">
-        Nomenclature references ({{ store.catalog.sources.length }})
-      </h2>
+      <h2 class="text-md">{{ title }} ({{ store.catalog.sources.length }})</h2>
       <PanelDropdown
         :menu-options="menuOptions"
         panel-key="taxonomy"
@@ -55,6 +53,13 @@ import PanelReferenceRow from './PanelReferenceRow.vue'
 import PanelDropdown from '../PanelDropdown.vue'
 
 const MAX_REFERENCES = 2
+
+const props = defineProps({
+  title: {
+    type: String,
+    default: 'Nomenclature references'
+  }
+})
 
 const store = useOtuStore()
 
