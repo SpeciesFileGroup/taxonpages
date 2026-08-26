@@ -337,8 +337,13 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { makeAPIRequest } from '@/utils'
 import { useOtuPageRequest } from '@/modules/otus/helpers/useOtuPageRequest.js'
-import { isAvailableForRank } from '@/modules/otus/utils'
-import { SPECIES_GROUP, SPECIES_AND_INFRASPECIES_GROUP } from '@/modules/otus/constants'
+import {
+  HIGHER_CLASSIFICATION_GROUP,
+  FAMILY_GROUP,
+  GENUS_GROUP,
+  SPECIES_GROUP,
+  SPECIES_AND_INFRASPECIES_GROUP
+} from '@/modules/otus/constants'
 import DwcTable from '../_shared/DwcTable.vue'
 import {
   makeBiologicalAssociation,
@@ -363,18 +368,57 @@ const props = defineProps({
   per: {
     type: Number,
     default: 50
+  },
+  // Rank groups ordered broadest-to-narrowest. `collapseAboveRank` is a cutoff,
+  // inclusive of the named rank: this rank and anything narrower is
+  // flat-eligible (see collapseThreshold below); anything broader always
+  // shows the grouped summary. Default 'SpeciesGroup' reproduces the panel's
+  // original species-only-flat behavior. Configured via `bind:` in
+  // taxa_page.yml, e.g. collapseAboveRank: 'GenusGroup'.
+  collapseAboveRank: {
+    type: String,
+    default: SPECIES_GROUP
+  },
+  // A flat-rank page (per collapseAboveRank) still escalates to the grouped
+  // summary if its record count exceeds this. Infinity by default — i.e. off
+  // unless set via taxa_page.yml — so behavior is unchanged until configured.
+  collapseThreshold: {
+    type: Number,
+    default: Infinity
   }
 })
+
+const RANK_ORDER = [
+  HIGHER_CLASSIFICATION_GROUP,
+  FAMILY_GROUP,
+  GENUS_GROUP,
+  SPECIES_GROUP,
+  SPECIES_AND_INFRASPECIES_GROUP
+]
 
 // PageLayout.vue (package) only forwards taxon-rank into its own internal
 // v-if for whether to render a panel at all — it does NOT pass it down as a
 // prop. The full taxon object *is* passed down, and carries rank_string, so
-// read rank off that instead.
-const isSpeciesLevel = computed(() =>
-  isAvailableForRank([SPECIES_GROUP, SPECIES_AND_INFRASPECIES_GROUP], props.taxon?.rank_string)
-)
+// read rank off that instead. An unmatched/misconfigured rank falls back to
+// "collapse" (false) rather than "flat" — the safer default.
+// Inclusive of collapseAboveRank itself: 'GenusGroup' means genus and
+// everything narrower (species, infraspecies) is flat-eligible; only
+// FamilyGroup/HigherClassificationGroup collapse unconditionally.
+const isFlatRank = computed(() => {
+  const cutoffIndex = RANK_ORDER.indexOf(props.collapseAboveRank)
+  const rankIndex = RANK_ORDER.findIndex((group) => props.taxon?.rank_string?.includes(group))
+  if (cutoffIndex === -1 || rankIndex === -1) return false
+  return rankIndex >= cutoffIndex
+})
 
-// Higher-rank (above species) summary state — two directions, fetched
+// Set once a flat-rank page's fetched total exceeds collapseThreshold — see
+// onMounted, which fetches the flat table first and promotes to the summary
+// view after the fact rather than probing the count up front, since flat-rank
+// (usually species) pages are the overwhelming majority of traffic and are
+// almost never over threshold.
+const forcedSummary = ref(false)
+
+// Higher-rank (above collapseAboveRank) summary state — two directions, fetched
 // separately via subject_taxon_name_id/object_taxon_name_id (not the
 // ambiguous otu_query[taxon_name_id], which matches either side). Raw rows
 // are kept so groupBy can be switched client-side with no re-fetch.
@@ -384,7 +428,7 @@ const summaryTruncated = ref(false) // true if either direction hit SUMMARY_FETC
 const groupBy = ref('family') // 'family' | 'genus'
 const selectedGroup = ref(null) // { key, count, ids } while drilled into one group
 
-const showSummary = computed(() => !isSpeciesLevel.value && !selectedGroup.value)
+const showSummary = computed(() => (!isFlatRank.value || forcedSummary.value) && !selectedGroup.value)
 
 function groupRows(rows, side) {
   const groups = new Map()
@@ -445,9 +489,13 @@ function linkify(html) {
   )
 }
 
-onMounted(() => {
-  if (isSpeciesLevel.value) {
-    loadBiologicalAssociations()
+onMounted(async () => {
+  if (isFlatRank.value) {
+    await loadBiologicalAssociations()
+    if (pagination.value.total > props.collapseThreshold) {
+      forcedSummary.value = true
+      loadSummary()
+    }
   } else {
     loadSummary()
   }

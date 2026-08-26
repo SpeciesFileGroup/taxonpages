@@ -17,7 +17,10 @@ taxa_page:
           - panel:statistics
           - panel:sounds
 
-      - - - panel:biological-associations-v2
+      - - - id: panel:biological-associations-v2
+            bind:
+              collapseAboveRank: 'SpeciesGroup'
+              collapseThreshold: 15
 
   specimen_records:
     label: 'Specimen Records'

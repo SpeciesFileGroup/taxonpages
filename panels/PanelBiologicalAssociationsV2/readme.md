@@ -16,6 +16,24 @@ Put this directory (PanelBiologicalAssociationsV2) into the panels folder on the
 - panel:biological-associations-v2
 ```
 
+## Configuration
+
+Set via `bind:` in `taxa_page.yml`, same mechanism as `subMaxImages` on the gallery panel:
+
+```yaml
+- - - id: panel:biological-associations-v2
+      bind:
+        collapseAboveRank: 'GenusGroup'
+        collapseThreshold: 15
+```
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `collapseAboveRank` | String | `'SpeciesGroup'` | Rank-group cutoff, inclusive: this rank and anything narrower (e.g. `'GenusGroup'` → genus, species, infraspecies) shows the flat per-record table by default; anything broader always shows the grouped family/genus summary. One of `'HigherClassificationGroup'`, `'FamilyGroup'`, `'GenusGroup'`, `'SpeciesGroup'`, `'SpeciesAndInfraspeciesGroup'` (same values as `rank_group` elsewhere in `taxa_page.yml`). |
+| `collapseThreshold` | Number | `Infinity` | A flat-eligible page still escalates to the grouped summary if its record count exceeds this. `Infinity` (the default) disables the escalation. |
+
+A flat-eligible page (per `collapseAboveRank`) always loads the flat table first; if its total exceeds `collapseThreshold` it then re-fetches as the grouped summary instead. Pages above the rank cutoff go straight to the grouped summary and never pay for the flat fetch.
+
 ## Differences from the built-in panel
 
 - **Depictions** shown as thumbnails inline in the table; clicking opens the full `ImageViewer` lightbox with figure label, attribution, and source reference
