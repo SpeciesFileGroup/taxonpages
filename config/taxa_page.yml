@@ -23,7 +23,7 @@ taxa_page:
               collapseThreshold: 15
 
   specimen_records:
-    label: 'Specimen Records'
+    label: 'Specimen & Occurrence Records'
     rank_group: ['SpeciesGroup']
     panels:
       - - - panel:specimen-occurrences

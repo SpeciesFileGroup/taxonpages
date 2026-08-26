@@ -5,7 +5,10 @@
       :is-loading="isLoading"
       :max="MAX"
       @select="setCurrentImages"
+      @show-detail="showDetail"
     />
+
+    <DwcTable ref="dwcTableRef" />
 
     <ImageViewer
       v-if="isViewerVisible"
@@ -25,6 +28,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { makeAPIRequest } from '@/utils'
 import ListRecords from './components/ListRecords.vue'
+import DwcTable from '../_shared/DwcTable.vue'
+import { isSpecimenType } from '../_shared/specimenRef.js'
 import { groupRecords, groupCountLabel } from './lib/groupRecords'
 
 // Module-level cache: institutionCode → full name
@@ -116,6 +121,7 @@ const currentIndex = ref(0)
 const currentImages = ref([])
 const isViewerVisible = ref(false)
 const isLoading = ref(false)
+const dwcTableRef = ref(null)
 
 const dwcRecords = ref([])
 
@@ -254,6 +260,24 @@ function getCoordinates({ verbatimCoordinates }) {
   return coordinates ? `(${coordinates})` : ''
 }
 
+// The only place raw dwc_occurrence_object_id/dwc_occurrence_object_type are
+// read and validated. Returns null for anything not safe to hand to
+// DwcTable.show() — a missing id, or a type other than the two it accepts.
+function toDetailRef(record) {
+  const { dwc_occurrence_object_id: id, dwc_occurrence_object_type: type } = record
+  return id && isSpecimenType(type) ? { id, type } : null
+}
+
+// Catalog numbers aren't a primary identifier for this database, so a plain
+// ordinal fallback is fine when one isn't recorded.
+function toRecordEntry(record, index) {
+  return {
+    key: record.id ?? index,
+    label: record.catalogNumber || `Record ${index + 1}`,
+    detail: toDetailRef(record)
+  }
+}
+
 function toListItem(group) {
   const first = group.records[0]
   const key = group.records.map((r) => r.id).join('-')
@@ -265,21 +289,21 @@ function toListItem(group) {
       typeStatus: first.typeStatus,
       label: first.label,
       associatedMedia: media,
-      catalogNumbers: null
+      recordEntries: null,
+      detail: toDetailRef(first)
     }
   }
 
-  const catalogNumbers =
-    first.dwc_occurrence_object_type === 'CollectionObject'
-      ? [...new Set(group.records.map((r) => r.catalogNumber).filter(Boolean))]
-      : []
-
+  // A group row represents N records — there is no single "the record" to
+  // show, so it never gets a top-level detail trigger. Individual records
+  // are only reachable through recordEntries below.
   return {
     key,
     typeStatus: first.typeStatus,
     label: makeGroupLabel(group),
     associatedMedia: media,
-    catalogNumbers: catalogNumbers.length ? catalogNumbers : null
+    recordEntries: group.records.map(toRecordEntry),
+    detail: null
   }
 }
 
@@ -310,5 +334,13 @@ function setCurrentImages({ images, index }) {
   currentImages.value = images
   currentIndex.value = index
   isViewerVisible.value = true
+}
+
+function showDetail(detail) {
+  // toDetailRef() already guarantees this; redundant guard directly at the
+  // one call site that invokes .show(), so a future refactor can't bypass it.
+  if (detail?.id && isSpecimenType(detail.type)) {
+    dwcTableRef.value?.show(detail)
+  }
 }
 </script>
