@@ -127,7 +127,17 @@ function loadDwc() {
       .get(`/otus/${props.otuId}/inventory/type_material.json`)
       .catch(() => ({ data: { type_materials_catalog_labels: [] } }))
   ])
-    .then(async ([{ data }, { data: typeMaterialData }]) => {
+    .then(async ([{ data: rawData }, { data: typeMaterialData }]) => {
+      // dwc_occurrence is polymorphic — the endpoint also returns
+      // AssertedDistribution (citation-based distribution, not a physical
+      // specimen) and potentially other object types. Allow-list rather
+      // than deny-list a single type.
+      const data = rawData.filter(
+        (d) =>
+          d.dwc_occurrence_object_type === 'CollectionObject' ||
+          d.dwc_occurrence_object_type === 'FieldOccurrence'
+      )
+
       const missingTypeSpecimens = await fetchMissingTypeSpecimens(
         typeMaterialData.type_materials_catalog_labels || [],
         data
@@ -228,10 +238,10 @@ function getDepositoryData(data) {
     : `<span>${display}</span>`
 }
 
-function getCountAndSex({ individualCount, sex }) {
-  return sex
-    ? `${individualCount} ${sex}`
-    : `${individualCount} specimen${individualCount > 1 ? 's' : ''}`
+function getCountAndSex({ individualCount, sex, dwc_occurrence_object_type }) {
+  if (sex) return `${individualCount} ${sex}`
+  const noun = dwc_occurrence_object_type === 'FieldOccurrence' ? 'occurrence' : 'specimen'
+  return `${individualCount} ${noun}${individualCount > 1 ? 's' : ''}`
 }
 
 function getCollector({ recordedBy }) {
@@ -269,7 +279,7 @@ function toListItem(group) {
     typeStatus: first.typeStatus,
     label: makeGroupLabel(group),
     associatedMedia: media,
-    catalogNumbers: catalogNumbers.length > 1 ? catalogNumbers : null
+    catalogNumbers: catalogNumbers.length ? catalogNumbers : null
   }
 }
 

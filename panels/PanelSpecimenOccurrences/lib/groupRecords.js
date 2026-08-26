@@ -8,13 +8,16 @@ const KEY_FIELDS = [
   'county',
   'verbatimLocality',
   'eventDate',
-  'recordedBy'
+  'recordedBy',
+  'institutionCode'
 ]
 
 export function buildGroupKey(record) {
-  return [record.dwc_occurrence_object_type, record.typeStatus || '']
-    .concat(KEY_FIELDS.map((f) => record[f] || ''))
-    .join('|')
+  return JSON.stringify(
+    [record.dwc_occurrence_object_type, record.typeStatus || ''].concat(
+      KEY_FIELDS.map((f) => record[f] || '')
+    )
+  )
 }
 
 function hasNoEventFields(record) {
@@ -37,7 +40,7 @@ function sortGroups(groups) {
 
 function uniformSex(records) {
   const sexes = new Set(records.map((r) => r.sex).filter(Boolean))
-  return sexes.size === 1 ? [...sexes][0] : null
+  return records.every((r) => r.sex) && sexes.size === 1 ? [...sexes][0] : null
 }
 
 function groupBucket(records) {
@@ -75,31 +78,25 @@ export function groupRecords(records) {
     (group) => ({
       records: group.records,
       isGroup: group.records.length > 1,
-      totalCount: group.records.reduce((sum, r) => sum + r.individualCount, 0),
+      totalCount: group.records.reduce((sum, r) => sum + (Number(r.individualCount) || 1), 0),
       uniformSex: uniformSex(group.records)
     })
   )
 }
 
-function pluralize(word) {
-  return word.endsWith('s') ? word : `${word}s`
-}
-
 // Aggregated "count + sex/noun" text for a collapsed group row, replacing
 // the single-record getCountAndSex() output. Sex is only shown when every
 // member of the group shares the same sex; otherwise falls back to a plain
-// noun (pluralized type status for type groups, "specimens"/"occurrences"
-// otherwise). Only meaningful for isGroup groups (records.length > 1).
+// noun ("specimens"/"occurrences"). typeStatus is not folded in here — it's
+// a full citation sentence in real data (e.g. "syntype of Pnigodes setosus
+// LeConte, 1876"), not clean DWC vocabulary, and ListRecords.vue already
+// renders it verbatim above the label. Only meaningful for isGroup groups
+// (records.length > 1).
 export function groupCountLabel(group) {
   if (group.uniformSex) {
     return `${group.totalCount} ${group.uniformSex}`
   }
   const first = group.records[0]
-  const noun =
-    first.dwc_occurrence_object_type === 'CollectionObject' && first.typeStatus
-      ? pluralize(first.typeStatus)
-      : first.dwc_occurrence_object_type === 'FieldOccurrence'
-        ? 'occurrences'
-        : 'specimens'
+  const noun = first.dwc_occurrence_object_type === 'FieldOccurrence' ? 'occurrences' : 'specimens'
   return `${group.totalCount} ${noun}`
 }
