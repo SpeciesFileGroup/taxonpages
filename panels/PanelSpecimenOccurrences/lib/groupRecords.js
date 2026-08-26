@@ -2,15 +2,20 @@
 // list. No network calls, no Vue — testable with a plain Node script.
 // See docs/superpowers/specs/2026-08-26-merge-specimen-occurrence-panels-design.md
 
-const KEY_FIELDS = [
+const EVENT_FIELDS = [
   'country',
   'stateProvince',
   'county',
   'verbatimLocality',
   'eventDate',
-  'recordedBy',
-  'institutionCode'
+  'recordedBy'
 ]
+
+// Grouping key also splits by institutionCode (fix #5: same-event specimens
+// held at different institutions must not collapse into one row). Kept
+// separate from EVENT_FIELDS because hasNoEventFields() below must only
+// look at genuine collecting-event data, not institution.
+const KEY_FIELDS = [...EVENT_FIELDS, 'institutionCode']
 
 export function buildGroupKey(record) {
   return JSON.stringify(
@@ -20,8 +25,14 @@ export function buildGroupKey(record) {
   )
 }
 
+// A record with no collecting-event data at all (old, unlocalized museum
+// specimens) gets its own singleton group rather than key-matching other
+// blank records. Must check only EVENT_FIELDS, not institutionCode: an
+// unlocalized specimen almost always has institutionCode populated, so
+// including it here would collapse unrelated unlocalized specimens at the
+// same institution into one row.
 function hasNoEventFields(record) {
-  return KEY_FIELDS.every((f) => !record[f])
+  return EVENT_FIELDS.every((f) => !record[f])
 }
 
 function hasMedia(records) {
