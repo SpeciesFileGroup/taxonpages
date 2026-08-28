@@ -747,7 +747,16 @@ const listItems = computed(() => groupRecords(filteredRecords.value).map(toListI
 // lot of >1 individualCount). Follows the same active filters as the list
 // itself, so it updates live rather than only ever reporting the total.
 const totalSpecimenCount = computed(() =>
-  filteredRecords.value.reduce((sum, r) => sum + (Number(r.individualCount) || 1), 0)
+  filteredRecords.value.reduce((sum, r) => {
+    // individualCount: 0 is a legitimate value (RangedLot-category specimens)
+    // and must be counted as 0, not defaulted to 1 like a missing value —
+    // Number(null) is 0 too, so check for absence before coercing.
+    if (r.individualCount === null || r.individualCount === undefined || r.individualCount === '') {
+      return sum + 1
+    }
+    const n = Number(r.individualCount)
+    return sum + (Number.isFinite(n) ? n : 1)
+  }, 0)
 )
 
 onMounted(loadDwc)
