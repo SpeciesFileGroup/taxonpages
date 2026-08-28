@@ -12,10 +12,14 @@ const EVENT_FIELDS = [
 ]
 
 // Grouping key also splits by institutionCode (fix #5: same-event specimens
-// held at different institutions must not collapse into one row). Kept
-// separate from EVENT_FIELDS because hasNoEventFields() below must only
-// look at genuine collecting-event data, not institution.
-const KEY_FIELDS = [...EVENT_FIELDS, 'institutionCode']
+// held at different institutions must not collapse into one row) and by
+// year/month/day (the display layer's getDate() falls back to these when
+// eventDate is blank — common for older, partially-dated museum lots — so
+// two records with blank eventDate but different year/month/day must not
+// collapse into a group whose date label can only show one of them). All
+// kept separate from EVENT_FIELDS because hasNoEventFields() below must
+// only look at genuine collecting-event data, not institution.
+const KEY_FIELDS = [...EVENT_FIELDS, 'institutionCode', 'year', 'month', 'day']
 
 export function buildGroupKey(record) {
   return JSON.stringify(

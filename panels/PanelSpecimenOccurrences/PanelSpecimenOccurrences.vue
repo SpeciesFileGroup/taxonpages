@@ -7,11 +7,17 @@
       :countries="availableCountries"
       :collectors="availableCollectors"
       :month-counts="monthCounts"
+      :year-counts="yearCounts"
+      :identified-year-counts="identifiedYearCounts"
+      :not-shown-collected-count="notShownCollectedCount"
+      :not-shown-identified-count="notShownIdentifiedCount"
       v-model:filter-countries="filterCountries"
       v-model:filter-collectors="filterCollectors"
       v-model:filter-type-only="filterTypeOnly"
       v-model:filter-media-only="filterMediaOnly"
       v-model:filter-month="filterMonth"
+      v-model:filter-year="filterYear"
+      v-model:filter-identified-year="filterIdentifiedYear"
       @select="setCurrentImages"
       @show-detail="showDetail"
     />
@@ -139,11 +145,18 @@ const filterCountries = ref([])
 const filterCollectors = ref([])
 const filterTypeOnly = ref(false)
 const filterMediaOnly = ref(false)
-// Set by clicking a phenology bar — kept separate from the other filters
-// below so the chart itself can keep showing every month's count (filtered
-// by everything else) rather than collapsing to just the selected month
-// once one is picked.
+// Set by clicking a phenology/timeline bar — kept separate from the other
+// filters below so each chart can keep showing its own counts (filtered by
+// everything except itself) rather than collapsing to just the selected
+// bar once one is picked. Month and year cross-filter each other: picking
+// a year narrows the month chart and vice versa.
 const filterMonth = ref(null)
+const filterYear = ref(null)
+// Set by clicking a Timeline "Identified" bar — an independent axis from
+// filterMonth/filterYear (those are collecting-date concepts, this is an
+// identification-date one), so it only narrows the final list, not the
+// collecting-date charts.
+const filterIdentifiedYear = ref(null)
 
 const availableCountries = computed(() =>
   [...new Set(dwcRecords.value.map((r) => r.country).filter(Boolean))].sort()
@@ -153,7 +166,7 @@ const availableCollectors = computed(() =>
   [...new Set(dwcRecords.value.map((r) => r.recordedBy).filter(Boolean))].sort()
 )
 
-function matchesNonMonthFilters(r) {
+function matchesBaseFilters(r) {
   if (filterCountries.value.length && !filterCountries.value.includes(r.country)) return false
   if (filterCollectors.value.length && !filterCollectors.value.includes(r.recordedBy)) return false
   if (filterTypeOnly.value && !r.typeStatus) return false
@@ -161,12 +174,24 @@ function matchesNonMonthFilters(r) {
   return true
 }
 
-const recordsBeforeMonthFilter = computed(() => dwcRecords.value.filter(matchesNonMonthFilters))
+const baseFilteredRecords = computed(() => dwcRecords.value.filter(matchesBaseFilters))
 
-const filteredRecords = computed(() =>
-  recordsBeforeMonthFilter.value.filter(
+const recordsBeforeMonthFilter = computed(() =>
+  baseFilteredRecords.value.filter(
+    (r) => filterYear.value == null || Number(r.year) === filterYear.value
+  )
+)
+
+const recordsBeforeYearFilter = computed(() =>
+  baseFilteredRecords.value.filter(
     (r) => filterMonth.value == null || Number(r.month) === filterMonth.value
   )
+)
+
+const filteredRecords = computed(() =>
+  recordsBeforeMonthFilter.value
+    .filter((r) => filterMonth.value == null || Number(r.month) === filterMonth.value)
+    .filter((r) => filterIdentifiedYear.value == null || getIdentifiedYear(r) === filterIdentifiedYear.value)
 )
 
 // Collecting-date histogram (1 count per month, 1-12), filtered by
@@ -181,14 +206,13 @@ const monthCounts = computed(() => {
   return counts
 })
 
-// Specimens-collected-per-year — only years that actually have a record,
-// sorted ascending. Matches the same choice CollectionDatabase's own
-// "Specimens over time" chart makes: a filled-in continuous timeline back
-// to whatever year the first specimen was collected would mostly be empty
-// bars for a typical museum series with real gaps.
+// Specimens-collected-per-year — sparse data, only years that actually have
+// a record, sorted ascending. ListRecords.vue's timeline chart fills in the
+// zero-count years between min and max itself (so bar position reflects
+// real elapsed time); this computed only needs to report what's there.
 const yearCounts = computed(() => {
   const counts = new Map()
-  recordsBeforeMonthFilter.value.forEach((r) => {
+  recordsBeforeYearFilter.value.forEach((r) => {
     const year = Number(r.year)
     if (year) counts.set(year, (counts.get(year) || 0) + 1)
   })
@@ -196,6 +220,42 @@ const yearCounts = computed(() => {
     .sort(([a], [b]) => a - b)
     .map(([year, count]) => ({ year, count }))
 })
+
+// dateIdentified is DWC-flexible (yyyy, yyyy-mm, or yyyy-mm-dd) — only the
+// leading year is needed here, same as getDate() only needs a leading year
+// for grouping elsewhere.
+function getIdentifiedYear({ dateIdentified }) {
+  return dateIdentified ? Number(String(dateIdentified).match(/^\d{4}/)?.[0]) : null
+}
+
+// Specimens-identified-per-year, same shape/sparsity as yearCounts. Kept
+// off baseFilteredRecords (not cross-filtered against filterMonth/filterYear
+// like the collected-date series) since those two filters are collecting-
+// date concepts — narrowing the identification-date series by a collecting
+// month/year selection would answer a different question than the chart is
+// asking.
+const identifiedYearCounts = computed(() => {
+  const counts = new Map()
+  baseFilteredRecords.value.forEach((r) => {
+    const year = getIdentifiedYear(r)
+    if (year) counts.set(year, (counts.get(year) || 0) + 1)
+  })
+  return [...counts.entries()]
+    .sort(([a], [b]) => a - b)
+    .map(([year, count]) => ({ year, count }))
+})
+
+// Counts for the timeline chart's "Not shown: N without a ... date" footer
+// note — same source populations as yearCounts/identifiedYearCounts above,
+// just counting the records that don't carry a usable year rather than
+// tallying by year.
+const notShownCollectedCount = computed(
+  () => recordsBeforeYearFilter.value.filter((r) => !Number(r.year)).length
+)
+
+const notShownIdentifiedCount = computed(
+  () => baseFilteredRecords.value.filter((r) => !getIdentifiedYear(r)).length
+)
 
 function loadDwc() {
   isLoading.value = true
@@ -337,7 +397,7 @@ function makeGroupSummary(group) {
 }
 
 function getCatalogNumberHtml({ catalogNumber }) {
-  return catalogNumber ? `<span class="font-mono text-secondary">${catalogNumber}</span>` : ''
+  return catalogNumber ? `<span class="font-mono text-secondary">${escHtml(catalogNumber)}</span>` : ''
 }
 
 function getDepositoryData(data) {
