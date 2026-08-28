@@ -39,6 +39,14 @@
   </div>
 </template>
 
+<script>
+// True module scope (a plain <script> block runs once per module load, unlike
+// <script setup>'s top level which re-runs on every component instantiation —
+// SpeciesBars.vue mounts/unmounts this component via v-if/v-else on every bar
+// click, so this must live outside <script setup> to actually survive that).
+const instNameCache = new Map()
+</script>
+
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { makeAPIRequest } from '@/utils'
@@ -46,9 +54,6 @@ import ListRecords from './ListRecords.vue'
 import DwcTable from '../../_shared/DwcTable.vue'
 import { isSpecimenType, resolveSpecimenRef } from '../../_shared/specimenRef.js'
 import { groupRecords, groupCountLabel } from '../lib/groupRecords'
-
-// Module-level cache: institutionCode → full name
-const instNameCache = new Map()
 
 const UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i
 
