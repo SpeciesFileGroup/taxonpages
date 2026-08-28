@@ -1,6 +1,9 @@
 <template>
   <VCard>
-    <VCardHeader>Specimen &amp; occurrence records</VCardHeader>
+    <VCardHeader>
+      Specimen &amp; occurrence records
+      <span v-if="props.totalSpecimenCount" class="opacity-50 font-normal">({{ props.totalSpecimenCount }} specimens)</span>
+    </VCardHeader>
     <VCardContent :class="isLoading && 'min-h-[6rem]'">
       <VSpinner v-if="isLoading" />
 
@@ -302,6 +305,13 @@ const props = defineProps({
   max: {
     type: Number,
     default: 2
+  },
+
+  // individualCount summed across every currently-filtered record — shown
+  // in the header, distinct from list.length (grouped rows).
+  totalSpecimenCount: {
+    type: Number,
+    default: 0
   },
 
   countries: {

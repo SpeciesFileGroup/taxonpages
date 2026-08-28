@@ -4,6 +4,7 @@
       :list="listItems"
       :is-loading="isLoading"
       :max="MAX"
+      :total-specimen-count="totalSpecimenCount"
       :countries="availableCountries"
       :collectors="availableCollectors"
       :month-counts="monthCounts"
@@ -142,6 +143,17 @@ const props = defineProps({
   directOnly: {
     type: Boolean,
     default: false
+  },
+
+  // When set, skips the dwc.json fetch and uses this raw row array instead
+  // — SpeciesBars.vue already fetches the same genus-wide data to build the
+  // "…: all" and "…(not identified to species)" rows, so expanding either
+  // of those shouldn't repeat the fetch the user just watched happen.
+  // type_material.json and biological_associations are still fetched fresh
+  // (they're per-OTU-cheap regardless, and aren't already sitting in hand).
+  preloadedData: {
+    type: Array,
+    default: null
   }
 })
 
@@ -279,7 +291,9 @@ const notShownIdentifiedCount = computed(
 function loadDwc() {
   isLoading.value = true
   Promise.all([
-    makeAPIRequest.get(`/otus/${props.otuId}/inventory/dwc.json`),
+    props.preloadedData
+      ? Promise.resolve({ data: props.preloadedData })
+      : makeAPIRequest.get(`/otus/${props.otuId}/inventory/dwc.json`),
     makeAPIRequest
       .get(`/otus/${props.otuId}/inventory/type_material.json`)
       .catch(() => ({ data: { type_materials_catalog_labels: [] } })),
@@ -292,11 +306,23 @@ function loadDwc() {
       // AssertedDistribution (citation-based distribution, not a physical
       // specimen) and potentially other object types. Allow-list rather
       // than deny-list a single type.
-      const data = rawData.filter(
-        (d) =>
-          d.dwc_occurrence_object_type === 'CollectionObject' ||
-          d.dwc_occurrence_object_type === 'FieldOccurrence'
-      )
+      //
+      // Shallow-copy each record (not just .filter(), which keeps the same
+      // object references) — the media-resolution step below mutates
+      // item.associatedMedia in place, and when rawData came from
+      // preloadedData that would otherwise corrupt SpeciesBars.vue's cached
+      // copy: the second time "…: all"/"…(not identified to species)" gets
+      // expanded, associatedMedia would already be the resolved image array
+      // from last time instead of the original pipe-separated URL string,
+      // getMediaImages()'s .split('|') would throw, and the whole record
+      // list would silently come up empty.
+      const data = rawData
+        .filter(
+          (d) =>
+            d.dwc_occurrence_object_type === 'CollectionObject' ||
+            d.dwc_occurrence_object_type === 'FieldOccurrence'
+        )
+        .map((d) => ({ ...d }))
 
       const missingTypeSpecimens = await fetchMissingTypeSpecimens(
         typeMaterialData.type_materials_catalog_labels || [],
@@ -708,6 +734,15 @@ function toListItem(group) {
 }
 
 const listItems = computed(() => groupRecords(filteredRecords.value).map(toListItem))
+
+// The true specimen count (individualCount summed) — distinct from
+// listItems.length, which counts grouped rows, and from filteredRecords
+// .length, which counts raw dwc rows (a single row can itself represent a
+// lot of >1 individualCount). Follows the same active filters as the list
+// itself, so it updates live rather than only ever reporting the total.
+const totalSpecimenCount = computed(() =>
+  filteredRecords.value.reduce((sum, r) => sum + (Number(r.individualCount) || 1), 0)
+)
 
 onMounted(loadDwc)
 
