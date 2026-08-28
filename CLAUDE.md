@@ -145,7 +145,7 @@ Import example (from `panels/PanelBiologicalAssociationsV2/`): `import DwcTable 
 
 ## specimenRef.js
 
-`panels/_shared/specimenRef.js` — exports `isSpecimenType(type)` and `resolveSpecimenRef(entity)`. Resolves a biological-association subject/object entity to the physical CollectionObject/FieldOccurrence it refers to, even when the entity is an `AnatomicalPart` wrapping one (parses `"nidus: FieldOccurrence 4996; <uuid>; ..."`-style `object_label` text — TaxonWorks never exposes the wrapped specimen as a structured field). Depended on by `PanelBiologicalAssociationsV2/makeBiologicalAssociation.js` (locality/collector lookup, the "ⓘ" button) and `_shared/DwcTable.vue` (finding associations reachable via a wrapping AnatomicalPart). If you change it, check both call sites.
+`panels/_shared/specimenRef.js` — exports `isSpecimenType(type)` and `resolveSpecimenRef(entity)`. Resolves a biological-association subject/object entity to the physical CollectionObject/FieldOccurrence it refers to, even when the entity is an `AnatomicalPart` wrapping one (parses `"nidus: FieldOccurrence 4996; <uuid>; ..."`-style `object_label` text — TaxonWorks never exposes the wrapped specimen as a structured field). Depended on by `PanelBiologicalAssociationsV2/makeBiologicalAssociation.js` (locality/collector lookup, the "ⓘ" button), `_shared/DwcTable.vue` (finding associations reachable via a wrapping AnatomicalPart), and `PanelSpecimenOccurrences/components/SingleSpeciesOccurrences.vue` (indexing every association for the OTU once to show the primary one inline on each list row). If you change it, check all three call sites.
 
 ## Institution name lookup
 

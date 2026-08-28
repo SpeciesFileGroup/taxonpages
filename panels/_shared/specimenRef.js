@@ -12,7 +12,7 @@
  *   - ./DwcTable.vue
  *       — finding biological associations that involve the CO/FO being
  *         shown, including ones only reachable via a wrapping AnatomicalPart
- *   - ../PanelSpecimenOccurrences/PanelSpecimenOccurrences.vue
+ *   - ../PanelSpecimenOccurrences/components/SingleSpeciesOccurrences.vue
  *       — indexing every association for the OTU once (not per row) to show
  *         the primary one inline on each list row
  *
