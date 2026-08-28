@@ -24,7 +24,11 @@ taxa_page:
 
   specimen_records:
     label: 'Specimen & Occurrence Records'
-    rank_group: ['SpeciesGroup', 'GenusGroup']
+    # No rank_group restriction — experimentally enabled for every rank (see
+    # PanelSpecimenOccurrences.vue's isHigherTaxon). Genus/subgenus is the
+    # only range actually verified to perform reasonably; tribe and up are
+    # untested/likely impractical (see project memory) but left open on
+    # purpose to see how it actually behaves rather than pre-judging it.
     panels:
       - - - panel:specimen-occurrences
 

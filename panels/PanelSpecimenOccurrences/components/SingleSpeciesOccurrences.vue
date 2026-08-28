@@ -131,15 +131,16 @@ const props = defineProps({
     required: true
   },
 
-  // Restricts to records with no specificEpithet — used only for a higher
-  // taxon's own "not identified to species" row in SpeciesBars.vue.
-  // /otus/:id/inventory/dwc.json always calls TaxonWorks' scoped_by_otu,
-  // which (despite its own "# include self" comment) passes
-  // descendants: false to Queries::TaxonName::Filter — and that library's
-  // own docs say false means "self AND descendants", not "self only". So
-  // fetching a genus/subgenus OTU here returns the WHOLE subtree, identical
-  // to every species's own fetch; this is the only way to recover just the
-  // genus-rank-only determinations from that same response.
+  // Restricts to records whose CURRENT determination (otu_id) is this
+  // OTU itself — used only for a higher taxon's own "not identified to
+  // species" row in SpeciesBars.vue. /otus/:id/inventory/dwc.json always
+  // calls TaxonWorks' scoped_by_otu, which (despite its own "# include
+  // self" comment) passes descendants: false to Queries::TaxonName::Filter
+  // — and that library's own docs say false means "self AND descendants",
+  // not "self only". So fetching a genus/subgenus OTU here returns the
+  // WHOLE subtree, identical to every species's own fetch; filtering to
+  // otu_id === props.otuId is the only way to recover just the records
+  // actually determined to this rank from that same response.
   directOnly: {
     type: Boolean,
     default: false
@@ -333,7 +334,7 @@ function loadDwc() {
       // See the directOnly prop doc — dwc.json for a genus/subgenus OTU
       // returns its entire descendant subtree, not just genus-rank-only
       // determinations, so that case needs this extra client-side filter.
-      const scoped = props.directOnly ? data.filter((d) => !d.specificEpithet) : data
+      const scoped = props.directOnly ? data.filter((d) => d.otu_id === props.otuId) : data
 
       await Promise.all(
         scoped.map(async (item) => {
