@@ -24,7 +24,7 @@ taxa_page:
 
   specimen_records:
     label: 'Specimen & Occurrence Records'
-    rank_group: ['SpeciesGroup']
+    rank_group: ['SpeciesGroup', 'GenusGroup']
     panels:
       - - - panel:specimen-occurrences
 

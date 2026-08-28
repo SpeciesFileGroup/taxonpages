@@ -212,7 +212,10 @@
                     class="inline-block w-fit text-xs font-medium bg-red-500 text-white rounded px-1.5 py-0.5 mb-1"
                     v-html="item.typeStatusHtml"
                   />
-                  <span v-if="item.nameNote" class="text-xs italic text-secondary">{{ item.nameNote }}</span>
+                  <div v-if="item.identity || item.identificationQualifierHtml" class="flex items-baseline gap-2 text-xs">
+                    <span class="flex-1 min-w-0" v-html="item.identity" />
+                    <span v-if="item.identificationQualifierHtml" class="shrink-0" v-html="item.identificationQualifierHtml" />
+                  </div>
                   <span class="font-medium">{{ item.headline }}</span>
                   <span class="text-xs" v-html="item.summary" />
                 </div>
