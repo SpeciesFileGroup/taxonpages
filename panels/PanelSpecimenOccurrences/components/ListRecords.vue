@@ -447,11 +447,14 @@ const ticksDesc = computed(() => [...niceYAxis.value.ticks].reverse())
 
 // Bar height as a CSS value, scaled against the rounded axis max (not the
 // raw data max) so the tallest bar has headroom below the top gridline.
-// A hidden series collapses to 0 (toggled off); a visible-but-zero year
-// still gets a 1px hairline, same convention as the phenology chart above.
+// Zero (hidden series, or a genuinely zero-count year) renders no bar at
+// all — a 1px hairline placeholder here used to make a real-but-tiny count
+// (e.g. 1 out of a max of 155) visually indistinguishable from an actual
+// zero once scaled down that far, which is worse than just showing nothing
+// for zero.
 function barHeight(count, visible) {
-  if (!visible) return '0px'
-  return count ? `${(count / niceYAxis.value.max) * 100}%` : '1px'
+  if (!visible || !count) return '0px'
+  return `${(count / niceYAxis.value.max) * 100}%`
 }
 
 const notShownParts = computed(() => {
