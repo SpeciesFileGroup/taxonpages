@@ -519,7 +519,7 @@ function typeStatusHtml(typeStatus) {
 function getDetHtml({ identifiedBy, dateIdentified }) {
   if (!identifiedBy) return ''
   const year = String(dateIdentified || '').match(/^\d{4}/)?.[0]
-  return `<span class="opacity-60">det. ${escHtml(identifiedBy)}${year ? ' ' + year : ''}</span>`
+  return `<span class="opacity-60">det.</span> ${escHtml(identifiedBy)}${year ? ' ' + year : ''}`
 }
 
 // A small "?" badge for an uncertain determination (cf./aff./sp. — TaxonWorks'
@@ -613,7 +613,7 @@ function bioAssociationHtml(record) {
     ? `<em>${escHtml(otherName.italic)}</em>${otherName.plain ? ' ' + escHtml(otherName.plain) : ''}`
     : escHtml(otherName.plain)
   const more = matches.length > 1 ? ` <span class="opacity-60">+${matches.length - 1}</span>` : ''
-  return `<span class="opacity-70">${escHtml(relationshipLabel)} ${nameHtml}</span>${more}`
+  return `<span class="opacity-70">${escHtml(relationshipLabel)}</span> ${nameHtml}${more}`
 }
 
 // The identity line: WHICH physical object this is and how it was
