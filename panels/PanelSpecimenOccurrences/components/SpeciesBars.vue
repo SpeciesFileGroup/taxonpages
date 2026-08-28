@@ -13,7 +13,7 @@
       <SingleSpeciesOccurrences
         :otu-id="selected.otuId"
         :direct-only="!!selected.isOwnTaxon"
-        :preloaded-data="selected.otuId === props.otuId ? genusRawData : null"
+        :preloaded-data="selected.otuId === props.otuId ? genusRawData : (selected.records || null)"
       />
     </template>
 
