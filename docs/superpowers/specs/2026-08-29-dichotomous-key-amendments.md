@@ -429,6 +429,32 @@ unchanged.
 
 ---
 
+## A16 — Completeness truncated on large-scope keys (`per=500` bug)
+
+**Bug (user, key/3895):** "Key to the Lixini genera" (scope = tribe Lixini, 557 descendant
+taxon-names) shows no meaningful completeness. `loadCompleteness` fetches
+`GET /taxon_names?taxon_name_id[]=<scope>&descendants=true&per=500`; Lixini has 557
+descendants so 57 are dropped, including 4 of the 6 genera the key keys out (the recent
+2023–2025 ones, high ids, in the truncated tail). `buildCompletenessReport` then runs on a
+partial set → wrong counts / unusable report. Any tribe/family-scoped key hits this.
+
+**Fix:** resolve `targetRank` first (from the terminal taxa — already fetched), then query
+descendants **filtered to that rank**: `&rank=<targetRank>` (verified live: `rank=genus` on
+Lixini → 44 rows, not 557; `rank` accepts the bare rank word). The rank-filtered result won't
+contain the grouping-rank parents, so also do one small
+`GET /taxon_names?taxon_name_id[]=<distinct parent_id of the target taxa>` and merge. Bump the
+remaining `per` values to `1000`. `resolveScopeFromTerminals` (A13) is unaffected (it walks
+`parent_id` chains, not descendants) but bump its `per` to `1000` too.
+
+**Task:** 19.
+
+**Review check:** `#/key/3895` shows the completeness chip reading ~`6 / 16 genera` and the
+report lists all 16 Lixini genera, the 6 keyed ones ✓; `#/key/3977` (small scope) unchanged.
+
+**Status:** planned (Task 19).
+
+---
+
 ## Cross-cutting notes (not amendments, context for review)
 
 - **SPA is hash-mode** (`config/router.yml` → `hash_mode: true`): test the SPA at
@@ -441,4 +467,4 @@ unchanged.
   visual-pass / PanelKeys / interactiveKeys / README tasks became 8 / 9 / 10 / 11. Appended:
   Task 12 = completeness report tree (A8), Task 13 = synonym suffix (A6), Task 14 = primary
   source + references (A9), Task 15 = Keys tab + index (A10). **Execution order** (per the
-  SDD ledger, not the numbers): 7 → 12 → 13 → 14 → 8 → 9 → 10 → 15 → 16 → 17 → 18 → 11. (Task 18 = A15.) (Task 16 = A12+A14, Task 17 = A13.)
+  SDD ledger, not the numbers): 7 → 12 → 13 → 14 → 8 → 9 → 10 → 15 → 16 → 17 → 18 → 11 → 19. (Task 18 = A15, Task 19 = A16.) (Task 16 = A12+A14, Task 17 = A13.)

@@ -3007,6 +3007,28 @@ Then per card: `citation: metas[i].origin_citation || citesByLead[String(r.id)]?
 
 ---
 
+## Task 19: Completeness — rank-filter the descendants query (Amendment A16 / bug key/3895)
+
+> **Execution order:** after Task 18, before Task 11's whole-branch review reconsideration.
+> **File:** `modules/keys/KeyView.vue` only (`loadCompleteness`).
+
+**Bug:** `loadCompleteness` fetches `GET /taxon_names?taxon_name_id[]=<scope>&descendants=true&per=500`. A tribe/family scope (Lixini: 557 descendants) is truncated, dropping keyed-out taxa → wrong/empty completeness. Also `dq2` (OTU-id lookup) spreads *every* descendant id into one URL and is `per=500`-capped.
+
+**Fix — restructure `loadCompleteness` so the descendants query is rank-scoped:**
+
+- [ ] **Step 1:** `finestRank` is exported from `./lib/completeness.js` — import it alongside `buildCompletenessReport`.
+- [ ] **Step 2:** Move the terminal-taxon-name resolution (`tq` → `tnRaw` → `tnRowById`) to *before* the descendants fetch. From those rows compute the set of distinct terminal ranks and `targetRank = finestRank([...terminalRanks])`. If `targetRank` is null, `return` (chip hides, as today).
+- [ ] **Step 3:** Descendants fetch — replace `dq.set('per','500')` with a **rank-filtered** query: for each distinct rank in `[targetRank, ...coarserTerminalRanks]` do `dq.append('rank', r)`; `dq.set('per','1000')`. (`rank` is an array param and accepts the bare rank word — verified live: `rank=genus` on Lixini → 44 rows.) Keep `descendants=true`, no `validity` filter (synonyms still wanted).
+- [ ] **Step 4:** The rank-filtered result won't contain the grouping-rank parents. After building `descendants`, collect `[...new Set(descendants.map(d => d.parentId).filter(Boolean))]` and, if non-empty, `GET /taxon_names?taxon_name_id[]=<those>&per=1000`, map the rows the same way, and **merge** them into `descendants` / `descById` / `descIds` (dedupe by id). This gives `buildCompletenessReport` the parent rows it needs for `groups`.
+- [ ] **Step 5:** `dq2` (OTU ids for links) now iterates the merged (small) `descendants` — keep it, but `dq2.set('per','1000')`.
+- [ ] **Step 6:** Bump every remaining `per` in `loadCompleteness` and in `resolveScopeFromTerminals` from `500` to `1000`.
+- [ ] **Step 7:** `buildCompletenessReport` is unchanged (it still computes its own `targetRank`; with a rank-scoped `descendants` it resolves to the same value — no contradiction). No `lib/` change, no TDD.
+- [ ] **Step 8:** `npm run build` + `npm run build:ssr` green.
+- [ ] **Step 9:** browser — `#/key/3895`: chip ≈ `6 / 16 genera`, report lists all 16 Lixini genera (6 ✓); `#/key/3977`: unchanged (`7 / 9 species`).
+- [ ] **Step 10:** commit — `keys: rank-filter the completeness descendants query so large-scope keys aren't truncated (A16)`.
+
+---
+
 ## Self-review notes
 
 - **Spec §3.1 file layout** — Tasks 1–10 create every file listed except `useKey.js`, which was intentionally dropped: its role (fetch orchestration + derived data) lives in `KeyView.vue` + `lib/tree.js`, matching this repo's "component fetches, `lib/` transforms" pattern (prior plan). No separate store is needed — the Guided view holds no navigation state at all; the current couplet is a pure function of `route.params.couplet` via `coupletByNumber`.
