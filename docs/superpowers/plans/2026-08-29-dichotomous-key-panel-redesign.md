@@ -1628,7 +1628,7 @@ async function loadCompleteness(scopeOtuId, nodeMap) {
     const descendants = (Array.isArray(descRaw) ? descRaw : []).map((d) => ({
       taxonNameId: d.id,
       rank: d.rank,
-      name: d.cached || d.name,
+      name: [d.cached || d.name, d.cached_author_year].filter(Boolean).join(' '),  // Amendment A5: with authorship
       valid: d.cached_is_valid !== false
     }))
 
@@ -1650,7 +1650,7 @@ async function loadCompleteness(scopeOtuId, nodeMap) {
     const terminals = (Array.isArray(tnRaw) ? tnRaw : []).map((t) => ({
       taxonNameId: t.cached_valid_taxon_name_id || t.id,
       rank: t.rank,
-      label: t.cached || t.name
+      label: [t.cached || t.name, t.cached_author_year].filter(Boolean).join(' ')  // Amendment A5: with authorship
     }))
 
     completeness.value = assessCompleteness({ terminals, descendants })

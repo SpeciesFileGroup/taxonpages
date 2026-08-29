@@ -1,0 +1,216 @@
+# Dichotomous key redesign — amendments log
+
+Companion to `2026-08-29-dichotomous-key-panel-redesign-design.md` (spec) and
+`../plans/2026-08-29-dichotomous-key-panel-redesign.md` (plan). Every change requested
+*after* the plan was approved, so it can be checked off once implemented.
+
+**Branch:** `keys-panel-redesign`. **Status legend:** `planned` → `built` (implementer done,
+in review) → `verified` (review clean + controller/user confirmed in the browser).
+
+Each amendment: what was asked · the design decision · which plan task carries it · how to
+review that it landed satisfactorily.
+
+---
+
+## A1 — One URL per couplet (SSR- and CSR-safe)
+
+**Asked:** a distinct URL for each couplet; navigating a couplet creates that "anchor"; it
+must work under both SSR and client-side rendering.
+
+**Decision:** route is `/key/:id/:couplet?` — the couplet number is a **path segment**, never
+a URL hash (the fragment is not sent to the server, so a hash couplet would misrender every
+deep link under SSR). Both views derive their position from `route.params.couplet` via
+`coupletByNumber`. Guided-mode navigation is `RouterLink` / `router.push`, so browser **Back
+walks up the key**. `?format=` stays a query param (also SSR-visible). SPA dev runs in
+hash-mode so the live URL is `#/key/:id/:couplet` — the path segment still parses identically.
+
+**Task(s):** 1 (route + `coupletByNumber`), 3 (Full-key reads `couplet`), 6 (Guided view is a
+pure function of the route param, no local state).
+
+**Review check:**
+- `/key/3977/4` (or `#/key/3977/4`) loads with couplet 4 selected — Guided shows couplet 4
+  with breadcrumb `1 › 3 › 4`; Full key scrolls to couplet 4.
+- In Guided, choosing an option changes the URL to `/key/3977/<n>`; browser Back returns to
+  the previous couplet.
+- `npm run dev:ssr` → `/key/3977/4` renders without a hydration-mismatch warning.
+- `grep -rn "#couplet" modules/keys` shows `#couplet-` only as an `id=` scroll target, never
+  in a `:to`/`:href`.
+
+**Status:** built (Tasks 1, 3, 6 complete & reviewed) — needs the browser confirmation above.
+
+---
+
+## A2 — Full-key: mark the current couplet + a "return to it" control
+
+**Asked:** after clicking "couplet 7" you're at couplet 7; scrolling around loses your place.
+Mark the current couplet visually, and give a persistent control that jumps back to it.
+
+**Decision:** in `FullKeyView.vue`, driven by the existing `couplet` prop:
+- the current couplet's `<section>` gets `data-current` + a highlight (`ring-2 ring-secondary
+  ring-offset-2 ring-offset-base-foreground bg-secondary/5`);
+- a fixed, `key-print-hide` button (bottom-right) "↑ Couplet N", shown only while a couplet
+  is active, calls `scrollToCouplet(currentCoupletNumber)`.
+
+**Task:** 8, Step 1 (1b marker, 1c return control).
+
+**Review check:**
+- Open `#/key/3977/4` in Full-key format → couplet 4's block has a visible ring/tint.
+- Scroll away → a "↑ Couplet 4" pill stays fixed bottom-right; clicking it scrolls back to
+  couplet 4.
+- No pill when the URL has no `:couplet` (`#/key/3977`).
+- Pill and ring are hidden / absent in print (`?format=full`, print preview).
+
+**Status:** planned (Task 8).
+
+---
+
+## A3 — Dark-mode readable surface
+
+**Asked:** white text on the dark page background is hard to read; other TaxonPages panels
+put content on a grey (elevated) surface in dark mode. Match that.
+
+**Decision:** wrap `KeyView.vue`'s loaded content (`v-else` branch) in an elevated panel —
+`rounded-lg border border-base-muted bg-base-foreground p-4 sm:p-6` — keeping the outer
+`container mx-auto py-4`. Because `GuidedChoice` cards were also `bg-base-foreground`, they
+drop to `bg-base` (or `/60`) + keep their border so they still read as raised against the
+new backing. Theme tokens only.
+
+**Task:** 8, Step 2.
+
+**Review check:**
+- In **dark** mode, `#/key/3977` content sits on a distinctly lighter grey card; body text is
+  comfortable to read (this is the reported problem — confirm it's gone).
+- Guided choice cards and the A2 current-couplet ring are still visually distinct from the
+  panel backing.
+- Light mode still looks right; no hard-coded colours (`grep` for hex / `rgb(` in
+  `modules/keys` → none).
+
+**Status:** planned (Task 8).
+
+---
+
+## A4 — Taxonomic completeness check
+
+**Asked:** based on the key's scope, does it contain all descendants? Auto-detect the
+end-taxon level: if all couplet targets are subgenera → check all subgenera; if it ends at
+species but also keys out some subgenera → check species. Applies at every rank. Show it as a
+chip next to `[x couplets] [9 taxa] [updated …]`; clicking shows the full report.
+
+**Decision:** `lib/completeness.js` (pure, Node-tested):
+- `finestRank(ranks)` — the most-nested rank present among the key's terminal taxa
+  (`RANK_ORDER` coarse→fine; unknown ranks ignored; `null` when nothing usable).
+- `assessCompleteness({ terminals, descendants })` — `targetRank = finestRank(terminal
+  ranks)`; `expected` = **valid** descendants of the scope taxon at `targetRank`; `covered` =
+  expected that the key keys out (matched by taxon-name id, synonyms folded to their valid
+  id); `missing` = the rest; `outOfScope` = terminals at `targetRank` not under the scope.
+  `isComplete` when both lists are empty.
+- `KeyView.loadCompleteness()` — fire-and-forget after the key loads: scope OTU → taxon-name;
+  `GET /taxon_names?taxon_name_id[]=<scope>&descendants=true&validity=true`; terminal OTUs →
+  `GET /otus?otu_id[]=…` → `GET /taxon_names?taxon_name_id[]=…`.
+- `KeyHeader.vue` — a fourth chip: `complete (N rank)` in neutral, or `C / E rank` in
+  `text-danger`; click → `VModal` report (target rank, covered/expected, missing list,
+  out-of-scope list).
+
+**Ruling:** "expected" counts **valid** taxa only, at exactly the rank the key uses (a
+species-level key is not marked incomplete for lacking subspecies).
+
+**Task:** 7.
+
+**Review check:**
+- `#/key/3977` shows a fourth chip. Key #3977's title says *A. grigorievi* and
+  *A. albosquamus* are missing; the chip should be red and read ≈ `7 / 9 species`; the report
+  modal lists those two (with authorship — see A5) under "Missing".
+- A hypothetical all-subgenus key would show `… subgenus`; a species key with a stray
+  subgenus couplet still shows `… species`.
+- `lib/completeness.js` has no Vue / network imports; its Node test covered finest-rank
+  selection, the valid-only filter, missing, out-of-scope, and the complete case.
+
+**Status:** built (Task 7 commit `b195216`) — in controller review; needs A5 folded in and
+the browser confirmation above.
+
+---
+
+## A5 — Completeness report shows names *with authorship*
+
+**Asked:** the completeness check should give taxon names with authorship — a missing set
+that's all "Smith, 2023" flags a key that predates a revision or a specific paper.
+
+**Decision:** in `loadCompleteness()`, build every name as
+`[cached, cached_author_year].filter(Boolean).join(' ')` for both the scope descendants and
+the terminal (out-of-scope) taxa, so the report modal's "Missing" and "Referenced but outside
+scope" lists carry authorship (e.g. *Adosomus (Xeradosomus) grigorievi* (Suvorov, 1912)).
+
+**Task:** 7 (plan text patched post-dispatch; enforced in Task 7's review).
+
+**Review check:** the completeness report modal lists names **with** their author + year, not
+bare binomials.
+
+**Status:** planned (fold into Task 7 during review).
+
+---
+
+## A6 — Synonymized target names
+
+**Asked:** if a lead references a synonymized name, show it as written in the key (the
+synonym the author used) but also indicate the valid name.
+
+**Decision:** `KeyView` builds a `synonymy` map `{ [otuId]: { validName } }` from the same
+terminal taxon-name data A4 fetches — entries where `cached_is_valid === false`, `validName`
+resolved from `cached_valid_taxon_name_id` (one extra `GET /taxon_names?taxon_name_id[]=…`
+batch for the valid names). It's exposed with `provide('keySynonymy', ref)`. `TaxonLink.vue`
+does `inject('keySynonymy', ref({}))`, looks up its own `id` (the OTU id), and appends a
+muted `[= <i>valid name</i>]` suffix after the linked name (built as a span to survive Vue
+whitespace-condensing). No changes to `FullKeyView` / `ReachableTaxa` / `GuidedChoice`.
+Completeness (A4) already counts a synonym terminal toward its valid name.
+
+**Task:** 12.
+
+**Review check:**
+- A couplet whose target OTU is a junior synonym renders "*Name as in key* Author
+  [= *Valid name*]", the valid part muted.
+- A valid target renders with no suffix.
+- The completeness chip does not double-count or mark such a taxon missing.
+- `lib/synonymy.js` (or the helper) is pure and Node-tested.
+
+**Status:** planned (Task 12).
+
+---
+
+## A7 — "couplet N" links do not jump
+
+**Asked (bug):** clicking a "couplet x" link in Full-key view does not properly jump to that
+couplet.
+
+**Root cause:** the framework router's `scrollBehavior`
+(`node_modules/@sfgrp/taxonpages/src/router/index.js:42`) returns `{ top: 0 }` for every
+navigation without a secondary `#fragment` — which is every couplet navigation — so the page
+scrolls to top and Task 3's `nextTick(scrollIntoView)` loses the race.
+
+**Decision:** in `FullKeyView.scrollToCouplet`, defer the scroll past the router's own scroll
+with `nextTick` → double `requestAnimationFrame`. Fixes both the "couplet N" links and the A2
+"↑ Couplet N" return button (same function). Guided view is unaffected — there a scroll-to-top
+on couplet change is desirable.
+
+**Task:** 8, Step 1a.
+
+**Review check:**
+- In Full-key format, clicking "couplet 6" (or "from 3") smoothly scrolls that couplet to the
+  top of the viewport — from any starting scroll position, and on a fresh deep-link load.
+- The A2 return pill does the same.
+
+**Status:** planned (Task 8).
+
+---
+
+## Cross-cutting notes (not amendments, context for review)
+
+- **SPA is hash-mode** (`config/router.yml` → `hash_mode: true`): test the SPA at
+  `http://localhost:5173/#/key/3977`; SSR (`:6173`) is history-mode. Router-agnostic code
+  (`RouterLink {name,params}`, `route.params`) — no code impact.
+- **Spec wording:** "no hash anywhere" (spec §3.2/§3.3) means no ad-hoc `#couplet-N` fragment
+  *state*; the SPA router still uses `#/` as its history transport. (One-line spec
+  clarification owed at finish.)
+- **Task renumbering:** the completeness check was inserted as Task 7; the original
+  visual-pass / PanelKeys / interactiveKeys / README tasks became 8 / 9 / 10 / 11. The
+  synonym task is appended as Task 12. Execution order (per the SDD ledger): 7 → 12 → 8 → 9 →
+  10 → 11.
