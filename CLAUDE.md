@@ -24,6 +24,8 @@ CLI: `taxonpages package list/add/remove/unpack` manages panels and packages.
 ### For CLAUDE
 - List of feature requests for TaxonWorks. Append if a new need is arising (ask me first): `docs/TaxonWorksWishlist.md`
 - To do list for CLAUDE: `docs/Task_images.md`, `docs/Task_Scope for Geography.md`
+- TaxonWorks API documentation: https://github.com/SpeciesFileGroup/taxonworks_api (local copy may be available)
+- TaxonWorks source repo: https://github.com/SpeciesFileGroup/taxonworks (local copy may be avalable)
 
 ## Critical: path alias
 
