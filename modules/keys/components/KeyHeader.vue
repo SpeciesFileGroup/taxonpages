@@ -14,16 +14,16 @@
       <span v-else class="italic">{{ meta.taxonomicScope }}</span>
     </p>
 
-    <p v-if="meta.description" class="mt-2 text-base-content">{{ meta.description }}</p>
-
     <p v-if="meta.originCitation" class="mt-2 text-sm text-base-content [&_i]:italic">
       <span class="text-base-soft">Primary source: </span><span
         class="cursor-pointer hover:underline"
         role="button" tabindex="0"
         @click="showCitation = true" @keydown.enter="showCitation = true" @keydown.space.prevent="showCitation = true"
-        v-html="meta.originCitation"
+        v-html="sanitizeAndLinkifyHtml(meta.originCitation)"
       />
     </p>
+
+    <p v-if="meta.description" class="mt-2 text-base-content">{{ meta.description }}</p>
 
     <p v-if="meta.attribution" class="mt-1 text-sm text-base-soft">{{ attributionText }}</p>
 
@@ -61,7 +61,7 @@
 
     <VModal v-if="showCitation" @close="showCitation = false">
       <template #header><div class="text-sm font-medium">Reference</div></template>
-      <div class="px-4 pb-4 text-sm leading-relaxed [&_i]:italic" v-html="meta.originCitation" />
+      <div class="px-4 pb-4 text-sm leading-relaxed [&_i]:italic" v-html="sanitizeAndLinkifyHtml(meta.originCitation)" />
     </VModal>
 
     <VModal v-if="showCompleteness && completeness" @close="showCompleteness = false">
@@ -75,7 +75,7 @@
       <template #header><div class="text-sm font-medium">References cited</div></template>
       <ul class="px-4 pb-4 text-sm leading-relaxed space-y-2 [&_i]:italic">
         <li v-for="(r, i) in references" :key="i">
-          <span v-if="r.isPrimary" class="text-base-soft">[primary] </span><span v-html="r.full" />
+          <span v-if="r.isPrimary" class="text-base-soft">[primary] </span><span v-html="sanitizeAndLinkifyHtml(r.full)" />
         </li>
       </ul>
     </VModal>
@@ -84,6 +84,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { sanitizeAndLinkifyHtml } from '@/utils'
 import CompletenessReport from './CompletenessReport.vue'
 
 const props = defineProps({

@@ -29,14 +29,14 @@
           <span class="text-base-soft">Scope: </span><span v-html="k.scope" />
         </p>
         <p
+          v-if="k.citation"
+          class="mt-1 text-sm text-base-content [&_i]:italic"
+          v-html="sanitizeAndLinkifyHtml(k.citation)"
+        />
+        <p
           v-if="k.description"
           class="mt-1 text-sm text-base-content"
         >{{ k.description }}</p>
-        <p
-          v-if="k.citation"
-          class="mt-1 text-sm text-base-content [&_i]:italic"
-          v-html="k.citation"
-        />
         <div class="mt-2 flex flex-wrap gap-2 text-xs text-base-soft">
           <span
             v-if="k.coupletsCount"
@@ -59,6 +59,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { makeAPIRequest } from '@/utils/request'
+import { sanitizeAndLinkifyHtml } from '@/utils'
 
 const loading = ref(true)
 const keys = ref([])
