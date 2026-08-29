@@ -1405,7 +1405,7 @@ Template — replace the results block:
 </div>
 ```
 
-(`key-print-hide` is styled in Task 7; harmless until then.)
+(`key-print-hide` is styled in Task 8; harmless until then.)
 
 - [ ] **Step 10: Compile check** — `npm run build` and `npm run build:ssr` → succeed.
 
@@ -1432,7 +1432,338 @@ git commit -m "keys: guided step-through view, reachable-taxa summary, persisted
 
 ---
 
-## Task 7: Full-key current-couplet marker + return control, then visual pass
+## Task 7: Key completeness check (`lib/completeness.js` + header chip/report)
+
+**Files:**
+- Create: `modules/keys/lib/completeness.js`
+- Modify: `modules/keys/KeyView.vue` (resolve scope descendants + terminal ranks, compute `completeness`, pass to `KeyHeader`)
+- Modify: `modules/keys/components/KeyHeader.vue` (a fourth chip + a report modal)
+- Test: throwaway `/tmp/keycompleteness.test.mjs`
+
+**Interfaces:**
+- Consumes: `Node` shape from Task 1 (`isCouplet`, `targetType`, `targetId`); `listMeta.otu_id` from Task 2's call 2; `makeAPIRequest`.
+- Produces:
+  - `lib/completeness.js`:
+    - `finestRank(ranks: string[]): string | null` — the finest (most nested) rank among `ranks`, using `RANK_ORDER` (coarse→fine); ranks are normalised (lowercased, last `::` / `/` segment taken); unknown ranks are ignored; `null` when nothing usable.
+    - `assessCompleteness({ terminals, descendants }): { targetRank, expectedCount, coveredCount, covered: string[], missing: string[], outOfScope: string[], isComplete: boolean } | null`
+      - `terminals`: `Array<{ taxonNameId: number, rank: string, label: string }>` — the key's OTU-target leaves resolved to a valid taxon-name id + rank
+      - `descendants`: `Array<{ taxonNameId: number, rank: string, name: string, valid: boolean }>` — valid descendants of the key's scope taxon
+      - `targetRank = finestRank(terminals.map(t => t.rank))`; `null` targetRank → return `null` (no chip)
+      - `expected` = `descendants` with `valid && normalisedRank === targetRank`
+      - `covered` = `expected` whose `taxonNameId` is in the set of `terminals` taxon-name ids
+      - `missing` = `expected.name` minus `covered` (sorted, locale)
+      - `outOfScope` = `terminals` at `targetRank` whose `taxonNameId` is not in `descendants` (referenced but not under scope), by `label`
+      - `isComplete = missing.length === 0 && outOfScope.length === 0`
+  - `KeyView.vue`: a `completeness` ref (`null` until resolved), populated by a fire-and-forget `loadCompleteness()`; passed to `<KeyHeader :completeness="completeness" />`.
+  - `KeyHeader.vue`: new prop `completeness: { type: Object, default: null }`; a chip (after the three existing chips) shown only when `completeness` is set; click opens a `VModal` report.
+
+- [ ] **Step 1: Write the failing test**
+
+Create `/tmp/keycompleteness.test.mjs`:
+
+```js
+import assert from 'node:assert/strict'
+import { finestRank, assessCompleteness } from '/home/jakobj/Data/01Aktuelle_Projekte/0_TaxonWorks/TaxonPagesDev/taxa/modules/keys/lib/completeness.js'
+
+// finestRank: species is finer than subgenus/genus; unknowns ignored; empty -> null
+assert.equal(finestRank(['genus', 'subgenus', 'species']), 'species')
+assert.equal(finestRank(['subgenus', 'subgenus']), 'subgenus')
+assert.equal(finestRank(['NomenclaturalRank::Iczn::SpeciesGroup::Species', 'subgenus']), 'species')
+assert.equal(finestRank(['weird', 'genus']), 'genus')
+assert.equal(finestRank([]), null)
+assert.equal(finestRank(['weird']), null)
+
+// assessCompleteness: genus scope, key ends at species (with a subgenus also keyed out)
+const descendants = [
+  { taxonNameId: 1, rank: 'species',  name: 'Aus aus',   valid: true },
+  { taxonNameId: 2, rank: 'species',  name: 'Aus bus',   valid: true },
+  { taxonNameId: 3, rank: 'species',  name: 'Aus cus',   valid: true },
+  { taxonNameId: 4, rank: 'subgenus', name: 'Aus (Aus)', valid: true },
+  { taxonNameId: 5, rank: 'species',  name: 'Aus dus',   valid: false } // invalid -> not expected
+]
+const terminals = [
+  { taxonNameId: 1, rank: 'species',  label: 'Aus aus L.' },
+  { taxonNameId: 2, rank: 'species',  label: 'Aus bus L.' },
+  { taxonNameId: 4, rank: 'subgenus', label: 'Aus (Aus)' },      // coarser than target, ignored for expected
+  { taxonNameId: 99, rank: 'species', label: 'Xus xus' }         // not under scope
+]
+const r = assessCompleteness({ terminals, descendants })
+assert.equal(r.targetRank, 'species')
+assert.equal(r.expectedCount, 3)          // taxonNameId 1,2,3 (4 is subgenus, 5 invalid)
+assert.equal(r.coveredCount, 2)           // 1,2
+assert.deepEqual(r.missing, ['Aus cus'])  // 3 not keyed out
+assert.deepEqual(r.outOfScope, ['Xus xus']) // terminal at species rank, not in descendants
+assert.equal(r.isComplete, false)
+
+// complete case
+const r2 = assessCompleteness({
+  terminals: [
+    { taxonNameId: 1, rank: 'species', label: 'Aus aus' },
+    { taxonNameId: 2, rank: 'species', label: 'Aus bus' },
+    { taxonNameId: 3, rank: 'species', label: 'Aus cus' }
+  ],
+  descendants
+})
+assert.equal(r2.isComplete, true)
+assert.deepEqual(r2.missing, [])
+
+// no usable rank -> null
+assert.equal(assessCompleteness({ terminals: [], descendants }), null)
+
+console.log('All keycompleteness tests passed.')
+```
+
+- [ ] **Step 2: Run it to verify it fails**
+
+Run: `node /tmp/keycompleteness.test.mjs`
+Expected: FAIL — `Cannot find module '.../modules/keys/lib/completeness.js'`
+
+- [ ] **Step 3: Create `modules/keys/lib/completeness.js`**
+
+```js
+// Pure. Given the key's terminal taxa (with ranks) and the valid descendants of the
+// key's scope taxon (with ranks), decide the rank the key operates at and whether every
+// taxon of that rank in scope is keyed out. No Vue, no network — Node-testable.
+
+// Coarse -> fine. Anything not listed is "unknown" and ignored by finestRank.
+const RANK_ORDER = [
+  'kingdom', 'subkingdom', 'phylum', 'subphylum', 'superclass', 'class', 'subclass',
+  'infraclass', 'superorder', 'order', 'suborder', 'infraorder', 'superfamily',
+  'family', 'subfamily', 'tribe', 'subtribe', 'genus', 'subgenus', 'section',
+  'subsection', 'series', 'subseries', 'species group', 'species', 'subspecies',
+  'variety', 'subvariety', 'form', 'subform'
+]
+
+function normRank(rank) {
+  if (!rank) return ''
+  let r = String(rank)
+  if (r.includes('::')) r = r.split('::').pop()
+  if (r.includes('/')) r = r.split('/').pop()
+  // "SpeciesGroup::Species" style already handled; camelCase leaf -> spaced words
+  r = r.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase().trim()
+  return r
+}
+
+export function finestRank(ranks) {
+  let best = -1
+  for (const raw of ranks || []) {
+    const idx = RANK_ORDER.indexOf(normRank(raw))
+    if (idx > best) best = idx
+  }
+  return best === -1 ? null : RANK_ORDER[best]
+}
+
+export function assessCompleteness({ terminals, descendants }) {
+  const terms = Array.isArray(terminals) ? terminals : []
+  const descs = Array.isArray(descendants) ? descendants : []
+
+  const targetRank = finestRank(terms.map((t) => t.rank))
+  if (!targetRank) return null
+
+  const termIds = new Set(terms.map((t) => t.taxonNameId).filter((x) => x != null))
+  const descIds = new Set(descs.map((d) => d.taxonNameId).filter((x) => x != null))
+
+  const expected = descs.filter((d) => d.valid && normRank(d.rank) === targetRank)
+  const covered = expected.filter((d) => termIds.has(d.taxonNameId))
+  const coveredIds = new Set(covered.map((d) => d.taxonNameId))
+
+  const missing = expected
+    .filter((d) => !coveredIds.has(d.taxonNameId))
+    .map((d) => d.name)
+    .sort((a, b) => String(a).localeCompare(String(b)))
+
+  const outOfScope = terms
+    .filter((t) => normRank(t.rank) === targetRank && !descIds.has(t.taxonNameId))
+    .map((t) => t.label)
+    .sort((a, b) => String(a).localeCompare(String(b)))
+
+  return {
+    targetRank,
+    expectedCount: expected.length,
+    coveredCount: covered.length,
+    covered: covered.map((d) => d.name),
+    missing,
+    outOfScope,
+    isComplete: missing.length === 0 && outOfScope.length === 0
+  }
+}
+```
+
+- [ ] **Step 4: Run it to verify it passes**
+
+Run: `node /tmp/keycompleteness.test.mjs`
+Expected: `All keycompleteness tests passed.`
+
+- [ ] **Step 5: Wire `loadCompleteness()` into `modules/keys/KeyView.vue`**
+
+Script — add the import and a ref:
+
+```js
+import { assessCompleteness } from './lib/completeness.js'
+const completeness = ref(null)
+```
+
+Add this function (mirrors `loadCitations` — fire-and-forget, never throws):
+
+```js
+async function loadCompleteness(scopeOtuId, nodeMap) {
+  completeness.value = null
+  const terminalOtuIds = Object.values(nodeMap)
+    .filter((n) => !n.isCouplet && n.targetType === '/api/v1/otus' && n.targetId != null)
+    .map((n) => n.targetId)
+  if (!scopeOtuId || !terminalOtuIds.length) return
+  try {
+    // scope OTU -> its taxon-name id
+    const { data: scopeOtu } = await makeAPIRequest.get(`/otus/${scopeOtuId}`)
+    const scopeTnId = scopeOtu?.taxon_name_id
+    if (!scopeTnId) return
+
+    // valid descendants of the scope taxon (id + rank + name)
+    const dq = new URLSearchParams()
+    dq.append('taxon_name_id[]', scopeTnId)
+    dq.set('descendants', 'true')
+    dq.set('validity', 'true')
+    dq.set('per', '500')
+    const { data: descRaw } = await makeAPIRequest.get(`/taxon_names?${dq.toString()}`)
+    const descendants = (Array.isArray(descRaw) ? descRaw : []).map((d) => ({
+      taxonNameId: d.id,
+      rank: d.rank,
+      name: d.cached || d.name,
+      valid: d.cached_is_valid !== false
+    }))
+
+    // terminal OTUs -> taxon-name ids
+    const oq = new URLSearchParams()
+    terminalOtuIds.forEach((id) => oq.append('otu_id[]', id))
+    oq.set('per', '500')
+    const { data: otuRaw } = await makeAPIRequest.get(`/otus?${oq.toString()}`)
+    const termTnIds = [...new Set((Array.isArray(otuRaw) ? otuRaw : [])
+      .map((o) => o.taxon_name_id).filter(Boolean))]
+    if (!termTnIds.length) return
+
+    // ranks for the terminal taxon-names (some may already be in `descendants`, but fetch
+    // all so out-of-scope terminals still get a rank)
+    const tq = new URLSearchParams()
+    termTnIds.forEach((id) => tq.append('taxon_name_id[]', id))
+    tq.set('per', '500')
+    const { data: tnRaw } = await makeAPIRequest.get(`/taxon_names?${tq.toString()}`)
+    const terminals = (Array.isArray(tnRaw) ? tnRaw : []).map((t) => ({
+      taxonNameId: t.cached_valid_taxon_name_id || t.id,
+      rank: t.rank,
+      label: t.cached || t.name
+    }))
+
+    completeness.value = assessCompleteness({ terminals, descendants })
+  } catch (e) {
+    completeness.value = null
+  }
+}
+```
+
+In `load()`, right after `loadCitations(Object.keys(nodes.value))`, add:
+
+```js
+loadCompleteness(list_row_otu_id_here, nodes.value)
+```
+
+where the scope OTU id is the one already resolved into `listMeta.value.otu_id` — so call it **after** `listMeta.value` is set:
+
+```js
+listMeta.value = (Array.isArray(list) ? list : []).find((r) => r.id === Number(id)) || {}
+loadCompleteness(listMeta.value.otu_id, nodes.value)
+```
+
+Template — add the prop:
+
+```vue
+<KeyHeader class="flex-1" :meta="meta" :completeness="completeness" />
+```
+
+- [ ] **Step 6: Chip + report modal in `modules/keys/components/KeyHeader.vue`**
+
+Add the prop:
+
+```js
+const props = defineProps({
+  meta: { type: Object, required: true },
+  completeness: { type: Object, default: null }
+})
+const showCompleteness = ref(false)
+```
+
+In the chip row, after the `updatedInWords` chip, add:
+
+```vue
+<button
+  v-if="completeness"
+  type="button"
+  class="border rounded px-2 py-0.5"
+  :class="completeness.isComplete
+    ? 'border-base-muted text-base-soft'
+    : 'border-danger text-danger'"
+  @click="showCompleteness = true"
+  @keydown.enter="showCompleteness = true"
+  @keydown.space.prevent="showCompleteness = true"
+>{{ completeness.isComplete
+  ? `complete (${completeness.expectedCount} ${completeness.targetRank})`
+  : `${completeness.coveredCount} / ${completeness.expectedCount} ${completeness.targetRank}` }}</button>
+```
+
+Add the modal (next to the existing citation `VModal`):
+
+```vue
+<VModal v-if="showCompleteness && completeness" @close="showCompleteness = false">
+  <template #header><div class="text-sm font-medium">Completeness</div></template>
+  <div class="px-4 pb-4 text-sm space-y-2 [&_i]:italic">
+    <p class="text-base-content">
+      Keyed at <strong>{{ completeness.targetRank }}</strong> level —
+      {{ completeness.coveredCount }} of {{ completeness.expectedCount }} in the key's scope.
+    </p>
+    <div v-if="completeness.missing.length">
+      <p class="text-base-soft">Missing ({{ completeness.missing.length }}):</p>
+      <ul class="list-disc ml-5">
+        <li v-for="n in completeness.missing" :key="n"><i>{{ n }}</i></li>
+      </ul>
+    </div>
+    <div v-if="completeness.outOfScope.length">
+      <p class="text-base-soft">Referenced but outside the key's scope:</p>
+      <ul class="list-disc ml-5">
+        <li v-for="n in completeness.outOfScope" :key="n">{{ n }}</li>
+      </ul>
+    </div>
+    <p v-if="completeness.isComplete" class="text-base-content">
+      Every {{ completeness.targetRank }} in scope is keyed out.
+    </p>
+  </div>
+</VModal>
+```
+
+(`border-danger` / `text-danger` are existing theme tokens — `KeyView.vue`'s error state already uses `text-danger`.)
+
+- [ ] **Step 7: Run the throwaway test again, then delete it**
+
+```bash
+node /tmp/keycompleteness.test.mjs   # expect: All keycompleteness tests passed.
+rm /tmp/keycompleteness.test.mjs
+```
+
+- [ ] **Step 8: Compile check** — `npm run build` and `npm run build:ssr` → succeed.
+
+- [ ] **Step 9: Browser check**
+
+`npm run dev`, open `http://localhost:5173/#/key/3977` (SPA is hash-mode).
+Expected: a fourth chip next to "updated 6 months ago". Key #3977's own title says *A. grigorievi* and *A. albosquamus* are missing — the descendants query returns 9 valid species of *Adosomus*; the key keys out 7 (`otus_count` is 9 but 2 of those OTUs are subgenera). So the chip should read roughly `7 / 9 species` in `text-danger`; clicking it lists *Adosomus (Xeradosomus) albisquamus* and *Adosomus (Xeradosomus) grigorievi* under "Missing". (Exact counts depend on the live data — the point is: a red "N / M species" chip, and the two names the title mentions appear in the Missing list.)
+
+- [ ] **Step 10: Commit**
+
+```bash
+git add modules/keys/
+git commit -m "keys: taxonomic completeness check — auto-detected rank, header chip + report"
+```
+
+---
+
+## Task 8: Full-key current-couplet marker + return control, then visual pass
 
 **Files:**
 - Modify: `modules/keys/components/FullKeyView.vue` (highlight the current couplet; add a sticky "return to current couplet" control)
@@ -1540,6 +1871,7 @@ Run `npm run dev`, open `http://localhost:5173/#/key/3977` (SPA is hash-mode —
 - The key content sits on the `bg-base-foreground` panel and white/dark text reads comfortably against it (this was the reported problem — confirm it is fixed in dark mode).
 - `GuidedChoice` cards and the current-couplet `ring` highlight read as distinct against the panel backing.
 - Couplet numbers legible; muted text (chips, citations, figure labels) dimmer but readable; hover states visible.
+- The completeness chip (Task 7) — the `text-danger`/`border-danger` incomplete state and the neutral `complete` state both read clearly in dark and light.
 - The fixed "↑ Couplet N" button (visible when a couplet is active, e.g. `/#/key/3977/4`) is legible and does not overlap key content awkwardly.
 Adjust token choices only (`bg-base` vs `bg-base-foreground`, `text-base-soft` vs `text-base-content`, `border-base-muted`) — no hard-coded colours.
 
@@ -1554,7 +1886,7 @@ git commit -m "keys: dark-mode surface, current-couplet marker + return control,
 
 ---
 
-## Task 8: Fork the keys list card (`panels/PanelKeys/`)
+## Task 9: Fork the keys list card (`panels/PanelKeys/`)
 
 **Files:**
 - Create: `panels/PanelKeys/main.js`
@@ -1562,7 +1894,7 @@ git commit -m "keys: dark-mode surface, current-couplet marker + return control,
 
 **Interfaces:**
 - Consumes: `TaxonWorks.getKeys(otuId)` response — `{ observation_matrices: { scoped, in }, leads: { scoped, in } }`; each `leads.*` item `{ id, text }`; each `observation_matrices.*` item `{ id, name, is_media }`.
-- Produces: panel id `panel:keys` (local; overrides the npm panel). Dichotomous rows link to route `dichotomous-key`; non-media matrix rows link to `interactive-key` (Task 9); media matrix rows keep the core `image-matrices-id`.
+- Produces: panel id `panel:keys` (local; overrides the npm panel). Dichotomous rows link to route `dichotomous-key`; non-media matrix rows link to `interactive-key` (Task 10); media matrix rows keep the core `image-matrices-id`.
 
 - [ ] **Step 1: Create `panels/PanelKeys/main.js`**
 
@@ -1662,7 +1994,7 @@ onBeforeUnmount(() => {
 - [ ] **Step 4: Browser check**
 
 Run `npm run dev`. Open an OTU overview page known to have a dichotomous key — e.g. an Adosomus species: `http://localhost:5173/` → search "Adosomus roridus" → its page, "Overview" tab, the "Keys" panel.
-Expected: the panel lists "Key to the species of Adosomus …"; clicking it navigates to `/key/<id>` (the new view), **not** `/keys/<id>`. If the OTU also has an observation matrix, that row goes to `/interactive-key/<id>` after Task 9 (until then that route 404s — acceptable mid-plan, retest in Task 9).
+Expected: the panel lists "Key to the species of Adosomus …"; clicking it navigates to `/key/<id>` (the new view), **not** `/keys/<id>`. If the OTU also has an observation matrix, that row goes to `/interactive-key/<id>` after Task 10 (until then that route 404s — acceptable mid-plan, retest in Task 10).
 
 - [ ] **Step 5: Commit**
 
@@ -1673,7 +2005,7 @@ git commit -m "keys: fork panel:keys list card, link dichotomous keys to the loc
 
 ---
 
-## Task 9: Thin fork of the interactive/matrix key (`modules/interactiveKeys/`)
+## Task 10: Thin fork of the interactive/matrix key (`modules/interactiveKeys/`)
 
 **Files:**
 - Create: `modules/interactiveKeys/router/index.js`
@@ -1720,7 +2052,7 @@ Keep everything else — the `<VueInteractiveKey>` usage, the `@sfgrp/distinguis
 
 - [ ] **Step 5: Browser check**
 
-Open an OTU with an observation matrix key via the forked `PanelKeys` panel (Task 8). Click the matrix row.
+Open an OTU with an observation matrix key via the forked `PanelKeys` panel (Task 9). Click the matrix row.
 Expected: it loads at `/interactive-key/<id>` and renders the interactive key exactly as the package version does at `/interactive_keys/<id>` (same layout, same theming). No console errors.
 
 - [ ] **Step 6: Commit**
@@ -1732,7 +2064,7 @@ git commit -m "keys: thin local fork of the interactive/matrix key view for rout
 
 ---
 
-## Task 10: Module README + manifest polish
+## Task 11: Module README + manifest polish
 
 **Files:**
 - Create: `modules/keys/README.md`
@@ -1817,18 +2149,19 @@ git commit -m "keys: module README and publish notes"
 ## Self-review notes
 
 - **Spec §3.1 file layout** — Tasks 1–10 create every file listed except `useKey.js`, which was intentionally dropped: its role (fetch orchestration + derived data) lives in `KeyView.vue` + `lib/tree.js`, matching this repo's "component fetches, `lib/` transforms" pattern (prior plan). No separate store is needed — the Guided view holds no navigation state at all; the current couplet is a pure function of `route.params.couplet` via `coupletByNumber`.
-- **Spec §3.2 one URL per couplet + §3.3 SSR** — route `/key/:id/:couplet?` (Task 1); both views take `keyId` + `couplet` props from `route.params` (Tasks 3, 6); no URL hash anywhere (Task 7 Step 2 greps to confirm `#couplet-` appears only as a scroll-target `id`); Guided navigation is `RouterLink`/`router.push` so Back walks up the key; `dev:ssr` deep-link check in Tasks 6 & 10.
+- **Spec §3.2 one URL per couplet + §3.3 SSR** — route `/key/:id/:couplet?` (Task 1); both views take `keyId` + `couplet` props from `route.params` (Tasks 3, 6); no URL hash anywhere (Task 8 Step 4 greps to confirm `#couplet-` appears only as a scroll-target `id`); Guided navigation is `RouterLink`/`router.push` so Back walks up the key; `dev:ssr` deep-link check in Tasks 6 & 11.
 - **Spec §4 three calls** — call 1 Task 1, call 2 Task 2, call 3 Task 5.
 - **Spec §5 formats + toggle** — Full key Task 3, Guided Task 6, toggle + persistence Task 6, `?format=` override Task 6 (`resolveFormat`, Node-tested); `localStorage` pref applied post-mount (no SSR mismatch).
 - **Spec §5.1 "leads to" / no downstream text** — `ReachableTaxa.vue` (Task 6) + `descendantOtus` (Task 1, Node-tested).
 - **Spec §5.2 couplet references / back-jumps** — `FullKeyView.vue`: `id="couplet-N"` scroll targets, `<RouterLink>` to the `:couplet` param for couplet-number targets and "from N", scroll-into-view watcher (Task 3).
 - **Spec §6 figures + lightbox** — Task 4; `KeyLightbox` is `Teleport` + `ClientOnly`, keyboard + focus-trap, keys-local (no `panels/_shared`).
 - **Spec §7 masthead, no modal** — `KeyHeader.vue` (Task 2); title/description/scope/citation always visible; only the *full reference* is behind a click, consistent with `DwcTable`.
-- **Spec §8 link-on-hover, reserved emphasis, print** — Task 7.
-- **Spec §9 PanelKeys fork** — Task 8.
-- **Spec §10 interactive-key thin fork** — Task 9 (kept, per approval).
-- **Spec §3.4 distributability** — no `panels/`/`config/`/`_shared/` imports in `modules/keys/`; manifest Task 1; README Task 10.
-- **Global constraint "links text-coloured until hover"** — enforced in every component and re-audited in Task 7 Step 2.
+- **Design amendment 3 (completeness check)** — `lib/completeness.js` (Task 7, Node-tested `finestRank` + `assessCompleteness`); `KeyView` resolves scope descendants + terminal ranks and passes a `completeness` object to `KeyHeader`; chip + report modal in `KeyHeader` (Task 7). Finest-rank auto-detect; valid descendants only.
+- **Spec §8 link-on-hover, reserved emphasis, print** — Task 8. **Ruling (2026-08-29):** the Guided "Go to couplet N →" primary action stays a filled `bg-primary` link — it is the forward CTA of a choice card, not an in-text jump target; the "no standing colour" rule governs breadcrumb steps / "from N" / couplet-number links embedded in prose. Task 8's link audit must NOT re-flag the CTA.
+- **Spec §9 PanelKeys fork** — Task 9.
+- **Spec §10 interactive-key thin fork** — Task 10 (kept, per approval).
+- **Spec §3.4 distributability** — no `panels/`/`config/`/`_shared/` imports in `modules/keys/`; manifest Task 1; README Task 11.
+- **Global constraint "links text-coloured until hover"** — enforced in every component and re-audited in Task 8 Step 4 (with the Guided-CTA carve-out above).
 - **Type consistency** — `Node` fields (`isCouplet`, `coupletNumber`, `targetType`, `targetId`, `targetLabel`, `targetLink`, `figures`, `children`) defined in Task 1, used unchanged in Tasks 3–9. `coupletByNumber(value, nodes)` (Task 1) consumed by `GuidedView` (Task 6). `keyId` + `couplet` props: `FullKeyView` (Task 3) and `GuidedView` (Task 6) take `keyId: [String, Number]` and `couplet: { type: String, default: null }` (a nullable string — `null`/`undefined` skip Vue's type check; do NOT write `type: [String, null]`, `null` is not a valid type constructor), passed from `route.params.id` / `route.params.couplet ?? null` in `KeyView` — the Task 5 `KeyView` template snippet keeps these props (noted inline). `citations` map shape `{ id, short, full }[]` produced in Task 5, consumed by `LeadText` (Task 3) which tolerates an empty `{}` until then. `format` values `'guided'|'full'` consistent across `format.js`, `FormatToggle`, `KeyView`.
 - **Known unverified point** — `figures[]` field names (`figure_label` vs `label`, whether `thumb`/`medium` are directly usable as `<img src>`); code reads both spellings and Task 4 Step 4 is a structural check with a fake figure. Revisit when the first real Lead depiction exists in the data.
-- **Route collision** — new paths `/key/:id/:couplet?` and `/interactive-key/:id` deliberately differ from core `/keys/:id` and `/interactive_keys/:id`; core routes remain registered but nothing links to them after Task 8.
+- **Route collision** — new paths `/key/:id/:couplet?` and `/interactive-key/:id` deliberately differ from core `/keys/:id` and `/interactive_keys/:id`; core routes remain registered but nothing links to them after Task 9.
