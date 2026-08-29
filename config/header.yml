@@ -17,6 +17,9 @@
     - label: Search DwC
       link: /resources/tw/filter/dwc_otus
 
+    - label: Keys
+      link: /keys
+
     - label: Bibliography
       link: /resources/tw/filter/bibliography
 
