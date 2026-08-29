@@ -1774,9 +1774,29 @@ git commit -m "keys: taxonomic completeness check — auto-detected rank, header
 
 **Design amendment (2026-08-29):** In Full-key view, navigating to a couplet (clicking a couplet-number link → `:couplet` route param) scrolls you there, but after scrolling around to check other couplets it is easy to lose your place. So: (a) the current couplet's `<section>` is visually marked, and (b) a persistent control returns you to it.
 
-- [ ] **Step 1: Current-couplet marker + return control in `modules/keys/components/FullKeyView.vue`**
+**Bug fix folded in (2026-08-29): "couplet N" links don't jump.** The framework router's `scrollBehavior` (`node_modules/@sfgrp/taxonpages/src/router/index.js:42`) returns `{ top: 0 }` for every hashless navigation — and our couplet URLs (`/key/:id/:couplet`, or `#/key/:id/:couplet` in the SPA's hash mode) carry no secondary hash — so every couplet navigation scrolls the window to top, and Task 3's `nextTick(...scrollIntoView)` loses the race. Fix: defer our scroll past the router's, in `scrollToCouplet` (Step 1a below). This also fixes the "↑ Couplet N" return button, which calls the same function.
 
-On the couplet `<section>`, add a `data-current` attribute and a highlight class when it is the current couplet:
+- [ ] **Step 1: Current-couplet marker + return control + scroll fix in `modules/keys/components/FullKeyView.vue`**
+
+**1a — fix `scrollToCouplet` so the jump wins the race with the router's `{ top: 0 }`.** Replace Task 3's `scrollToCouplet` body with a double-`requestAnimationFrame` deferral after `nextTick` (rAF fires after the router has applied its own scroll on nav-resolve), and change the import to `{ watch, nextTick, computed }`:
+
+```js
+function scrollToCouplet(n) {
+  if (n == null || n === '' || typeof document === 'undefined') return
+  nextTick(() => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.getElementById(`couplet-${n}`)
+          ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      })
+    })
+  })
+}
+```
+
+Keep the two existing watchers (`watch(() => props.couplet, scrollToCouplet, { immediate: true })` and `watch(() => props.couplets, () => scrollToCouplet(props.couplet))`).
+
+**1b — current-couplet marker.** On the couplet `<section>`, add a `data-current` attribute and a highlight class when it is the current couplet:
 
 ```vue
 <section
@@ -1791,7 +1811,7 @@ On the couplet `<section>`, add a `data-current` attribute and a highlight class
 >
 ```
 
-Add, after the couplet list (still inside the component's root element), a fixed-position control shown only while a couplet is active — and hidden in print:
+**1c — return control.** Add, after the couplet list (still inside the component's root element), a fixed-position button shown only while a couplet is active — and hidden in print:
 
 ```vue
 <button
@@ -1802,7 +1822,7 @@ Add, after the couplet list (still inside the component's root element), a fixed
 >↑ Couplet {{ currentCoupletNumber }}</button>
 ```
 
-Script additions:
+Script additions for 1b/1c:
 
 ```js
 const currentCoupletNumber = computed(() =>
@@ -1814,7 +1834,7 @@ function isCurrent(couplet) {
 }
 ```
 
-(`scrollToCouplet` already exists from Task 3; `computed` is already imported there? — Task 3's `FullKeyView` imports `{ watch, nextTick }` only, so add `computed` to that import.)
+(`computed` was added to the `vue` import in 1a.)
 
 - [ ] **Step 2: Dark-mode surface in `modules/keys/KeyView.vue`**
 
