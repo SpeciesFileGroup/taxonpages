@@ -255,6 +255,34 @@ label, and — when there are couplet citations beyond the primary — shows a "
 
 ---
 
+## A10 — Top-level "Keys" tab + auto index page
+
+**Asked:** a top-level nav tab "Keys" (between "Search DwC" and "Bibliography") that
+automatically lists every key in the project by the data in their headers (scope, citation,
+description, …).
+
+**Decision:** `config/header.yml` gets a `- label: Keys / link: /keys` entry in the right
+position. The local module registers a second route `{ name: 'keys-index', path: '/keys' }`
+(distinct from core `/keys/:id` and our `/key/:id`). `KeysIndex.vue` fetches `GET /leads`
+(every public key root — title, description, counts, updated) and one `GET /leads/key/:id`
+per key for `metadata` (scope + origin citation), rendering a card per key on the same
+`bg-base-foreground` surface as the key view, each card titled with a link to `/key/:id`.
+
+**Task:** 15.
+
+**Review check:**
+- A "Keys" item appears in the header between "Search DwC" and "Bibliography"; it opens
+  `/keys`.
+- `/keys` lists one card for key #3977 with title, `Scope: Adosomus Faust, 1904`, the
+  description, the Voss 1937 citation, and couplet/taxa/updated chips; the title links to
+  `/key/3977`.
+- Distributability: the module owns the route; the nav link is a host `config/header.yml`
+  edit (README documents it as an install step).
+
+**Status:** planned (Task 15).
+
+---
+
 ## Cross-cutting notes (not amendments, context for review)
 
 - **SPA is hash-mode** (`config/router.yml` → `hash_mode: true`): test the SPA at
@@ -266,5 +294,5 @@ label, and — when there are couplet citations beyond the primary — shows a "
 - **Task numbering:** the completeness check was inserted as Task 7; the original
   visual-pass / PanelKeys / interactiveKeys / README tasks became 8 / 9 / 10 / 11. Appended:
   Task 12 = completeness report tree (A8), Task 13 = synonym suffix (A6), Task 14 = primary
-  source + references (A9). **Execution order** (per the SDD ledger, not the numbers):
-  7 → 12 → 13 → 14 → 8 → 9 → 10 → 11.
+  source + references (A9), Task 15 = Keys tab + index (A10). **Execution order** (per the
+  SDD ledger, not the numbers): 7 → 12 → 13 → 14 → 8 → 9 → 10 → 15 → 11.

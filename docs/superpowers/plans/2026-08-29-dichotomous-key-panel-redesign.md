@@ -2652,6 +2652,150 @@ git commit -m "keys: label the key citation 'Primary source' + aggregated refere
 
 ---
 
+## Task 15: Top-level "Keys" tab + auto index page (Amendment A10)
+
+> **Execution order:** after Task 10, before Task 11 (README documents it).
+
+**Asked (A10):** a top-level nav tab "Keys" (between "Search DwC" and "Bibliography") that
+automatically lists every key in the project, showing the data from their headers (scope,
+citation, description, counts, …).
+
+**Files:**
+- Modify: `config/header.yml` (add the nav link)
+- Modify: `modules/keys/router/index.js` (add the `/keys` index route)
+- Create: `modules/keys/KeysIndex.vue`
+
+**Interfaces:**
+- Route `{ name: 'keys-index', path: '/keys' }` — distinct from the core `keys` module's
+  `/keys/:id` (which needs a segment) and from our `/key/:id`. Registered alongside the
+  existing `dichotomous-key` route in the same `router/index.js` array.
+- `KeysIndex.vue` — no props; fetches on mount.
+
+- [ ] **Step 1: Add the nav link in `config/header.yml`**
+
+Insert between the "Search DwC" and "Bibliography" entries:
+
+```yaml
+    - label: Keys
+      link: /keys
+```
+
+- [ ] **Step 2: Register the route — `modules/keys/router/index.js`**
+
+```js
+export default [
+  {
+    name: 'keys-index',
+    path: '/keys',
+    component: () => import('../KeysIndex.vue')
+  },
+  {
+    name: 'dichotomous-key',
+    path: '/key/:id/:couplet?',
+    component: () => import('../KeyView.vue')
+  }
+]
+```
+
+- [ ] **Step 3: Create `modules/keys/KeysIndex.vue`**
+
+```vue
+<template>
+  <div class="container mx-auto py-6">
+    <h1 class="text-2xl font-semibold text-base-content mb-4">Keys</h1>
+
+    <VSpinner v-if="loading" />
+    <p v-else-if="!keys.length" class="text-base-soft">No public keys in this project.</p>
+
+    <ul v-else class="space-y-4">
+      <li
+        v-for="k in keys"
+        :key="k.id"
+        class="rounded-lg border border-base-muted bg-base-foreground p-4 sm:p-5"
+      >
+        <RouterLink
+          :to="{ name: 'dichotomous-key', params: { id: k.id } }"
+          class="text-lg text-base-content hover:underline hover:text-secondary [&_i]:italic"
+          v-html="k.title"
+        />
+        <p v-if="k.scope" class="mt-1 text-sm text-base-content [&_i]:italic">
+          <span class="text-base-soft">Scope: </span><span v-html="k.scope" />
+        </p>
+        <p v-if="k.description" class="mt-1 text-sm text-base-content">{{ k.description }}</p>
+        <p
+          v-if="k.citation"
+          class="mt-1 text-sm text-base-content [&_i]:italic"
+          v-html="k.citation"
+        />
+        <div class="mt-2 flex flex-wrap gap-2 text-xs text-base-soft">
+          <span v-if="k.coupletsCount" class="border border-base-muted rounded px-2 py-0.5">{{ k.coupletsCount }} couplets</span>
+          <span v-if="k.otusCount" class="border border-base-muted rounded px-2 py-0.5">{{ k.otusCount }} taxa</span>
+          <span v-if="k.updatedInWords" class="border border-base-muted rounded px-2 py-0.5">updated {{ k.updatedInWords }} ago</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import { makeAPIRequest } from '@/utils/request'
+
+const loading = ref(true)
+const keys = ref([])
+
+onMounted(async () => {
+  try {
+    const { data: list } = await makeAPIRequest.get('/leads')
+    const rows = Array.isArray(list) ? list : []
+    // one metadata call per key (there are only a handful) for scope + citation
+    const metas = await Promise.all(
+      rows.map((r) =>
+        makeAPIRequest.get(`/leads/key/${r.id}`).then((res) => res.data?.metadata || {}).catch(() => ({}))
+      )
+    )
+    keys.value = rows.map((r, i) => ({
+      id: r.id,
+      title: metas[i].title || r.text || `Key ${r.id}`,
+      scope: metas[i].taxonomic_scope || null,
+      citation: metas[i].origin_citation || null,
+      description: r.description || null,
+      coupletsCount: r.couplets_count || null,
+      otusCount: r.otus_count || null,
+      updatedInWords: r.key_updated_at_in_words || null
+    }))
+  } catch (e) {
+    keys.value = []
+  } finally {
+    loading.value = false
+  }
+})
+</script>
+```
+
+- [ ] **Step 4: Compile check** — `npm run build` and `npm run build:ssr` → succeed.
+
+- [ ] **Step 5: Browser check**
+
+`npm run dev`, open `http://localhost:5173/#/keys` (also reachable from the new "Keys" nav
+item between "Search DwC" and "Bibliography").
+Expected: a "Keys" heading and one card — "Key to the species of Adosomus …" — with
+`Scope: Adosomus Faust, 1904`, the description line, the Voss 1937 citation, and the three
+chips. Clicking the title opens `/key/3977`.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add config/header.yml modules/keys/
+git commit -m "keys: top-level Keys tab + auto index page listing every key's header (A10)"
+```
+
+> **Distributability note (for Task 11 README):** the module registers the `/keys` route
+> itself, but the nav link is a host-project `config/header.yml` edit — document it as a
+> one-line install step.
+
+---
+
 ## Self-review notes
 
 - **Spec §3.1 file layout** — Tasks 1–10 create every file listed except `useKey.js`, which was intentionally dropped: its role (fetch orchestration + derived data) lives in `KeyView.vue` + `lib/tree.js`, matching this repo's "component fetches, `lib/` transforms" pattern (prior plan). No separate store is needed — the Guided view holds no navigation state at all; the current couplet is a pure function of `route.params.couplet` via `coupletByNumber`.
