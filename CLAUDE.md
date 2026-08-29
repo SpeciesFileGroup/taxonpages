@@ -21,6 +21,10 @@ taxa/
 Custom panels each need a `main.js` (registers the panel id) and are wired up in `config/taxa_page.yml`.
 CLI: `taxonpages package list/add/remove/unpack` manages panels and packages.
 
+### For CLAUDE
+- List of feature requests for TaxonWorks. Append if a new need is arising (ask me first): `docs/TaxonWorksWishlist.md`
+- To do list for CLAUDE: `docs/Task_images.md`, `docs/Task_Scope for Geography.md`
+
 ## Critical: path alias
 
 `@/` resolves to **`node_modules/@sfgrp/taxonpages/src/`**, NOT to the local `taxa/` tree.
