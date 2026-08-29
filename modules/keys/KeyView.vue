@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, provide } from 'vue'
 import { useRoute } from 'vue-router'
 import { makeAPIRequest } from '@/utils/request'
 import { buildNodes, orderedCouplets, childChoices } from './lib/tree.js'
@@ -46,9 +46,14 @@ import GuidedView from './components/GuidedView.vue'
 import FormatToggle from './components/FormatToggle.vue'
 import CoupletCitation from './components/CoupletCitation.vue'
 import { readFormat, writeFormat } from './lib/format.js'
-import { assessCompleteness } from './lib/completeness.js'
+import { buildCompletenessReport } from './lib/completeness.js'
 
 const route = useRoute()
+
+// { [terminalOtuId]: { validName } } for key terminals that key out a junior synonym.
+// Built in loadCompleteness, consumed by TaxonLink via inject (Task 13 / A6).
+const synonymyByOtuId = ref({})
+provide('keySynonymy', computed(() => synonymyByOtuId.value))
 
 const format = ref('guided')
 onMounted(() => { format.value = readFormat() })
@@ -123,53 +128,107 @@ async function loadCitations(leadIds) {
 }
 
 async function loadCompleteness(scopeOtuId, nodeMap) {
-  completeness.value = null
-  const terminalOtuIds = [...new Set(Object.values(nodeMap)
-    .filter((n) => !n.isCouplet && n.targetType === '/api/v1/otus' && n.targetId != null)
-    .map((n) => n.targetId))]
-  if (!scopeOtuId || !terminalOtuIds.length) return
   try {
+    completeness.value = null
+    synonymyByOtuId.value = {}
+
+    // key terminals that point at an OTU, deduped by OTU id (first target_label wins)
+    const termByOtuId = new Map()
+    for (const n of Object.values(nodeMap)) {
+      if (n.isCouplet || n.targetType !== '/api/v1/otus' || n.targetId == null) continue
+      if (!termByOtuId.has(n.targetId)) {
+        termByOtuId.set(n.targetId, { otuId: n.targetId, label: String(n.targetLabel || '') })
+      }
+    }
+    const terminals = [...termByOtuId.values()]
+    if (!scopeOtuId || !terminals.length) return
+
     // scope OTU -> its taxon-name id
     const { data: scopeOtu } = await makeAPIRequest.get(`/otus/${scopeOtuId}`)
     const scopeTnId = scopeOtu?.taxon_name_id
     if (!scopeTnId) return
 
-    // valid descendants of the scope taxon (id + rank + name)
+    // all descendants of the scope taxon INCLUDING synonyms (no validity filter)
     const dq = new URLSearchParams()
     dq.append('taxon_name_id[]', scopeTnId)
     dq.set('descendants', 'true')
-    dq.set('validity', 'true')
     dq.set('per', '500')
     const { data: descRaw } = await makeAPIRequest.get(`/taxon_names?${dq.toString()}`)
     const descendants = (Array.isArray(descRaw) ? descRaw : []).map((d) => ({
-      taxonNameId: d.id,
+      id: d.id,
+      parentId: d.parent_id,
       rank: d.rank,
-      name: [d.cached || d.name, d.cached_author_year].filter(Boolean).join(' '),
-      valid: d.cached_is_valid !== false
+      name: d.cached || d.name,
+      authorYear: d.cached_author_year,
+      valid: d.cached_is_valid !== false,
+      validId: d.cached_valid_taxon_name_id
     }))
+    const descById = new Map(descendants.map((d) => [d.id, d]))
+    const descIds = new Set(descendants.map((d) => d.id))
+    const authored = (d) => (d ? [d.name, d.authorYear].filter(Boolean).join(' ') : '')
 
-    // terminal OTUs -> taxon-name ids
+    // scope taxon-name rank
+    let scopeRank = descById.get(scopeTnId)?.rank || null
+    if (!scopeRank) {
+      const { data: scopeTn } = await makeAPIRequest.get(`/taxon_names/${scopeTnId}`)
+      scopeRank = scopeTn?.rank || null
+    }
+
+    // terminal OTUs -> their taxon-name ids
     const oq = new URLSearchParams()
-    terminalOtuIds.forEach((id) => oq.append('otu_id[]', id))
+    terminals.forEach((t) => oq.append('otu_id[]', t.otuId))
     oq.set('per', '500')
     const { data: otuRaw } = await makeAPIRequest.get(`/otus?${oq.toString()}`)
-    const termTnIds = [...new Set((Array.isArray(otuRaw) ? otuRaw : [])
-      .map((o) => o.taxon_name_id).filter(Boolean))]
-    if (!termTnIds.length) return
+    const otuIdToTnId = new Map()
+    for (const o of Array.isArray(otuRaw) ? otuRaw : []) {
+      if (o.taxon_name_id != null) otuIdToTnId.set(o.id, o.taxon_name_id)
+    }
+    const rawTnIds = [...new Set([...otuIdToTnId.values()])]
+    if (!rawTnIds.length) return
 
-    // ranks for the terminal taxon-names (some may already be in `descendants`, but fetch
-    // all so out-of-scope terminals still get a rank)
+    // resolve those taxon-names (validity + valid target) so synonym terminals fold to
+    // their valid id
     const tq = new URLSearchParams()
-    termTnIds.forEach((id) => tq.append('taxon_name_id[]', id))
+    rawTnIds.forEach((id) => tq.append('taxon_name_id[]', id))
     tq.set('per', '500')
     const { data: tnRaw } = await makeAPIRequest.get(`/taxon_names?${tq.toString()}`)
-    const terminals = (Array.isArray(tnRaw) ? tnRaw : []).map((t) => ({
-      taxonNameId: t.cached_valid_taxon_name_id || t.id,
-      rank: t.rank,
-      label: [t.cached || t.name, t.cached_author_year].filter(Boolean).join(' ')
-    }))
+    const tnRowById = new Map((Array.isArray(tnRaw) ? tnRaw : []).map((t) => [t.id, t]))
 
-    completeness.value = assessCompleteness({ terminals, descendants })
+    const terminalTnIds = []
+    const outOfScopeTerminals = []
+    const synMap = {}
+    for (const t of terminals) {
+      const rawTnId = otuIdToTnId.get(t.otuId)
+      if (rawTnId == null) continue
+      const row = tnRowById.get(rawTnId)
+      const validId = row?.cached_valid_taxon_name_id || rawTnId
+      terminalTnIds.push(validId)
+      if (!descIds.has(validId)) outOfScopeTerminals.push({ label: t.label, otuId: t.otuId })
+      if (row && row.cached_is_valid === false) {
+        synMap[t.otuId] = { validName: authored(descById.get(validId)) }
+      }
+    }
+    synonymyByOtuId.value = synMap
+
+    // an OTU id per descendant taxon-name, for the report's new-tab links
+    const tnIdToOtuId = {}
+    const dq2 = new URLSearchParams()
+    descendants.forEach((d) => dq2.append('taxon_name_id[]', d.id))
+    dq2.set('per', '500')
+    const { data: otuRaw2 } = await makeAPIRequest.get(`/otus?${dq2.toString()}`)
+    for (const o of Array.isArray(otuRaw2) ? otuRaw2 : []) {
+      if (o.taxon_name_id != null && !(o.taxon_name_id in tnIdToOtuId)) {
+        tnIdToOtuId[o.taxon_name_id] = o.id
+      }
+    }
+
+    completeness.value = buildCompletenessReport({
+      scopeRank,
+      descendants,
+      terminalTnIds: [...new Set(terminalTnIds)],
+      tnIdToOtuId,
+      outOfScopeTerminals
+    })
   } catch (e) {
     completeness.value = null
   }

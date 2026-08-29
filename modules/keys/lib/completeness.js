@@ -64,3 +64,82 @@ export function assessCompleteness({ terminals, descendants }) {
     isComplete: missing.length === 0 && outOfScope.length === 0
   }
 }
+
+function taxRef(d, tnIdToOtuId) {
+  return { id: d.id, otuId: tnIdToOtuId[d.id] ?? null, name: d.name, authorYear: d.authorYear || '' }
+}
+const authored = (d) => [d.name, d.authorYear].filter(Boolean).join(' ')
+
+// Richer report for the header modal: keeps assessCompleteness's first six fields (so the
+// chip is unchanged) and adds `groups` (one per grouping-rank taxon — the rank between
+// scope and target — each with its target-rank `members` marked included/missing and their
+// `synonyms`) and `ungrouped` (target taxa parented directly by the scope). Pure.
+export function buildCompletenessReport({
+  scopeRank, descendants, terminalTnIds, tnIdToOtuId = {}, outOfScopeTerminals = []
+}) {
+  const descs = Array.isArray(descendants) ? descendants : []
+  const termSet = new Set((terminalTnIds || []).filter((x) => x != null))
+  const byId = new Map(descs.map((d) => [d.id, d]))
+
+  const valid = descs.filter((d) => d.valid)
+  const targetRank = finestRank(
+    valid.filter((d) => termSet.has(d.id)).map((d) => d.rank)
+  ) || finestRank(valid.map((d) => d.rank))
+  if (!targetRank) return null
+
+  const norm = (r) => normRank(r)
+  const scope = norm(scopeRank)
+
+  const synsByValidId = new Map()
+  for (const d of descs) {
+    if (!d.valid && d.validId != null) {
+      if (!synsByValidId.has(d.validId)) synsByValidId.set(d.validId, [])
+      synsByValidId.get(d.validId).push(taxRef(d, tnIdToOtuId))
+    }
+  }
+
+  const targetTaxa = valid.filter((d) => norm(d.rank) === targetRank)
+  const isIncluded = (d) =>
+    termSet.has(d.id) || (synsByValidId.get(d.id) || []).some((s) => termSet.has(s.id))
+
+  const mkMember = (d) => ({
+    taxon: taxRef(d, tnIdToOtuId),
+    status: isIncluded(d) ? 'included' : 'missing',
+    synonyms: (synsByValidId.get(d.id) || []).slice().sort((a, b) => a.name.localeCompare(b.name))
+  })
+
+  // grouping rank = parent rank of target taxa when that parent is finer than scope
+  const groupMap = new Map() // parentId -> { taxon, members }
+  const ungrouped = []
+  for (const d of targetTaxa) {
+    const parent = d.parentId != null ? byId.get(d.parentId) : null
+    if (parent && norm(parent.rank) !== scope) {
+      if (!groupMap.has(parent.id)) groupMap.set(parent.id, { taxon: taxRef(parent, tnIdToOtuId), members: [] })
+      groupMap.get(parent.id).members.push(mkMember(d))
+    } else {
+      ungrouped.push(mkMember(d))
+    }
+  }
+  const bySortName = (a, b) => a.taxon.name.localeCompare(b.taxon.name)
+  const groups = [...groupMap.values()]
+    .map((g) => ({ ...g, members: g.members.sort(bySortName) }))
+    .sort((a, b) => a.taxon.name.localeCompare(b.taxon.name))
+  ungrouped.sort(bySortName)
+
+  const covered = targetTaxa.filter(isIncluded)
+  const missing = targetTaxa.filter((d) => !isIncluded(d)).map(authored)
+    .sort((a, b) => a.localeCompare(b))
+  const outOfScope = (outOfScopeTerminals || []).map((t) => t.label)
+    .sort((a, b) => String(a).localeCompare(String(b)))
+
+  return {
+    targetRank,
+    expectedCount: targetTaxa.length,
+    coveredCount: covered.length,
+    missing,
+    outOfScope,
+    isComplete: missing.length === 0 && outOfScope.length === 0,
+    groups,
+    ungrouped
+  }
+}

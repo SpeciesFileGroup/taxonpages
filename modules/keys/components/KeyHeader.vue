@@ -60,26 +60,8 @@
 
     <VModal v-if="showCompleteness && completeness" @close="showCompleteness = false">
       <template #header><div class="text-sm font-medium">Completeness</div></template>
-      <div class="px-4 pb-4 text-sm space-y-2 [&_i]:italic">
-        <p class="text-base-content">
-          Keyed at <strong>{{ completeness.targetRank }}</strong> level —
-          {{ completeness.coveredCount }} of {{ completeness.expectedCount }} in the key's scope.
-        </p>
-        <div v-if="completeness.missing.length">
-          <p class="text-base-soft">Missing ({{ completeness.missing.length }}):</p>
-          <ul class="list-disc ml-5">
-            <li v-for="n in completeness.missing" :key="n"><i>{{ n }}</i></li>
-          </ul>
-        </div>
-        <div v-if="completeness.outOfScope.length">
-          <p class="text-base-soft">Referenced but outside the key's scope:</p>
-          <ul class="list-disc ml-5">
-            <li v-for="n in completeness.outOfScope" :key="n">{{ n }}</li>
-          </ul>
-        </div>
-        <p v-if="completeness.isComplete" class="text-base-content">
-          Every {{ completeness.targetRank }} in scope is keyed out.
-        </p>
+      <div class="px-4 pb-4">
+        <CompletenessReport :report="completeness" />
       </div>
     </VModal>
   </header>
@@ -87,6 +69,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import CompletenessReport from './CompletenessReport.vue'
 
 const props = defineProps({
   meta: { type: Object, required: true },
