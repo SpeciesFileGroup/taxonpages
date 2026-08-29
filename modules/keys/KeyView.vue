@@ -10,7 +10,12 @@
         :couplets="couplets"
         :nodes="nodes"
         :citations="citations"
-        @open-citation="() => {}"
+        @open-citation="activeCitation = $event"
+      />
+      <CoupletCitation
+        v-if="activeCitation"
+        :citation="activeCitation"
+        @close="activeCitation = null"
       />
     </div>
   </div>
@@ -23,6 +28,7 @@ import { makeAPIRequest } from '@/utils/request'
 import { buildNodes, orderedCouplets, childChoices } from './lib/tree.js'
 import KeyHeader from './components/KeyHeader.vue'
 import FullKeyView from './components/FullKeyView.vue'
+import CoupletCitation from './components/CoupletCitation.vue'
 
 const route = useRoute()
 
@@ -35,6 +41,7 @@ const nodes = ref({})
 const couplets = computed(() => orderedCouplets(nodes.value))
 const childrenOf = (id) => childChoices(id, nodes.value)
 const citations = ref({})
+const activeCitation = ref(null)
 
 const meta = computed(() => ({
   title: rawMeta.value.title || listMeta.value.text || '',
@@ -58,12 +65,36 @@ async function load(id) {
     const { data } = await keyReq
     rawMeta.value = data.metadata || {}
     nodes.value = buildNodes(data.data.entries || {}, data.data.leads || {})
+    loadCitations(Object.keys(nodes.value))
     const { data: list } = await listReq
     listMeta.value = (Array.isArray(list) ? list : []).find((r) => r.id === Number(id)) || {}
   } catch (e) {
     error.value = true
   } finally {
     loading.value = false
+  }
+}
+
+async function loadCitations(leadIds) {
+  if (!leadIds.length) return
+  const qs = new URLSearchParams()
+  qs.set('citation_object_type', 'Lead')
+  qs.append('extend[]', 'source')
+  leadIds.forEach((id) => qs.append('citation_object_id[]', id))
+  try {
+    const { data } = await makeAPIRequest.get(`/citations?${qs.toString()}`)
+    const map = {}
+    for (const c of Array.isArray(data) ? data : []) {
+      const key = String(c.citation_object_id)
+      ;(map[key] ||= []).push({
+        id: c.id,
+        short: c.citation_source_body || c.source?.author_year || 'reference',
+        full: c.source?.cached || c.citation_source_body || ''
+      })
+    }
+    citations.value = map
+  } catch (e) {
+    citations.value = {}
   }
 }
 
