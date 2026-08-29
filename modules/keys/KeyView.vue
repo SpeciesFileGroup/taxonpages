@@ -124,9 +124,9 @@ async function loadCitations(leadIds) {
 
 async function loadCompleteness(scopeOtuId, nodeMap) {
   completeness.value = null
-  const terminalOtuIds = Object.values(nodeMap)
+  const terminalOtuIds = [...new Set(Object.values(nodeMap)
     .filter((n) => !n.isCouplet && n.targetType === '/api/v1/otus' && n.targetId != null)
-    .map((n) => n.targetId)
+    .map((n) => n.targetId))]
   if (!scopeOtuId || !terminalOtuIds.length) return
   try {
     // scope OTU -> its taxon-name id
@@ -144,7 +144,7 @@ async function loadCompleteness(scopeOtuId, nodeMap) {
     const descendants = (Array.isArray(descRaw) ? descRaw : []).map((d) => ({
       taxonNameId: d.id,
       rank: d.rank,
-      name: d.cached || d.name,
+      name: [d.cached || d.name, d.cached_author_year].filter(Boolean).join(' '),
       valid: d.cached_is_valid !== false
     }))
 
@@ -166,7 +166,7 @@ async function loadCompleteness(scopeOtuId, nodeMap) {
     const terminals = (Array.isArray(tnRaw) ? tnRaw : []).map((t) => ({
       taxonNameId: t.cached_valid_taxon_name_id || t.id,
       rank: t.rank,
-      label: t.cached || t.name
+      label: [t.cached || t.name, t.cached_author_year].filter(Boolean).join(' ')
     }))
 
     completeness.value = assessCompleteness({ terminals, descendants })
