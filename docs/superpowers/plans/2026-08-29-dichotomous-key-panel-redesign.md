@@ -2820,6 +2820,131 @@ git commit -m "keys: top-level Keys tab + auto index page listing every key's he
 
 ---
 
+## Task 16: Clickable reference URLs + primary source above description (Amendments A12, A14)
+
+> **Execution order:** after Task 8. Touches `KeyHeader.vue`, `CoupletCitation.vue`,
+> `KeysIndex.vue`.
+
+**Files:**
+- Modify: `modules/keys/components/KeyHeader.vue`
+- Modify: `modules/keys/components/CoupletCitation.vue`
+- Modify: `modules/keys/KeysIndex.vue`
+
+**Interfaces:** no prop changes. `sanitizeAndLinkifyHtml` is exported from `@/utils` (and
+`@/utils/url`) — it sanitises HTML and wraps bare `http(s)://…` (incl. `https://doi.org/…`)
+in `<a target="_blank" rel="noopener noreferrer" class="text-secondary">`.
+
+- [ ] **Step 1: A12 — linkify every citation `v-html` in the keys module**
+
+`import { sanitizeAndLinkifyHtml } from '@/utils'` in each of the three files, then replace:
+- `KeyHeader.vue` — the primary-source `<p>`'s `v-html="meta.originCitation"` →
+  `v-html="sanitizeAndLinkifyHtml(meta.originCitation)"`; the citation `VModal` body
+  `v-html="meta.originCitation"` → same; the references `VModal` list item
+  `v-html="r.full"` → `v-html="sanitizeAndLinkifyHtml(r.full)"`.
+- `CoupletCitation.vue` — `v-html="citation.full"` → `v-html="sanitizeAndLinkifyHtml(citation.full)"`.
+- `KeysIndex.vue` — the citation `<p v-html="k.citation">` → `v-html="sanitizeAndLinkifyHtml(k.citation)"`.
+  (Leave `k.title` / `k.scope` as plain `v-html` — those are name strings, not references.)
+
+Optional polish: in `KeyHeader.vue`'s references modal, replace the `[primary]` text tag with
+`<VBadge color="blue" shape="pill" size="sm" weight="normal">primary</VBadge>` (global
+component; matches `PanelReferences` style). Only if `VBadge` resolves as a global — check
+`node_modules/@sfgrp/taxonpages/src/components/` — otherwise keep `[primary]`.
+
+- [ ] **Step 2: A14 — primary source above the description, both places**
+
+Reorder so the sequence is **title → scope → primary source → description → attribution →
+chips**:
+- `KeyHeader.vue` — move the primary-source `<p>` (the `<span>Primary source: </span>…`
+  block) to directly after the scope `<p>` and before the description `<p>`.
+- `KeysIndex.vue` — in the card template, move the citation `<p>` above the description `<p>`
+  (after the scope `<p>`).
+
+- [ ] **Step 3: Compile check** — `npm run build` and `npm run build:ssr` → succeed.
+
+- [ ] **Step 4: Browser check**
+
+`#/key/3977` and `#/keys` — the Voss 1937 citation still renders (italic journal), the
+"Primary source:" line is now above the description, and any URL in a reference is a
+clickable link. (Key #3977's Voss citation has no URL — inject a test URL into
+`meta.originCitation` briefly, or check against a key/source that has a DOI.)
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add modules/keys/
+git commit -m "keys: linkify URLs/DOIs in references (A12); primary source above description (A14)"
+```
+
+---
+
+## Task 17: Content-agnostic header chips (Amendment A13)
+
+> **Execution order:** after Task 16. Touches `modules/keys/KeyView.vue` (+ maybe
+> `modules/keys/lib/tree.js` for an LCA helper).
+
+**Problem:** `KeyView`'s four header chips (`couplets` / `taxa` / `updated` / completeness)
+all derive from `listMeta`, populated only by matching the key id against `GET /leads` —
+which returns only `is_public` key roots. A non-public key opened by id shows a bare header.
+
+**Files:**
+- Modify: `modules/keys/KeyView.vue`
+- Modify (maybe): `modules/keys/lib/tree.js` (add `terminalOtus(nodes)` and/or an LCA helper — pure, Node-tested if added)
+
+- [ ] **Step 1: Derive couplets + taxa from the loaded tree**
+
+In `KeyView.vue`, the `meta` computed currently takes `coupletsCount` / `otusCount` from
+`listMeta`. Change them to always prefer the tree:
+- `coupletsCount`: `couplets.value.length` (the existing `orderedCouplets(nodes.value)` computed).
+- `otusCount`: count of **distinct** `targetId` across `nodes` where
+  `!isCouplet && targetType === '/api/v1/otus'`. Add `terminalOtus(nodes)` to `lib/tree.js`
+  (returns `[{ id, label }]` deduped) if not already trivial — or inline a `Set` in `KeyView`.
+- Fall back to `listMeta` values only if the tree is empty.
+
+`KeyHeader.vue` needs no change — it already renders the chips from `meta`.
+
+- [ ] **Step 2: Completeness for non-public keys — resolve the scope taxon from the terminals**
+
+`loadCompleteness` currently needs `listMeta.value.otu_id`. Make it work without:
+- If `listMeta.value.otu_id` is present, use it (fast path, unchanged).
+- Else: resolve the scope from the key's terminal taxa. After fetching the terminal
+  taxon-name rows (the existing `GET /taxon_names?taxon_name_id[]=…` call), fetch each one's
+  ancestor chain — `GET /taxon_names?taxon_name_id[]=<terminals>&extend[]=parents` if
+  supported, else walk `parent_id` with a batched `/taxon_names?taxon_name_id[]=` per level —
+  and take the **lowest common ancestor** taxon-name id. Use that as `scopeTnId` for the
+  `descendants=true` query (skip the `/otus/:scopeOtuId` hop entirely in this branch).
+- Add a pure `lowestCommonAncestor(chains)` helper to `lib/tree.js` (input: array of
+  ancestor-id arrays root→leaf; output: the deepest id present in all) — Node-tested.
+- If the ancestor chains can't be resolved, leave `completeness.value = null` (chip hides) —
+  same graceful degradation as today.
+
+- [ ] **Step 3: `updated` chip**
+
+`key_updated_at` is genuinely absent from `/leads/key/:id`. Leave the `updated` chip
+best-effort from the `listMeta` match; it simply won't render for a non-public key. Add a
+one-line code comment saying so.
+
+- [ ] **Step 4: Tests** — if `lib/tree.js` gains `terminalOtus` / `lowestCommonAncestor`,
+  TDD them with a throwaway `/tmp/keytree2.test.mjs` (RED → GREEN → delete), per repo
+  convention.
+
+- [ ] **Step 5: Compile check** — `npm run build` and `npm run build:ssr` → succeed.
+
+- [ ] **Step 6: Browser check**
+
+`#/key/3977` — chips unchanged (still `7 couplets` / `9 taxa` / `updated …` / `7 / 9
+species`, now sourced from the tree for the first two). Then open a **non-public** key by id
+(the user will supply one, e.g. the Entimini key): the couplets + taxa chips render from its
+structure; completeness renders if the scope resolves.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add modules/keys/
+git commit -m "keys: header chips (couplets/taxa) from the key tree, completeness scope from terminals (A13)"
+```
+
+---
+
 ## Self-review notes
 
 - **Spec §3.1 file layout** — Tasks 1–10 create every file listed except `useKey.js`, which was intentionally dropped: its role (fetch orchestration + derived data) lives in `KeyView.vue` + `lib/tree.js`, matching this repo's "component fetches, `lib/` transforms" pattern (prior plan). No separate store is needed — the Guided view holds no navigation state at all; the current couplet is a pure function of `route.params.couplet` via `coupletByNumber`.

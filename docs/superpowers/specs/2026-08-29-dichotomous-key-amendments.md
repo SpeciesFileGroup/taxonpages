@@ -309,7 +309,88 @@ the key's scope .". Theme tokens only (`--color-success` exists).
 emphasised, left rule) vs the quiet included rows; each group shows an "N / M keyed out"
 count.
 
-**Status:** planned (Task 8).
+**Status:** built — Task 8 recovered commit `70dfafa` (implementer's run was cut by a rate
+limit before commit; controller committed the completed edits, both builds green). Task review
+still owed.
+
+---
+
+## A12 — Clickable URLs / DOIs in references (align with TaxonPages PR #364)
+
+**Asked:** check how other panels handle references and the URLs in them; is there a shared
+modal? (ref: `SpeciesFileGroup/taxonpages` PR #364). The "modal with all sources, primary
+marked" is liked as-is — just make the URLs clickable.
+
+**Findings:** No drop-in shared "sources modal" component. The package pattern is the
+**`sanitizeAndLinkifyHtml(html)` util** (`@/utils` / `@/utils/url.js`) — it sanitises then
+turns bare `http(s)://…` (incl. `https://doi.org/…`) into
+`<a target="_blank" rel="noopener noreferrer" class="text-secondary">`. PR #364 (and #351)
+just apply it wherever `source.cached` is rendered. Related: `ModalCitations.vue` (BA-panel,
+`VModal` + `VTable` Reference|Pages), `PanelReferences` (aggregates project references; already
+maps `citation_object_type: 'Lead'` → the badge label **"Key"**).
+
+**Decision:** replace every bare `v-html` of citation HTML in the keys module with
+`sanitizeAndLinkifyHtml(...)` — `KeyHeader.vue` (primary source line + the references-cited
+`VModal`), `CoupletCitation.vue`, `KeysIndex.vue`. Keep our modal layout; optionally swap the
+`[primary]` text tag for a `VBadge` pill to match the package look.
+
+**Task:** 16.
+
+**Review check:** a reference containing a DOI/URL renders it as a clickable `text-secondary`
+link (new tab) in the primary-source line, the references modal, the per-couplet citation
+popup, and the Keys index cards.
+
+**Status:** planned (Task 16).
+
+---
+
+## A13 — Header chips must be content-agnostic (not tied to the public `/leads` row)
+
+**Asked:** `[x couplets] [x taxa] [updated x ago] [x/x species]` don't show for the "Entimini
+key" — looks hard-coded for Adosomus. Make it agnostic to content.
+
+**Findings:** not hard-coded — but `KeyView`'s chips read `couplets_count` / `otus_count` /
+`key_updated_at_in_words` / scope `otu_id` from `listMeta`, which is populated only by matching
+the key id against `GET /leads` — and `/leads` returns **only `is_public` key roots**. For a
+key opened by id that isn't public, `listMeta` is `{}` and all four chips vanish (and
+`loadCompleteness` early-returns for lack of a scope `otu_id`).
+
+**Decision:**
+- **Couplets** and **taxa** chips: derive from the already-loaded key tree —
+  `orderedCouplets(nodes).length` and the count of distinct terminal OTU targets. Always
+  shown, no `/leads` dependency.
+- **Updated** chip: `key_updated_at` is not in the per-key `/leads/key/:id` payload — keep it
+  best-effort from the `/leads` match; absent for non-public keys (acceptable, documented).
+- **Completeness** chip: needs the scope taxon. Prefer resolving it from the key's terminal
+  taxa (lowest common ancestor of the terminal taxon-names) rather than the root lead's
+  `otu_id`, so it works for non-public keys too; fall back to `listMeta.otu_id` when available.
+  *(If LCA resolution proves fiddly, ship couplets/taxa agnostic now and leave completeness
+  gated on a public key, noted.)*
+
+**Task:** 17.
+
+**Review check:** open a non-public key by id — the couplets and taxa chips still render from
+its own structure; the completeness chip renders whenever a scope taxon can be resolved.
+
+**Status:** planned (Task 17).
+
+---
+
+## A14 — Primary source above the description
+
+**Asked:** in the keys overview (`KeysIndex`) and the key itself (`KeyHeader`), the primary
+source should be shown **above** the description, not below.
+
+**Decision:** move the primary-source `<p>` before the description `<p>` in both
+`KeyHeader.vue` and `KeysIndex.vue`. (Order everywhere: title → scope → **primary source** →
+description → attribution → chips.)
+
+**Task:** 16 (same files as A12).
+
+**Review check:** in both the Keys index cards and the key header, the primary-source line
+sits directly under the scope line and above the description.
+
+**Status:** planned (Task 16).
 
 ---
 
@@ -325,4 +406,4 @@ count.
   visual-pass / PanelKeys / interactiveKeys / README tasks became 8 / 9 / 10 / 11. Appended:
   Task 12 = completeness report tree (A8), Task 13 = synonym suffix (A6), Task 14 = primary
   source + references (A9), Task 15 = Keys tab + index (A10). **Execution order** (per the
-  SDD ledger, not the numbers): 7 → 12 → 13 → 14 → 8 → 9 → 10 → 15 → 11.
+  SDD ledger, not the numbers): 7 → 12 → 13 → 14 → 8 → 9 → 10 → 15 → 16 → 17 → 11. (Task 16 = A12+A14, Task 17 = A13.)
