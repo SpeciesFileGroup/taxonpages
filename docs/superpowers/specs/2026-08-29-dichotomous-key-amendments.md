@@ -273,13 +273,21 @@ per key for `metadata` (scope + origin citation), rendering a card per key on th
 **Review check:**
 - A "Keys" item appears in the header between "Search DwC" and "Bibliography"; it opens
   `/keys`.
-- `/keys` lists one card for key #3977 with title, `Scope: Adosomus Faust, 1904`, the
-  description, the Voss 1937 citation, and couplet/taxa/updated chips; the title links to
-  `/key/3977`.
+- `/keys` lists a card per key with title, `Scope: …`, description, citation, and
+  couplet/taxa/updated chips; the title links to `/key/:id`.
 - Distributability: the module owns the route; the nav link is a host `config/header.yml`
   edit (README documents it as an install step).
 
-**Status:** planned (Task 15).
+**Not a defect — data gating:** `GET /api/v1/leads` maps to `leads#api_index`, which is
+`Lead.roots_with_data(project_id, true).where(is_public: true)` — the public API returns
+**only keys whose root lead is flagged publicly accessible**. There is no public endpoint for
+non-public keys (`/leads/:id` 404s, `/leads?parent_id` 401s). If the "Keys" page shows fewer
+keys than exist in TaxonWorks, the missing ones need their `is_public` flag set in the
+TaxonWorks lead editor — no code change. `KeysIndex.vue` already uses the only project-wide
+discovery endpoint.
+
+**Status:** built — Task 15 complete (commit `f60f54c`, review clean). Browser confirmation of
+`#/keys` owed (final walkthrough).
 
 ---
 
