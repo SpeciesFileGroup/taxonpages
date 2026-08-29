@@ -69,23 +69,24 @@ New project-local module, auto-discovered via `~/modules/**/router/*.js` (same m
 ```
 taxa/modules/keys/
   package.json            ← taxonpages manifest (see 3.4); not consumed locally, present for publish
-  router/index.js         ← route registration
-  KeyView.vue             ← route component: fetch orchestration + format state
-  useKey.js               ← reactive store: load, adapt, tree helpers (adapted from pinpoint's key.ts)
+  README.md               ← what it is, how to publish
+  router/index.js         ← route registration: { name: 'dichotomous-key', path: '/key/:id/:couplet?' }
+  KeyView.vue             ← route component: 3 API calls, format state, view switch (no separate store)
   lib/
-    tree.js               ← pure: couplet ordering, descendant-OTU collection, breadcrumb path
-    format.js             ← persisted format preference (localStorage, SSR-guarded)
+    tree.js               ← pure, Node-tested: buildNodes, orderedCouplets, descendantOtus, breadcrumb, childChoices, coupletByNumber
+    format.js             ← resolveFormat (pure) + readFormat/writeFormat (localStorage, SSR-guarded)
   components/
     KeyHeader.vue
     FormatToggle.vue
-    GuidedView.vue        ← current couplet + breadcrumb + choices
+    GuidedView.vue        ← current couplet (derived from :couplet) + breadcrumb + choices
     GuidedChoice.vue      ← one lead: decision text, figures, citation, "leads to" line
-    FullKeyView.vue       ← numbered couplet list with back-jump anchors
+    FullKeyView.vue       ← numbered couplet list; id="couplet-N" + RouterLink-to-:couplet jumps
     LeadText.vue          ← lead text + inline short citation, shared by both views
     LeadFigures.vue       ← thumbnail row → KeyLightbox
     ReachableTaxa.vue     ← "leads to N species: …" with disclosure for large sets
     CoupletCitation.vue   ← short form + click-through popup (VModal)
     KeyLightbox.vue       ← keys-local image viewer (overlay, prev/next, caption, Esc, focus-trap)
+    TaxonLink.vue         ← <RouterLink target="_blank"> to otus-id, italic label
 ```
 
 The forked list card is a **separate** unit (a module's `router/index.js` can only add routes,
@@ -97,30 +98,62 @@ taxa/panels/PanelKeys/
   PanelKeys.vue           ← forked list card; dichotomous keys link to the local route
 ```
 
-### 3.2 Route
+### 3.2 Route — one URL per couplet
 
 ```js
 // modules/keys/router/index.js
 export default [
-  { name: 'dichotomous-key', path: '/key/:id',
+  { name: 'dichotomous-key', path: '/key/:id/:couplet?',
     component: () => import('../KeyView.vue') }
 ]
 ```
 
+- `/key/:id` — the whole key (Guided starts at couplet 1; Full key from the top).
+- `/key/:id/:couplet` — a specific couplet, e.g. `/key/3977/4`. Canonical, shareable,
+  bookmarkable. `:couplet` is the couplet **number** (may be a curator string such as `A`,
+  matched string-safe against the ordered couplet list; unknown values fall back to the root
+  couplet, no error).
+- Composes with the format query param: `/key/3977/4?format=full`.
+
+**Why a path segment, not a hash.** The couplet must resolve identically under SSR and CSR.
+Browsers never send the URL fragment (`#…`) to the server, so a hash-based couplet would
+render couplet 1 on the server for every deep link and only correct itself after client
+hydration. `route.params.couplet` is populated the same way during the SSR render and on the
+client, so the server emits the right couplet's HTML. No hash is used anywhere; the path
+param is the single source of truth. (A query param would also be SSR-visible; a path segment
+is chosen because "a distinct URL per couplet" reads best and it needs no extra route shape.)
+
+**Navigation.** In Guided mode, descending / breadcrumb / back all call
+`router.push({ name: 'dichotomous-key', params: { id, couplet } })` rather than mutating local
+state, so the URL always reflects the current couplet and browser **Back walks up the key**.
+In Full-key mode, a set `:couplet` scrolls that couplet's section into view on mount / on
+change (client-only, guarded); every couplet section carries `id="couplet-<number>"`.
+
 Vue Router assembles `[...dynamicRoutes, ...coreModuleRoutes, ...userModuleRoutes]` and
 first-match wins, so a local module cannot transparently reclaim the core `/keys/:id` path.
-The redesign lives at the sibling path `/key/:id`; the forked `PanelKeys.vue` links there;
+The redesign lives at the sibling path `/key/…`; the forked `PanelKeys.vue` links there;
 the core `/keys/:id` route stays registered but unreferenced.
 
-*(Path is cosmetic and trivially changed. If a future consumer wants to supersede `/keys/:id`
-outright, the host project disables the core `keys` module via the discovery `disabled`
-option — documented as an install note, not relied on here.)*
+*(Base path `/key` is cosmetic and trivially changed. If a future consumer wants to supersede
+`/keys/:id` outright, the host project disables the core `keys` module via the discovery
+`disabled` option — documented as an install note, not relied on here.)*
 
 ### 3.3 SSR
 
-`npm run dev:ssr` runs the app SSR. `KeyView.vue` fetches on mount / via the framework's
-SSR-aware request path; `KeyLightbox` and `format.js` guard all `window`/`localStorage`
-access. The lightbox overlay renders client-only (`<ClientOnly>` / mounted guard).
+`npm run dev:ssr` runs the app SSR. Requirements:
+
+- **Couplet selection is route-driven.** Both views derive their position from
+  `route.params.couplet` — no `window` / `location` / hash access — so the SSR render and the
+  client render select the same couplet for a given URL.
+- `KeyView.vue` fetches client-side with a spinner during SSR (matching the current
+  `keyId.vue`, which is entirely `<ClientOnly>`); the couplet the URL points at is still
+  deterministic. Full SSR data-fetching is out of scope but nothing here blocks adding it.
+- `?format=` (query) is SSR-visible and wins in `resolveFormat`. The `localStorage`-persisted
+  format preference is a **client-only, post-mount** enhancement — applied in `onMounted`, so
+  a stored preference that differs from the server default produces at most a one-frame swap
+  on the client, never a hydration-mismatch error.
+- `KeyLightbox` and `lib/format.js` guard every `window` / `localStorage` / `document`
+  access; the lightbox overlay renders client-only (`<ClientOnly>` + `<Teleport>`).
 
 ### 3.4 Distributability constraints (design rules, enforced from day one)
 
@@ -161,12 +194,15 @@ after (3 needs the lead ids from 1). Header and couplet text render as soon as 1
 citations and the description/chip row fill in when 2/3 land. `original_png` needs
 `?project_token=` appended (per pinpoint: strip the leading 8 chars, prefix `${baseUrl}/`).
 
-`useKey.js` derives, via pure `lib/tree.js`:
+`lib/tree.js` provides (pure, Node-tested; `KeyView.vue` owns fetch + state):
 - ordered couplet list (depth-first, `position`-sorted) with stable couplet numbers
   (`origin_label` when present, else sequence);
 - for each node, the set of **descendant terminal OTUs** (`{ id, label }`, leaf leads with
   `target_type: '/api/v1/otus'`), deduped and name-sorted;
-- breadcrumb path root→node for the Guided view.
+- breadcrumb path root→node for the Guided view;
+- `coupletByNumber(value, nodes)` — the couplet node whose number matches `value`
+  (string-safe: `String(n.coupletNumber) === String(value)`), or `null`; used to turn a
+  `:couplet` route param into a node in both views.
 
 ## 5. Formats
 
@@ -176,11 +212,16 @@ query param overrides (shareable links, print).
 
 ### 5.1 Guided view
 
-One couplet at a time (`GuidedView.vue`):
+One couplet at a time (`GuidedView.vue`). The displayed couplet is a function of the route:
+`route.params.couplet` → `coupletByNumber` → node; absent or unknown → root couplet. The
+component holds no independent "current couplet" state.
 
-- **Breadcrumb** — the path taken so far, each step "Couplet N — <first few words>", click to
-  jump back. Text-coloured, hover reveals it is interactive. Not `<a>` (no navigation).
-- **Current couplet** — heading "Couplet N"; an "Up" control when not at the root.
+- **Breadcrumb** — the path taken so far (`breadcrumb(currentId, nodes)`), each step
+  "Couplet N". Rendered as `RouterLink` to `{ params: { id, couplet: N } }` — text-coloured,
+  hover reveals it is interactive; a real `<a href>` so middle-click opens that couplet in a
+  new tab.
+- **Current couplet** — heading "Couplet N"; an "↑ back" control (RouterLink to the parent
+  couplet) when not at the root.
 - **Choices** (`GuidedChoice.vue`, one per child, in a responsive grid):
   - the **decision**: full lead text (`LeadText.vue`) — this is the only place couplet text
     is read, in normal body colour;
@@ -190,7 +231,8 @@ One couplet at a time (`GuidedView.vue`):
     - choice points straight at an OTU → that taxon, italic, linked, new tab;
     - choice points at another couplet → "→ Couplet M · leads to K species", with the K
       taxon names behind a disclosure (inline when K is small). Names italic, linked, new tab.
-  - choosing a child that is a couplet advances `currentNode` (app state); a terminal choice
+  - choosing a child that is a couplet does `router.push({ params: { id, couplet: M } })`, so
+    the URL becomes `/key/:id/M` and browser **Back walks up the key**; a terminal choice
     shows the taxon (already linked).
 - **No downstream couplet text is ever previewed.** The reader descends to read it.
 
@@ -213,13 +255,15 @@ Couplet 3  ›  from Couplet 1                                   [Up]
 `FullKeyView.vue` — the classic scannable layout:
 
 - numbered couplet list, each couplet a block: `N.` then its leads as `—`-separated lines;
-- each lead: text, then its target in bold — a couplet number (back/forward anchor,
-  `#couplet-N`, smooth-scroll, text-coloured + hover) or a taxon (italic, linked, new tab);
+- each couplet section carries `id="couplet-<number>"` (the scroll target);
+- each lead: text, then its target — a couplet number or a taxon (italic, linked, new tab);
+- a couplet-number target and the "from N" back-reference are `RouterLink`s to
+  `{ params: { id, couplet: N } }` (no hash — consistent with §3.2, real `<a href>` for
+  middle-click); when the `:couplet` param changes, `FullKeyView` scrolls
+  `#couplet-<number>` into view (client-only, guarded). "from N" back-references follow
+  TaxonWorks' own `print_key_markdown`.
 - figures thumbnails inline under the lead; short citation at end of the lead line;
-- couplet blocks carry `id="couplet-N"`; a lead pointing to couplet M links to `#couplet-M`;
-  each couplet shows "from N" back-anchors (as TaxonWorks' own `print_key_markdown` does).
-- print stylesheet: drop interactive chrome, expand all disclosures, black text, show figure
-  captions.
+- print stylesheet: drop interactive chrome, black text, no underlines.
 
 Length is the only issue here and it is inherent; structure + weight (numbers, taxa) +
 anchors address it. No "leads to" summarisation in this mode — the list *is* the summary.
@@ -299,7 +343,8 @@ commit are dropped — flagged as an open question.)*
 
 ## 11. Open questions / assumptions
 
-1. **Route path** `/key/:id` — assumed acceptable; cosmetic.
+1. **Route** `/key/:id/:couplet?` — base path `/key` cosmetic; the optional `:couplet`
+   segment gives one URL per couplet, SSR- and CSR-resolvable (§3.2). Assumed acceptable.
 2. **Two formats** (Guided + Full key); indented-tree format deferred. Assumed.
 3. **Interactive key** — assumed "thin fork only, no redesign". If even the thin fork is
    unwanted this round, drop §10.
@@ -313,14 +358,16 @@ commit are dropped — flagged as an open question.)*
 
 Each step builds, is revertible, and is committed on its own.
 
-1. Scaffold `modules/keys/` — route, `KeyView.vue` shell, `useKey.js` + `lib/tree.js` with
-   call 1 only; renders raw couplet list (no styling). Route reachable at `/key/:id`.
+1. Scaffold `modules/keys/` — route `/key/:id/:couplet?`, `KeyView.vue` shell,
+   `lib/tree.js` (incl. `coupletByNumber`) with call 1 only; renders raw couplet list.
 2. `KeyHeader.vue` + call 2 wiring (title, scope, description, origin citation, chips).
-3. `FullKeyView.vue` — numbered list, anchors, taxon links (new tab), theme tokens.
+3. `FullKeyView.vue` — numbered list, `id="couplet-N"` + RouterLink-to-`:couplet` jumps,
+   scroll-into-view on param change, taxon links (new tab), theme tokens.
 4. `LeadFigures.vue` + `KeyLightbox.vue` — figures in Full key view.
 5. `CoupletCitation.vue` + call 3 — inline short form + popup, in header and Full key view.
 6. `GuidedView.vue` / `GuidedChoice.vue` / `ReachableTaxa.vue` + `FormatToggle.vue` +
-   `lib/format.js` — the step-through, descendant-OTU "leads to" lines, persisted toggle.
+   `lib/format.js` — the step-through (current couplet derived from `:couplet`, navigation
+   via `router.push`), descendant-OTU "leads to" lines, persisted toggle.
 7. Visual pass — link-on-hover treatment, emphasis on numbers/taxa, print stylesheet,
    dark/light check.
 8. `panels/PanelKeys/` fork — wire the list card to the local route.

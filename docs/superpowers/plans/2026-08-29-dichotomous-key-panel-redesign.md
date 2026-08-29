@@ -15,11 +15,11 @@
 - **No imports from project-local paths** (`panels/`, `config/`, `_shared/`) inside `modules/keys/`. Only `@/…` (framework src), `vue`, and files within `modules/keys/` itself. This keeps the module publishable as `taxonpages-module-keys`.
 - **No dependency on `@sfgrp/pinpoint`** anywhere in the new code.
 - **Styling: theme tokens only** — `text-base-content`, `bg-base-foreground`, `border-base-muted`, `text-base-soft`, `text-secondary`, `text-secondary-content`, `--tp-card-shadow`, `--tp-card-border`. Never `text-secondary-color` (generates no CSS — see `CLAUDE.md`).
-- **Links are text-coloured until hover.** In-key jump targets (breadcrumb steps, `#couplet-N` anchors) carry no standing colour — only `hover:underline hover:text-secondary`. Outbound taxon links may carry a subtle standing treatment (italic name, `hover:underline`) but never a saturated colour block.
+- **Links are text-coloured until hover.** In-key jump targets (breadcrumb steps, couplet-number jumps, "from N") carry no standing colour — only `hover:underline hover:text-secondary`. Outbound taxon links may carry a subtle standing treatment (italic name, `hover:underline`) but never a saturated colour block.
 - **Every taxon target** (`target_type === '/api/v1/otus'`) opens in a new tab: `target="_blank" rel="noopener"`.
 - **Standing emphasis reserved for**: couplet numbers and terminal taxon names. Lead text is plain body. Citations, figure labels, chips are secondary (`text-base-soft`, smaller).
 - **Contrast rule** (as in `DwcTable`): only labels / section headers may be faint; every actual value is full-contrast.
-- **Route path** for the redesign is `/key/:id`, route name `dichotomous-key`. The core `/keys/:id` route stays registered but unreferenced (Vue Router first-match-wins prevents a local module from reclaiming the path).
+- **Route** `{ name: 'dichotomous-key', path: '/key/:id/:couplet?' }`. `:couplet` is the couplet **number** (string-safe; may be a curator label like `A`). One URL per couplet, resolvable identically under SSR and CSR — **no URL hash anywhere** (browsers don't send the fragment to the server). Both views derive their position from `route.params.couplet` via `coupletByNumber`; unknown/absent → root couplet, no error. Guided navigation is `router.push({ params: { id, couplet } })` so browser Back walks up the key. The core `/keys/:id` route stays registered but unreferenced (Vue Router first-match-wins prevents a local module from reclaiming the path).
 - **Vue whitespace condensing**: when text follows a Vue element (`<template>`, `<RouterLink>`, `<em>`…) and a space is needed, build the suffix as an HTML string in a computed and render with `v-html` on a `<span>` on the same line as the preceding element's closing tag. See `CLAUDE.md` "Vue whitespace condensing".
 - **SSR**: `npm run dev:ssr` also runs. Guard every `window` / `localStorage` / `document` access; render the lightbox overlay client-only.
 
@@ -31,18 +31,18 @@
 modules/keys/
   package.json                  ← taxonpages manifest for later publish (not consumed locally)
   README.md                     ← what it is, how to publish
-  router/index.js               ← route: { name: 'dichotomous-key', path: '/key/:id' }
-  KeyView.vue                   ← route component: 3 API calls, format state, layout
+  router/index.js               ← route: { name: 'dichotomous-key', path: '/key/:id/:couplet?' }
+  KeyView.vue                   ← route component: 3 API calls, format state, layout; reads route.params
   lib/
-    tree.js                     ← PURE: buildNodes, orderedCouplets, descendantOtus, breadcrumb, childChoices  (Node-tested)
+    tree.js                     ← PURE: buildNodes, orderedCouplets, descendantOtus, breadcrumb, childChoices, coupletByNumber  (Node-tested)
     format.js                   ← resolveFormat (pure) + readFormat/writeFormat (localStorage, guarded)
   components/
     KeyHeader.vue               ← title, scope, description, origin citation, attribution, chips
     FormatToggle.vue            ← Guided ⇄ Full key segmented control
-    GuidedView.vue              ← breadcrumb + current couplet + choices; owns currentId
+    GuidedView.vue              ← breadcrumb + current couplet + choices; current couplet = route.params.couplet
     GuidedChoice.vue            ← one lead: LeadText + LeadFigures + CoupletCitation + ReachableTaxa
     ReachableTaxa.vue           ← "→ Couplet M · leads to K species" + name disclosure
-    FullKeyView.vue             ← numbered couplet list with #couplet-N anchors
+    FullKeyView.vue             ← numbered couplet list; id="couplet-N", RouterLink jumps, scroll-into-view on :couplet
     LeadText.vue                ← lead text + inline short citation (shared by both views)
     LeadFigures.vue             ← thumbnail row → opens KeyLightbox
     KeyLightbox.vue             ← keys-local image viewer (overlay, prev/next, caption, Esc, focus-trap)
@@ -136,7 +136,8 @@ Short inline form: `citation_source_body` (already `"Author, year:pages"`), fall
   - `descendantOtus(nodeId: number, nodes: Record<string,Node>): {id:number,label:string}[]` — terminal OTU targets in the subtree rooted at `nodeId`, deduped by `id`, sorted by `label` (locale)
   - `breadcrumb(nodeId: number, nodes: Record<string,Node>): Node[]` — couplet nodes from root to `nodeId` inclusive
   - `childChoices(coupletId: number, nodes: Record<string,Node>): Node[]` — `nodes[coupletId].children` mapped to nodes, `position`-sorted
-- Produces (`router/index.js`): route `{ name: 'dichotomous-key', path: '/key/:id' }`
+  - `coupletByNumber(value: string|number|null, nodes: Record<string,Node>): Node|null` — the couplet node whose number matches `value` string-safe (`String(n.coupletNumber) === String(value)`); `null` when `value` is nullish or unmatched
+- Produces (`router/index.js`): route `{ name: 'dichotomous-key', path: '/key/:id/:couplet?' }`
 
 - [ ] **Step 1: Write the failing test**
 
@@ -145,7 +146,7 @@ Create `/tmp/keytree.test.mjs`:
 ```js
 import assert from 'node:assert/strict'
 import {
-  buildNodes, rootId, orderedCouplets, descendantOtus, breadcrumb, childChoices
+  buildNodes, rootId, orderedCouplets, descendantOtus, breadcrumb, childChoices, coupletByNumber
 } from '/home/jakobj/Data/01Aktuelle_Projekte/0_TaxonWorks/TaxonPagesDev/taxa/modules/keys/lib/tree.js'
 
 // Minimal 3-couplet fixture:
@@ -192,6 +193,12 @@ assert.deepEqual(breadcrumb(1, nodes).map((n) => n.id), [1])
 
 // childChoices: position-sorted child nodes
 assert.deepEqual(childChoices(1, nodes).map((n) => n.id), [10, 11])
+
+// coupletByNumber: string-safe match; nullish/unmatched -> null
+assert.equal(coupletByNumber(2, nodes).id, 10)
+assert.equal(coupletByNumber('2', nodes).id, 10)
+assert.equal(coupletByNumber(null, nodes), null)
+assert.equal(coupletByNumber(99, nodes), null)
 
 console.log('All keytree tests passed.')
 ```
@@ -286,6 +293,18 @@ export function breadcrumb(nodeId, nodes) {
   }
   return path
 }
+
+// Resolve a :couplet route param (a couplet number, possibly a curator string like "A")
+// to its node. String-safe. Nullish or unmatched -> null (caller falls back to the root).
+export function coupletByNumber(value, nodes) {
+  if (value == null || value === '') return null
+  const wanted = String(value)
+  return (
+    Object.values(nodes).find(
+      (n) => n.isCouplet && String(n.coupletNumber) === wanted
+    ) || null
+  )
+}
 ```
 
 - [ ] **Step 4: Run it to verify it passes**
@@ -299,11 +318,15 @@ Expected: `All keytree tests passed.`
 export default [
   {
     name: 'dichotomous-key',
-    path: '/key/:id',
+    path: '/key/:id/:couplet?',
     component: () => import('../KeyView.vue')
   }
 ]
 ```
+
+`:couplet` is optional. `/key/3977` and `/key/3977/4` both match; `route.params.couplet` is
+`undefined` for the first, `'4'` for the second — available identically during SSR render and
+on the client.
 
 - [ ] **Step 6: Create `modules/keys/package.json`**
 
@@ -565,11 +588,11 @@ git commit -m "keys: metadata masthead with description, scope link, citation, c
 - Modify: `modules/keys/KeyView.vue` (render `<FullKeyView>` instead of the raw `<ol>`)
 
 **Interfaces:**
-- Consumes: `Node` shape, `orderedCouplets`, `childChoices` (Task 1); `meta` (Task 2).
+- Consumes: `Node` shape, `orderedCouplets`, `childChoices` (Task 1); `meta` (Task 2); `route.params.id` / `route.params.couplet`.
 - Produces:
   - `TaxonLink` props `{ id:number, label:string }` — renders `<RouterLink target="_blank">` to `otus-id`, italic label, `hover:underline`.
   - `LeadText` props `{ node:Node, citations:object }` — lead text + (later) inline citation. `citations` may be `{}` now; the prop exists so Task 5 needs no signature change.
-  - `FullKeyView` props `{ couplets:Node[], nodes:Record<string,Node>, citations:object }`.
+  - `FullKeyView` props `{ keyId:string|number, couplet:string|null, couplets:Node[], nodes:Record<string,Node>, citations:object }`. Couplet-number targets and "from N" back-references are `<RouterLink>`s to `{ name: 'dichotomous-key', params: { id: keyId, couplet: N } }` (no hash). When `couplet` changes, the matching `#couplet-N` section is scrolled into view (client-only).
 
 - [ ] **Step 1: Create `modules/keys/components/TaxonLink.vue`**
 
@@ -642,10 +665,10 @@ const shortCitations = computed(() => props.citations[props.node.id] || [])
         </span>
         <div class="flex-1">
           <p v-if="fromCouplet(couplet)" class="text-xs text-base-soft mb-1">
-            <a
-              :href="`#couplet-${fromCouplet(couplet)}`"
+            <RouterLink
+              :to="coupletTo(fromCouplet(couplet))"
               class="hover:underline hover:text-secondary"
-            >from {{ fromCouplet(couplet) }}</a>
+            >from {{ fromCouplet(couplet) }}</RouterLink>
           </p>
 
           <div
@@ -658,11 +681,11 @@ const shortCitations = computed(() => props.citations[props.node.id] || [])
               <div class="flex-1">
                 <LeadText :node="choice" :citations="citations" @open-citation="$emit('open-citation', $event)" />
                 <span> … </span>
-                <a
+                <RouterLink
                   v-if="choice.isCouplet"
-                  :href="`#couplet-${choice.coupletNumber}`"
+                  :to="coupletTo(choice.coupletNumber)"
                   class="font-medium hover:underline hover:text-secondary"
-                >couplet {{ choice.coupletNumber }}</a>
+                >couplet {{ choice.coupletNumber }}</RouterLink>
                 <TaxonLink
                   v-else-if="choice.targetType === '/api/v1/otus'"
                   :id="choice.targetId"
@@ -688,12 +711,15 @@ const shortCitations = computed(() => props.citations[props.node.id] || [])
 </template>
 
 <script setup>
+import { watch, nextTick } from 'vue'
 import { childChoices } from '../lib/tree.js'
 import LeadText from './LeadText.vue'
 import TaxonLink from './TaxonLink.vue'
 import LeadFigures from './LeadFigures.vue'
 
 const props = defineProps({
+  keyId: { type: [String, Number], required: true },
+  couplet: { type: [String, null], default: null },
   couplets: { type: Array, required: true },
   nodes: { type: Object, required: true },
   citations: { type: Object, default: () => ({}) }
@@ -702,11 +728,24 @@ defineEmits(['open-citation'])
 
 const childrenOf = (id) => childChoices(id, props.nodes)
 
-// The couplet number whose lead points into this couplet (its parent couplet), for a back-anchor.
+// RouterLink target for a couplet number — same route, :couplet param changes. No hash.
+const coupletTo = (n) => ({ name: 'dichotomous-key', params: { id: props.keyId, couplet: String(n) } })
+
+// The couplet number whose lead points into this couplet (its parent couplet), for a back-reference.
 function fromCouplet(couplet) {
   const parent = couplet.parentId == null ? null : props.nodes[couplet.parentId]
   return parent && parent.isCouplet ? parent.coupletNumber : null
 }
+
+// When the URL names a couplet, bring its section into view (client only).
+function scrollToCouplet(n) {
+  if (n == null || typeof document === 'undefined') return
+  nextTick(() => {
+    document.getElementById(`couplet-${n}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
+}
+watch(() => props.couplet, scrollToCouplet, { immediate: true })
+watch(() => props.couplets, () => scrollToCouplet(props.couplet))
 </script>
 ```
 
@@ -723,7 +762,14 @@ Template — replace the `<div v-else> … </div>` block with:
 ```vue
 <div v-else>
   <KeyHeader :meta="meta" />
-  <FullKeyView :couplets="couplets" :nodes="nodes" :citations="citations" @open-citation="() => {}" />
+  <FullKeyView
+    :key-id="route.params.id"
+    :couplet="route.params.couplet ?? null"
+    :couplets="couplets"
+    :nodes="nodes"
+    :citations="citations"
+    @open-citation="() => {}"
+  />
 </div>
 ```
 
@@ -734,12 +780,16 @@ import FullKeyView from './components/FullKeyView.vue'
 const citations = ref({})
 ```
 
-- [ ] **Step 5: Compile check** — `npm run build` → succeeds.
+`route` is already imported (Task 2). `route.params.couplet` is reactive, so `FullKeyView`'s
+`watch(() => props.couplet, …)` scrolls whenever the URL's couplet segment changes.
+
+- [ ] **Step 5: Compile check** — `npm run build` and `npm run build:ssr` → succeed (the scroll watcher guards `document`).
 
 - [ ] **Step 6: Browser check**
 
 Reload `http://localhost:5173/key/3977`.
-Expected: a numbered couplet list. Couplet numbers are bold and colour-accented; the two leads of each couplet are stacked, the second prefixed `—`; each lead ends in ` … ` then either `couplet N` (an in-page anchor — clicking scrolls to that couplet) or a species name in italic (clicking opens the OTU page in a **new tab**). Couplets 2–7 show a small "from N" back-anchor. No blue wall — jump anchors are plain text until hovered.
+Expected: a numbered couplet list. Couplet numbers are bold and colour-accented; the two leads of each couplet are stacked, the second prefixed `—`; each lead ends in ` … ` then either `couplet N` (clicking navigates to `/key/3977/N` and scrolls that couplet into view; middle-click opens `/key/3977/N` in a new tab) or a species name in italic (clicking opens the OTU page in a **new tab**). Couplets 2–7 show a small "from N" back-reference. No blue wall — jump links are plain text until hovered.
+Then open `http://localhost:5173/key/3977/4` directly: the page loads already scrolled to couplet 4. Browser Back returns to the previous couplet position.
 
 - [ ] **Step 7: Commit**
 
@@ -994,10 +1044,13 @@ loadCitations(Object.keys(nodes.value))
 
 (fire-and-forget; the map fills in reactively).
 
-Template — pass the handler through and host the modal:
+Template — wire the real `@open-citation` handler (keep the `key-id` / `couplet` props from
+Task 3) and host the modal:
 
 ```vue
 <FullKeyView
+  :key-id="route.params.id"
+  :couplet="route.params.couplet ?? null"
   :couplets="couplets"
   :nodes="nodes"
   :citations="citations"
@@ -1038,12 +1091,12 @@ git commit -m "keys: per-couplet + key-level citations (short inline form, full 
 - Test: append to a throwaway `/tmp/keyformat.test.mjs`
 
 **Interfaces:**
-- Consumes: `descendantOtus`, `breadcrumb`, `childChoices`, `rootId` (Task 1); `citations` map (Task 5).
+- Consumes: `descendantOtus`, `breadcrumb`, `childChoices`, `rootId`, `coupletByNumber` (Task 1); `citations` map (Task 5); `route.params.id` / `route.params.couplet`.
 - Produces:
   - `lib/format.js`: `resolveFormat({ stored, query }): 'guided'|'full'` (pure); `readFormat(): 'guided'|'full'`; `writeFormat(v): void`.
   - `ReachableTaxa` props `{ choice:Node, nodes:Record<string,Node> }`.
-  - `GuidedChoice` props `{ choice:Node, nodes:Record<string,Node>, citations:object }`, emits `descend(id)`, `open-citation(c)`.
-  - `GuidedView` props `{ nodes:Record<string,Node>, citations:object }`, emits `open-citation(c)`.
+  - `GuidedChoice` props `{ keyId:string|number, choice:Node, nodes:Record<string,Node>, citations:object }`, emits `open-citation(c)`. The "descend" action is a `<RouterLink>` to `{ name:'dichotomous-key', params:{ id:keyId, couplet } }` — no `descend` emit.
+  - `GuidedView` props `{ keyId:string|number, couplet:string|null, nodes:Record<string,Node>, citations:object }`, emits `open-citation(c)`. Current couplet = `coupletByNumber(couplet, nodes) ?? nodes[rootId(nodes)]`; breadcrumb steps and "↑ back" are `<RouterLink>`s to the same route with the target `:couplet`.
   - `FormatToggle` props `{ modelValue:'guided'|'full' }`, emits `update:modelValue`.
 
 - [ ] **Step 1: Write the failing test for `resolveFormat`**
@@ -1174,12 +1227,11 @@ const taxa = computed(() => descendantOtus(props.choice.id, props.nodes))
 
     <ReachableTaxa :choice="choice" :nodes="nodes" />
 
-    <button
+    <RouterLink
       v-if="choice.isCouplet"
-      type="button"
+      :to="{ name: 'dichotomous-key', params: { id: keyId, couplet: String(choice.coupletNumber) } }"
       class="self-start text-sm px-3 py-1 rounded bg-primary text-primary-content hover:bg-primary/80"
-      @click="$emit('descend', choice.id)"
-    >Go to couplet {{ choice.coupletNumber }} →</button>
+    >Go to couplet {{ choice.coupletNumber }} →</RouterLink>
   </div>
 </template>
 
@@ -1189,11 +1241,12 @@ import LeadFigures from './LeadFigures.vue'
 import ReachableTaxa from './ReachableTaxa.vue'
 
 defineProps({
+  keyId: { type: [String, Number], required: true },
   choice: { type: Object, required: true },
   nodes: { type: Object, required: true },
   citations: { type: Object, default: () => ({}) }
 })
-defineEmits(['descend', 'open-citation'])
+defineEmits(['open-citation'])
 </script>
 ```
 
@@ -1204,34 +1257,32 @@ defineEmits(['descend', 'open-citation'])
   <div>
     <nav v-if="trail.length > 1" class="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
       <template v-for="(step, i) in trail" :key="step.id">
-        <button
-          type="button"
+        <RouterLink
+          :to="to(step.coupletNumber)"
           class="hover:underline hover:text-secondary"
           :class="i === trail.length - 1 ? 'text-base-content font-medium' : 'text-base-soft'"
-          @click="currentId = step.id"
-        >Couplet {{ step.coupletNumber }}</button>
+        >Couplet {{ step.coupletNumber }}</RouterLink>
         <span v-if="i < trail.length - 1" class="text-base-soft">›</span>
       </template>
     </nav>
 
     <div class="flex items-baseline justify-between mb-3">
       <h2 class="text-lg font-semibold text-secondary-content">Couplet {{ current.coupletNumber }}</h2>
-      <button
-        v-if="current.parentId != null && nodes[current.parentId]"
-        type="button"
+      <RouterLink
+        v-if="parentCouplet"
+        :to="to(parentCouplet.coupletNumber)"
         class="text-sm text-base-soft hover:underline hover:text-secondary"
-        @click="currentId = current.parentId"
-      >↑ back</button>
+      >↑ back</RouterLink>
     </div>
 
     <div class="grid gap-4 md:grid-cols-2">
       <GuidedChoice
         v-for="choice in choices"
         :key="choice.id"
+        :key-id="keyId"
         :choice="choice"
         :nodes="nodes"
         :citations="citations"
-        @descend="currentId = $event"
         @open-citation="$emit('open-citation', $event)"
       />
     </div>
@@ -1239,22 +1290,42 @@ defineEmits(['descend', 'open-citation'])
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { rootId, breadcrumb, childChoices } from '../lib/tree.js'
+import { computed } from 'vue'
+import { rootId, breadcrumb, childChoices, coupletByNumber } from '../lib/tree.js'
 import GuidedChoice from './GuidedChoice.vue'
 
 const props = defineProps({
+  keyId: { type: [String, Number], required: true },
+  couplet: { type: [String, null], default: null },
   nodes: { type: Object, required: true },
   citations: { type: Object, default: () => ({}) }
 })
 defineEmits(['open-citation'])
 
-const currentId = ref(null)
-watch(() => props.nodes, (n) => { currentId.value = Object.keys(n).length ? rootId(n) : null }, { immediate: true })
+// Current couplet is a function of the URL. Unknown / absent -> root couplet.
+const current = computed(() => {
+  if (!Object.keys(props.nodes).length) return {}
+  return coupletByNumber(props.couplet, props.nodes) || props.nodes[rootId(props.nodes)] || {}
+})
 
-const current = computed(() => props.nodes[currentId.value] || {})
-const trail = computed(() => (currentId.value ? breadcrumb(currentId.value, props.nodes) : []))
-const choices = computed(() => (currentId.value ? childChoices(currentId.value, props.nodes) : []))
+const parentCouplet = computed(() => {
+  const p = current.value.parentId == null ? null : props.nodes[current.value.parentId]
+  return p && p.isCouplet ? p : null
+})
+
+const trail = computed(() => (current.value.id ? breadcrumb(current.value.id, props.nodes) : []))
+const choices = computed(() => (current.value.id ? childChoices(current.value.id, props.nodes) : []))
+
+// RouterLink target for a couplet number. The root couplet drops the :couplet segment
+// so its URL is the clean /key/:id.
+function to(coupletNumber) {
+  const root = props.nodes[rootId(props.nodes)]
+  const params = { id: props.keyId }
+  if (!root || String(root.coupletNumber) !== String(coupletNumber)) {
+    params.couplet = String(coupletNumber)
+  }
+  return { name: 'dichotomous-key', params }
+}
 </script>
 ```
 
@@ -1309,17 +1380,21 @@ Template — replace the results block:
 <div v-else>
   <div class="flex items-start justify-between gap-4">
     <KeyHeader class="flex-1" :meta="meta" />
-    <FormatToggle v-model="format" class="mt-1 shrink-0" />
+    <FormatToggle v-model="format" class="mt-1 shrink-0 key-print-hide" />
   </div>
 
   <GuidedView
     v-if="format === 'guided'"
+    :key-id="route.params.id"
+    :couplet="route.params.couplet ?? null"
     :nodes="nodes"
     :citations="citations"
     @open-citation="activeCitation = $event"
   />
   <FullKeyView
     v-else
+    :key-id="route.params.id"
+    :couplet="route.params.couplet ?? null"
     :couplets="couplets"
     :nodes="nodes"
     :citations="citations"
@@ -1330,6 +1405,8 @@ Template — replace the results block:
 </div>
 ```
 
+(`key-print-hide` is styled in Task 7; harmless until then.)
+
 - [ ] **Step 10: Compile check** — `npm run build` and `npm run build:ssr` → succeed.
 
 - [ ] **Step 11: Browser check**
@@ -1339,8 +1416,10 @@ Expected (Guided, the default):
 - Header with a "Guided | Full key" toggle at the top-right.
 - "Couplet 1" heading; two choice cards side by side on desktop.
 - Each card: the lead text (plain body colour), then a `→ Couplet 2 · leads to N taxa  show names` line. Card 1 ("Scrobes ventrally confluent…") → "leads to 2 taxa", names shown inline (*A. samsonowii*, *A. roridus*). Card 2 → "leads to 7 taxa", collapsed behind "show names".
-- Card with a child couplet has a "Go to couplet N →" button; clicking it swaps the view to that couplet and adds a breadcrumb (`Couplet 1 › Couplet 3`). Breadcrumb steps and "↑ back" return upward.
-- Toggle to "Full key" → the Task 3 list. Reload the page → it stays on "Full key" (localStorage). Append `?format=guided` to the URL → shows Guided regardless of stored value.
+- Card with a child couplet has a "Go to couplet N →" link; clicking it navigates to `/key/3977/N`, the view swaps to that couplet, and a breadcrumb appears (`Couplet 1 › Couplet 3`). Breadcrumb steps and "↑ back" are links that navigate upward; **browser Back walks up the key**.
+- Open `http://localhost:5173/key/3977/4` directly → Guided loads showing couplet 4 with the full breadcrumb `Couplet 1 › Couplet 3 › Couplet 4`. Under `npm run dev:ssr` (`http://localhost:6173/key/3977/4`) the page renders without error and settles on couplet 4 after hydration — same URL, same couplet, on server and client (data still loads client-side with a brief spinner, as the current `keyId.vue` does entirely; the point is the couplet is chosen from `route.params`, never a hash, so it is deterministic regardless of render mode).
+- Middle-click "Go to couplet N" → opens `/key/3977/N` in a new tab.
+- Toggle to "Full key" → the Task 3 list. Reload the page → it stays on "Full key" (localStorage). Append `?format=guided` to the URL → shows Guided regardless of stored value (query wins). `/key/3977/4?format=full` → Full key scrolled to couplet 4.
 - No downstream couplet text is shown anywhere in Guided mode — only the decision text of the current couplet's own choices.
 
 - [ ] **Step 12: Delete throwaway script and commit**
@@ -1375,16 +1454,17 @@ Append to the component:
 </style>
 ```
 
-Add `class="key-print-hide"` to `<FormatToggle>` and to the Guided view's "Go to couplet" buttons / "↑ back" (they are meaningless on paper). Force Full-key rendering for print is out of scope; document that `?format=full` before printing gives the paginated list.
+`<FormatToggle>` already has `key-print-hide` (Task 6). Also add it to the Guided view's breadcrumb `<nav>` and "↑ back" link (navigation chrome, meaningless on paper). Forcing Full-key rendering for print is out of scope — document in the README that `?format=full` before printing gives the paginated list.
 
 - [ ] **Step 2: Link-treatment audit**
 
 Grep the module for link classes and confirm the rule:
 
-Run: `grep -rn "text-secondary\|hover:underline\|target=\"_blank\"" modules/keys/components/`
+Run: `grep -rn "text-secondary\|hover:underline\|target=\"_blank\"\|#couplet" modules/keys/`
 
 Confirm:
-- Breadcrumb steps, `#couplet-N` anchors, "from N" anchors, "show names" / "↑ back" — **no standing `text-secondary`**, only `hover:underline hover:text-secondary`.
+- Breadcrumb steps, couplet-number `<RouterLink>` jumps, "from N" back-references, "show names" / "↑ back" — **no standing `text-secondary`**, only `hover:underline hover:text-secondary`.
+- No literal `#couplet-` in any `:href` / `:to` (couplet navigation goes through the `:couplet` route param, not a hash — grep should show `#couplet-` only as the `id="couplet-..."` scroll target in `FullKeyView.vue`).
 - `TaxonLink` — `italic text-base-content` + `hover:underline hover:text-secondary`, and every instance has `target="_blank" rel="noopener"`.
 - Couplet numbers — `font-semibold` + `text-secondary-content` (colour accent is allowed here; this is reserved emphasis).
 
@@ -1601,12 +1681,19 @@ default at a local route.
 
 ## What it provides
 
-- Route `dichotomous-key` → `/key/:id` (`:id` is a TaxonWorks lead/key id).
+- Route `dichotomous-key` → `/key/:id/:couplet?` (`:id` is a TaxonWorks lead/key id;
+  optional `:couplet` is a couplet number). **One URL per couplet** — `/key/3977/4` is
+  shareable and bookmarkable, and resolves identically under SSR and client rendering
+  (no URL hash: browsers don't send the fragment to the server). Both views derive their
+  position from the route; Guided-mode navigation uses `router.push`, so browser Back
+  walks up the key.
 - Two views, toggled and remembered per viewer (`localStorage` key
-  `taxonpages:key-format`; `?format=guided|full` overrides):
+  `taxonpages:key-format`; `?format=guided|full` in the query overrides and is SSR-visible;
+  composes as `/key/3977/4?format=full`):
   - **Guided** — one couplet at a time, breadcrumb trail, and a "leads to N taxa"
     summary per choice instead of a wall of downstream text.
-  - **Full key** — the classic numbered couplet list with `#couplet-N` jump anchors.
+  - **Full key** — the classic numbered couplet list; couplet references navigate the
+    `:couplet` param and scroll the target `id="couplet-N"` section into view.
 - Per-couplet figures with a self-contained lightbox.
 - Per-couplet and key-level citations (short inline form, full reference in a modal).
 - A visible metadata masthead (title, taxonomic scope, description, origin citation,
@@ -1629,9 +1716,9 @@ This folder is a self-contained TaxonPages module. To distribute:
    `extractBaseName` strips the `taxonpages-module-` prefix → registers as module `keys`.
 
 It has no runtime dependency on `@sfgrp/pinpoint`. `@sfgrp/taxonpages` and `vue` are
-peer dependencies. The route path is `/key/:id` to avoid colliding with a host
-project's core `/keys/:id`; a host may disable the core `keys` module if it wants
-this to own `/keys/:id` outright.
+peer dependencies. The base route path is `/key` (not `/keys`) to avoid colliding with a
+host project's core `/keys/:id`; a host may disable the core `keys` module if it wants
+this to own `/keys/:id` outright. To print a long key, open `?format=full` first.
 
 The keys list card (`panel:keys`) is forked separately in `panels/PanelKeys/` and is
 not part of this module.
@@ -1642,8 +1729,10 @@ not part of this module.
 - [ ] **Step 3: Full manual walkthrough**
 
 `npm run dev`, then:
-- `/key/3977` — Guided loads by default; header complete; toggle works and persists; breadcrumb navigation works; citation modal on couplet 1; no figures (none in data).
-- Switch to Full key — numbered list, anchors scroll, taxon links open new tabs.
+- `/key/3977` — Guided loads by default; header complete; toggle works and persists; citation modal on couplet 1; no figures (none in data).
+- Guided navigation: "Go to couplet" / breadcrumb / "↑ back" change the URL to `/key/3977/N`; browser Back walks up the key; a pasted `/key/3977/6` deep-links straight to couplet 6.
+- Switch to Full key — numbered list; couplet references navigate `:couplet` and scroll; `/key/3977/4?format=full` loads scrolled to couplet 4; taxon links open new tabs.
+- `npm run dev:ssr` (`http://localhost:6173`): `/key/3977/4` renders without error and settles on couplet 4 after hydration; no hydration-mismatch warnings in the console.
 - OTU overview for an Adosomus species — "Keys" panel lists the key, links to `/key/3977`.
 - No console errors in either view or either theme.
 
@@ -1658,11 +1747,12 @@ git commit -m "keys: module README and publish notes"
 
 ## Self-review notes
 
-- **Spec §3.1 file layout** — Tasks 1–10 create every file listed except `useKey.js`, which was intentionally dropped: its role (fetch orchestration + derived data) lives in `KeyView.vue` + `lib/tree.js`, matching this repo's "component fetches, `lib/` transforms" pattern (prior plan). No separate store is needed because Guided-view navigation state is local to `GuidedView.vue`.
+- **Spec §3.1 file layout** — Tasks 1–10 create every file listed except `useKey.js`, which was intentionally dropped: its role (fetch orchestration + derived data) lives in `KeyView.vue` + `lib/tree.js`, matching this repo's "component fetches, `lib/` transforms" pattern (prior plan). No separate store is needed — the Guided view holds no navigation state at all; the current couplet is a pure function of `route.params.couplet` via `coupletByNumber`.
+- **Spec §3.2 one URL per couplet + §3.3 SSR** — route `/key/:id/:couplet?` (Task 1); both views take `keyId` + `couplet` props from `route.params` (Tasks 3, 6); no URL hash anywhere (Task 7 Step 2 greps to confirm `#couplet-` appears only as a scroll-target `id`); Guided navigation is `RouterLink`/`router.push` so Back walks up the key; `dev:ssr` deep-link check in Tasks 6 & 10.
 - **Spec §4 three calls** — call 1 Task 1, call 2 Task 2, call 3 Task 5.
-- **Spec §5 formats + toggle** — Full key Task 3, Guided Task 6, toggle + persistence Task 6, `?format=` override Task 6 (`resolveFormat`).
+- **Spec §5 formats + toggle** — Full key Task 3, Guided Task 6, toggle + persistence Task 6, `?format=` override Task 6 (`resolveFormat`, Node-tested); `localStorage` pref applied post-mount (no SSR mismatch).
 - **Spec §5.1 "leads to" / no downstream text** — `ReachableTaxa.vue` (Task 6) + `descendantOtus` (Task 1, Node-tested).
-- **Spec §5.2 anchors / back-jumps** — `FullKeyView.vue` `#couplet-N` + "from N" (Task 3).
+- **Spec §5.2 couplet references / back-jumps** — `FullKeyView.vue`: `id="couplet-N"` scroll targets, `<RouterLink>` to the `:couplet` param for couplet-number targets and "from N", scroll-into-view watcher (Task 3).
 - **Spec §6 figures + lightbox** — Task 4; `KeyLightbox` is `Teleport` + `ClientOnly`, keyboard + focus-trap, keys-local (no `panels/_shared`).
 - **Spec §7 masthead, no modal** — `KeyHeader.vue` (Task 2); title/description/scope/citation always visible; only the *full reference* is behind a click, consistent with `DwcTable`.
 - **Spec §8 link-on-hover, reserved emphasis, print** — Task 7.
@@ -1670,6 +1760,6 @@ git commit -m "keys: module README and publish notes"
 - **Spec §10 interactive-key thin fork** — Task 9 (kept, per approval).
 - **Spec §3.4 distributability** — no `panels/`/`config/`/`_shared/` imports in `modules/keys/`; manifest Task 1; README Task 10.
 - **Global constraint "links text-coloured until hover"** — enforced in every component and re-audited in Task 7 Step 2.
-- **Type consistency** — `Node` fields (`isCouplet`, `coupletNumber`, `targetType`, `targetId`, `targetLabel`, `targetLink`, `figures`, `children`) are defined in Task 1 and used unchanged in Tasks 3–9. `citations` map shape `{ id, short, full }[]` is produced in Task 5 and consumed by `LeadText` (Task 3) which tolerates an empty `{}` until then. `format` values `'guided'|'full'` consistent across `format.js`, `FormatToggle`, `KeyView`.
+- **Type consistency** — `Node` fields (`isCouplet`, `coupletNumber`, `targetType`, `targetId`, `targetLabel`, `targetLink`, `figures`, `children`) defined in Task 1, used unchanged in Tasks 3–9. `coupletByNumber(value, nodes)` (Task 1) consumed by `GuidedView` (Task 6). `keyId` + `couplet` props: `FullKeyView` (Task 3) and `GuidedView`/`GuidedChoice` (Task 6) all take `keyId: [String, Number]` and `couplet: [String, null]`, passed from `route.params.id` / `route.params.couplet ?? null` in `KeyView` — the Task 5 `KeyView` template snippet keeps these props (noted inline). `citations` map shape `{ id, short, full }[]` produced in Task 5, consumed by `LeadText` (Task 3) which tolerates an empty `{}` until then. `format` values `'guided'|'full'` consistent across `format.js`, `FormatToggle`, `KeyView`.
 - **Known unverified point** — `figures[]` field names (`figure_label` vs `label`, whether `thumb`/`medium` are directly usable as `<img src>`); code reads both spellings and Task 4 Step 4 is a structural check with a fake figure. Revisit when the first real Lead depiction exists in the data.
-- **Route collision** — new paths `/key/:id` and `/interactive-key/:id` deliberately differ from core `/keys/:id` and `/interactive_keys/:id`; core routes remain registered but nothing links to them after Task 8.
+- **Route collision** — new paths `/key/:id/:couplet?` and `/interactive-key/:id` deliberately differ from core `/keys/:id` and `/interactive_keys/:id`; core routes remain registered but nothing links to them after Task 8.
