@@ -37,7 +37,9 @@
     <section v-if="report.outOfScope.length">
       <p class="text-base-soft">Referenced but outside the key's scope:</p>
       <ul class="ml-4 list-disc">
-        <li v-for="n in report.outOfScope" :key="n">{{ n }}</li>
+        <li v-for="t in report.outOfScope" :key="t.otuId ?? t.name">
+          <TaxRefLink :taxon="t" />
+        </li>
       </ul>
     </section>
   </div>

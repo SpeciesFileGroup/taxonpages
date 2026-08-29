@@ -66,9 +66,14 @@ export function assessCompleteness({ terminals, descendants }) {
 }
 
 function taxRef(d, tnIdToOtuId) {
-  return { id: d.id, otuId: tnIdToOtuId[d.id] ?? null, name: d.name, authorYear: d.authorYear || '' }
+  return {
+    id: d.id,
+    otuId: tnIdToOtuId[d.id] ?? null,
+    name: String(d.name || ''),
+    authorYear: d.authorYear || ''
+  }
 }
-const authored = (d) => [d.name, d.authorYear].filter(Boolean).join(' ')
+const authored = (d) => [String(d.name || ''), d.authorYear].filter(Boolean).join(' ')
 
 // Richer report for the header modal: keeps assessCompleteness's first six fields (so the
 // chip is unchanged) and adds `groups` (one per grouping-rank taxon — the rank between
@@ -120,17 +125,19 @@ export function buildCompletenessReport({
       ungrouped.push(mkMember(d))
     }
   }
-  const bySortName = (a, b) => a.taxon.name.localeCompare(b.taxon.name)
+  const bySortName = (a, b) =>
+    String(a.taxon.name || '').localeCompare(String(b.taxon.name || ''))
   const groups = [...groupMap.values()]
     .map((g) => ({ ...g, members: g.members.sort(bySortName) }))
-    .sort((a, b) => a.taxon.name.localeCompare(b.taxon.name))
+    .sort(bySortName)
   ungrouped.sort(bySortName)
 
   const covered = targetTaxa.filter(isIncluded)
   const missing = targetTaxa.filter((d) => !isIncluded(d)).map(authored)
     .sort((a, b) => a.localeCompare(b))
-  const outOfScope = (outOfScopeTerminals || []).map((t) => t.label)
-    .sort((a, b) => String(a).localeCompare(String(b)))
+  const outOfScope = (outOfScopeTerminals || [])
+    .map((t) => ({ id: null, otuId: t.otuId ?? null, name: String(t.label || ''), authorYear: '' }))
+    .sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')))
 
   return {
     targetRank,
