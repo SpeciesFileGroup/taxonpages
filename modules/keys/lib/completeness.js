@@ -30,41 +30,6 @@ export function finestRank(ranks) {
   return best === -1 ? null : RANK_ORDER[best]
 }
 
-export function assessCompleteness({ terminals, descendants }) {
-  const terms = Array.isArray(terminals) ? terminals : []
-  const descs = Array.isArray(descendants) ? descendants : []
-
-  const targetRank = finestRank(terms.map((t) => t.rank))
-  if (!targetRank) return null
-
-  const termIds = new Set(terms.map((t) => t.taxonNameId).filter((x) => x != null))
-  const descIds = new Set(descs.map((d) => d.taxonNameId).filter((x) => x != null))
-
-  const expected = descs.filter((d) => d.valid && normRank(d.rank) === targetRank)
-  const covered = expected.filter((d) => termIds.has(d.taxonNameId))
-  const coveredIds = new Set(covered.map((d) => d.taxonNameId))
-
-  const missing = expected
-    .filter((d) => !coveredIds.has(d.taxonNameId))
-    .map((d) => d.name)
-    .sort((a, b) => String(a).localeCompare(String(b)))
-
-  const outOfScope = terms
-    .filter((t) => normRank(t.rank) === targetRank && !descIds.has(t.taxonNameId))
-    .map((t) => t.label)
-    .sort((a, b) => String(a).localeCompare(String(b)))
-
-  return {
-    targetRank,
-    expectedCount: expected.length,
-    coveredCount: covered.length,
-    covered: covered.map((d) => d.name),
-    missing,
-    outOfScope,
-    isComplete: missing.length === 0 && outOfScope.length === 0
-  }
-}
-
 function taxRef(d, tnIdToOtuId) {
   return {
     id: d.id,
@@ -75,8 +40,8 @@ function taxRef(d, tnIdToOtuId) {
 }
 const authored = (d) => [String(d.name || ''), d.authorYear].filter(Boolean).join(' ')
 
-// Richer report for the header modal: keeps assessCompleteness's first six fields (so the
-// chip is unchanged) and adds `groups` (one per grouping-rank taxon — the rank between
+// Richer report for the header modal: keeps the chip's first six fields unchanged
+// and adds `groups` (one per grouping-rank taxon — the rank between
 // scope and target — each with its target-rank `members` marked included/missing and their
 // `synonyms`) and `ungrouped` (target taxa parented directly by the scope). Pure.
 export function buildCompletenessReport({
@@ -87,9 +52,12 @@ export function buildCompletenessReport({
   const byId = new Map(descs.map((d) => [d.id, d]))
 
   const valid = descs.filter((d) => d.valid)
+  // Rank the key operates at = finest rank among in-scope valid descendants that are
+  // actually keyed out. No fallback to "finest rank anywhere in scope" — that fabricated
+  // a target rank with zero coverage (spurious "0 / N") when no terminal matched (F7).
   const targetRank = finestRank(
     valid.filter((d) => termSet.has(d.id)).map((d) => d.rank)
-  ) || finestRank(valid.map((d) => d.rank))
+  )
   if (!targetRank) return null
 
   const norm = (r) => normRank(r)

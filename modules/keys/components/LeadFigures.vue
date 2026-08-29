@@ -8,7 +8,7 @@
       :title="fig.figure_label || fig.label || 'figure'"
       @click="open(i)"
     >
-      <img :src="fig.thumb || fig.medium" alt="" class="h-full w-full object-contain" />
+      <img :src="thumbSrc(fig)" alt="" class="h-full w-full object-contain" />
     </button>
 
     <ClientOnly>
@@ -31,4 +31,14 @@ defineProps({ figures: { type: Array, default: () => [] } })
 
 const viewer = ref(null)
 const open = (i) => { viewer.value = i }
+
+// Agree with the lightbox's src(): a figure may carry only original_png (no thumb/medium).
+const apiUrl = (typeof __APP_ENV__ !== 'undefined' && __APP_ENV__.url) || ''
+const token = (typeof __APP_ENV__ !== 'undefined' && __APP_ENV__.project_token) || ''
+function thumbSrc(fig) {
+  if (fig.thumb) return fig.thumb
+  if (fig.medium) return fig.medium
+  if (fig.original_png) return `${apiUrl}/${String(fig.original_png).substring(8)}?project_token=${token}`
+  return ''
+}
 </script>

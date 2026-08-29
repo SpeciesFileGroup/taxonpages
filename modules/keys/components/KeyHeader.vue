@@ -9,18 +9,17 @@
         :to="{ name: 'otus-id', params: { id: meta.otuId } }"
         target="_blank"
         rel="noopener"
-        class="italic hover:underline hover:text-secondary"
+        class="italic text-base-content hover:underline hover:text-secondary"
       >{{ meta.taxonomicScope }}</RouterLink>
       <span v-else class="italic">{{ meta.taxonomicScope }}</span>
     </p>
 
     <p v-if="primaryCitation" class="mt-2 text-sm text-base-content [&_i]:italic">
-      <span class="text-base-soft">Primary source: </span><span
-        class="cursor-pointer hover:underline"
-        role="button" tabindex="0"
-        @click="showCitation = true" @keydown.enter="showCitation = true" @keydown.space.prevent="showCitation = true"
-        v-html="sanitizeAndLinkifyHtml(primaryCitation)"
-      />
+      <span class="text-base-soft">Primary source: </span><span v-html="sanitizeAndLinkifyHtml(primaryCitation)" /><button
+        type="button"
+        class="ml-1 text-xs text-base-soft hover:underline"
+        @click="showCitation = true"
+      >(details)</button>
     </p>
 
     <p v-if="meta.description" class="mt-2 text-base-content">{{ meta.description }}</p>

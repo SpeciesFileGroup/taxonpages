@@ -91,7 +91,7 @@ onMounted(async () => {
       for (const c of Array.isArray(cites) ? cites : []) {
         ;(citesByLead[String(c.citation_object_id)] ||= []).push(c)
       }
-    } catch (e) {
+    } catch {
       /* leave empty */
     }
 
@@ -108,7 +108,7 @@ onMounted(async () => {
       otusCount: r.otus_count || null,
       updatedInWords: r.key_updated_at_in_words || null
     }))
-  } catch (e) {
+  } catch {
     keys.value = []
   } finally {
     loading.value = false

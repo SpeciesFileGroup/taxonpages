@@ -39,9 +39,9 @@
 
       <div v-if="caption(current)" class="flex-none px-6 pb-4 pt-2 text-center text-sm text-base-content [&_i]:italic">
         <span v-if="current.figure_label || current.label" class="text-base-soft">
-          {{ current.figure_label || current.label }} —
+          {{ current.figure_label || current.label }}<template v-if="current.caption"> — </template>
         </span>
-        <span v-html="current.caption" />
+        <span v-if="current.caption" v-html="sanitizeAndLinkifyHtml(current.caption || '')" />
       </div>
     </div>
   </Teleport>
@@ -49,6 +49,9 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+// Only sanitizeAndLinkifyHtml is exported from @/utils (sanitizeHtml is module-private
+// there); it also linkifies URLs in captions, matching the citation sites.
+import { sanitizeAndLinkifyHtml } from '@/utils'
 
 const props = defineProps({
   figures: { type: Array, required: true },

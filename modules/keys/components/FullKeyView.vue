@@ -18,7 +18,7 @@
           <p v-if="fromCouplet(couplet)" class="text-xs text-base-soft mb-1">
             <RouterLink
               :to="coupletTo(fromCouplet(couplet))"
-              class="hover:underline hover:text-secondary"
+              class="text-base-content hover:underline hover:text-secondary"
             >from {{ fromCouplet(couplet) }}</RouterLink>
           </p>
 
@@ -35,7 +35,7 @@
                 <RouterLink
                   v-if="choice.isCouplet"
                   :to="coupletTo(choice.coupletNumber)"
-                  class="font-medium hover:underline hover:text-secondary"
+                  class="font-medium text-base-content hover:underline hover:text-secondary"
                 >couplet {{ choice.coupletNumber }}</RouterLink>
                 <TaxonLink
                   v-else-if="choice.targetType === '/api/v1/otus'"
@@ -47,7 +47,7 @@
                   :href="choice.targetLink"
                   target="_blank"
                   rel="noopener"
-                  class="hover:underline hover:text-secondary"
+                  class="text-base-content hover:underline hover:text-secondary"
                 >{{ choice.targetLabel }}</a>
                 <span v-else class="text-base-content">{{ choice.targetLabel }}</span>
 
@@ -77,7 +77,7 @@ import LeadFigures from './LeadFigures.vue'
 
 const props = defineProps({
   keyId: { type: [String, Number], required: true },
-  couplet: { type: [String, null], default: null },
+  couplet: { type: String, default: null },
   couplets: { type: Array, required: true },
   nodes: { type: Object, required: true },
   citations: { type: Object, default: () => ({}) }

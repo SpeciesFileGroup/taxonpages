@@ -1,8 +1,8 @@
 <template>
-  <div class="container mx-auto py-4">
+  <div class="tp-keys container mx-auto py-4">
     <VSpinner v-if="loading" />
     <div v-else-if="error" class="text-danger">Could not load key {{ route.params.id }}.</div>
-    <div v-else class="rounded-lg border border-base-border bg-base-foreground p-4 sm:p-6">
+    <div v-else class="rounded-lg border border-base-muted bg-base-foreground p-4 sm:p-6">
       <div class="flex items-start justify-between gap-4">
         <KeyHeader class="flex-1" :meta="meta" :completeness="completeness" :references="references" :primary-citation="primaryCitation" />
         <FormatToggle v-model="format" class="mt-1 shrink-0 key-print-hide" />
@@ -39,7 +39,7 @@
 import { ref, computed, watch, onMounted, provide } from 'vue'
 import { useRoute } from 'vue-router'
 import { makeAPIRequest } from '@/utils/request'
-import { buildNodes, orderedCouplets, childChoices, rootId, terminalOtus, lowestCommonAncestor } from './lib/tree.js'
+import { buildNodes, orderedCouplets, rootId, terminalOtus, lowestCommonAncestor } from './lib/tree.js'
 import KeyHeader from './components/KeyHeader.vue'
 import FullKeyView from './components/FullKeyView.vue'
 import GuidedView from './components/GuidedView.vue'
@@ -56,8 +56,15 @@ const synonymyByOtuId = ref({})
 provide('keySynonymy', computed(() => synonymyByOtuId.value))
 
 const format = ref('guided')
-onMounted(() => { format.value = readFormat() })
+// ?format= comes from the router query (in hash mode the URL search string is empty, so it
+// must not be read off the location object); the localStorage default applies post-mount (F2).
+onMounted(() => { format.value = readFormat(route.query.format) })
 watch(format, (v) => writeFormat(v))
+
+// Monotonic request generation. Every shared-ref write in load / loadCitations /
+// loadCompleteness is guarded by `myGen === loadGen`, so a slow load(A) can't clobber
+// refs after the user navigated to key B (F6).
+let loadGen = 0
 
 const loading = ref(true)
 const error = ref(false)
@@ -67,7 +74,6 @@ const nodes = ref({})
 
 const couplets = computed(() => orderedCouplets(nodes.value))
 const terminalOtuList = computed(() => terminalOtus(nodes.value))
-const childrenOf = (id) => childChoices(id, nodes.value)
 const citations = ref({})
 const activeCitation = ref(null)
 const completeness = ref(null)
@@ -112,27 +118,31 @@ const references = computed(() => {
 })
 
 async function load(id) {
+  const myGen = ++loadGen
   loading.value = true
   error.value = false
   listMeta.value = {}
+  rawMeta.value = {}
   try {
     const keyReq = makeAPIRequest.get(`/leads/key/${id}`)
     const listReq = makeAPIRequest.get('/leads').catch(() => ({ data: [] }))
     const { data } = await keyReq
+    if (myGen !== loadGen) return
     rawMeta.value = data.metadata || {}
     nodes.value = buildNodes(data.data.entries || {}, data.data.leads || {})
-    loadCitations(Object.keys(nodes.value))
+    loadCitations(Object.keys(nodes.value), myGen)
     const { data: list } = await listReq
+    if (myGen !== loadGen) return
     listMeta.value = (Array.isArray(list) ? list : []).find((r) => r.id === Number(id)) || {}
-    loadCompleteness(listMeta.value.otu_id, nodes.value)
-  } catch (e) {
-    error.value = true
+    loadCompleteness(listMeta.value.otu_id, nodes.value, myGen)
+  } catch {
+    if (myGen === loadGen) error.value = true
   } finally {
-    loading.value = false
+    if (myGen === loadGen) loading.value = false
   }
 }
 
-async function loadCitations(leadIds) {
+async function loadCitations(leadIds, myGen) {
   if (!leadIds.length) return
   const qs = new URLSearchParams()
   qs.set('citation_object_type', 'Lead')
@@ -140,6 +150,7 @@ async function loadCitations(leadIds) {
   leadIds.forEach((id) => qs.append('citation_object_id[]', id))
   try {
     const { data } = await makeAPIRequest.get(`/citations?${qs.toString()}`)
+    if (myGen !== loadGen) return
     const map = {}
     for (const c of Array.isArray(data) ? data : []) {
       const key = String(c.citation_object_id)
@@ -150,8 +161,8 @@ async function loadCitations(leadIds) {
       })
     }
     citations.value = map
-  } catch (e) {
-    citations.value = {}
+  } catch {
+    if (myGen === loadGen) citations.value = {}
   }
 }
 
@@ -190,8 +201,9 @@ async function resolveScopeFromTerminals(tnIds) {
   return lowestCommonAncestor(chains)
 }
 
-async function loadCompleteness(scopeOtuId, nodeMap) {
+async function loadCompleteness(scopeOtuId, nodeMap, myGen) {
   try {
+    if (myGen !== loadGen) return
     completeness.value = null
     synonymyByOtuId.value = {}
 
@@ -251,14 +263,29 @@ async function loadCompleteness(scopeOtuId, nodeMap) {
       valid: d.cached_is_valid !== false,
       validId: d.cached_valid_taxon_name_id
     })
-    const dq = new URLSearchParams()
-    dq.append('taxon_name_id[]', scopeTnId)
-    dq.set('descendants', 'true')
-    terminalRankWords.forEach((r) => dq.append('rank', r))
-    dq.set('per', '1000')
-    const { data: descRaw } = await makeAPIRequest.get(`/taxon_names?${dq.toString()}`)
-    const descendants = (Array.isArray(descRaw) ? descRaw : []).map(mapRow)
-    const descById = new Map(descendants.map((d) => [d.id, d]))
+    // GET /taxon_names `rank` is a scalar, last-one-wins param — appending several ranks
+    // keeps only the last one. Issue one rank-filtered request per distinct terminal rank
+    // and merge, deduping by id (F1).
+    const descRaw = (
+      await Promise.all(
+        terminalRankWords.map((r) => {
+          const q = new URLSearchParams()
+          q.append('taxon_name_id[]', scopeTnId)
+          q.set('descendants', 'true')
+          q.set('rank', r)
+          q.set('per', '1000')
+          return makeAPIRequest.get(`/taxon_names?${q.toString()}`).then((x) => x.data).catch(() => [])
+        })
+      )
+    ).flat()
+    const descendants = []
+    const descById = new Map()
+    for (const raw of Array.isArray(descRaw) ? descRaw : []) {
+      if (raw == null || descById.has(raw.id)) continue
+      const row = mapRow(raw)
+      descendants.push(row)
+      descById.set(row.id, row)
+    }
     const descIds = new Set(descendants.map((d) => d.id))
     const authored = (d) => (d ? [d.name, d.authorYear].filter(Boolean).join(' ') : '')
 
@@ -300,6 +327,7 @@ async function loadCompleteness(scopeOtuId, nodeMap) {
         synMap[t.otuId] = { validName: authored(descById.get(validId)) }
       }
     }
+    if (myGen !== loadGen) return
     synonymyByOtuId.value = synMap
 
     // an OTU id per descendant taxon-name, for the report's new-tab links
@@ -314,6 +342,7 @@ async function loadCompleteness(scopeOtuId, nodeMap) {
       }
     }
 
+    if (myGen !== loadGen) return
     completeness.value = buildCompletenessReport({
       scopeRank,
       descendants,
@@ -321,8 +350,8 @@ async function loadCompleteness(scopeOtuId, nodeMap) {
       tnIdToOtuId,
       outOfScopeTerminals
     })
-  } catch (e) {
-    completeness.value = null
+  } catch {
+    if (myGen === loadGen) completeness.value = null
   }
 }
 
@@ -330,9 +359,11 @@ watch(() => route.params.id, (id) => id && load(id), { immediate: true })
 </script>
 
 <style>
+/* Unscoped so `.key-print-hide` inside child components still matches; the two broad
+   rules are namespaced under `.tp-keys` so they don't leak app-wide once a key opens (F5). */
 @media print {
   .key-print-hide { display: none !important; }
-  .container { max-width: none !important; }
-  a { text-decoration: none !important; color: inherit !important; }
+  .tp-keys.container { max-width: none !important; }
+  .tp-keys a { text-decoration: none !important; color: inherit !important; }
 }
 </style>

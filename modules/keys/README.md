@@ -10,7 +10,7 @@ A local, NPM-distributable TaxonPages module that replaces the `@sfgrp/pinpoint`
 - **`dichotomous-key`** → `/key/:id/:couplet?` — the key view
   - `:id` is a TaxonWorks lead/key ID
   - `:couplet` (optional) is a couplet number — one URL per couplet, shareable and bookmarkable
-  - Composes with `?format=guided|full` (SSR-visible, overrides the `localStorage` preference)
+  - Composes with `?format=guided|full` (read from the route query, so transport-agnostic; overrides the `localStorage` preference, which is client-only and applied post-mount)
 
 No URL hash is used for couplet navigation (unlike some dichotomous-key viewers). The couplet is a **path segment**, so it resolves identically under server-side and client-side rendering: browsers never send the fragment to the server, so SSR would always render couplet 1 if couplet were in the hash.
 

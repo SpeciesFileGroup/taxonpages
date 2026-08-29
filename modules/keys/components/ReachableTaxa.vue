@@ -5,7 +5,7 @@
       <span class="text-base-soft">Couplet {{ choice.coupletNumber }} · </span>
       <span class="text-base-content">leads to {{ taxa.length }} {{ taxa.length === 1 ? 'taxon' : 'taxa' }}</span>
       <button
-        v-if="taxa.length"
+        v-if="taxa.length > inlineLimit"
         type="button"
         class="ml-1 text-base-soft hover:underline hover:text-secondary"
         @click="expanded = !expanded"
@@ -24,7 +24,7 @@
       :href="choice.targetLink"
       target="_blank"
       rel="noopener"
-      class="hover:underline hover:text-secondary"
+      class="text-base-content hover:underline hover:text-secondary"
     >{{ choice.targetLabel }}</a>
     <span v-else class="text-base-content">{{ choice.targetLabel }}</span>
   </div>
