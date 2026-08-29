@@ -5,5 +5,5 @@
   "type": "module",
   "description": "Dichotomous (couplet) key renderer for TaxonPages.",
   "taxonpages": { "type": "module", "entry": "./router/index.js" },
-  "peerDependencies": { "@sfgrp/taxonpages": "*", "vue": "^3" }
+  "peerDependencies": { "@sfgrp/taxonpages": "*", "vue": "^3", "vue-router": "^4" }
 }
