@@ -1,9 +1,13 @@
 import { ref, computed, watch } from 'vue'
 
 export const CHECKLIST_KEY = '7ddf754f-d193-4cc9-b351-99906754a03b'
-export const GBIF_TAXON_BASE = 'https://demo.gbif-staging.org/taxon'
-export const GBIF_OCCURRENCE_BASE = 'https://demo.gbif-staging.org/occurrence/search'
-export const GBIF_OCCURRENCE_DETAIL = 'https://demo.gbif-staging.org/occurrence'
+// The v2 CoL match returns alphanumeric usage keys (e.g. "32HTC"). These now
+// resolve on the main www.gbif.org portal, which serves the CoL taxonomy under
+// /taxon/:key (the legacy integer-keyed backbone lives at /species/:key and on
+// old.gbif.org). The former demo.gbif-staging.org preview host is retired.
+export const GBIF_TAXON_BASE = 'https://www.gbif.org/taxon'
+export const GBIF_OCCURRENCE_BASE = 'https://www.gbif.org/occurrence/search'
+export const GBIF_OCCURRENCE_DETAIL = 'https://www.gbif.org/occurrence'
 
 const MATCH_ENDPOINT = 'https://api.gbif.org/v2/species/match'
 const MIN_CONFIDENCE = 80

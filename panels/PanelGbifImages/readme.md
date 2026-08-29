@@ -4,7 +4,7 @@
 
 Copied from [MortenHofft/taxonpages](https://github.com/MortenHofft/taxonpages) by [Morten Høfft](https://github.com/MortenHofft) on 2026-05-21.
 
-**Note:** Links open `demo.gbif-staging.org` — the GBIF v2 CoL API returns alphanumeric keys (e.g. `LPL3Q`) that the current `www.gbif.org` does not yet support; the staging server does.
+**Note:** Links open `www.gbif.org`. The GBIF v2 CoL API returns alphanumeric usage keys (e.g. `LPL3Q`); these now resolve on the main portal under `/taxon/:key` (CoL taxonomy). The former `demo.gbif-staging.org` preview host is retired — the legacy integer-keyed backbone still lives at `/species/:key` and on `old.gbif.org`.
 
 ---
 
