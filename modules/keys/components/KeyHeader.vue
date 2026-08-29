@@ -14,12 +14,12 @@
       <span v-else class="italic">{{ meta.taxonomicScope }}</span>
     </p>
 
-    <p v-if="meta.originCitation" class="mt-2 text-sm text-base-content [&_i]:italic">
+    <p v-if="primaryCitation" class="mt-2 text-sm text-base-content [&_i]:italic">
       <span class="text-base-soft">Primary source: </span><span
         class="cursor-pointer hover:underline"
         role="button" tabindex="0"
         @click="showCitation = true" @keydown.enter="showCitation = true" @keydown.space.prevent="showCitation = true"
-        v-html="sanitizeAndLinkifyHtml(meta.originCitation)"
+        v-html="sanitizeAndLinkifyHtml(primaryCitation)"
       />
     </p>
 
@@ -61,7 +61,7 @@
 
     <VModal v-if="showCitation" @close="showCitation = false">
       <template #header><div class="text-sm font-medium">Reference</div></template>
-      <div class="px-4 pb-4 text-sm leading-relaxed [&_i]:italic" v-html="sanitizeAndLinkifyHtml(meta.originCitation)" />
+      <div class="px-4 pb-4 text-sm leading-relaxed [&_i]:italic" v-html="sanitizeAndLinkifyHtml(primaryCitation)" />
     </VModal>
 
     <VModal v-if="showCompleteness && completeness" @close="showCompleteness = false">
@@ -90,7 +90,8 @@ import CompletenessReport from './CompletenessReport.vue'
 const props = defineProps({
   meta: { type: Object, required: true },
   completeness: { type: Object, default: null },
-  references: { type: Array, default: () => [] }
+  references: { type: Array, default: () => [] },
+  primaryCitation: { type: String, default: null }
 })
 
 const showCitation = ref(false)

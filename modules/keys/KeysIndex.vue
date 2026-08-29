@@ -78,11 +78,31 @@ onMounted(async () => {
           .catch(() => ({}))
       )
     )
+    // One batched citations call: root-lead citation per key (the key id IS the
+    // root lead id). Used to fill the "Primary source" line for keys whose
+    // citation isn't flagged is_original in TaxonWorks (A15).
+    const cq = new URLSearchParams()
+    cq.set('citation_object_type', 'Lead')
+    cq.append('extend[]', 'source')
+    rows.forEach((r) => cq.append('citation_object_id[]', r.id))
+    const citesByLead = {}
+    try {
+      const { data: cites } = await makeAPIRequest.get(`/citations?${cq.toString()}`)
+      for (const c of Array.isArray(cites) ? cites : []) {
+        ;(citesByLead[String(c.citation_object_id)] ||= []).push(c)
+      }
+    } catch (e) {
+      /* leave empty */
+    }
+
     keys.value = rows.map((r, i) => ({
       id: r.id,
       title: metas[i].title || r.text || `Key ${r.id}`,
       scope: metas[i].taxonomic_scope || null,
-      citation: metas[i].origin_citation || null,
+      citation:
+        metas[i].origin_citation ||
+        citesByLead[String(r.id)]?.[0]?.source?.cached ||
+        null,
       description: r.description || null,
       coupletsCount: r.couplets_count || null,
       otusCount: r.otus_count || null,

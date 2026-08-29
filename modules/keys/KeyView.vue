@@ -4,7 +4,7 @@
     <div v-else-if="error" class="text-danger">Could not load key {{ route.params.id }}.</div>
     <div v-else class="rounded-lg border border-base-border bg-base-foreground p-4 sm:p-6">
       <div class="flex items-start justify-between gap-4">
-        <KeyHeader class="flex-1" :meta="meta" :completeness="completeness" :references="references" />
+        <KeyHeader class="flex-1" :meta="meta" :completeness="completeness" :references="references" :primary-citation="primaryCitation" />
         <FormatToggle v-model="format" class="mt-1 shrink-0 key-print-hide" />
       </div>
 
@@ -39,7 +39,7 @@
 import { ref, computed, watch, onMounted, provide } from 'vue'
 import { useRoute } from 'vue-router'
 import { makeAPIRequest } from '@/utils/request'
-import { buildNodes, orderedCouplets, childChoices, terminalOtus, lowestCommonAncestor } from './lib/tree.js'
+import { buildNodes, orderedCouplets, childChoices, rootId, terminalOtus, lowestCommonAncestor } from './lib/tree.js'
 import KeyHeader from './components/KeyHeader.vue'
 import FullKeyView from './components/FullKeyView.vue'
 import GuidedView from './components/GuidedView.vue'
@@ -88,6 +88,13 @@ const meta = computed(() => ({
   otusCount: terminalOtuList.value.length || listMeta.value.otus_count || null
 }))
 
+const primaryCitation = computed(() => {
+  if (meta.value.originCitation) return meta.value.originCitation
+  if (!Object.keys(nodes.value).length) return null
+  const rootCites = citations.value[String(rootId(nodes.value))] || []
+  return rootCites[0]?.full || null
+})
+
 const references = computed(() => {
   const byFull = new Map()
   for (const list of Object.values(citations.value || {})) {
@@ -95,7 +102,7 @@ const references = computed(() => {
       if (c.full && !byFull.has(c.full)) byFull.set(c.full, { full: c.full, short: c.short, isPrimary: false })
     }
   }
-  const primary = meta.value.originCitation
+  const primary = primaryCitation.value
   if (primary) {
     const existing = byFull.get(primary)
     if (existing) existing.isPrimary = true
