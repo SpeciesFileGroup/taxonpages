@@ -3,8 +3,21 @@
     <VSpinner v-if="loading" />
     <div v-else-if="error" class="text-danger">Could not load key {{ route.params.id }}.</div>
     <div v-else>
-      <KeyHeader :meta="meta" />
+      <div class="flex items-start justify-between gap-4">
+        <KeyHeader class="flex-1" :meta="meta" />
+        <FormatToggle v-model="format" class="mt-1 shrink-0 key-print-hide" />
+      </div>
+
+      <GuidedView
+        v-if="format === 'guided'"
+        :key-id="route.params.id"
+        :couplet="route.params.couplet ?? null"
+        :nodes="nodes"
+        :citations="citations"
+        @open-citation="activeCitation = $event"
+      />
       <FullKeyView
+        v-else
         :key-id="route.params.id"
         :couplet="route.params.couplet ?? null"
         :couplets="couplets"
@@ -12,6 +25,7 @@
         :citations="citations"
         @open-citation="activeCitation = $event"
       />
+
       <CoupletCitation
         v-if="activeCitation"
         :citation="activeCitation"
@@ -22,15 +36,22 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { makeAPIRequest } from '@/utils/request'
 import { buildNodes, orderedCouplets, childChoices } from './lib/tree.js'
 import KeyHeader from './components/KeyHeader.vue'
 import FullKeyView from './components/FullKeyView.vue'
+import GuidedView from './components/GuidedView.vue'
+import FormatToggle from './components/FormatToggle.vue'
 import CoupletCitation from './components/CoupletCitation.vue'
+import { readFormat, writeFormat } from './lib/format.js'
 
 const route = useRoute()
+
+const format = ref('guided')
+onMounted(() => { format.value = readFormat() })
+watch(format, (v) => writeFormat(v))
 
 const loading = ref(true)
 const error = ref(false)
