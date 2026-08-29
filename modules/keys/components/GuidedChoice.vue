@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded border border-base-muted bg-base-background p-4 flex flex-col gap-3"
+  <div class="rounded border border-base-muted bg-base-lighter p-4 flex flex-col gap-3"
        :style="{ boxShadow: 'var(--tp-card-shadow) 0 2px 4px 0' }">
     <p class="[&_i]:italic leading-relaxed">
       <LeadText :node="choice" :citations="citations" @open-citation="$emit('open-citation', $event)" />

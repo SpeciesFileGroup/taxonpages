@@ -120,3 +120,9 @@ function scrollToCouplet(n) {
 watch(() => props.couplet, scrollToCouplet, { immediate: true })
 watch(() => props.couplets, () => scrollToCouplet(props.couplet))
 </script>
+
+<style>
+@media print {
+  [data-current] { box-shadow: none !important; background: none !important; }
+}
+</style>
