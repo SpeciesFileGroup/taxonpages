@@ -1855,7 +1855,31 @@ Keep the outer `container mx-auto py-4` wrapper. Then check nested surfaces stil
 
 Do not hard-code colours; only swap between theme tokens.
 
-- [ ] **Step 3: Add a print stylesheet to `modules/keys/KeyView.vue`**
+- [ ] **Step 3: Make included vs missing striking in `modules/keys/components/CompletenessReport.vue` (Amendment A11)**
+
+**Reported (2026-08-29):** in the completeness modal the ✓/✗ marks are tiny and both rows
+read as the same blue link — you can't tell at a glance which taxa the key covers. Make the
+contrast unmistakable. There is a `--color-success` theme token (`text-success` / `bg-success`
+/ `border-success` utilities work).
+
+- Each member row is a flex row with a **fixed-width marker column** (`w-5 shrink-0
+  text-center`), not an inline glyph: `✓` in `text-success`, `✗` in `text-danger`, both
+  `font-semibold`.
+- **Missing** rows get standing emphasis: the name (`TaxRefLink`) in `text-danger
+  font-medium`, and the row carries `border-l-2 border-danger pl-2 -ml-2` (or a subtle
+  `bg-danger/5 rounded`) so missing rows visibly stand out from the list.
+- **Included** rows stay quiet: normal link colour, normal weight, just the green `✓`.
+- After each group heading, a small `text-base-soft` summary: `({{ covered }} / {{ total }}
+  keyed out)` — count `members` by `status`.
+- Synonyms stay as they are (indented, `= `, linked, muted).
+- Fix the stray space in the summary line ("… in the key's scope ." → "… in the key's
+  scope.").
+
+`TaxRefLink.vue` may need a `class` / `emphasis` prop, or wrap it — but the ✗ marker + the
+`border-l` + `text-danger` on the row container is enough; keep `TaxRefLink` itself generic.
+Theme tokens only.
+
+- [ ] **Step 4: Add a print stylesheet to `modules/keys/KeyView.vue`**
 
 Append to the component:
 
@@ -1871,7 +1895,7 @@ Append to the component:
 
 `<FormatToggle>` already has `key-print-hide` (Task 6). Also add it to the Guided view's breadcrumb `<nav>` and "↑ back" link (navigation chrome, meaningless on paper). Forcing Full-key rendering for print is out of scope — document in the README that `?format=full` before printing gives the paginated list.
 
-- [ ] **Step 4: Link-treatment audit**
+- [ ] **Step 5: Link-treatment audit**
 
 Grep the module for link classes and confirm the rule:
 
@@ -1885,7 +1909,7 @@ Confirm:
 
 Fix any element that violates it.
 
-- [ ] **Step 5: Dark / light check**
+- [ ] **Step 6: Dark / light check**
 
 Run `npm run dev`, open `http://localhost:5173/#/key/3977` (SPA is hash-mode — note the `/#/`). Toggle the site theme (header sun/moon control). In BOTH themes verify:
 - The key content sits on the `bg-base-foreground` panel and white/dark text reads comfortably against it (this was the reported problem — confirm it is fixed in dark mode).
@@ -1895,13 +1919,13 @@ Run `npm run dev`, open `http://localhost:5173/#/key/3977` (SPA is hash-mode —
 - The fixed "↑ Couplet N" button (visible when a couplet is active, e.g. `/#/key/3977/4`) is legible and does not overlap key content awkwardly.
 Adjust token choices only (`bg-base` vs `bg-base-foreground`, `text-base-soft` vs `text-base-content`, `border-base-muted`) — no hard-coded colours.
 
-- [ ] **Step 6: Compile check** — `npm run build` and `npm run build:ssr` → succeed.
+- [ ] **Step 7: Compile check** — `npm run build` and `npm run build:ssr` → succeed.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
 git add modules/keys/
-git commit -m "keys: dark-mode surface, current-couplet marker + return control, visual pass"
+git commit -m "keys: dark surface, current-couplet marker + return control, striking completeness report, visual pass"
 ```
 
 ---

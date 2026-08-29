@@ -291,6 +291,28 @@ discovery endpoint.
 
 ---
 
+## A11 — Completeness modal: make included vs missing striking
+
+**Asked:** from the rendered modal — the ✓/✗ marks are tiny and every row reads as the same
+blue link; you can't tell at a glance which taxa the key covers.
+
+**Decision (folded into Task 8's visual pass):** in `CompletenessReport.vue` —
+fixed-width marker column (`✓` `text-success` / `✗` `text-danger`, `font-semibold`); **missing
+rows** carry standing emphasis (name in `text-danger font-medium` + a `border-l-2
+border-danger` rule); **included rows** stay quiet (normal link, green ✓ only); a small
+`(covered / total keyed out)` summary after each group heading; fix the stray space in "… in
+the key's scope .". Theme tokens only (`--color-success` exists).
+
+**Task:** 8, Step 3.
+
+**Review check:** opening the completeness chip, missing taxa are immediately obvious (red,
+emphasised, left rule) vs the quiet included rows; each group shows an "N / M keyed out"
+count.
+
+**Status:** planned (Task 8).
+
+---
+
 ## Cross-cutting notes (not amendments, context for review)
 
 - **SPA is hash-mode** (`config/router.yml` → `hash_mode: true`): test the SPA at
