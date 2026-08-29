@@ -1296,7 +1296,7 @@ import GuidedChoice from './GuidedChoice.vue'
 
 const props = defineProps({
   keyId: { type: [String, Number], required: true },
-  couplet: { type: [String, null], default: null },
+  couplet: { type: String, default: null },
   nodes: { type: Object, required: true },
   citations: { type: Object, default: () => ({}) }
 })
@@ -1432,15 +1432,79 @@ git commit -m "keys: guided step-through view, reachable-taxa summary, persisted
 
 ---
 
-## Task 7: Visual pass (link treatment, emphasis, print, dark/light)
+## Task 7: Full-key current-couplet marker + return control, then visual pass
 
 **Files:**
+- Modify: `modules/keys/components/FullKeyView.vue` (highlight the current couplet; add a sticky "return to current couplet" control)
 - Modify: `modules/keys/KeyView.vue` (print stylesheet, container spacing)
-- Modify: any of `modules/keys/components/*.vue` as needed for the checks below
+- Modify: any of `modules/keys/components/*.vue` as needed for the audit checks below
 
-**Interfaces:** none changed — presentation only.
+**Interfaces:** no prop changes. `FullKeyView` already receives `couplet` (the current couplet number, or `null`); this task adds visual treatment driven by that existing prop.
 
-- [ ] **Step 1: Add a print stylesheet to `modules/keys/KeyView.vue`**
+**Design amendment (2026-08-29):** In Full-key view, navigating to a couplet (clicking a couplet-number link → `:couplet` route param) scrolls you there, but after scrolling around to check other couplets it is easy to lose your place. So: (a) the current couplet's `<section>` is visually marked, and (b) a persistent control returns you to it.
+
+- [ ] **Step 1: Current-couplet marker + return control in `modules/keys/components/FullKeyView.vue`**
+
+On the couplet `<section>`, add a `data-current` attribute and a highlight class when it is the current couplet:
+
+```vue
+<section
+  v-for="couplet in couplets"
+  :key="couplet.id"
+  :id="`couplet-${couplet.coupletNumber}`"
+  :data-current="isCurrent(couplet) || null"
+  class="mb-5 scroll-mt-24 rounded transition-colors"
+  :class="isCurrent(couplet)
+    ? 'ring-2 ring-secondary ring-offset-2 ring-offset-base-foreground bg-secondary/5'
+    : ''"
+>
+```
+
+Add, after the couplet list (still inside the component's root element), a fixed-position control shown only while a couplet is active — and hidden in print:
+
+```vue
+<button
+  v-if="currentCoupletNumber"
+  type="button"
+  class="key-print-hide fixed bottom-4 right-4 z-40 flex items-center gap-1 rounded-full bg-primary text-primary-content text-sm px-3 py-2 shadow-lg hover:bg-primary/80"
+  @click="scrollToCouplet(currentCoupletNumber)"
+>↑ Couplet {{ currentCoupletNumber }}</button>
+```
+
+Script additions:
+
+```js
+const currentCoupletNumber = computed(() =>
+  props.couplet != null && props.couplet !== '' ? String(props.couplet) : null
+)
+function isCurrent(couplet) {
+  return currentCoupletNumber.value != null &&
+    String(couplet.coupletNumber) === currentCoupletNumber.value
+}
+```
+
+(`scrollToCouplet` already exists from Task 3; `computed` is already imported there? — Task 3's `FullKeyView` imports `{ watch, nextTick }` only, so add `computed` to that import.)
+
+- [ ] **Step 2: Dark-mode surface in `modules/keys/KeyView.vue`**
+
+**Reported (2026-08-29):** in dark mode the key currently renders white text directly on the page background, which is hard to read. Other TaxonPages panels place their content on an elevated `bg-base-foreground` surface (the grey card backing in dark mode). Match that.
+
+Wrap the rendered content of the `v-else` branch (the `KeyHeader` + view + `CoupletCitation`, i.e. everything shown once the key has loaded) in a surface panel:
+
+```vue
+<div v-else class="rounded-lg border border-base-muted bg-base-foreground p-4 sm:p-6">
+  <!-- header row, GuidedView / FullKeyView, CoupletCitation -->
+</div>
+```
+
+Keep the outer `container mx-auto py-4` wrapper. Then check nested surfaces still read as distinct against this backing:
+- `GuidedChoice` cards currently use `bg-base-foreground` too — on the new backing they will blend. Give them a visible edge: keep `border border-base-muted` and drop their `bg-base-foreground` to plain `bg-base` (or `bg-base-foreground/60`), whichever reads as a raised card in both themes.
+- The current-couplet `ring` highlight from Step 1 must still be visible against `bg-base-foreground` — `ring-offset-base-foreground` already accounts for that; verify in the dark/light check.
+- The fixed "↑ Couplet N" button sits above the page, not inside the panel — unaffected.
+
+Do not hard-code colours; only swap between theme tokens.
+
+- [ ] **Step 3: Add a print stylesheet to `modules/keys/KeyView.vue`**
 
 Append to the component:
 
@@ -1456,7 +1520,7 @@ Append to the component:
 
 `<FormatToggle>` already has `key-print-hide` (Task 6). Also add it to the Guided view's breadcrumb `<nav>` and "↑ back" link (navigation chrome, meaningless on paper). Forcing Full-key rendering for print is out of scope — document in the README that `?format=full` before printing gives the paginated list.
 
-- [ ] **Step 2: Link-treatment audit**
+- [ ] **Step 4: Link-treatment audit**
 
 Grep the module for link classes and confirm the rule:
 
@@ -1470,17 +1534,22 @@ Confirm:
 
 Fix any element that violates it.
 
-- [ ] **Step 3: Dark / light check**
+- [ ] **Step 5: Dark / light check**
 
-Run `npm run dev`. Toggle the site theme (header sun/moon control). On `http://localhost:5173/key/3977` in both themes verify: card surfaces read against the page, couplet numbers are legible, muted text (chips, citations, figure labels) is dimmer but readable, hover states are visible. Adjust token choices (`text-base-soft` vs `text-base-content`, `border-base-muted`) only — no hard-coded colours.
+Run `npm run dev`, open `http://localhost:5173/#/key/3977` (SPA is hash-mode — note the `/#/`). Toggle the site theme (header sun/moon control). In BOTH themes verify:
+- The key content sits on the `bg-base-foreground` panel and white/dark text reads comfortably against it (this was the reported problem — confirm it is fixed in dark mode).
+- `GuidedChoice` cards and the current-couplet `ring` highlight read as distinct against the panel backing.
+- Couplet numbers legible; muted text (chips, citations, figure labels) dimmer but readable; hover states visible.
+- The fixed "↑ Couplet N" button (visible when a couplet is active, e.g. `/#/key/3977/4`) is legible and does not overlap key content awkwardly.
+Adjust token choices only (`bg-base` vs `bg-base-foreground`, `text-base-soft` vs `text-base-content`, `border-base-muted`) — no hard-coded colours.
 
-- [ ] **Step 4: Compile check** — `npm run build` → succeeds.
+- [ ] **Step 6: Compile check** — `npm run build` and `npm run build:ssr` → succeed.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
 git add modules/keys/
-git commit -m "keys: visual pass — link-on-hover, reserved emphasis, print stylesheet, theme check"
+git commit -m "keys: dark-mode surface, current-couplet marker + return control, visual pass"
 ```
 
 ---
@@ -1760,6 +1829,6 @@ git commit -m "keys: module README and publish notes"
 - **Spec §10 interactive-key thin fork** — Task 9 (kept, per approval).
 - **Spec §3.4 distributability** — no `panels/`/`config/`/`_shared/` imports in `modules/keys/`; manifest Task 1; README Task 10.
 - **Global constraint "links text-coloured until hover"** — enforced in every component and re-audited in Task 7 Step 2.
-- **Type consistency** — `Node` fields (`isCouplet`, `coupletNumber`, `targetType`, `targetId`, `targetLabel`, `targetLink`, `figures`, `children`) defined in Task 1, used unchanged in Tasks 3–9. `coupletByNumber(value, nodes)` (Task 1) consumed by `GuidedView` (Task 6). `keyId` + `couplet` props: `FullKeyView` (Task 3) and `GuidedView`/`GuidedChoice` (Task 6) all take `keyId: [String, Number]` and `couplet: [String, null]`, passed from `route.params.id` / `route.params.couplet ?? null` in `KeyView` — the Task 5 `KeyView` template snippet keeps these props (noted inline). `citations` map shape `{ id, short, full }[]` produced in Task 5, consumed by `LeadText` (Task 3) which tolerates an empty `{}` until then. `format` values `'guided'|'full'` consistent across `format.js`, `FormatToggle`, `KeyView`.
+- **Type consistency** — `Node` fields (`isCouplet`, `coupletNumber`, `targetType`, `targetId`, `targetLabel`, `targetLink`, `figures`, `children`) defined in Task 1, used unchanged in Tasks 3–9. `coupletByNumber(value, nodes)` (Task 1) consumed by `GuidedView` (Task 6). `keyId` + `couplet` props: `FullKeyView` (Task 3) and `GuidedView` (Task 6) take `keyId: [String, Number]` and `couplet: { type: String, default: null }` (a nullable string — `null`/`undefined` skip Vue's type check; do NOT write `type: [String, null]`, `null` is not a valid type constructor), passed from `route.params.id` / `route.params.couplet ?? null` in `KeyView` — the Task 5 `KeyView` template snippet keeps these props (noted inline). `citations` map shape `{ id, short, full }[]` produced in Task 5, consumed by `LeadText` (Task 3) which tolerates an empty `{}` until then. `format` values `'guided'|'full'` consistent across `format.js`, `FormatToggle`, `KeyView`.
 - **Known unverified point** — `figures[]` field names (`figure_label` vs `label`, whether `thumb`/`medium` are directly usable as `<img src>`); code reads both spellings and Task 4 Step 4 is a structural check with a fake figure. Revisit when the first real Lead depiction exists in the data.
 - **Route collision** — new paths `/key/:id/:couplet?` and `/interactive-key/:id` deliberately differ from core `/keys/:id` and `/interactive_keys/:id`; core routes remain registered but nothing links to them after Task 8.
