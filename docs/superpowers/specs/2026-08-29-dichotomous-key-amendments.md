@@ -394,6 +394,41 @@ sits directly under the scope line and above the description.
 
 ---
 
+## A15 — Primary source falls back to the root lead's citation
+
+**Asked:** the Strophosoma key shows no "Primary source" line even though its metadata has a
+citation (Flach 1907).
+
+**Findings:** `GET /leads/key/:id` → `metadata.origin_citation` is `lead.source&.cached`, where
+`Shared::Citations#source` is the citation flagged **`is_original: true`**. The Flach citation
+on that key's root lead is NOT flagged original (`is_original: null`), so `origin_citation` is
+`null` and nothing renders. The citation is still returned by
+`GET /citations?citation_object_type=Lead&citation_object_id[]=<root lead id>` (the key id IS
+the root lead id).
+
+**Decision:**
+- `KeyView` derives `primaryCitation` = `meta.originCitation || <first citation on the root
+  lead>` (root lead id = `rootId(nodes.value)`; its citations are already in the Task-14
+  `citations` map, or one `/citations` call). `KeyHeader` renders the "Primary source:" line
+  and the citation modal from `primaryCitation`; the `references` computed flags / prepends
+  `primaryCitation` (not only `originCitation`).
+- `KeysIndex` batches one `GET /citations?citation_object_type=Lead&citation_object_id[]=<all
+  key ids>&extend[]=source` and uses `origin_citation || rootLeadCitation.source.cached` per
+  card.
+- Data note (also for the curator): flagging the citation "original" in TaxonWorks makes
+  `origin_citation` populate directly — the fallback just stops the line disappearing when
+  they haven't.
+
+**Task:** 18.
+
+**Review check:** the Strophosoma key (`#/key/3605`) shows "Primary source: Flach, K. (1907) …"
+and the Keys index card for it shows the same; a key whose citation *is* flagged original is
+unchanged.
+
+**Status:** planned (Task 18).
+
+---
+
 ## Cross-cutting notes (not amendments, context for review)
 
 - **SPA is hash-mode** (`config/router.yml` → `hash_mode: true`): test the SPA at
@@ -406,4 +441,4 @@ sits directly under the scope line and above the description.
   visual-pass / PanelKeys / interactiveKeys / README tasks became 8 / 9 / 10 / 11. Appended:
   Task 12 = completeness report tree (A8), Task 13 = synonym suffix (A6), Task 14 = primary
   source + references (A9), Task 15 = Keys tab + index (A10). **Execution order** (per the
-  SDD ledger, not the numbers): 7 → 12 → 13 → 14 → 8 → 9 → 10 → 15 → 16 → 17 → 11. (Task 16 = A12+A14, Task 17 = A13.)
+  SDD ledger, not the numbers): 7 → 12 → 13 → 14 → 8 → 9 → 10 → 15 → 16 → 17 → 18 → 11. (Task 18 = A15.) (Task 16 = A12+A14, Task 17 = A13.)

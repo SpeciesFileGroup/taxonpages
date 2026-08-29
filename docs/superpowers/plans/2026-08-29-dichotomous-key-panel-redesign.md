@@ -2945,6 +2945,68 @@ git commit -m "keys: header chips (couplets/taxa) from the key tree, completenes
 
 ---
 
+## Task 18: Primary source falls back to the root lead's citation (Amendment A15)
+
+> **Execution order:** after Task 17, before Task 11.
+
+**Files:** Modify `modules/keys/KeyView.vue`, `modules/keys/components/KeyHeader.vue`, `modules/keys/KeysIndex.vue`.
+
+**Why:** `metadata.origin_citation` is only set when a root-lead citation is flagged
+`is_original: true` in TaxonWorks. Curators often don't flag it, so the "Primary source" line
+vanishes even though the citation exists (returned by `GET /citations?citation_object_type=Lead&citation_object_id[]=<root lead id>` — the key id equals its root lead id).
+
+- [ ] **Step 1 — `KeyView.vue`: `primaryCitation` computed + thread it through**
+
+`rootId` is exported from `lib/tree.js`. Add:
+
+```js
+import { buildNodes, orderedCouplets, childChoices, rootId, terminalOtus } from './lib/tree.js'
+// ...
+const primaryCitation = computed(() => {
+  if (meta.value.originCitation) return meta.value.originCitation
+  if (!Object.keys(nodes.value).length) return null
+  const rootCites = citations.value[String(rootId(nodes.value))] || []
+  return rootCites[0]?.full || null
+})
+```
+
+- `<KeyHeader … :primary-citation="primaryCitation" />` (keep `:meta` / `:completeness` / `:references`).
+- In the `references` computed, replace the two `meta.value.originCitation` references with
+  `primaryCitation.value` (the string used to flag `isPrimary` and to prepend when missing).
+
+- [ ] **Step 2 — `KeyHeader.vue`: render from `primaryCitation`**
+
+Add prop `primaryCitation: { type: String, default: null }`. The "Primary source:" `<p>` becomes
+`v-if="primaryCitation"` and its inner `v-html="sanitizeAndLinkifyHtml(primaryCitation)"`; the
+`showCitation` `VModal` body `v-html="sanitizeAndLinkifyHtml(primaryCitation)"`. (Drop the
+direct `meta.originCitation` uses in this component — `primaryCitation` supersedes them.)
+
+- [ ] **Step 3 — `KeysIndex.vue`: root-lead citation fallback**
+
+After the `/leads` list + per-key metadata calls, one batched call:
+
+```js
+const cq = new URLSearchParams()
+cq.set('citation_object_type', 'Lead')
+cq.append('extend[]', 'source')
+rows.forEach((r) => cq.append('citation_object_id[]', r.id))
+const citesByLead = {}
+try {
+  const { data: cites } = await makeAPIRequest.get(`/citations?${cq.toString()}`)
+  for (const c of Array.isArray(cites) ? cites : []) {
+    (citesByLead[String(c.citation_object_id)] ||= []).push(c)
+  }
+} catch (e) { /* leave empty */ }
+```
+
+Then per card: `citation: metas[i].origin_citation || citesByLead[String(r.id)]?.[0]?.source?.cached || null`.
+
+- [ ] **Step 4** — `npm run build` and `npm run build:ssr` → green.
+- [ ] **Step 5** — browser: `#/key/3605` and `#/keys` show "Primary source: Flach, K. (1907) …"; `#/key/3977` unchanged.
+- [ ] **Step 6** — commit: `keys: primary source falls back to the root lead's citation when not flagged original (A15)`.
+
+---
+
 ## Self-review notes
 
 - **Spec §3.1 file layout** — Tasks 1–10 create every file listed except `useKey.js`, which was intentionally dropped: its role (fetch orchestration + derived data) lives in `KeyView.vue` + `lib/tree.js`, matching this repo's "component fetches, `lib/` transforms" pattern (prior plan). No separate store is needed — the Guided view holds no navigation state at all; the current couplet is a pure function of `route.params.couplet` via `coupletByNumber`.
