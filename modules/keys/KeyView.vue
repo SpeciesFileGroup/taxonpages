@@ -4,17 +4,14 @@
     <div v-else-if="error" class="text-danger">Could not load key {{ route.params.id }}.</div>
     <div v-else>
       <KeyHeader :meta="meta" />
-      <ol>
-        <li v-for="c in couplets" :key="c.id" class="mb-3">
-          <strong>Couplet {{ c.coupletNumber }}</strong>
-          <ul class="ml-4 list-disc">
-            <li v-for="choice in childrenOf(c.id)" :key="choice.id">
-              {{ choice.text }}
-              — <em>{{ choice.isCouplet ? 'couplet ' + choice.coupletNumber : choice.targetLabel }}</em>
-            </li>
-          </ul>
-        </li>
-      </ol>
+      <FullKeyView
+        :key-id="route.params.id"
+        :couplet="route.params.couplet ?? null"
+        :couplets="couplets"
+        :nodes="nodes"
+        :citations="citations"
+        @open-citation="() => {}"
+      />
     </div>
   </div>
 </template>
@@ -25,6 +22,7 @@ import { useRoute } from 'vue-router'
 import { makeAPIRequest } from '@/utils/request'
 import { buildNodes, orderedCouplets, childChoices } from './lib/tree.js'
 import KeyHeader from './components/KeyHeader.vue'
+import FullKeyView from './components/FullKeyView.vue'
 
 const route = useRoute()
 
@@ -36,6 +34,7 @@ const nodes = ref({})
 
 const couplets = computed(() => orderedCouplets(nodes.value))
 const childrenOf = (id) => childChoices(id, nodes.value)
+const citations = ref({})
 
 const meta = computed(() => ({
   title: rawMeta.value.title || listMeta.value.text || '',
