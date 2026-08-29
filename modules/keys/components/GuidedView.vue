@@ -12,7 +12,7 @@
     </nav>
 
     <div class="flex items-baseline justify-between mb-3">
-      <h2 class="text-lg font-semibold text-secondary-content">Couplet {{ current.coupletNumber }}</h2>
+      <h2 class="text-lg font-semibold text-base-content">Couplet {{ current.coupletNumber }}</h2>
       <RouterLink
         v-if="parentCouplet"
         :to="to(parentCouplet.coupletNumber)"

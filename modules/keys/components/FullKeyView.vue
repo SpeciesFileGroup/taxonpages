@@ -11,7 +11,7 @@
         : ''"
     >
       <div class="flex gap-3">
-        <span class="font-semibold text-secondary-content shrink-0 tabular-nums">
+        <span class="font-semibold text-secondary shrink-0 tabular-nums">
           {{ couplet.coupletNumber }}
         </span>
         <div class="flex-1">
