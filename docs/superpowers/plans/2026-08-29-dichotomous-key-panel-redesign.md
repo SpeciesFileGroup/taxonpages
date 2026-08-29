@@ -2166,6 +2166,492 @@ git commit -m "keys: module README and publish notes"
 
 ---
 
+## Task 12: Completeness report — grouped, linked, synonym-aware taxon listing (Amendment A8)
+
+> **Execution order:** runs after Task 7, **before Task 8**. Depends on Task 7's
+> `lib/completeness.js` (`finestRank`) and its `KeyView.loadCompleteness` scaffolding.
+
+**Asked (A8):** the completeness report should also list the **included** species (not only
+missing), every listed taxon a **new-tab** link to its OTU page, and the whole listing
+presented like the OTU page's "Descendants" tab — **grouped by subgenus, synonyms shown,
+sorted**.
+
+**Files:**
+- Modify: `modules/keys/lib/completeness.js` (add `buildCompletenessReport`, pure, Node-tested)
+- Modify: `modules/keys/KeyView.vue` (`loadCompleteness` → fetch synonyms + OTU ids, call the new builder, `provide` a synonymy map for Task 13)
+- Create: `modules/keys/components/CompletenessReport.vue`
+- Modify: `modules/keys/components/KeyHeader.vue` (modal body → `<CompletenessReport>`)
+- Test: throwaway `/tmp/keyreport.test.mjs`
+
+**Interfaces:**
+- `buildCompletenessReport({ scopeRank, descendants, terminalTnIds, tnIdToOtuId, outOfScopeTerminals }): Report`
+  - `scopeRank: string` — rank of the key's scope taxon (e.g. `'genus'`)
+  - `descendants: Array<{ id, parentId, rank, name, authorYear, valid, validId }>` — every
+    descendant of the scope taxon **including synonyms** (`valid:false`, `validId` = the
+    valid taxon-name id it points at); `name` is the bare `cached`, `authorYear` the
+    `cached_author_year`
+  - `terminalTnIds: number[]` — valid taxon-name ids the key keys out (synonym terminals
+    already folded to their valid id)
+  - `tnIdToOtuId: Record<number, number>` — taxon-name id → an OTU id (for links); may be
+    partial
+  - `outOfScopeTerminals: Array<{ label, otuId }>` — key terminals not under the scope taxon
+  - **Report** = `{ targetRank, expectedCount, coveredCount, missing: string[], outOfScope: string[], isComplete, groups, ungrouped }`
+    — the first six keep `assessCompleteness`'s contract (so `KeyHeader`'s chip is unchanged);
+    `missing` / `outOfScope` strings carry authorship (A5).
+    - `groups: Array<{ taxon: TaxRef, members: Member[] }>` — one per grouping-rank taxon
+      (the rank between `scopeRank` and `targetRank` that actually parents target-rank taxa),
+      sorted by `taxon.name`
+    - `ungrouped: Member[]` — target-rank taxa whose parent is the scope itself
+    - `Member = { taxon: TaxRef, status: 'included'|'missing', synonyms: TaxRef[] }`, members
+      sorted by `taxon.name`
+    - `TaxRef = { id, otuId: number|null, name, authorYear }`
+- `CompletenessReport.vue` props `{ report: Object }`.
+- `KeyView` adds `provide('keySynonymy', <ref/computed of Record<otuId,{validName}>>)` for
+  Task 13 (built from `descendants` synonyms whose valid target is a key terminal / any
+  terminal OTU that resolves to a synonym name).
+
+- [ ] **Step 1: Write the failing test** — `/tmp/keyreport.test.mjs`
+
+```js
+import assert from 'node:assert/strict'
+import { buildCompletenessReport } from '/home/jakobj/Data/01Aktuelle_Projekte/0_TaxonWorks/TaxonPagesDev/taxa/modules/keys/lib/completeness.js'
+
+// genus "Aus" -> 2 subgenera, 3 species, 1 synonym of species 12
+const descendants = [
+  { id: 20, parentId: 1,  rank: 'subgenus', name: 'Aus (Aus)',  authorYear: 'L., 1900', valid: true,  validId: 20 },
+  { id: 21, parentId: 1,  rank: 'subgenus', name: 'Aus (Bus)',  authorYear: 'L., 1901', valid: true,  validId: 21 },
+  { id: 11, parentId: 20, rank: 'species',  name: 'Aus aus',    authorYear: '(Fabr., 1777)', valid: true, validId: 11 },
+  { id: 12, parentId: 20, rank: 'species',  name: 'Aus bus',    authorYear: 'Voss, 1937',    valid: true, validId: 12 },
+  { id: 13, parentId: 21, rank: 'species',  name: 'Aus cus',    authorYear: 'Heller, 1923',  valid: true, validId: 13 },
+  { id: 99, parentId: 20, rank: 'species',  name: 'Aus vetus',  authorYear: 'Old, 1850',     valid: false, validId: 12 }
+]
+const r = buildCompletenessReport({
+  scopeRank: 'genus',
+  descendants,
+  terminalTnIds: [11, 13],                 // key keys out aus + cus, NOT bus
+  tnIdToOtuId: { 11: 511, 12: 512, 13: 513, 20: 520, 21: 521, 99: 599 },
+  outOfScopeTerminals: [{ label: 'Xus xus L.', otuId: 700 }]
+})
+
+assert.equal(r.targetRank, 'species')
+assert.equal(r.expectedCount, 3)
+assert.equal(r.coveredCount, 2)
+assert.deepEqual(r.missing, ['Aus bus Voss, 1937'])
+assert.deepEqual(r.outOfScope, ['Xus xus L.'])
+assert.equal(r.isComplete, false)
+
+// grouped by subgenus, sorted
+assert.deepEqual(r.groups.map((g) => g.taxon.name), ['Aus (Aus)', 'Aus (Bus)'])
+const ausGrp = r.groups[0]
+assert.deepEqual(ausGrp.members.map((m) => [m.taxon.name, m.status]),
+  [['Aus aus', 'included'], ['Aus bus', 'missing']])
+assert.equal(ausGrp.members[0].taxon.otuId, 511)
+// synonym attached to its valid species, carries its own otuId + authorship
+assert.deepEqual(ausGrp.members[1].synonyms.map((s) => [s.name, s.authorYear, s.otuId]),
+  [['Aus vetus', 'Old, 1850', 599]])
+assert.deepEqual(r.groups[1].members.map((m) => [m.taxon.name, m.status]), [['Aus cus', 'included']])
+assert.equal(r.ungrouped.length, 0)
+
+console.log('All keyreport tests passed.')
+```
+
+- [ ] **Step 2: Run it — expect FAIL** (`buildCompletenessReport` not exported).
+
+- [ ] **Step 3: Implement `buildCompletenessReport` in `modules/keys/lib/completeness.js`**
+
+Append (reuse the file's existing `normRank` / `finestRank`):
+
+```js
+function taxRef(d, tnIdToOtuId) {
+  return { id: d.id, otuId: tnIdToOtuId[d.id] ?? null, name: d.name, authorYear: d.authorYear || '' }
+}
+const authored = (d) => [d.name, d.authorYear].filter(Boolean).join(' ')
+
+export function buildCompletenessReport({
+  scopeRank, descendants, terminalTnIds, tnIdToOtuId = {}, outOfScopeTerminals = []
+}) {
+  const descs = Array.isArray(descendants) ? descendants : []
+  const termSet = new Set((terminalTnIds || []).filter((x) => x != null))
+  const byId = new Map(descs.map((d) => [d.id, d]))
+
+  const valid = descs.filter((d) => d.valid)
+  const targetRank = finestRank(
+    valid.filter((d) => termSet.has(d.id)).map((d) => d.rank)
+  ) || finestRank(valid.map((d) => d.rank))
+  if (!targetRank) return null
+
+  const norm = (r) => normRank(r)
+  const scope = norm(scopeRank)
+
+  const synsByValidId = new Map()
+  for (const d of descs) {
+    if (!d.valid && d.validId != null) {
+      if (!synsByValidId.has(d.validId)) synsByValidId.set(d.validId, [])
+      synsByValidId.get(d.validId).push(taxRef(d, tnIdToOtuId))
+    }
+  }
+
+  const targetTaxa = valid.filter((d) => norm(d.rank) === targetRank)
+  const isIncluded = (d) =>
+    termSet.has(d.id) || (synsByValidId.get(d.id) || []).some((s) => termSet.has(s.id))
+
+  const mkMember = (d) => ({
+    taxon: taxRef(d, tnIdToOtuId),
+    status: isIncluded(d) ? 'included' : 'missing',
+    synonyms: (synsByValidId.get(d.id) || []).sort((a, b) => a.name.localeCompare(b.name))
+  })
+
+  // grouping rank = parent rank of target taxa when that parent is finer than scope
+  const groupMap = new Map() // parentId -> { taxon, members }
+  const ungrouped = []
+  for (const d of targetTaxa) {
+    const parent = d.parentId != null ? byId.get(d.parentId) : null
+    if (parent && norm(parent.rank) !== scope) {
+      if (!groupMap.has(parent.id)) groupMap.set(parent.id, { taxon: taxRef(parent, tnIdToOtuId), members: [] })
+      groupMap.get(parent.id).members.push(mkMember(d))
+    } else {
+      ungrouped.push(mkMember(d))
+    }
+  }
+  const bySortName = (a, b) => a.taxon.name.localeCompare(b.taxon.name)
+  const groups = [...groupMap.values()]
+    .map((g) => ({ ...g, members: g.members.sort(bySortName) }))
+    .sort((a, b) => a.taxon.name.localeCompare(b.taxon.name))
+  ungrouped.sort(bySortName)
+
+  const covered = targetTaxa.filter(isIncluded)
+  const missing = targetTaxa.filter((d) => !isIncluded(d)).map(authored)
+    .sort((a, b) => a.localeCompare(b))
+  const outOfScope = (outOfScopeTerminals || []).map((t) => t.label)
+    .sort((a, b) => String(a).localeCompare(String(b)))
+
+  return {
+    targetRank,
+    expectedCount: targetTaxa.length,
+    coveredCount: covered.length,
+    missing,
+    outOfScope,
+    isComplete: missing.length === 0 && outOfScope.length === 0,
+    groups,
+    ungrouped
+  }
+}
+```
+
+- [ ] **Step 4: Run it — expect PASS** (`All keyreport tests passed.`).
+
+- [ ] **Step 5: Rework `loadCompleteness` in `modules/keys/KeyView.vue`**
+
+- Drop `validity=true` from the descendants call so synonyms come back:
+  `GET /taxon_names?taxon_name_id[]=<scope>&descendants=true&per=500`.
+- Map each descendant row to `{ id, parentId: parent_id, rank, name: cached || name, authorYear: cached_author_year, valid: cached_is_valid !== false, validId: cached_valid_taxon_name_id }`.
+- After the terminal-taxon-name fetch, also resolve OTU ids for the links:
+  `GET /otus?taxon_name_id[]=<every descendant id, de-duped>&per=500` → build
+  `tnIdToOtuId` (`row.taxon_name_id → row.id`; first wins).
+- `scopeRank` = the scope taxon-name's `rank` (from the `/taxon_names/:scopeTnId` you can get
+  it in the descendants response — the scope row is usually included — or one extra
+  `GET /taxon_names/:scopeTnId`).
+- `outOfScopeTerminals`: for each terminal OTU whose resolved taxon-name id is **not** among
+  `descendants`, `{ label: <the key lead's target_label>, otuId: <the terminal OTU id> }`
+  (thread `target_label` through from `nodes`).
+- `completeness.value = buildCompletenessReport({ scopeRank, descendants, terminalTnIds, tnIdToOtuId, outOfScopeTerminals })`.
+  (`assessCompleteness` may stay exported/tested but `KeyView` now uses the richer builder;
+  its first six fields keep the chip working unchanged.)
+- Build `synonymyByOtuId`: `{ [terminalOtuId]: { validName } }` for every terminal OTU whose
+  taxon-name is a synonym (`valid === false`) — `validName` = `authored(byId.get(validId))`.
+  `provide('keySynonymy', computed(() => synonymyByOtuId.value))` (a `ref`, updated in
+  `loadCompleteness`, defaulting to `{}`).
+- Keep the whole body in one `try/catch → completeness.value = null` (and move the pre-`try`
+  lines inside `try`, addressing Task 7's deferred minor).
+
+- [ ] **Step 6: Create `modules/keys/components/CompletenessReport.vue`**
+
+```vue
+<template>
+  <div class="text-sm [&_i]:italic space-y-3">
+    <p class="text-base-content">
+      Keyed at <strong>{{ report.targetRank }}</strong> level —
+      {{ report.coveredCount }} of {{ report.expectedCount }} in the key's scope
+      <span v-if="report.isComplete" class="text-base-soft">(complete)</span>.
+    </p>
+
+    <section v-for="g in report.groups" :key="g.taxon.id">
+      <h4 class="font-medium text-base-content">
+        <TaxLink :taxon="g.taxon" />
+      </h4>
+      <ul class="ml-4 mt-1 space-y-1">
+        <li v-for="m in g.members" :key="m.taxon.id">
+          <span :class="m.status === 'included' ? 'text-base-content' : 'text-danger'">
+            <span aria-hidden="true">{{ m.status === 'included' ? '✓' : '✗' }}</span>
+            <TaxLink :taxon="m.taxon" />
+          </span>
+          <ul v-if="m.synonyms.length" class="ml-5 text-base-soft">
+            <li v-for="s in m.synonyms" :key="s.id">= <TaxLink :taxon="s" /></li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+
+    <section v-if="report.ungrouped.length">
+      <ul class="ml-4 space-y-1">
+        <li v-for="m in report.ungrouped" :key="m.taxon.id">
+          <span :class="m.status === 'included' ? 'text-base-content' : 'text-danger'">
+            <span aria-hidden="true">{{ m.status === 'included' ? '✓' : '✗' }}</span>
+            <TaxLink :taxon="m.taxon" />
+          </span>
+        </li>
+      </ul>
+    </section>
+
+    <section v-if="report.outOfScope.length">
+      <p class="text-base-soft">Referenced but outside the key's scope:</p>
+      <ul class="ml-4 list-disc">
+        <li v-for="n in report.outOfScope" :key="n">{{ n }}</li>
+      </ul>
+    </section>
+  </div>
+</template>
+
+<script setup>
+import { h } from 'vue'
+
+defineProps({ report: { type: Object, required: true } })
+
+// tiny inline component: new-tab OTU link when we have an otuId, else plain italic name
+const TaxLink = (props) => {
+  const label = [props.taxon.name, props.taxon.authorYear].filter(Boolean).join(' ')
+  if (props.taxon.otuId) {
+    return h(
+      resolveRouterLink(),
+      { to: { name: 'otus-id', params: { id: props.taxon.otuId } }, target: '_blank', rel: 'noopener',
+        class: 'hover:underline hover:text-secondary' },
+      () => [h('i', props.taxon.name), props.taxon.authorYear ? ' ' + props.taxon.authorYear : '']
+    )
+  }
+  return h('span', {}, [h('i', props.taxon.name), props.taxon.authorYear ? ' ' + props.taxon.authorYear : ''])
+}
+</script>
+```
+
+> **Note:** `RouterLink` is a global component — resolve it with `resolveComponent('RouterLink')`
+> inside the functional `TaxLink` (import `resolveComponent` from `vue`; replace the
+> `resolveRouterLink()` placeholder). If a functional component with `h` proves fiddly, make
+> `TaxLink` a normal `<script setup>` child component file
+> (`modules/keys/components/TaxRefLink.vue`) with a `taxon` prop and the same
+> `RouterLink target="_blank"` / plain-span fallback — either is fine; keep it in `modules/keys/`.
+
+- [ ] **Step 7: Point `KeyHeader.vue`'s completeness modal at the component**
+
+Replace the modal body (the inline "Keyed at … / Missing / outOfScope" markup added in Task 7)
+with:
+
+```vue
+<VModal v-if="showCompleteness && completeness" @close="showCompleteness = false">
+  <template #header><div class="text-sm font-medium">Completeness</div></template>
+  <div class="px-4 pb-4">
+    <CompletenessReport :report="completeness" />
+  </div>
+</VModal>
+```
+
+Add `import CompletenessReport from './CompletenessReport.vue'`. The chip itself is unchanged
+(still reads `completeness.isComplete` / `coveredCount` / `expectedCount` / `targetRank`).
+
+- [ ] **Step 8: Re-run the throwaway test, delete it**
+
+```bash
+node /tmp/keyreport.test.mjs   # All keyreport tests passed.
+rm /tmp/keyreport.test.mjs
+```
+
+- [ ] **Step 9: Compile check** — `npm run build` and `npm run build:ssr` → succeed.
+
+- [ ] **Step 10: Browser check**
+
+`npm run dev`, `http://localhost:5173/#/key/3977`, click the completeness chip.
+Expected: the report lists **all** species of *Adosomus*, grouped under the three subgenera
+(*Adosomus (Adosomus)*, *Adosomus (Pseudoadosomus)*, *Adosomus (Xeradosomus)*), each species
+prefixed ✓ (in the key) or ✗ (missing — *albisquamus*, *grigorievi*), with authorship, and
+synonyms listed under `=` beneath their valid species. Every name that has an OTU is a link
+that opens the taxon page in a **new tab**.
+
+- [ ] **Step 11: Commit**
+
+```bash
+git add modules/keys/
+git commit -m "keys: completeness report — grouped by subgenus, synonyms, new-tab links (A8)"
+```
+
+---
+
+## Task 13: Synonym suffix on couplet target names (Amendment A6)
+
+> **Execution order:** runs after Task 12 (consumes the `keySynonymy` map it `provide`s).
+
+**Asked (A6):** when a lead references a synonymized name, show it as written in the key (the
+synonym), but also indicate the valid name.
+
+**Files:**
+- Modify: `modules/keys/components/TaxonLink.vue`
+
+**Interfaces:** consumes `inject('keySynonymy')` — `Record<otuId, { validName: string }>`,
+provided by `KeyView` (Task 12). No prop changes; `TaxonLink` already receives `id` (the OTU
+id) and `label`.
+
+- [ ] **Step 1: Add the valid-name suffix to `modules/keys/components/TaxonLink.vue`**
+
+```vue
+<template>
+  <span>
+    <RouterLink
+      :to="{ name: 'otus-id', params: { id } }"
+      target="_blank"
+      rel="noopener"
+      class="italic text-base-content hover:underline hover:text-secondary"
+    >{{ label }}</RouterLink><span
+      v-if="validName"
+      class="text-base-soft"
+    > [= <i>{{ validName }}</i>]</span>
+  </span>
+</template>
+
+<script setup>
+import { inject, computed } from 'vue'
+
+const props = defineProps({
+  id: { type: [Number, String], required: true },
+  label: { type: String, required: true }
+})
+
+const synonymy = inject('keySynonymy', { value: {} })
+const validName = computed(() => synonymy.value?.[props.id]?.validName || '')
+</script>
+```
+
+(The `</RouterLink><span` on one line and the leading space *inside* the suffix span's text
+are deliberate — Vue whitespace-condense would otherwise drop the gap. See `CLAUDE.md`.)
+
+- [ ] **Step 2: Compile check** — `npm run build` and `npm run build:ssr` → succeed.
+
+- [ ] **Step 3: Browser check**
+
+If key #3977 has no synonym targets, temporarily hard-code a `keySynonymy` entry in `KeyView`
+(`synonymyByOtuId.value = { <some terminal otuId>: { validName: 'Test valid name' } }`) to
+confirm the suffix renders as `label [= *Test valid name*]` with the bracket muted, then
+remove it. Otherwise navigate to a key/couplet whose target is a known synonym.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add modules/keys/components/TaxonLink.vue
+git commit -m "keys: show valid name beside a synonymized couplet target (A6)"
+```
+
+---
+
+## Task 14: "Primary source" label + aggregated references list (Amendment A9)
+
+> **Execution order:** runs after Task 5 (needs the `citations` map); slot it after Task 13,
+> before Task 8.
+
+**Asked (A9):** the citation attached to the key's metadata should be labelled "primary
+source"; the other citations referenced across the couplets should also be viewable as a
+list.
+
+**Files:**
+- Modify: `modules/keys/KeyView.vue` (derive `allReferences` from the `citations` map)
+- Modify: `modules/keys/components/KeyHeader.vue` ("Primary source:" label + a "References
+  cited (N)" affordance and modal)
+
+**Interfaces:**
+- `KeyView` passes a new prop to `KeyHeader`: `references: Array<{ full: string, short: string, isPrimary: boolean }>` — every **distinct** source used anywhere in the key, deduped by `full` (the `source.cached` HTML string), sorted by `short` (locale). The key-level origin citation (`meta.originCitation`) is included with `isPrimary: true` (matched by string-equality of `full`; if it isn't among the couplet citations, prepend it).
+- `KeyHeader` gets prop `references: { type: Array, default: () => [] }`.
+
+- [ ] **Step 1: Derive `allReferences` in `modules/keys/KeyView.vue`**
+
+Add a computed (the `citations` ref is the `{ [leadId]: [{ id, short, full }] }` map from
+Task 5; `meta.originCitation` is the key-level HTML string):
+
+```js
+const references = computed(() => {
+  const byFull = new Map()
+  for (const list of Object.values(citations.value || {})) {
+    for (const c of list) {
+      if (c.full && !byFull.has(c.full)) byFull.set(c.full, { full: c.full, short: c.short, isPrimary: false })
+    }
+  }
+  const primary = meta.value.originCitation
+  if (primary) {
+    const existing = byFull.get(primary)
+    if (existing) existing.isPrimary = true
+    else byFull.set(primary, { full: primary, short: 'primary source', isPrimary: true })
+  }
+  return [...byFull.values()].sort((a, b) => String(a.short).localeCompare(String(b.short)))
+})
+```
+
+Pass it: `<KeyHeader class="flex-1" :meta="meta" :completeness="completeness" :references="references" />`.
+
+- [ ] **Step 2: "Primary source" label + references modal in `modules/keys/components/KeyHeader.vue`**
+
+- Prefix the existing origin-citation `<p>` with a faint label:
+
+```vue
+<p v-if="meta.originCitation" class="mt-2 text-sm text-base-content [&_i]:italic">
+  <span class="text-base-soft">Primary source: </span><span
+    class="cursor-pointer hover:underline"
+    role="button" tabindex="0"
+    @click="showCitation = true" @keydown.enter="showCitation = true" @keydown.space.prevent="showCitation = true"
+    v-html="meta.originCitation"
+  />
+</p>
+```
+
+(the whole citation stays clickable → the existing `showCitation` `VModal`.)
+
+- Add, in or just after the chip row, a references affordance shown when there is more than
+  just the primary:
+
+```vue
+<button
+  v-if="references.length > 1 || (references.length === 1 && !references[0].isPrimary)"
+  type="button"
+  class="mt-2 block text-sm text-base-soft hover:underline hover:text-secondary"
+  @click="showReferences = true"
+>References cited ({{ references.length }})</button>
+
+<VModal v-if="showReferences" @close="showReferences = false">
+  <template #header><div class="text-sm font-medium">References cited</div></template>
+  <ul class="px-4 pb-4 text-sm leading-relaxed space-y-2 [&_i]:italic">
+    <li v-for="(r, i) in references" :key="i">
+      <span v-if="r.isPrimary" class="text-base-soft">[primary] </span><span v-html="r.full" />
+    </li>
+  </ul>
+</VModal>
+```
+
+Add `const showReferences = ref(false)` and the `references` prop.
+
+- [ ] **Step 3: Compile check** — `npm run build` and `npm run build:ssr` → succeed.
+
+- [ ] **Step 4: Browser check**
+
+`http://localhost:5173/#/key/3977`. The header shows "Primary source: Voss, E. (1937) …".
+Key #3977 currently has a couplet citation only on couplet 1 (also Voss 1937) — so
+`references` dedupes to a single entry flagged primary, and the "References cited" button is
+**hidden** (nothing beyond the primary). Add a second distinct couplet citation in
+TaxonWorks (or temporarily inject one into `citations.value`) to see the button + modal list
+both sources, the primary tagged `[primary]`.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add modules/keys/
+git commit -m "keys: label the key citation 'Primary source' + aggregated references-cited list (A9)"
+```
+
+---
+
 ## Self-review notes
 
 - **Spec §3.1 file layout** — Tasks 1–10 create every file listed except `useKey.js`, which was intentionally dropped: its role (fetch orchestration + derived data) lives in `KeyView.vue` + `lib/tree.js`, matching this repo's "component fetches, `lib/` transforms" pattern (prior plan). No separate store is needed — the Guided view holds no navigation state at all; the current couplet is a pure function of `route.params.couplet` via `coupletByNumber`.

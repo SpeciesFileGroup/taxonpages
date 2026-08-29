@@ -125,8 +125,8 @@ species-level key is not marked incomplete for lacking subspecies).
 - `lib/completeness.js` has no Vue / network imports; its Node test covered finest-rank
   selection, the valid-only filter, missing, out-of-scope, and the complete case.
 
-**Status:** built (Task 7 commit `b195216`) — in controller review; needs A5 folded in and
-the browser confirmation above.
+**Status:** verified in code — Task 7 complete (commits `b195216`..`abc4330`, review clean
+after 1 fix round). Live-chip browser confirmation still owed (final walkthrough).
 
 ---
 
@@ -145,7 +145,8 @@ scope" lists carry authorship (e.g. *Adosomus (Xeradosomus) grigorievi* (Suvorov
 **Review check:** the completeness report modal lists names **with** their author + year, not
 bare binomials.
 
-**Status:** planned (fold into Task 7 during review).
+**Status:** done — Task 7 fix round 1 (commit `abc4330`), re-review confirmed both name maps
+build `[cached, cached_author_year].filter(Boolean).join(' ')`.
 
 ---
 
@@ -163,16 +164,15 @@ muted `[= <i>valid name</i>]` suffix after the linked name (built as a span to s
 whitespace-condensing). No changes to `FullKeyView` / `ReachableTaxa` / `GuidedChoice`.
 Completeness (A4) already counts a synonym terminal toward its valid name.
 
-**Task:** 12.
+**Task:** 13 (consumes the `keySynonymy` map that Task 12 builds & `provide`s).
 
 **Review check:**
 - A couplet whose target OTU is a junior synonym renders "*Name as in key* Author
   [= *Valid name*]", the valid part muted.
 - A valid target renders with no suffix.
 - The completeness chip does not double-count or mark such a taxon missing.
-- `lib/synonymy.js` (or the helper) is pure and Node-tested.
 
-**Status:** planned (Task 12).
+**Status:** planned (Task 13).
 
 ---
 
@@ -202,6 +202,59 @@ on couplet change is desirable.
 
 ---
 
+## A8 — Completeness report: full grouped, linked, synonym-aware listing
+
+**Asked:** the completeness report should also list the *included* species (not only missing);
+every listed taxon a **new-tab** link to its taxon page; and the whole listing presented like
+the OTU page's "Descendants" tab — grouped by subgenus, with synonyms, sorted.
+
+**Decision:** `lib/completeness.js` gains `buildCompletenessReport({ scopeRank, descendants,
+terminalTnIds, tnIdToOtuId, outOfScopeTerminals })` (pure, Node-tested) → the existing flat
+fields (so the chip is unchanged) **plus** `groups` (one per grouping-rank taxon — the rank
+between scope and target, i.e. subgenus here — each with its target-rank `members` marked
+`included`/`missing` and their `synonyms`) and `ungrouped`. `KeyView.loadCompleteness` drops
+the `validity=true` filter (so synonyms come back), resolves an OTU id per taxon-name
+(`GET /otus?taxon_name_id[]=…`) for the links, and also `provide`s a `keySynonymy` map for
+A6/Task 13. New `CompletenessReport.vue` renders the tree in the header modal; every name
+with an OTU is a `RouterLink target="_blank"` to `otus-id`.
+
+**Task:** 12.
+
+**Review check:**
+- Click the completeness chip on `#/key/3977`: all *Adosomus* species listed, grouped under
+  the three subgenera, each ✓ (in key) / ✗ (missing), with authorship, synonyms indented
+  under `=` beneath their valid species.
+- Every name that has an OTU opens the taxon page in a **new tab**.
+- `buildCompletenessReport` is pure; its Node test covers grouping, member status,
+  synonym attachment, sorting, and out-of-scope.
+
+**Status:** planned (Task 12).
+
+---
+
+## A9 — "Primary source" label + aggregated references list
+
+**Asked:** the citation attached to the key metadata should be labelled "primary source";
+the other citations referenced across the couplets should also be viewable as a list.
+
+**Decision:** `KeyView` derives `references` — every **distinct** source used anywhere in the
+key (deduped by the `source.cached` HTML string, sorted), with the key-level origin citation
+flagged `isPrimary`. `KeyHeader` prefixes the origin citation with a faint "Primary source: "
+label, and — when there are couplet citations beyond the primary — shows a "References cited
+(N)" button opening a `VModal` list (primary tagged `[primary]`).
+
+**Task:** 14.
+
+**Review check:**
+- Header reads "Primary source: Voss, E. (1937) …".
+- With ≥2 distinct sources across the key, a "References cited (N)" button opens a modal
+  listing them all, the primary marked.
+- With only the primary (key #3977's current data), the button is hidden.
+
+**Status:** planned (Task 14).
+
+---
+
 ## Cross-cutting notes (not amendments, context for review)
 
 - **SPA is hash-mode** (`config/router.yml` → `hash_mode: true`): test the SPA at
@@ -210,7 +263,8 @@ on couplet change is desirable.
 - **Spec wording:** "no hash anywhere" (spec §3.2/§3.3) means no ad-hoc `#couplet-N` fragment
   *state*; the SPA router still uses `#/` as its history transport. (One-line spec
   clarification owed at finish.)
-- **Task renumbering:** the completeness check was inserted as Task 7; the original
-  visual-pass / PanelKeys / interactiveKeys / README tasks became 8 / 9 / 10 / 11. The
-  synonym task is appended as Task 12. Execution order (per the SDD ledger): 7 → 12 → 8 → 9 →
-  10 → 11.
+- **Task numbering:** the completeness check was inserted as Task 7; the original
+  visual-pass / PanelKeys / interactiveKeys / README tasks became 8 / 9 / 10 / 11. Appended:
+  Task 12 = completeness report tree (A8), Task 13 = synonym suffix (A6), Task 14 = primary
+  source + references (A9). **Execution order** (per the SDD ledger, not the numbers):
+  7 → 12 → 13 → 14 → 8 → 9 → 10 → 11.
