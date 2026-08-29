@@ -1,0 +1,9 @@
+{
+  "name": "taxonpages-module-keys",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Dichotomous (couplet) key renderer for TaxonPages.",
+  "taxonpages": { "type": "module", "entry": "./router/index.js" },
+  "peerDependencies": { "@sfgrp/taxonpages": "*", "vue": "^3" }
+}
