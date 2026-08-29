@@ -16,15 +16,14 @@
 
     <p v-if="meta.description" class="mt-2 text-base-content">{{ meta.description }}</p>
 
-    <p
-      v-if="meta.originCitation"
-      class="mt-2 text-sm text-base-content [&_i]:italic cursor-pointer hover:underline"
-      role="button"
-      tabindex="0"
-      @click="showCitation = true"
-      @keydown.enter="showCitation = true"
-      v-html="meta.originCitation"
-    />
+    <p v-if="meta.originCitation" class="mt-2 text-sm text-base-content [&_i]:italic">
+      <span class="text-base-soft">Primary source: </span><span
+        class="cursor-pointer hover:underline"
+        role="button" tabindex="0"
+        @click="showCitation = true" @keydown.enter="showCitation = true" @keydown.space.prevent="showCitation = true"
+        v-html="meta.originCitation"
+      />
+    </p>
 
     <p v-if="meta.attribution" class="mt-1 text-sm text-base-soft">{{ attributionText }}</p>
 
@@ -53,6 +52,13 @@
         : `${completeness.coveredCount} / ${completeness.expectedCount} ${completeness.targetRank}` }}</button>
     </div>
 
+    <button
+      v-if="references.length > 1 || (references.length === 1 && !references[0].isPrimary)"
+      type="button"
+      class="mt-2 block text-sm text-base-soft hover:underline hover:text-secondary"
+      @click="showReferences = true"
+    >References cited ({{ references.length }})</button>
+
     <VModal v-if="showCitation" @close="showCitation = false">
       <template #header><div class="text-sm font-medium">Reference</div></template>
       <div class="px-4 pb-4 text-sm leading-relaxed [&_i]:italic" v-html="meta.originCitation" />
@@ -64,6 +70,15 @@
         <CompletenessReport :report="completeness" />
       </div>
     </VModal>
+
+    <VModal v-if="showReferences" @close="showReferences = false">
+      <template #header><div class="text-sm font-medium">References cited</div></template>
+      <ul class="px-4 pb-4 text-sm leading-relaxed space-y-2 [&_i]:italic">
+        <li v-for="(r, i) in references" :key="i">
+          <span v-if="r.isPrimary" class="text-base-soft">[primary] </span><span v-html="r.full" />
+        </li>
+      </ul>
+    </VModal>
   </header>
 </template>
 
@@ -73,11 +88,13 @@ import CompletenessReport from './CompletenessReport.vue'
 
 const props = defineProps({
   meta: { type: Object, required: true },
-  completeness: { type: Object, default: null }
+  completeness: { type: Object, default: null },
+  references: { type: Array, default: () => [] }
 })
 
 const showCitation = ref(false)
 const showCompleteness = ref(false)
+const showReferences = ref(false)
 
 // attribution shape from TaxonWorks attribution_to_json is loosely specified; render a
 // best-effort string and never throw.

@@ -4,7 +4,7 @@
     <div v-else-if="error" class="text-danger">Could not load key {{ route.params.id }}.</div>
     <div v-else>
       <div class="flex items-start justify-between gap-4">
-        <KeyHeader class="flex-1" :meta="meta" :completeness="completeness" />
+        <KeyHeader class="flex-1" :meta="meta" :completeness="completeness" :references="references" />
         <FormatToggle v-model="format" class="mt-1 shrink-0 key-print-hide" />
       </div>
 
@@ -82,6 +82,22 @@ const meta = computed(() => ({
   coupletsCount: listMeta.value.couplets_count || null,
   otusCount: listMeta.value.otus_count || null
 }))
+
+const references = computed(() => {
+  const byFull = new Map()
+  for (const list of Object.values(citations.value || {})) {
+    for (const c of list) {
+      if (c.full && !byFull.has(c.full)) byFull.set(c.full, { full: c.full, short: c.short, isPrimary: false })
+    }
+  }
+  const primary = meta.value.originCitation
+  if (primary) {
+    const existing = byFull.get(primary)
+    if (existing) existing.isPrimary = true
+    else byFull.set(primary, { full: primary, short: 'primary source', isPrimary: true })
+  }
+  return [...byFull.values()].sort((a, b) => String(a.short).localeCompare(String(b.short)))
+})
 
 async function load(id) {
   loading.value = true
