@@ -2,7 +2,7 @@
   <div class="container mx-auto py-4">
     <VSpinner v-if="loading" />
     <div v-else-if="error" class="text-danger">Could not load key {{ route.params.id }}.</div>
-    <div v-else>
+    <div v-else class="rounded-lg border border-base-muted bg-base-foreground p-4 sm:p-6">
       <div class="flex items-start justify-between gap-4">
         <KeyHeader class="flex-1" :meta="meta" :completeness="completeness" :references="references" />
         <FormatToggle v-model="format" class="mt-1 shrink-0 key-print-hide" />
@@ -252,3 +252,11 @@ async function loadCompleteness(scopeOtuId, nodeMap) {
 
 watch(() => route.params.id, (id) => id && load(id), { immediate: true })
 </script>
+
+<style>
+@media print {
+  .key-print-hide { display: none !important; }
+  .container { max-width: none !important; }
+  a { text-decoration: none !important; color: inherit !important; }
+}
+</style>

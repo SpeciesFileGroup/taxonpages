@@ -4,7 +4,11 @@
       v-for="couplet in couplets"
       :key="couplet.id"
       :id="`couplet-${couplet.coupletNumber}`"
-      class="mb-5 scroll-mt-24"
+      :data-current="isCurrent(couplet) || null"
+      class="mb-5 scroll-mt-24 rounded transition-colors"
+      :class="isCurrent(couplet)
+        ? 'ring-2 ring-secondary ring-offset-2 ring-offset-base-foreground bg-secondary/5'
+        : ''"
     >
       <div class="flex gap-3">
         <span class="font-semibold text-secondary-content shrink-0 tabular-nums">
@@ -54,11 +58,18 @@
         </div>
       </div>
     </section>
+
+    <button
+      v-if="currentCoupletNumber"
+      type="button"
+      class="key-print-hide fixed bottom-4 right-4 z-40 flex items-center gap-1 rounded-full bg-primary text-primary-content text-sm px-3 py-2 shadow-lg hover:bg-primary/80"
+      @click="scrollToCouplet(currentCoupletNumber)"
+    >↑ Couplet {{ currentCoupletNumber }}</button>
   </div>
 </template>
 
 <script setup>
-import { watch, nextTick } from 'vue'
+import { watch, nextTick, computed } from 'vue'
 import { childChoices } from '../lib/tree.js'
 import LeadText from './LeadText.vue'
 import TaxonLink from './TaxonLink.vue'
@@ -84,11 +95,26 @@ function fromCouplet(couplet) {
   return parent && parent.isCouplet ? parent.coupletNumber : null
 }
 
+const currentCoupletNumber = computed(() =>
+  props.couplet != null && props.couplet !== '' ? String(props.couplet) : null
+)
+function isCurrent(couplet) {
+  return currentCoupletNumber.value != null &&
+    String(couplet.coupletNumber) === currentCoupletNumber.value
+}
+
 // When the URL names a couplet, bring its section into view (client only).
+// Deferred past the router's own scrollBehavior ({ top: 0 } on hashless nav) via
+// nextTick + double rAF, so our smooth scroll wins the race.
 function scrollToCouplet(n) {
-  if (n == null || typeof document === 'undefined') return
+  if (n == null || n === '' || typeof document === 'undefined') return
   nextTick(() => {
-    document.getElementById(`couplet-${n}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.getElementById(`couplet-${n}`)
+          ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      })
+    })
   })
 }
 watch(() => props.couplet, scrollToCouplet, { immediate: true })

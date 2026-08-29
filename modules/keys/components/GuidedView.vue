@@ -1,6 +1,6 @@
 <template>
   <div>
-    <nav v-if="trail.length > 1" class="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+    <nav v-if="trail.length > 1" class="key-print-hide mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
       <template v-for="(step, i) in trail" :key="step.id">
         <RouterLink
           :to="to(step.coupletNumber)"
@@ -16,7 +16,7 @@
       <RouterLink
         v-if="parentCouplet"
         :to="to(parentCouplet.coupletNumber)"
-        class="text-sm text-base-soft hover:underline hover:text-secondary"
+        class="key-print-hide text-sm text-base-soft hover:underline hover:text-secondary"
       >↑ back</RouterLink>
     </div>
 
