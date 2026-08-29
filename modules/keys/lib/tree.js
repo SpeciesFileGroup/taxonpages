@@ -57,6 +57,36 @@ export function orderedCouplets(nodes) {
   return out
 }
 
+// Every terminal (non-couplet) lead across the whole key that points at an OTU,
+// deduped by OTU id (first occurrence wins the label). Returns [{ id, label }].
+// Unlike descendantOtus this is not rooted at a node — it scans the entire tree.
+export function terminalOtus(nodes) {
+  const found = new Map()
+  for (const n of Object.values(nodes || {})) {
+    if (n.isCouplet || n.targetType !== '/api/v1/otus' || n.targetId == null) continue
+    if (!found.has(n.targetId)) {
+      found.set(n.targetId, { id: n.targetId, label: String(n.targetLabel || '') })
+    }
+  }
+  return [...found.values()]
+}
+
+// chains: an array of ancestor-id arrays, each ordered ROOT -> LEAF.
+// Returns the deepest (closest-to-leaf) id present in EVERY chain, or null when
+// there is no common id / no usable input. Empty/non-array chains are ignored.
+export function lowestCommonAncestor(chains) {
+  const valid = (Array.isArray(chains) ? chains : []).filter(
+    (c) => Array.isArray(c) && c.length
+  )
+  if (!valid.length) return null
+  const [first, ...rest] = valid
+  let lca = null
+  for (const id of first) {
+    if (rest.every((c) => c.includes(id))) lca = id
+  }
+  return lca
+}
+
 export function descendantOtus(nodeId, nodes) {
   const found = new Map()
   const walk = (id) => {

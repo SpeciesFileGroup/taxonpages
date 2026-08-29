@@ -39,7 +39,7 @@
 import { ref, computed, watch, onMounted, provide } from 'vue'
 import { useRoute } from 'vue-router'
 import { makeAPIRequest } from '@/utils/request'
-import { buildNodes, orderedCouplets, childChoices } from './lib/tree.js'
+import { buildNodes, orderedCouplets, childChoices, terminalOtus, lowestCommonAncestor } from './lib/tree.js'
 import KeyHeader from './components/KeyHeader.vue'
 import FullKeyView from './components/FullKeyView.vue'
 import GuidedView from './components/GuidedView.vue'
@@ -66,6 +66,7 @@ const listMeta = ref({})
 const nodes = ref({})
 
 const couplets = computed(() => orderedCouplets(nodes.value))
+const terminalOtuList = computed(() => terminalOtus(nodes.value))
 const childrenOf = (id) => childChoices(id, nodes.value)
 const citations = ref({})
 const activeCitation = ref(null)
@@ -78,9 +79,13 @@ const meta = computed(() => ({
   attribution: rawMeta.value.attribution || null,
   description: listMeta.value.description || null,
   otuId: listMeta.value.otu_id || null,
+  // key_updated_at / *_in_words is only in the public GET /leads row, never in
+  // GET /leads/key/:id — so this chip renders for public keys only (A13 Step 3).
   updatedInWords: listMeta.value.key_updated_at_in_words || null,
-  coupletsCount: listMeta.value.couplets_count || null,
-  otusCount: listMeta.value.otus_count || null
+  // couplets + taxa always come from the loaded key tree; the /leads row is only
+  // a fallback for the brief moment before nodes populate (A13 Step 1).
+  coupletsCount: couplets.value.length || listMeta.value.couplets_count || null,
+  otusCount: terminalOtuList.value.length || listMeta.value.otus_count || null
 }))
 
 const references = computed(() => {
@@ -143,25 +148,72 @@ async function loadCitations(leadIds) {
   }
 }
 
+// Batch-walk parent_id upward from the terminal taxon-names, one level per request,
+// and return the lowest common ancestor taxon-name id — the scope taxon of a key
+// that has no public /leads row (so no scope otu_id). null if it can't be resolved.
+async function resolveScopeFromTerminals(tnIds) {
+  const parentOf = new Map()
+  let frontier = [...new Set(tnIds)]
+  for (let level = 0; level < 15 && frontier.length; level++) {
+    const q = new URLSearchParams()
+    frontier.forEach((id) => q.append('taxon_name_id[]', id))
+    q.set('per', '500')
+    const { data } = await makeAPIRequest.get(`/taxon_names?${q.toString()}`)
+    const next = []
+    for (const r of Array.isArray(data) ? data : []) {
+      if (parentOf.has(r.id)) continue
+      parentOf.set(r.id, r.parent_id ?? null)
+      if (r.parent_id != null && !parentOf.has(r.parent_id)) next.push(r.parent_id)
+    }
+    frontier = [...new Set(next)]
+  }
+  // one root -> leaf ancestor chain per terminal
+  const chains = []
+  for (const start of new Set(tnIds)) {
+    const chain = []
+    const seen = new Set()
+    let cur = start
+    while (cur != null && !seen.has(cur)) {
+      seen.add(cur)
+      chain.push(cur)
+      cur = parentOf.has(cur) ? parentOf.get(cur) : null
+    }
+    chains.push(chain.reverse())
+  }
+  return lowestCommonAncestor(chains)
+}
+
 async function loadCompleteness(scopeOtuId, nodeMap) {
   try {
     completeness.value = null
     synonymyByOtuId.value = {}
 
     // key terminals that point at an OTU, deduped by OTU id (first target_label wins)
-    const termByOtuId = new Map()
-    for (const n of Object.values(nodeMap)) {
-      if (n.isCouplet || n.targetType !== '/api/v1/otus' || n.targetId == null) continue
-      if (!termByOtuId.has(n.targetId)) {
-        termByOtuId.set(n.targetId, { otuId: n.targetId, label: String(n.targetLabel || '') })
-      }
-    }
-    const terminals = [...termByOtuId.values()]
-    if (!scopeOtuId || !terminals.length) return
+    const terminals = terminalOtus(nodeMap).map((t) => ({ otuId: t.id, label: t.label }))
+    if (!terminals.length) return
 
-    // scope OTU -> its taxon-name id
-    const { data: scopeOtu } = await makeAPIRequest.get(`/otus/${scopeOtuId}`)
-    const scopeTnId = scopeOtu?.taxon_name_id
+    // terminal OTUs -> their taxon-name ids (resolved early: the non-public-key
+    // branch derives the scope taxon from these)
+    const oq = new URLSearchParams()
+    terminals.forEach((t) => oq.append('otu_id[]', t.otuId))
+    oq.set('per', '500')
+    const { data: otuRaw } = await makeAPIRequest.get(`/otus?${oq.toString()}`)
+    const otuIdToTnId = new Map()
+    for (const o of Array.isArray(otuRaw) ? otuRaw : []) {
+      if (o.taxon_name_id != null) otuIdToTnId.set(o.id, o.taxon_name_id)
+    }
+    const rawTnIds = [...new Set([...otuIdToTnId.values()])]
+    if (!rawTnIds.length) return
+
+    // scope taxon-name id: fast path from the public /leads row's scope OTU;
+    // otherwise the lowest common ancestor of the key's own terminals (A13 Step 2)
+    let scopeTnId = null
+    if (scopeOtuId) {
+      const { data: scopeOtu } = await makeAPIRequest.get(`/otus/${scopeOtuId}`)
+      scopeTnId = scopeOtu?.taxon_name_id || null
+    } else {
+      scopeTnId = await resolveScopeFromTerminals(rawTnIds)
+    }
     if (!scopeTnId) return
 
     // all descendants of the scope taxon INCLUDING synonyms (no validity filter)
@@ -189,18 +241,6 @@ async function loadCompleteness(scopeOtuId, nodeMap) {
       const { data: scopeTn } = await makeAPIRequest.get(`/taxon_names/${scopeTnId}`)
       scopeRank = scopeTn?.rank || null
     }
-
-    // terminal OTUs -> their taxon-name ids
-    const oq = new URLSearchParams()
-    terminals.forEach((t) => oq.append('otu_id[]', t.otuId))
-    oq.set('per', '500')
-    const { data: otuRaw } = await makeAPIRequest.get(`/otus?${oq.toString()}`)
-    const otuIdToTnId = new Map()
-    for (const o of Array.isArray(otuRaw) ? otuRaw : []) {
-      if (o.taxon_name_id != null) otuIdToTnId.set(o.id, o.taxon_name_id)
-    }
-    const rawTnIds = [...new Set([...otuIdToTnId.values()])]
-    if (!rawTnIds.length) return
 
     // resolve those taxon-names (validity + valid target) so synonym terminals fold to
     // their valid id
