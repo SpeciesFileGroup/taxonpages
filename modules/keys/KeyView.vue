@@ -46,7 +46,7 @@ import GuidedView from './components/GuidedView.vue'
 import FormatToggle from './components/FormatToggle.vue'
 import CoupletCitation from './components/CoupletCitation.vue'
 import { readFormat, writeFormat } from './lib/format.js'
-import { buildCompletenessReport } from './lib/completeness.js'
+import { buildCompletenessReport, finestRank } from './lib/completeness.js'
 
 const route = useRoute()
 
@@ -164,7 +164,7 @@ async function resolveScopeFromTerminals(tnIds) {
   for (let level = 0; level < 15 && frontier.length; level++) {
     const q = new URLSearchParams()
     frontier.forEach((id) => q.append('taxon_name_id[]', id))
-    q.set('per', '500')
+    q.set('per', '1000')
     const { data } = await makeAPIRequest.get(`/taxon_names?${q.toString()}`)
     const next = []
     for (const r of Array.isArray(data) ? data : []) {
@@ -203,7 +203,7 @@ async function loadCompleteness(scopeOtuId, nodeMap) {
     // branch derives the scope taxon from these)
     const oq = new URLSearchParams()
     terminals.forEach((t) => oq.append('otu_id[]', t.otuId))
-    oq.set('per', '500')
+    oq.set('per', '1000')
     const { data: otuRaw } = await makeAPIRequest.get(`/otus?${oq.toString()}`)
     const otuIdToTnId = new Map()
     for (const o of Array.isArray(otuRaw) ? otuRaw : []) {
@@ -223,13 +223,26 @@ async function loadCompleteness(scopeOtuId, nodeMap) {
     }
     if (!scopeTnId) return
 
-    // all descendants of the scope taxon INCLUDING synonyms (no validity filter)
-    const dq = new URLSearchParams()
-    dq.append('taxon_name_id[]', scopeTnId)
-    dq.set('descendants', 'true')
-    dq.set('per', '500')
-    const { data: descRaw } = await makeAPIRequest.get(`/taxon_names?${dq.toString()}`)
-    const descendants = (Array.isArray(descRaw) ? descRaw : []).map((d) => ({
+    // resolve the terminal taxon-names (validity + valid target) BEFORE the descendants
+    // fetch — their ranks drive a rank-scoped descendants query so a large tribe/family
+    // scope (Lixini: 557 descendants) isn't silently truncated by a per-page cap (A16).
+    const tq = new URLSearchParams()
+    rawTnIds.forEach((id) => tq.append('taxon_name_id[]', id))
+    tq.set('per', '1000')
+    const { data: tnRaw } = await makeAPIRequest.get(`/taxon_names?${tq.toString()}`)
+    const tnRowById = new Map((Array.isArray(tnRaw) ? tnRaw : []).map((t) => [t.id, t]))
+
+    // distinct terminal ranks as bare words (finestRank([raw]) normalises a single rank);
+    // targetRank is the finest of them, the rest are coarser ranks the key also keys out.
+    const terminalRankWords = [...new Set(
+      [...tnRowById.values()].map((t) => finestRank([t.rank])).filter(Boolean)
+    )]
+    const targetRank = finestRank(terminalRankWords)
+    if (!targetRank) return
+
+    // descendants of the scope taxon, rank-scoped to [targetRank, ...coarser terminal
+    // ranks], synonyms included (no validity filter — synonym folding still needs them)
+    const mapRow = (d) => ({
       id: d.id,
       parentId: d.parent_id,
       rank: d.rank,
@@ -237,10 +250,34 @@ async function loadCompleteness(scopeOtuId, nodeMap) {
       authorYear: d.cached_author_year,
       valid: d.cached_is_valid !== false,
       validId: d.cached_valid_taxon_name_id
-    }))
+    })
+    const dq = new URLSearchParams()
+    dq.append('taxon_name_id[]', scopeTnId)
+    dq.set('descendants', 'true')
+    terminalRankWords.forEach((r) => dq.append('rank', r))
+    dq.set('per', '1000')
+    const { data: descRaw } = await makeAPIRequest.get(`/taxon_names?${dq.toString()}`)
+    const descendants = (Array.isArray(descRaw) ? descRaw : []).map(mapRow)
     const descById = new Map(descendants.map((d) => [d.id, d]))
     const descIds = new Set(descendants.map((d) => d.id))
     const authored = (d) => (d ? [d.name, d.authorYear].filter(Boolean).join(' ') : '')
+
+    // the rank-scoped result omits the grouping-rank parents buildCompletenessReport
+    // needs for its `groups`; fetch the distinct parents and merge them in (dedupe by id)
+    const parentIds = [...new Set(descendants.map((d) => d.parentId).filter(Boolean))]
+    if (parentIds.length) {
+      const pq = new URLSearchParams()
+      parentIds.forEach((id) => pq.append('taxon_name_id[]', id))
+      pq.set('per', '1000')
+      const { data: parentRaw } = await makeAPIRequest.get(`/taxon_names?${pq.toString()}`)
+      for (const d of Array.isArray(parentRaw) ? parentRaw : []) {
+        if (descById.has(d.id)) continue
+        const row = mapRow(d)
+        descendants.push(row)
+        descById.set(row.id, row)
+        descIds.add(row.id)
+      }
+    }
 
     // scope taxon-name rank
     let scopeRank = descById.get(scopeTnId)?.rank || null
@@ -248,14 +285,6 @@ async function loadCompleteness(scopeOtuId, nodeMap) {
       const { data: scopeTn } = await makeAPIRequest.get(`/taxon_names/${scopeTnId}`)
       scopeRank = scopeTn?.rank || null
     }
-
-    // resolve those taxon-names (validity + valid target) so synonym terminals fold to
-    // their valid id
-    const tq = new URLSearchParams()
-    rawTnIds.forEach((id) => tq.append('taxon_name_id[]', id))
-    tq.set('per', '500')
-    const { data: tnRaw } = await makeAPIRequest.get(`/taxon_names?${tq.toString()}`)
-    const tnRowById = new Map((Array.isArray(tnRaw) ? tnRaw : []).map((t) => [t.id, t]))
 
     const terminalTnIds = []
     const outOfScopeTerminals = []
@@ -277,7 +306,7 @@ async function loadCompleteness(scopeOtuId, nodeMap) {
     const tnIdToOtuId = {}
     const dq2 = new URLSearchParams()
     descendants.forEach((d) => dq2.append('taxon_name_id[]', d.id))
-    dq2.set('per', '500')
+    dq2.set('per', '1000')
     const { data: otuRaw2 } = await makeAPIRequest.get(`/otus?${dq2.toString()}`)
     for (const o of Array.isArray(otuRaw2) ? otuRaw2 : []) {
       if (o.taxon_name_id != null && !(o.taxon_name_id in tnIdToOtuId)) {
