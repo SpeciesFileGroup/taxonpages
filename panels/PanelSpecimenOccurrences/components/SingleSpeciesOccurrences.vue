@@ -341,7 +341,10 @@ function loadDwc() {
       // determinations, so that case needs this extra client-side filter.
       const scoped = props.directOnly ? data.filter((d) => d.otu_id === props.otuId) : data
 
-      await Promise.all(
+      // Media and institution-name resolution touch disjoint fields with no
+      // data dependency — start both before awaiting either so their network
+      // round trips overlap.
+      const mediaPromise = Promise.all(
         scoped.map(async (item) => {
           if (item.associatedMedia) {
             item.associatedMedia = await getMediaImages(item)
@@ -351,11 +354,13 @@ function loadDwc() {
 
       // Resolve institution names for unique codes (deduplicated by code)
       const seenCodes = new Set()
-      await Promise.all(
+      const institutionPromise = Promise.all(
         scoped
           .filter((d) => d.institutionCode && !seenCodes.has(d.institutionCode) && seenCodes.add(d.institutionCode))
           .map((d) => resolveInstitutionName(d.institutionCode, d.institutionID))
       )
+
+      await Promise.all([mediaPromise, institutionPromise])
 
       dwcRecords.value = scoped.map((d) => ({
         ...d,

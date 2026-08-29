@@ -137,10 +137,10 @@
 
                       <div class="relative flex items-end h-64">
                         <div
-                          v-for="slot in yearSlots"
+                          v-for="(slot, i) in yearSlots"
                           :key="slot.year"
                           class="flex items-end justify-center h-full"
-                          :style="slotFlexStyle()"
+                          :style="slotFlexStyle(i === yearSlots.length - 1)"
                         >
                           <div class="flex items-end gap-px h-full" :style="{ width: `${barWidthPx}px` }">
                             <div
@@ -185,10 +185,10 @@
                     </div>
                     <div class="flex mt-0.5">
                       <span
-                        v-for="slot in yearSlots"
+                        v-for="(slot, i) in yearSlots"
                         :key="slot.year"
                         class="text-[9px] text-center"
-                        :style="slotFlexStyle()"
+                        :style="slotFlexStyle(i === yearSlots.length - 1)"
                         :class="filterYear === slot.year || filterIdentifiedYear === slot.year ? 'text-secondary font-medium' : 'opacity-50'"
                       >{{ visibleYearLabels.has(slot.year) ? slot.year : '' }}</span>
                     </div>
@@ -525,9 +525,11 @@ const timelineContentWidth = computed(() => {
   return n * slotWidthPx.value + (n - 1) * SLOT_GAP
 })
 
-function slotFlexStyle() {
+function slotFlexStyle(isLast) {
   const width = slotWidthPx.value
-  return { flex: `0 0 ${width}px`, width: `${width}px`, marginRight: `${SLOT_GAP}px` }
+  // timelineContentWidth budgets only n-1 gaps, so the last slot must not
+  // carry a trailing marginRight or the row overflows its container by SLOT_GAP.
+  return { flex: `0 0 ${width}px`, width: `${width}px`, marginRight: isLast ? '0px' : `${SLOT_GAP}px` }
 }
 
 // Left-edge x offset (px, in the bars row's own unscrolled coordinate
