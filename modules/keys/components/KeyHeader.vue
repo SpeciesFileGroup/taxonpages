@@ -40,24 +40,24 @@
       <button
         v-if="completeness"
         type="button"
-        class="border rounded px-2 py-0.5"
+        class="border rounded px-2 py-0.5 cursor-pointer transition-colors"
         :class="completeness.isComplete
-          ? 'border-base-muted text-base-soft'
-          : 'border-danger text-danger'"
+          ? 'border-success text-success bg-success/10 hover:bg-success/20'
+          : 'border-danger text-danger bg-danger/10 hover:bg-danger/20'"
         @click="showCompleteness = true"
         @keydown.enter="showCompleteness = true"
         @keydown.space.prevent="showCompleteness = true"
       >{{ completeness.isComplete
         ? `complete (${completeness.expectedCount} ${completeness.targetRank})`
         : `${completeness.coveredCount} / ${completeness.expectedCount} ${completeness.targetRank}` }}</button>
-    </div>
 
-    <button
-      v-if="references.length > 1 || (references.length === 1 && !references[0].isPrimary)"
-      type="button"
-      class="mt-2 block text-sm text-base-soft hover:underline hover:text-secondary"
-      @click="showReferences = true"
-    >References cited ({{ references.length }})</button>
+      <button
+        v-if="references.length > 1 || (references.length === 1 && !references[0].isPrimary)"
+        type="button"
+        class="border border-base-muted rounded px-2 py-0.5 cursor-pointer transition-colors bg-base-muted/40 hover:bg-base-muted/70 hover:text-base-content"
+        @click="showReferences = true"
+      >References cited ({{ references.length }})</button>
+    </div>
 
     <VModal v-if="showCitation" @close="showCitation = false">
       <template #header><div class="text-sm font-medium">Reference</div></template>
