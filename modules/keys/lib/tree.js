@@ -2,6 +2,13 @@
 //
 // `entries` contains ONLY couplet nodes (those with children). `leads` contains every
 // lead including couplet roots. A node is a couplet iff it has an entry.
+//
+// `couplet_number` is whatever TaxonWorks holds: an auto integer for most nodes, or a
+// curator free-text override ("5a", "II 1", "A"). These can collide — e.g. key/3605's
+// root/title lead is auto-numbered 1 while series I's first real couplet is labelled "1"
+// — so the same number can appear on two couplets. That is intentional: the module mirrors
+// the key exactly as entered in TaxonWorks. Do NOT de-duplicate or renumber.
+// (Investigated 2026-08-30; ruled "not a bug" by the curator.)
 
 function toNode(id, lead, entry) {
   return {
