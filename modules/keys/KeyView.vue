@@ -78,13 +78,15 @@ const couplets = computed(() => orderedCouplets(nodes.value))
 const terminalOtuList = computed(() => terminalOtus(nodes.value))
 
 // Per-lead taxon-image loader (OTU inventory → iNaturalist fallback), consumed by
-// LeadFigures via inject. Lives for this KeyView instance, so its cache resets on
-// navigation to another key.
-provide('keyImages', useKeyImages(terminalOtuList))
+// LeadFigures via inject. KeyView is reused across /key/:id navigations, so its
+// caches are cleared explicitly in load() (keyImages.reset()).
+const keyImages = useKeyImages(terminalOtuList)
+provide('keyImages', keyImages)
 
 // Scientific-name rendering for lead-target pills: name italic, author + year roman
 // (matches the vanilla OTU page's cached_html / cached_author_year split).
-provide('keyTaxonNames', useKeyTaxonNames(terminalOtuList))
+const keyTaxonNames = useKeyTaxonNames(terminalOtuList)
+provide('keyTaxonNames', keyTaxonNames)
 const citations = ref({})
 const activeCitation = ref(null)
 const completeness = ref(null)
@@ -143,6 +145,8 @@ async function load(id) {
   rawMeta.value = {}
   resolvedScopeOtuId.value = null
   scopeTaxonName.value = null
+  keyImages.reset()
+  keyTaxonNames.reset()
   try {
     const keyReq = makeAPIRequest.get(`/leads/key/${id}`)
     const listReq = makeAPIRequest.get('/leads').catch(() => ({ data: [] }))

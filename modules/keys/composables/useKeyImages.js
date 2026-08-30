@@ -9,8 +9,10 @@
 //      observations), same logic as panels/PanelGallery/PanelGallery.vue
 //
 // Instantiated once in KeyView and provided as `keyImages`; LeadFigures injects it.
-// Results are cached + de-duped per OTU id for the lifetime of the KeyView instance
-// (the same taxon appearing in several leads fetches once).
+// Results are cached + de-duped per OTU id. KeyView is reused across /key/:id
+// navigations, so KeyView.load() calls `reset()` on each load — without it the
+// per-instance `metaMap` (iNaturalist fallback) and `entries` cache would resolve a
+// later key's leads against the first key's taxa.
 
 import { reactive } from 'vue'
 import axios from 'axios'
@@ -111,6 +113,14 @@ export function useKeyImages(terminalOtusRef) {
     return entries[key]
   }
 
+  // Called by KeyView.load() before the next key's tree is built: drop the image
+  // cache and force resolveMeta() to rebuild from the new key's terminal OTUs.
+  function reset() {
+    for (const k of Object.keys(entries)) delete entries[k]
+    metaMap = null
+    metaPromise = null
+  }
+
   // One batched pass (2 requests total, regardless of key size), lazily on first
   // iNaturalist fallback: terminal OTU ids -> taxon-name id -> { name, rank }.
   function resolveMeta() {
@@ -207,5 +217,5 @@ export function useKeyImages(terminalOtusRef) {
     return e
   }
 
-  return { request, entryFor }
+  return { request, entryFor, reset }
 }

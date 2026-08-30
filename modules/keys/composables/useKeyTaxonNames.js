@@ -8,7 +8,10 @@
 // which is what the vanilla OTU page renders via `full_name_tag` / `cached_html`.
 //
 // Instantiated once in KeyView, provided as `keyTaxonNames`; TaxonLink injects it and
-// falls back to the plain label for any OTU not in the map.
+// falls back to the plain label for any OTU not in the map. KeyView is reused across
+// /key/:id navigations, so `reset()` must be called on each load — otherwise the
+// `started` latch keeps the first key's names and every later key falls back to the
+// wholesale-italic label.
 
 import { reactive, watch } from 'vue'
 import { makeAPIRequest } from '@/utils/request'
@@ -17,6 +20,13 @@ export function useKeyTaxonNames(terminalOtusRef) {
   // otuId -> { html, authorYear, plain }
   const map = reactive({})
   let started = false
+
+  // Called by KeyView.load() before the next key's tree is built, so the
+  // terminalOtusRef watch below re-resolves for the new key.
+  function reset() {
+    for (const k of Object.keys(map)) delete map[k]
+    started = false
+  }
 
   async function resolve(otuIds) {
     if (started) return
@@ -65,5 +75,5 @@ export function useKeyTaxonNames(terminalOtusRef) {
     { immediate: true }
   )
 
-  return { map }
+  return { map, reset }
 }
