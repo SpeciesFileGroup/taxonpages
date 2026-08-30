@@ -46,7 +46,7 @@
     <div class="flex-none text-center text-sm px-6 pb-2 max-h-[40vh] overflow-y-auto">
       <!-- OTU section: badge, name, description -->
       <div
-        v-if="imageDisplay.hasOtu || imageDisplay.name"
+        v-if="!minimal && (imageDisplay.hasOtu || imageDisplay.name)"
         class="my-1"
       >
         <div
@@ -74,7 +74,7 @@
 
       <!-- CO/FO entries: badge + ⓘ, type status, figure label, caption -->
       <div
-        v-for="co in imageDisplay.coEntries"
+        v-for="co in (minimal ? [] : imageDisplay.coEntries)"
         :key="co.objectId"
         class="my-0.5"
       >
@@ -106,7 +106,9 @@
 
       <!-- Plain figure caption: images with no OTU / CO / FO structure (e.g. a
            biological-association plate, a keys lead figure) carry the label +
-           caption at the top level. Label in bold, caption below it. -->
+           caption at the top level. Label in bold, caption below it.
+           `captionHtml` is pre-sanitised HTML (keys, linkified); `caption` is
+           plain text run through the name-italiciser (biological associations). -->
       <div
         v-if="showPlainCaption"
         class="my-1"
@@ -117,14 +119,22 @@
           v-html="italicizeNames(image.figure_label)"
         />
         <div
-          v-if="image.caption"
+          v-if="image.captionHtml"
+          class="opacity-70 [&_a]:text-secondary [&_a]:hover:underline"
+          v-html="image.captionHtml"
+        />
+        <div
+          v-else-if="image.caption"
           class="opacity-70"
           v-html="italicizeNames(image.caption)"
         />
       </div>
 
       <!-- Attribution + citations (image-level) -->
-      <div class="opacity-60 my-1">
+      <div
+        v-if="!minimal"
+        class="opacity-60 my-1"
+      >
         <span v-if="image.attribution?.label">{{ image.attribution.label }}</span>
         <span
           v-else-if="!image.citations?.length"
@@ -141,13 +151,16 @@
 
       <!-- Source -->
       <div
-        v-if="image.source?.label"
+        v-if="!minimal && image.source?.label"
         class="opacity-60 my-1"
         v-html="image.source.label"
       />
 
       <!-- Thumbnail strip -->
-      <div class="flex flex-row overflow-x-auto justify-center gap-1.5 mt-2 pb-2">
+      <div
+        v-if="!minimal"
+        class="flex flex-row overflow-x-auto justify-center gap-1.5 mt-2 pb-2"
+      >
         <div
           v-for="(img, i) in images"
           :key="img.id"
@@ -165,7 +178,7 @@
     </div>
 
     <DwcTable
-      v-if="showInfoButton"
+      v-if="showInfoButton && !minimal"
       ref="dwcTableRef"
     />
 
@@ -187,11 +200,15 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
 import ControlImageNext from '@/components/ImageViewer/ControlImageNext.vue'
 import ControlImagePrevious from '@/components/ImageViewer/ControlImagePrevious.vue'
-import DwcTable from './DwcTable.vue'
 import { makeAPIRequest } from '@/utils/request'
+
+// Async both ways: DwcTable imports this file back (its media strip opens this
+// lightbox). Splitting DwcTable into its own chunk also keeps it out of the
+// bundles that use the lightbox in `minimal` mode (keys) or never click ⓘ.
+const DwcTable = defineAsyncComponent(() => import('./DwcTable.vue'))
 
 const props = defineProps({
   images: { type: Array, required: true },
@@ -201,7 +218,11 @@ const props = defineProps({
   // The ⓘ button opens a DwcTable for a CO/FO depiction. DwcTable opens this
   // lightbox for its own media strip, so that nested instance passes false to
   // stop the loop (DwcTable → lightbox → DwcTable → …).
-  showInfoButton: { type: Boolean, default: true }
+  showInfoButton: { type: Boolean, default: true },
+  // Caption-only mode (keys lead figures): render just the bold label + caption
+  // block. No name/OTU block, CO/FO entries, attribution, source, thumbnail
+  // strip, ⓘ button or DWC fetch — those images only ever carry label + caption.
+  minimal: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['close', 'next', 'previous', 'selectIndex'])
@@ -304,6 +325,7 @@ watch(
   () => props.index,
   (idx) => {
     isLoading.value = true
+    if (props.minimal) return  // caption-only: no depiction/DWC resolution
     fetchDwcForImage(props.images[idx])
     fetchDwcForImage(props.images[idx + 1])
     fetchDwcForImage(props.images[idx - 1])
@@ -446,9 +468,12 @@ const depictionTitle = computed(() => {
 // top-level figure_label / caption — e.g. a biological-association plate or a
 // keys lead figure. Shown as bold label + caption instead of the name block.
 const showPlainCaption = computed(() => {
+  const img = image.value
+  const hasText = !!(img.figure_label || img.caption || img.captionHtml)
+  if (props.minimal) return hasText
   const d = imageDisplay.value
   if (d.hasOtu || d.name || d.coEntries.length) return false
-  return !!(image.value.figure_label || image.value.caption)
+  return hasText
 })
 
 function openDwcTable(dep) {

@@ -39,6 +39,7 @@ Fixed, full-viewport overlay (`fixed inset-0 z-[10000]`, no internal Teleport �
 | `next` | Boolean | `false` | a next image exists |
 | `previous` | Boolean | `false` | a previous image exists |
 | `showInfoButton` | Boolean | `true` | show the ⓘ button that opens `DwcTable` for a CO/FO depiction, and render the nested `DwcTable`. Pass `false` when mounting from within a `DwcTable` to stop the recursion. |
+| `minimal` | Boolean | `false` | caption-only: render just the bold label + caption block. No name/OTU block, CO/FO entries, attribution, source, thumbnail strip, ⓘ or DWC fetch. Used by the keys module, whose lead figures only ever carry a label + caption. |
 
 **Emits:** `close`, `next`, `previous`, `selectIndex(i)` — the parent owns `index` and the list.
 
@@ -55,11 +56,12 @@ Fixed, full-viewport overlay (`fixed inset-0 z-[10000]`, no internal Teleport �
   citations:   Citation[],          // TW gallery only
   depictions:  Depiction[],         // Otu / CollectionObject / FieldOccurrence — drives the name block + ⓘ
   figure_label: string,             // plain image with no Otu/CO/FO depiction: shown bold …
-  caption:      string              // … with the caption beneath it
+  caption:      string,             // … plain text, run through the name-italiciser, beneath the label
+  captionHtml:  string              // … OR pre-sanitised HTML (keys, URL-linkified) rendered verbatim — wins over `caption`
 }
 ```
 
-If `depictions` has an Otu / CO / FO entry the block shows the parsed taxon name (CO/FO also fetch `/…/dwc` for type status + the ⓘ button). Otherwise, if `figure_label` / `caption` are set, they render as a bold-label + caption block. Otherwise just attribution / source.
+If `depictions` has an Otu / CO / FO entry the block shows the parsed taxon name (CO/FO also fetch `/…/dwc` for type status + the ⓘ button). Otherwise, if `figure_label` / `caption` / `captionHtml` are set, they render as a bold-label + caption block. Otherwise just attribution / source. In `minimal` mode only that bold-label + caption block renders.
 
 **Depended on by:**
 
@@ -70,5 +72,6 @@ If `depictions` has an Otu / CO / FO entry the block shows the parsed taxon name
 | PanelBiologicalAssociationsV2 | `../PanelBiologicalAssociationsV2/PanelBiologicalAssociationsV2.vue` | BA plates (`figure_label` / `caption`, no depiction structure) |
 | PanelSpecimenOccurrences | `../PanelSpecimenOccurrences/components/SingleSpeciesOccurrences.vue` | specimen `associatedMedia` (depictions carry CO/FO type) |
 | DwcTable | `./DwcTable.vue` | the modal's own `associatedMedia` strip (`showInfoButton` off) |
+| keys module | `../../modules/keys/components/LeadFigures.vue` | lead figures / "+N more images" (`minimal`, `captionHtml`) |
 
-If you change this file, check all five call sites — the contract is `images` + `index` + the four events; keep it stable.
+If you change this file, check all six call sites — the contract is `images` + `index` + the four events; keep it stable.
