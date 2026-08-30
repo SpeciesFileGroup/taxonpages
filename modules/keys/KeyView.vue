@@ -191,41 +191,56 @@ async function loadCitations(leadIds, myGen) {
   }
 }
 
-// Scope taxon for the header — its OTU id (route target) and `full_name_tag` (display).
-// Standalone so it isn't blocked behind the completeness pipeline. Public keys have the
-// scope OTU directly (listMeta.otu_id); others take the lowest common ancestor of the
-// key's terminal taxa.
-async function loadScope(scopeOtuId, nodeMap, myGen) {
-  try {
-    let tnId = null
-    let otuId = scopeOtuId || null
-
-    if (scopeOtuId) {
-      const { data: o } = await makeAPIRequest.get(`/otus/${scopeOtuId}`)
-      tnId = o?.taxon_name_id || null
-    } else {
-      const terminals = terminalOtus(nodeMap)
-      if (!terminals.length) return
+// Terminal-OTU → taxon-name resolution + the key's scope taxon, shared by loadScope()
+// (header, fast) and loadCompleteness() (slow pipeline). Both previously ran the
+// terminal `/otus` batch and the up-to-15-request ancestor walk independently (F1).
+// Memoised per load generation; a fresh load() (++loadGen) invalidates it.
+// Returns { scopeTnId, scopeOtuId, otuIdToTnId }.
+let scopeResolve = { gen: -1, promise: null }
+function resolveScope(scopeOtuId, nodeMap, myGen) {
+  if (scopeResolve.gen === myGen && scopeResolve.promise) return scopeResolve.promise
+  const promise = (async () => {
+    const otuIdToTnId = new Map()
+    const terminals = terminalOtus(nodeMap)
+    if (terminals.length) {
       const oq = new URLSearchParams()
       terminals.forEach((t) => oq.append('otu_id[]', t.id))
       oq.set('per', '1000')
       const { data: otuRaw } = await makeAPIRequest.get(`/otus?${oq.toString()}`)
-      const tnIds = [
-        ...new Set(
-          (Array.isArray(otuRaw) ? otuRaw : [])
-            .map((o) => o.taxon_name_id)
-            .filter((v) => v != null)
-        )
-      ]
-      if (!tnIds.length) return
-      tnId = await resolveScopeFromTerminals(tnIds)
-      if (!tnId) return
-      const { data: sOtu } = await makeAPIRequest.get(`/otus?taxon_name_id[]=${tnId}&per=1`)
-      otuId = Array.isArray(sOtu) ? sOtu[0]?.id ?? null : null
+      for (const o of Array.isArray(otuRaw) ? otuRaw : []) {
+        if (o.taxon_name_id != null) otuIdToTnId.set(o.id, o.taxon_name_id)
+      }
     }
-    if (!tnId || myGen !== loadGen) return
+    const rawTnIds = [...new Set([...otuIdToTnId.values()])]
 
-    const { data: sum } = await makeAPIRequest.get(`/taxon_names/${tnId}/inventory/summary`)
+    let scopeTnId = null
+    let resolvedOtuId = scopeOtuId || null
+    if (scopeOtuId) {
+      // public key: scope OTU is known, one lookup for its taxon-name id
+      const { data: o } = await makeAPIRequest.get(`/otus/${scopeOtuId}`)
+      scopeTnId = o?.taxon_name_id || null
+    } else if (rawTnIds.length) {
+      // otherwise: lowest common ancestor of the key's terminals (A13 Step 2)
+      scopeTnId = await resolveScopeFromTerminals(rawTnIds)
+      if (scopeTnId) {
+        const { data: sOtu } = await makeAPIRequest.get(`/otus?taxon_name_id[]=${scopeTnId}&per=1`)
+        resolvedOtuId = Array.isArray(sOtu) ? sOtu[0]?.id ?? null : null
+      }
+    }
+    return { scopeTnId, scopeOtuId: resolvedOtuId, otuIdToTnId }
+  })()
+  scopeResolve = { gen: myGen, promise }
+  return promise
+}
+
+// Scope taxon for the header — its OTU id (route target) and `full_name_tag` (display).
+// Standalone so it isn't blocked behind the completeness pipeline.
+async function loadScope(scopeOtuId, nodeMap, myGen) {
+  try {
+    const { scopeTnId, scopeOtuId: otuId } = await resolveScope(scopeOtuId, nodeMap, myGen)
+    if (!scopeTnId || myGen !== loadGen) return
+
+    const { data: sum } = await makeAPIRequest.get(`/taxon_names/${scopeTnId}/inventory/summary`)
     if (myGen !== loadGen) return
     if (otuId != null) resolvedScopeOtuId.value = otuId
     if (sum?.full_name_tag) scopeTaxonName.value = { html: sum.full_name_tag }
@@ -279,29 +294,13 @@ async function loadCompleteness(scopeOtuId, nodeMap, myGen) {
     const terminals = terminalOtus(nodeMap).map((t) => ({ otuId: t.id, label: t.label }))
     if (!terminals.length) return
 
-    // terminal OTUs -> their taxon-name ids (resolved early: the non-public-key
-    // branch derives the scope taxon from these)
-    const oq = new URLSearchParams()
-    terminals.forEach((t) => oq.append('otu_id[]', t.otuId))
-    oq.set('per', '1000')
-    const { data: otuRaw } = await makeAPIRequest.get(`/otus?${oq.toString()}`)
-    const otuIdToTnId = new Map()
-    for (const o of Array.isArray(otuRaw) ? otuRaw : []) {
-      if (o.taxon_name_id != null) otuIdToTnId.set(o.id, o.taxon_name_id)
-    }
+    // terminal OTU→taxon-name map + scope taxon-name id — resolved once per load
+    // generation and shared with loadScope() (F1: the /otus batch and the ancestor
+    // walk previously ran in both pipelines).
+    const { scopeTnId, otuIdToTnId } = await resolveScope(scopeOtuId, nodeMap, myGen)
+    if (myGen !== loadGen) return
     const rawTnIds = [...new Set([...otuIdToTnId.values()])]
-    if (!rawTnIds.length) return
-
-    // scope taxon-name id: fast path from the public /leads row's scope OTU;
-    // otherwise the lowest common ancestor of the key's own terminals (A13 Step 2)
-    let scopeTnId = null
-    if (scopeOtuId) {
-      const { data: scopeOtu } = await makeAPIRequest.get(`/otus/${scopeOtuId}`)
-      scopeTnId = scopeOtu?.taxon_name_id || null
-    } else {
-      scopeTnId = await resolveScopeFromTerminals(rawTnIds)
-    }
-    if (!scopeTnId) return
+    if (!scopeTnId || !rawTnIds.length) return
 
     // resolve the terminal taxon-names (validity + valid target) BEFORE the descendants
     // fetch — their ranks drive a rank-scoped descendants query so a large tribe/family
