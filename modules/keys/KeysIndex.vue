@@ -26,13 +26,26 @@
           v-if="k.scope"
           class="mt-1 text-sm text-base-content [&_i]:italic"
         >
-          <span class="text-base-soft">Scope: </span><span v-html="k.scope" />
+          <span class="text-base-soft">Scope: </span><RouterLink
+            v-if="k.otuId"
+            :to="{ name: 'otus-id', params: { id: k.otuId } }"
+            target="_blank"
+            rel="noopener"
+            class="text-secondary hover:underline"
+          ><span
+            v-if="k.scopeHtml"
+            v-html="k.scopeHtml"
+          /><template v-else>{{ k.scope }}</template></RouterLink><span
+            v-else-if="k.scopeHtml"
+            v-html="k.scopeHtml"
+          /><template v-else>{{ k.scope }}</template>
         </p>
         <p
           v-if="k.citation"
           class="mt-1 text-sm text-base-content [&_i]:italic"
-          v-html="sanitizeAndLinkifyHtml(k.citation)"
-        />
+        >
+          <span class="text-base-soft">Primary source: </span><span v-html="sanitizeAndLinkifyHtml(k.citation)" />
+        </p>
         <p
           v-if="k.description"
           class="mt-1 text-sm text-base-content"
@@ -64,6 +77,15 @@ import { sanitizeAndLinkifyHtml } from '@/utils'
 const loading = ref(true)
 const keys = ref([])
 
+// Pull the taxon-name markup ("<i>Strophosoma</i> Billberg, 1820") out of an OTU
+// object_tag, dropping the otu_tag wrapper and the trailing valid-name ✓ so it
+// matches the key page's full_name_tag rendering.
+function scopeNameFromObjectTag(tag) {
+  if (!tag) return null
+  const m = String(tag).match(/<span class="otu_tag_taxon_name"[^>]*>([\s\S]*?)<\/span>/)
+  return m ? m[1].trim() : null
+}
+
 onMounted(async () => {
   try {
     const { data: list } = await makeAPIRequest.get('/leads')
@@ -79,10 +101,30 @@ onMounted(async () => {
       )
     )
 
+    // Scope taxon name (italic) for every key's scope OTU in one bulk call —
+    // the /leads row carries otu_id, object_tag carries the marked-up name.
+    const otuIds = [...new Set(rows.map((r) => r.otu_id).filter(Boolean))]
+    let nameByOtuId = new Map()
+    if (otuIds.length) {
+      try {
+        const params = new URLSearchParams()
+        otuIds.forEach((id) => params.append('otu_id[]', id))
+        const { data: otus } = await makeAPIRequest.get(`/otus?${params.toString()}`)
+        nameByOtuId = new Map(
+          (Array.isArray(otus) ? otus : []).map((o) => [o.id, scopeNameFromObjectTag(o.object_tag)])
+        )
+      } catch {
+        // leave empty — scope falls back to the plain (still linked) text
+      }
+    }
+
     keys.value = rows.map((r, i) => ({
       id: r.id,
       title: metas[i].title || r.text || `Key ${r.id}`,
       scope: metas[i].taxonomic_scope || null,
+      // scope OTU (route target) + its italic name, matching the key page header
+      otuId: r.otu_id || null,
+      scopeHtml: nameByOtuId.get(r.otu_id) || null,
       // Primary source = origin_citation only (the citation flagged is_original
       // in TaxonWorks). No fallback — a key with no flagged original citation
       // shows no "Primary source" line.
