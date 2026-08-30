@@ -193,8 +193,8 @@
               >
                 <img
                   :src="ba.images[0].thumb"
-                  :alt="ba.images[0].label"
-                  :title="ba.images[0].label"
+                  :alt="ba.images[0].figure_label"
+                  :title="ba.images[0].figure_label"
                   class="h-12 w-12 object-cover rounded"
                 />
                 <span
@@ -269,8 +269,8 @@
 
 
 
-      <!-- ImageViewer -->
-      <ImageViewer
+      <!-- Shared lightbox -->
+      <ImageLightbox
         v-if="viewer.images.length"
         :index="viewer.index"
         :images="viewer.images"
@@ -345,6 +345,7 @@ import {
   SPECIES_AND_INFRASPECIES_GROUP
 } from '@/modules/otus/constants'
 import DwcTable from '../_shared/DwcTable.vue'
+import ImageLightbox from '../_shared/ImageLightbox.vue'
 import {
   makeBiologicalAssociation,
   resolveSpecimenRef
@@ -556,7 +557,13 @@ function makeGalleryImage(depiction) {
     medium: depiction.image.medium,
     attribution: { label: depiction.attribution?.label || '' },
     source: { label: '' },
-    depictions: depiction.figure_label ? [{ label: depiction.figure_label }] : [],
+    // A BA plate is not an Otu/CO/FO depiction — hand the label + caption to
+    // ImageLightbox as real fields (it shows label bold, caption beneath).
+    // The old shape faked depictions:[{label: figure_label}], which the shared
+    // lightbox would have run through its taxon-name parser.
+    figure_label: depiction.figure_label || '',
+    caption: depiction.caption || '',
+    depictions: [],
     _associationId: depiction.depiction_object_id
   }
 }

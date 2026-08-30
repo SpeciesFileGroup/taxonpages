@@ -36,7 +36,7 @@ A flat-eligible page (per `collapseAboveRank`) always loads the flat table first
 
 ## Differences from the built-in panel
 
-- **Depictions** shown as thumbnails inline in the table; clicking opens the full `ImageViewer` lightbox with figure label, attribution, and source reference
+- **Depictions** shown as thumbnails inline in the table; clicking opens the shared `../_shared/ImageLightbox.vue` with figure label, attribution, and source reference
 - **Asserted distributions** shown as a list of area names per row (absent records struck through)
 - **Citations** shown as clickable short references (e.g. "Masur & Wartmann, 2025:93"); clicking opens a modal with the full formatted reference, with URLs rendered as clickable links
 - Order and Genus columns removed to reduce horizontal clutter
@@ -59,13 +59,18 @@ After loading the associations page (one call to `/biological_associations?exten
 4. `/citations?citation_object_type=BiologicalAssociation&citation_object_id[]=...&extend[]=source`  
    Returns citation records with the full source object embedded — no separate `/sources` call needed.
 
-## ImageViewer
+## Lightbox
 
-The lightbox reuses the global `ImageViewer` component. Images are shaped to match its expected format:
+The shared `../_shared/ImageLightbox.vue` (see `../_shared/readme.md`). A BA plate is
+not an Otu/CO/FO depiction, so `makeGalleryImage()` shapes each image with the plate
+text as top-level fields the lightbox renders as a caption block (label bold, caption
+beneath) rather than a fake `depictions` entry:
 
-- `depictions[0].label` — figure label (caption line)
+- `figure_label` — plate label, shown bold
+- `caption` — free-text caption, shown beneath
 - `attribution.label` — copyright and license
 - `source.label` — full publication reference with clickable URLs
+- `depictions: []` — no Otu/CO/FO structure, so no name block and no ⓘ button
 
 ## Notes
 
