@@ -81,7 +81,7 @@
         <div class="flex items-center justify-center gap-1">
           <span class="text-xs opacity-40 uppercase tracking-wide">{{ co.objectType === 'CollectionObject' ? 'Collection object' : 'Field occurrence' }}</span>
           <button
-            v-if="co.dwcOk"
+            v-if="co.dwcOk && showInfoButton"
             type="button"
             class="shrink-0 opacity-40 hover:opacity-100 cursor-pointer leading-none text-xs"
             title="Show details"
@@ -101,6 +101,25 @@
           v-if="co.caption"
           class="opacity-70 text-xs"
           v-html="italicizeNames(co.caption)"
+        />
+      </div>
+
+      <!-- Plain figure caption: images with no OTU / CO / FO structure (e.g. a
+           biological-association plate, a keys lead figure) carry the label +
+           caption at the top level. Label in bold, caption below it. -->
+      <div
+        v-if="showPlainCaption"
+        class="my-1"
+      >
+        <div
+          v-if="image.figure_label"
+          class="font-semibold"
+          v-html="italicizeNames(image.figure_label)"
+        />
+        <div
+          v-if="image.caption"
+          class="opacity-70"
+          v-html="italicizeNames(image.caption)"
         />
       </div>
 
@@ -145,7 +164,10 @@
       </div>
     </div>
 
-    <DwcTable ref="dwcTableRef" />
+    <DwcTable
+      v-if="showInfoButton"
+      ref="dwcTableRef"
+    />
 
     <Teleport to="body">
       <VModal
@@ -175,7 +197,11 @@ const props = defineProps({
   images: { type: Array, required: true },
   index:  { type: Number, required: true },
   next:     { type: Boolean, default: false },
-  previous: { type: Boolean, default: false }
+  previous: { type: Boolean, default: false },
+  // The ⓘ button opens a DwcTable for a CO/FO depiction. DwcTable opens this
+  // lightbox for its own media strip, so that nested instance passes false to
+  // stop the loop (DwcTable → lightbox → DwcTable → …).
+  showInfoButton: { type: Boolean, default: true }
 })
 
 const emit = defineEmits(['close', 'next', 'previous', 'selectIndex'])
@@ -414,6 +440,15 @@ const depictionTitle = computed(() => {
   const { name } = imageDisplay.value
   if (!name) return ''
   return [name.italic, name.plain].filter(Boolean).join(' ')
+})
+
+// A plain image (no OTU / CO / FO depiction structure) whose only text is a
+// top-level figure_label / caption — e.g. a biological-association plate or a
+// keys lead figure. Shown as bold label + caption instead of the name block.
+const showPlainCaption = computed(() => {
+  const d = imageDisplay.value
+  if (d.hasOtu || d.name || d.coEntries.length) return false
+  return !!(image.value.figure_label || image.value.caption)
 })
 
 function openDwcTable(dep) {
