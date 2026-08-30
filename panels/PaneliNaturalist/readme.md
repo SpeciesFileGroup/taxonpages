@@ -10,7 +10,7 @@ Adapted from the Orthoptera Species File repository. Adapting it to only show re
 
 ### Curated taxon photos (upper)
 
-Fetched from the iNaturalist `/v1/taxa/:id` endpoint via the `taxon_photos` array. These are photos manually selected by iNaturalist editors as representative of the taxon. They are shown in a responsive grid; clicking any photo opens the TaxonPages `ImageViewer` lightbox with the full-size image, attribution, and a link to the photo page on iNaturalist. The section header links to the taxon page on iNaturalist. The section is hidden entirely if no curated photos are available.
+Fetched from the iNaturalist `/v1/taxa/:id` endpoint via the `taxon_photos` array. These are photos manually selected by iNaturalist editors as representative of the taxon. They are shown in a responsive grid; clicking any photo opens the shared `../_shared/ImageLightbox.vue` with the full-size image, attribution, and a link to the photo page on iNaturalist. The section header links to the taxon page on iNaturalist. The section is hidden entirely if no curated photos are available.
 
 Note: for higher-rank taxa (genus, tribe, etc.), the curated photos show individual species within the taxon without labeling which species is depicted. This is a limitation of the iNaturalist API — the `taxon_photos` endpoint does not return the source observation or species name for individual photos, and no reliable reverse lookup from photo ID to observation is available.
 
@@ -26,7 +26,11 @@ Paginated grid of research-grade observation photos. Each photo links to its ind
 - Responsive image grid: `grid-cols-[repeat(auto-fill,minmax(400px,1fr))]`
 - Image size changed from `square` to `medium` for better resolution
 - Panel is no longer restricted to genus and species group ranks — it now works at any rank (family, subfamily, tribe, genus, subgenus, species, etc.)
-- Curated taxon photos section added above observations, with ImageViewer lightbox
+- Curated taxon photos section added above observations, opening the shared lightbox
+
+## Shared dependencies
+
+- `../_shared/ImageLightbox.vue` — the project-wide fullscreen image viewer (curated-photos click). See [`../_shared/readme.md`](../_shared/readme.md).
 
 ## Taxon matching (documentation written by Claude AI)
 

@@ -4,6 +4,13 @@ Image gallery panel for OTU pages. Falls back to subordinate-taxa images, then i
 
 **Data depictions** (`is_metadata_depiction` — label photos, ledger pages, etc.) attached to a CollectionObject / FieldOccurrence are excluded from this OTU-scoped gallery; they remain visible in the specimen detail modal. A data depiction attached directly to the OTU is shown. See [ARCHITECTURE.md](./ARCHITECTURE.md#data-depiction-exclusion).
 
+## Shared dependencies
+
+- `../_shared/ImageLightbox.vue` — the project-wide fullscreen viewer (this panel is where it originated, as `GalleryViewer.vue`). Rendered with the ⓘ / DWC extras on.
+- `../_shared/DwcTable.vue` — reached through `ImageLightbox`'s ⓘ button.
+
+See [`../_shared/readme.md`](../_shared/readme.md).
+
 ---
 
 ## Configuration

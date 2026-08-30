@@ -38,7 +38,7 @@ Clicking a Collection Object or Field Occurrence row in the popup opens a struct
 
 Empty fields are hidden. All labels share a single grid column so values align cleanly across sections.
 
-> This component moved to `panels/_shared/DwcTable.vue` so `PanelGallery`, `PanelBiologicalAssociationsV2`, and this panel's `Search/OtuSearch.vue` can all use the same modal instead of keeping duplicate copies. See [`../_shared/readme.md`](../_shared/readme.md) for the full list of dependents.
+> This component lives in `panels/_shared/DwcTable.vue` so `PanelGallery` (via `ImageLightbox`), `PanelBiologicalAssociationsV2`, `PanelSpecimenOccurrences`, and this panel (`PanelMapV2.vue` + `Search/OtuSearch.vue`) all use the one modal instead of duplicate copies. See [`../_shared/readme.md`](../_shared/readme.md) for the full list of dependents.
 
 ## Directory layout
 
