@@ -8,9 +8,10 @@
 //     { id, thumb, medium, original, attribution:{label}, source:{label:'<a…>'},
 //       depictions:[{ label: taxonName }] }
 //
-// Output shape is what KeyLightbox / LeadFigures read:
+// Output shape is what LeadFigures reads (and maps onto the shared
+// panels/_shared/ImageLightbox.vue in `minimal` mode):
 //   { id, thumb, medium, original, label, caption, sourceTag }
-// - `label`     → shown as the lightbox heading (taxon name)
+// - `label`     → the lightbox heading (taxon name)
 // - `caption`   → HTML (attribution + source), run through sanitizeAndLinkifyHtml
 // - `sourceTag` → 'TaxonWorks' | 'iNaturalist', for the one-line strip caption
 

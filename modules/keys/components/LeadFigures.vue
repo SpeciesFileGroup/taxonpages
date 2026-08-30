@@ -39,20 +39,28 @@
     />
 
     <ClientOnly>
-      <KeyLightbox
-        v-if="viewer !== null"
-        :figures="items"
-        :index="viewer"
-        @close="viewer = null"
-        @update:index="viewer = $event"
-      />
+      <Teleport to="body">
+        <ImageLightbox
+          v-if="viewer !== null"
+          :images="lightboxItems"
+          :index="viewer"
+          :next="viewer < lightboxItems.length - 1"
+          :previous="viewer > 0"
+          minimal
+          @select-index="viewer = $event"
+          @next="viewer++"
+          @previous="viewer--"
+          @close="viewer = null"
+        />
+      </Teleport>
     </ClientOnly>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, inject, onMounted, onBeforeUnmount } from 'vue'
-import KeyLightbox from './KeyLightbox.vue'
+import { sanitizeAndLinkifyHtml } from '@/utils'
+import ImageLightbox from '../../../panels/_shared/ImageLightbox.vue'
 import { pickPreview } from '../lib/images.js'
 
 const props = defineProps({
@@ -121,6 +129,24 @@ function imgSrc(fig) {
     : [originalPngUrl(fig), fig.original, fig.medium, fig.thumb]
   return order.find(Boolean) || ''
 }
+
+// Shape each figure for the shared ImageLightbox (`minimal` mode: it renders
+// only the bold label + caption). Lightbox wants the largest source; captions
+// are HTML (attribution/source folded in for fallback images) so they go
+// through the same sanitiser the citation sites use.
+function lightboxSrc(fig) {
+  if (fig.original_png) return originalPngUrl(fig)
+  return fig.original || fig.medium || fig.thumb || ''
+}
+const lightboxItems = computed(() =>
+  items.value.map((f, i) => ({
+    id: f.id ?? i,
+    original: lightboxSrc(f),
+    thumb: f.thumb || f.medium || '',
+    figure_label: f.figure_label || f.label || '',
+    captionHtml: sanitizeAndLinkifyHtml(f.caption || '')
+  }))
+)
 function figTitle(fig) {
   return fig.figure_label || fig.label || fig.caption || 'figure'
 }

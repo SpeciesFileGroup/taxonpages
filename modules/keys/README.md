@@ -46,10 +46,12 @@ Toggle between two views (persisted per viewer in `localStorage` as `taxonpages:
 
 - **Per-lead figures** — a lead's own `figures` (from `GET /leads/key/:id`) render in the
   image column at column width, natural aspect, stacked, with the `figure_label` (or a
-  truncated caption) below each; click opens a keys-local lightbox (prev/next, ←/→ keys,
-  Esc to close, focus-trapped) with the full caption. Up to 3 shown, then a "+N more
-  images" link into the lightbox. A lead can carry figs 1–3 while its sibling carries fig
-  4 — each lead shows its own list.
+  truncated caption) below each; click opens the shared
+  `panels/_shared/ImageLightbox.vue` in `minimal` mode (prev/next, ←/→ keys, Esc to
+  close, focus-trapped) — just the bold label + full caption, nothing else. Up to 3
+  shown, then a "+N more images" link into the lightbox. A lead can carry figs 1–3 while
+  its sibling carries fig 4 — each lead shows its own list. `LeadFigures.vue` maps each
+  figure onto the lightbox's image shape (`lightboxItems`).
 - **Shared couplet figures** — when the *same image* is attached to **every** lead of a
   couplet (e.g. one plate illustrating the contrast, added to both leads), it is hoisted
   out of the per-lead figures and shown once for the couplet: in Full-key view a block on
