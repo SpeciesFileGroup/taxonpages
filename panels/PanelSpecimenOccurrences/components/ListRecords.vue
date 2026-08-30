@@ -93,7 +93,7 @@
                     class="flex items-center gap-1 rounded px-1.5 py-0.5 cursor-pointer"
                     :class="showIdentified ? 'opacity-100' : 'opacity-35'"
                     @click="showIdentified = !showIdentified"
-                  ><span class="inline-block w-2 h-2 rounded-sm bg-orange-500" />Identified</button>
+                  ><span class="inline-block w-2 h-2 rounded-sm" :style="{ background: IDENTIFIED_COLOR }" />Identified</button>
                 </div>
 
                 <!--
@@ -153,12 +153,12 @@
                               @click="showCollected && slot.collected && selectYear(slot.year)"
                             />
                             <div
-                              class="flex-1 rounded-sm bg-orange-500 hover:brightness-110"
+                              class="flex-1 rounded-sm hover:brightness-110"
                               :class="[
                                 showIdentified && slot.identified ? 'cursor-pointer' : '',
-                                filterIdentifiedYear === slot.year ? 'ring-2 ring-inset ring-white' : ''
+                                filterIdentifiedYear === slot.year ? 'ring-2 ring-inset ring-secondary-content' : ''
                               ]"
-                              :style="{ height: barHeight(slot.identified, showIdentified) }"
+                              :style="{ height: barHeight(slot.identified, showIdentified), background: IDENTIFIED_COLOR }"
                               @click="showIdentified && slot.identified && selectIdentifiedYear(slot.year)"
                             />
                           </div>
@@ -179,7 +179,7 @@
                         >
                           <div class="font-medium mb-0.5">{{ hoveredSlot.year }}</div>
                           <div class="flex items-center gap-1"><span class="inline-block w-2 h-2 rounded-full bg-secondary" />Collected<span class="ml-auto pl-2 font-medium">{{ hoveredSlot.collected }}</span></div>
-                          <div class="flex items-center gap-1"><span class="inline-block w-2 h-2 rounded-full bg-orange-500" />Identified<span class="ml-auto pl-2 font-medium">{{ hoveredSlot.identified }}</span></div>
+                          <div class="flex items-center gap-1"><span class="inline-block w-2 h-2 rounded-full" :style="{ background: IDENTIFIED_COLOR }" />Identified<span class="ml-auto pl-2 font-medium">{{ hoveredSlot.identified }}</span></div>
                         </div>
                       </template>
                     </div>
@@ -212,7 +212,7 @@
                 <div class="flex flex-col">
                   <span
                     v-if="item.typeStatus"
-                    class="inline-block w-fit text-xs font-medium bg-red-500 text-white rounded px-1.5 py-0.5 mb-1"
+                    class="inline-block w-fit text-xs font-medium bg-danger text-white rounded px-1.5 py-0.5 mb-1"
                     v-html="item.typeStatusHtml"
                   />
                   <div v-if="item.identity || item.identificationQualifierHtml" class="flex items-baseline gap-2 text-xs">
@@ -290,6 +290,12 @@
 import GalleryThumbnailList from '@/components/Gallery/GalleryThumbnailList.vue'
 import MultiSelect from './MultiSelect.vue'
 import { computed, ref, watch, onBeforeUnmount } from 'vue'
+import '../../_shared/panel-tokens.css'
+
+// Colour of the phenology timeline's "Identified" series — defined in
+// panels/_shared/panel-tokens.css (theme-aware, host-overridable), imported
+// above so this panel carries it when installed elsewhere.
+const IDENTIFIED_COLOR = 'var(--pp-accent-identified)'
 
 const props = defineProps({
   list: {

@@ -91,7 +91,8 @@
             :href="gbifUrl"
             target="_blank"
             rel="noopener"
-            class="inline-block px-3 py-1.5 rounded bg-[#4c9c2e] text-white text-xs font-medium hover:bg-[#3f8326]"
+            class="inline-block px-3 py-1.5 rounded text-white text-xs font-medium hover:brightness-95"
+            :style="{ background: 'var(--pp-gbif)' }"
           >
             View on GBIF.org
           </a>
@@ -113,6 +114,7 @@ import {
   GBIF_OCCURRENCE_BASE
 } from '../_gbifShared/useGbifMatch'
 import gbifMark from '../_gbifShared/gbif-mark.svg'
+import '../_gbifShared/gbif-tokens.css'
 import PanelDropdown from '@/modules/otus/components/Panel/PanelDropdown.vue'
 import { useOtuPageRequestStore } from '@/modules/otus/store/request'
 

@@ -10,7 +10,7 @@
       >
         <!-- CollectionObject / FieldOccurrence -->
         <template v-if="CLICKABLE_TYPES.includes(item.type)">
-          <div class="text-sm font-medium text-gray-600">{{ TYPE_LABELS[item.type] }}</div>
+          <div class="text-sm font-medium text-base-soft">{{ TYPE_LABELS[item.type] }}</div>
           <div class="text-xs truncate">
             <span class="italic">{{ splitName(targets?.[i]?.label ?? item.label).name }}</span>
             <span v-if="splitName(targets?.[i]?.label ?? item.label).author">
@@ -21,25 +21,25 @@
 
         <!-- AssertedDistribution / AssertedAbsent — BA-linked variant -->
         <template v-else-if="AD_TYPES.includes(item.type) && isBaLinked(item, targets?.[i])">
-          <div class="text-sm font-medium text-gray-600">Asserted Distribution (Biological Association)</div>
+          <div class="text-sm font-medium text-base-soft">Asserted Distribution (Biological Association)</div>
           <div class="text-xs mt-0.5">
-            <span v-if="baLoading" class="text-gray-400 italic">loading...</span>
+            <span v-if="baLoading" class="text-base-soft italic">loading...</span>
             <template v-else-if="baDetailsMap.get(item.id)">
               <RouterLink
                 :to="`/otus/${baDetailsMap.get(item.id).otherId}/overview`"
                 class="text-secondary hover:underline"
               ><span class="italic">{{ splitName(baDetailsMap.get(item.id).otherLabel).name }}</span>{{ splitName(baDetailsMap.get(item.id).otherLabel).author ? ' ' + splitName(baDetailsMap.get(item.id).otherLabel).author : '' }}</RouterLink>
-              <span class="mx-1 text-gray-400">/</span>
+              <span class="mx-1 text-base-soft">/</span>
               <RouterLink
                 :to="`/otus/${targets?.[i]?.id}/overview`"
                 class="text-secondary hover:underline"
               ><span class="italic">{{ splitName(targets?.[i]?.label ?? '').name }}</span>{{ splitName(targets?.[i]?.label ?? '').author ? ' ' + splitName(targets?.[i]?.label ?? '').author : '' }}</RouterLink>
             </template>
             <!-- fallback while loading or if match fails -->
-            <span v-else class="text-gray-500">{{ parseBaRelationship(item.label) }}</span>
+            <span v-else class="text-base-content">{{ parseBaRelationship(item.label) }}</span>
           </div>
           <div class="mt-1">
-            <span v-if="citationsLoading" class="text-gray-400 italic">loading...</span>
+            <span v-if="citationsLoading" class="text-base-soft italic">loading...</span>
             <template v-else>
               <button
                 v-for="cit in citationsByItemId.get(item.id) || []"
@@ -53,7 +53,7 @@
 
         <!-- AssertedDistribution / AssertedAbsent — regular -->
         <template v-else-if="AD_TYPES.includes(item.type)">
-          <div class="text-sm font-medium text-gray-600">
+          <div class="text-sm font-medium text-base-soft">
             {{ item.type === ASSERTED_ABSENT ? 'Asserted absent' : 'Asserted distribution' }}
           </div>
           <div class="font-medium truncate">{{ areaNameFor(item) }}</div>
@@ -64,7 +64,7 @@
             </span>
           </div>
           <div class="mt-1">
-            <span v-if="citationsLoading" class="text-gray-400 italic">loading...</span>
+            <span v-if="citationsLoading" class="text-base-soft italic">loading...</span>
             <template v-else>
               <button
                 v-for="cit in citationsByItemId.get(item.id) || []"

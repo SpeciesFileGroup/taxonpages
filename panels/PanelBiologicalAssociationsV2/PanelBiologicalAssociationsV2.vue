@@ -199,7 +199,7 @@
                 />
                 <span
                   v-if="ba.images.length > 1"
-                  class="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full px-1"
+                  class="absolute -top-1 -right-1 bg-secondary text-secondary-content text-xs rounded-full px-1"
                 >
                   +{{ ba.images.length - 1 }}
                 </span>

@@ -534,7 +534,7 @@ function getDetHtml({ identifiedBy, dateIdentified }) {
 // privacy/consent equivalent to port, so it's the only one that transfers.
 function identificationQualifierHtml({ identificationQualifier }) {
   if (!identificationQualifier) return ''
-  return `<span class="text-orange-500 font-bold cursor-help" title="Identification qualifier: ${escHtml(identificationQualifier)}">?</span>`
+  return `<span class="text-warning font-bold cursor-help" title="Identification qualifier: ${escHtml(identificationQualifier)}">?</span>`
 }
 
 function badgeHtml(text) {

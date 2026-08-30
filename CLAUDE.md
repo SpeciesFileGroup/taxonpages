@@ -23,7 +23,7 @@ CLI: `taxonpages package list/add/remove/unpack` manages panels and packages.
 
 ### For CLAUDE
 - List of feature requests for TaxonWorks. Append if a new need is arising (ask me first): `docs/TaxonWorksWishlist.md`
-- To do list for CLAUDE: `docs/Task_images.md`, `docs/Task_Scope for Geography.md`
+- To do list for CLAUDE: `docs/Task_toDo.md`
 - TaxonWorks API documentation: https://github.com/SpeciesFileGroup/taxonworks_api (local copy may be available)
 - TaxonWorks source repo: https://github.com/SpeciesFileGroup/taxonworks (local copy may be avalable)
 
@@ -38,6 +38,69 @@ Use `text-secondary`, `bg-secondary`, `border-secondary` (maps to `--color-secon
 **`text-secondary-color` is NOT a valid utility** — generates no CSS. It looks fine on `<a>` tags (browser default link color) but silently fails on `<span>`, `<div>`, `<button>`. All occurrences have been purged; do not reintroduce it.
 
 Other useful tokens: `text-base-content`, `bg-base-foreground`, `border-base-muted`, `text-secondary-content`.
+
+### Surface / background tokens — the vanilla scheme (theme-safe in dark + light)
+
+The color palette is always derived from the TaxonPages package's own `VCard.global.vue` / `VModal` / `theme.css`, individual panels should never have their own color palette. Every panel and
+component should follow it so dark mode stays readable:
+
+| Role | Token |
+|---|---|
+| Page background (the ground the layout paints) | `bg-base-background` |
+| **Panel / card / any raised surface** — where your content and text live | `bg-base-foreground` + `text-base-content` |
+| Muted label / secondary text (labels only, never values) | `text-base-soft` |
+| Border between surfaces | `border-base-muted` (a.k.a. `border-base-border`) |
+| Nested raised block inside a card | keep it `bg-base-foreground` and separate it with a **border** — or `bg-base-muted`. Never a different fill just for "depth". |
+| Accent / link text | `text-secondary` (standing `text-base-content`, `hover:text-secondary` for in-content links) |
+
+**Rules that keep dark mode legible:**
+- **Never put content on `bg-base-background`.** In dark mode it is near-black; text sitting
+  directly on it (especially default `text-base-content` / white) is white-on-black and reads
+  as broken. Content always sits on `bg-base-foreground`.
+- **Don't distinguish sibling cards by fill.** Same `bg-base-foreground`, separated by a
+  border (optionally a subtle `--tp-card-shadow`). A "recessed" darker fill inverts in dark
+  mode. (This is why `modules/keys/components/GuidedChoice.vue` was reverted from
+  `bg-base-background` to `bg-base-foreground` — 2026-08-30.)
+- **`*-content` colors are text-on-fill only.** `text-secondary-content` / `text-primary-content`
+  are white and are only legible *on* `bg-secondary` / `bg-primary`. On a card they are
+  invisible (white-on-white in light mode). Use `text-secondary` / `text-base-content` instead.
+
+### Every colour is a theme token — no literals
+
+Enforced across `panels/` `components/` `modules/` as of 2026-08-30 (audit + purge).
+
+**Never use:**
+- Tailwind's default palette — `text-red-500`, `bg-blue-600`, `text-gray-400`, … (any
+  `<util>-<colour>-<number>`). Every one is a fixed sRGB value that ignores the theme.
+- hex / `rgb(...)` / `hsl(...)` literals in `.vue` / `.js` / `style` blocks.
+- arbitrary colour values — `bg-[#4c9c2e]`, `text-[rgb(...)]`.
+
+**Use instead** — the token utilities the package's `@theme` generates (all resolve to a
+package `--tp-*` var; the whole set is re-tintable from `config/style/theme.css`):
+
+| Purpose | Utilities |
+|---|---|
+| Surfaces / text / borders | `*-base-background`, `*-base-foreground`, `*-base-content`, `*-base-soft`, `*-base-muted`, `*-base-border`, `*-base-lighter` |
+| Brand | `*-primary`, `*-primary-content`, `*-secondary`, `*-secondary-content` |
+| Status | `*-danger`, `*-success`, `*-warning` (package-provided — portable to any TaxonPages repo) |
+| Map categories | `*-map-georeference`, `*-map-aggregate`, `*-map-asserted`, `*-map-type-material`, `*-map-collection-object`, `*-map-field-occurrence` |
+| Chrome | `*-footer-*`, `*-scrollbar-*`, `*-card-shadow`, `*-card-border`, `*-tree-line` |
+
+**One carve-out:** `text-white` is allowed *only* as the label colour on a saturated status
+fill (`bg-danger`/`bg-success`/`bg-warning`) or a map-category disc — this is what the
+package's own `VButton` solid variants do. Never `text-white` on a `base-*` surface.
+
+**A colour a panel needs that has no package token** (e.g. a brand green, a data-series
+accent): do **not** add it to `config/style/theme.css` or `config/vendor/tailwind.css`
+`@theme` — a distributed panel wouldn't carry those, so the class would generate no CSS.
+Instead put a plain CSS custom property in a `*-tokens.css` beside the panel and import it
+from the panel:
+- generic → `panels/_shared/panel-tokens.css`; feature-scoped → e.g. `panels/_gbifShared/gbif-tokens.css`
+- prefix `--pp-` ("project panels"), define in `:root` **and** `.dark`
+- consume as `var(--pp-<name>)` via inline `:style` or a scoped class — never a `bg-*`/`text-*` utility
+- a host repo can still retint it by redefining `--pp-<name>` in its own `:root`
+
+Existing: `--pp-accent-identified` (phenology "Identified" series), `--pp-gbif` (GBIF green).
 
 ## Vue whitespace condensing — rendering spaces between elements
 

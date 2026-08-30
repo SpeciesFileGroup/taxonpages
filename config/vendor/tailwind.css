@@ -6,16 +6,16 @@
  * Add your custom @theme overrides or additional styles below.
  * The base TaxonPages theme is imported above.
  *
- * Example — override theme colors:
- *
- * @theme {
- *   --color-primary-color: rgb(25, 100, 200);
- * }
- *
  * Example — customize typography prose styles:
  *
  * .prose li {
  *   margin-top: 0.1428571em;
  *   margin-bottom: 0.1428571em;
  * }
+ *
+ * NOTE: do NOT add project-specific colour utilities here (e.g. bg-gbif) if the
+ * consuming panel is distributed as an npm package — a host repo installing that
+ * panel won't have this @theme block, so the class would generate no CSS. Such a
+ * panel must consume its accent as `var(--tp-<name>, <fallback>)` in its own
+ * style, self-contained. See PanelSpecimenOccurrences / PanelGbifTaxon.
  */

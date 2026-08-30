@@ -14,7 +14,7 @@
         alt="iNaturalist"
         class="h-8 w-auto shrink-0"
       />
-      <span class="text-amber-600 dark:text-amber-400 grow">
+      <span class="text-warning grow">
         No images found on TaxonWorks, fetched from iNaturalist instead
       </span>
     </VCardHeader>

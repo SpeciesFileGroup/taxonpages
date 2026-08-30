@@ -13,7 +13,7 @@
       />
     </VCardHeader>
     <div
-      class="relative w-full h-80 overflow-hidden bg-black/5"
+      class="relative w-full h-80 overflow-hidden bg-base-muted"
     >
       <img
         :key="currentImage.identifier"

@@ -77,7 +77,7 @@
           <span class="loading-dots" aria-hidden="true"><span /><span /><span /></span>
         </div>
         <div v-else-if="ownTaxonError" class="pb-2 text-xs border-b border-base-muted">
-          <strong class="text-orange-500">Query 1 failed:</strong>
+          <strong class="text-danger">Query 1 failed:</strong>
           <span class="opacity-70"> couldn't compute the whole-taxon total — the request {{ ownTaxonError }}. This
           gets more likely at higher taxonomic ranks (family, tribe). Query 2 below is unaffected and keeps working
           through the per-species list on its own.</span>

@@ -1,0 +1,24 @@
+/*
+ * Colour tokens used ONLY by this project's custom panels.
+ *
+ * These are deliberately NOT in the TaxonPages host palette
+ * (config/style/theme.css) and NOT registered in Tailwind's @theme — a panel
+ * distributed to another repo carries this file with it (relative import, same
+ * convention as DwcTable.vue / specimenRef.js) and keeps working with zero host
+ * configuration.
+ *
+ * Prefix `--pp-` ("project panels") marks them as separate from the package's
+ * own `--tp-` contract. A host can retint any of them by redefining the custom
+ * property in its own :root / .dark.
+ *
+ * Consume as `var(--pp-name)` (inline :style or a scoped class) — never as a
+ * Tailwind `bg-*` / `text-*` utility, which would need an @theme entry the host
+ * repo won't have.
+ */
+:root {
+  --pp-accent-identified: #f97316; /* phenology timeline — "Identified" series (PanelSpecimenOccurrences) */
+}
+
+.dark {
+  --pp-accent-identified: #fb923c;
+}

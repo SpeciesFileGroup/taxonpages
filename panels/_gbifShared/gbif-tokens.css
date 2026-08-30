@@ -1,0 +1,18 @@
+/*
+ * GBIF brand colour, shared by the GBIF panels (PanelGbifTaxon, and available to
+ * PanelGbifImages / PanelGbifMap / PanelGbifTypeSpecimens if needed).
+ *
+ * Same rules as panels/_shared/panel-tokens.css: not in the host palette, not in
+ * Tailwind @theme, carried with the panel by relative import. `--pp-` prefix =
+ * project-panel token, distinct from the package's `--tp-`. Retint by redefining
+ * in the host :root / .dark.
+ *
+ * The value matches the fill in gbif-mark.svg.
+ */
+:root {
+  --pp-gbif: #4c9c2e;
+}
+
+.dark {
+  --pp-gbif: #7cbe5a;
+}

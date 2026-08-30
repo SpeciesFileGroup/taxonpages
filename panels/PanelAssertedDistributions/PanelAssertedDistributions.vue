@@ -95,7 +95,7 @@
               <VTableBodyCell>
                 <span
                   v-if="item.isAbsent"
-                  class="text-red-600 text-sm font-medium"
+                  class="text-danger text-sm font-medium"
                 >Absent</span>
               </VTableBodyCell>
 

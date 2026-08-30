@@ -39,7 +39,7 @@ export function Mixed(cluster) {
     html: [
       circle,
       innerCircle,
-      `<span class="absolute text-xs top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white  z-[200]">
+      `<span class="absolute text-xs top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primary-content  z-[200]">
         ${cluster.getChildCount()}
       </span>
       `
