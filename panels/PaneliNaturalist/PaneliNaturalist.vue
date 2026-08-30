@@ -114,8 +114,8 @@
       />
     </VCardContent>
 
-    <!-- ImageViewer for curated taxon photos -->
-    <ImageViewer
+    <!-- Shared lightbox for curated taxon photos -->
+    <ImageLightbox
       v-if="taxonPhotoViewer.open"
       :index="taxonPhotoViewer.index"
       :images="taxonPhotoImages"
@@ -139,8 +139,8 @@
  * --------------------------------------------
  * Shows the curated representative photos that iNaturalist editors select
  * for the taxon overview page. Fetched from the taxon_photos array.
- * Clicking a photo opens the ImageViewer lightbox (same component used
- * elsewhere in TaxonPages) showing the full-size image with attribution
+ * Clicking a photo opens the shared ImageLightbox (panels/_shared/,
+ * used by every panel) showing the full-size image with attribution
  * and a link to the photo page on iNaturalist.
  *
  * LOWER — Research-grade observations (/v1/observations)
@@ -175,6 +175,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import axios from 'axios'
 import inatMark from './inat-mark.svg'
+import ImageLightbox from '../_shared/ImageLightbox.vue'
 
 const props = defineProps({
   taxon: {
@@ -211,7 +212,7 @@ const pagination = ref({
   total_results: 0
 })
 
-// ImageViewer state for curated taxon photos
+// ImageLightbox state for curated taxon photos
 const taxonPhotoViewer = reactive({
   open: false,
   index: 0
@@ -224,7 +225,7 @@ function openTaxonPhotoViewer(index) {
 
 /**
  * Converts a raw iNaturalist taxon_photo entry into the image object shape
- * expected by the ImageViewer component:
+ * expected by the shared ImageLightbox:
  *   { id, thumb, original, attribution: { label }, source: { label }, depictions: [] }
  *
  * Since taxon photos are not linked to a specific observation, the source
@@ -305,7 +306,7 @@ async function resolveInatTaxonId() {
 
 /**
  * Fetches the curated taxon photos from /v1/taxa/:id and converts them
- * into ImageViewer-compatible image objects.
+ * into ImageLightbox-compatible image objects.
  */
 async function loadTaxonPhotos() {
   if (!taxonId.value) return
