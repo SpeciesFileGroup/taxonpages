@@ -223,9 +223,10 @@ on couplet change is desirable.
   top of the viewport — from any starting scroll position, and on a fresh deep-link load.
 - The A2 return pill does the same.
 
-**Status:** ✅ verified 2026-08-30 (walkthrough — links land on the right couplet). Note: the
-*scroll motion* is still too abrupt/overshooting — tracked as a separate follow-up in
-`docs/Task_toDo.md`, not an A7 regression.
+**Status:** ✅ verified 2026-08-30. Follow-up from `docs/Task_toDo.md` also done: the scroll
+motion no longer jumps to the top and races back — `scrollToCouplet` captures the pre-nav
+scrollY, undoes the router's `{ top: 0 }`, then smooth-scrolls only the short remaining
+distance. Left-margin couplet numbers are now links too (click to select that couplet).
 
 ---
 

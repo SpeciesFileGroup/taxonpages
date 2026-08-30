@@ -11,9 +11,10 @@
         : ''"
     >
       <div class="flex gap-3">
-        <span class="font-semibold text-secondary shrink-0 tabular-nums">
-          {{ couplet.coupletNumber }}
-        </span>
+        <RouterLink
+          :to="coupletTo(couplet.coupletNumber)"
+          class="font-semibold text-secondary shrink-0 tabular-nums hover:underline"
+        >{{ couplet.coupletNumber }}</RouterLink>
         <div class="flex-1">
           <p v-if="fromCouplet(couplet)" class="text-xs text-base-soft mb-1">
             <RouterLink
@@ -104,21 +105,36 @@ function isCurrent(couplet) {
 }
 
 // When the URL names a couplet, bring its section into view (client only).
-// Deferred past the router's own scrollBehavior ({ top: 0 } on hashless nav) via
-// nextTick + double rAF, so our smooth scroll wins the race.
-function scrollToCouplet(n) {
+//
+// The framework router's scrollBehavior forces { top: 0 } on every hashless nav,
+// so a naive smooth scroll would jump the reader to the top of the key and then
+// glide the whole way back down to the target — jarring, and "further than
+// necessary" for a hop between neighbouring couplets. Instead: capture where the
+// reader actually was (fromY, read synchronously before the router scrolls),
+// undo the { top: 0 } jump with no animation, then smooth-scroll the short
+// remaining distance to the target.
+function scrollToCouplet(n, fromY) {
   if (n == null || n === '' || typeof document === 'undefined') return
+  const startY = typeof fromY === 'number'
+    ? fromY
+    : (typeof window !== 'undefined' ? window.scrollY : 0)
   nextTick(() => {
+    const undoRouterJump = () => {
+      if (window.scrollY === 0 && startY > 0) window.scrollTo(0, startY)
+    }
     requestAnimationFrame(() => {
+      undoRouterJump()
       requestAnimationFrame(() => {
+        undoRouterJump()
         document.getElementById(`couplet-${n}`)
           ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       })
     })
   })
 }
-watch(() => props.couplet, scrollToCouplet, { immediate: true })
-watch(() => props.couplets, () => scrollToCouplet(props.couplet))
+const currentScrollY = () => (typeof window !== 'undefined' ? window.scrollY : 0)
+watch(() => props.couplet, (n) => scrollToCouplet(n, currentScrollY()), { immediate: true })
+watch(() => props.couplets, () => scrollToCouplet(props.couplet, currentScrollY()))
 </script>
 
 <style>
