@@ -168,7 +168,7 @@
 import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
 import ControlImageNext from '@/components/ImageViewer/ControlImageNext.vue'
 import ControlImagePrevious from '@/components/ImageViewer/ControlImagePrevious.vue'
-import DwcTable from '../_shared/DwcTable.vue'
+import DwcTable from './DwcTable.vue'
 import { makeAPIRequest } from '@/utils/request'
 
 const props = defineProps({

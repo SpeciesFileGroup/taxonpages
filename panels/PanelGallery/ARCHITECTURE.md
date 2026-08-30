@@ -2,7 +2,11 @@
 
 Panel id: `panel:gallery-v2`  
 Entry point: `main.js` → registers `PanelGallery.vue`  
-Custom viewer: `GalleryViewer.vue` (fork of the vanilla `ImageViewer`)
+Lightbox: `panels/_shared/ImageLightbox.vue` — the shared fullscreen viewer (a fork of the
+vanilla `ImageViewer`, formerly this panel's local `GalleryViewer.vue`; moved to `_shared/`
+2026-08-30 and now used by PaneliNaturalist, PanelBiologicalAssociationsV2,
+PanelSpecimenOccurrences and the `DwcTable` media strip too). Its internals are documented in
+the sections below and in `panels/_shared/readme.md`.
 
 ---
 
@@ -12,7 +16,7 @@ Custom viewer: `GalleryViewer.vue` (fork of the vanilla `ImageViewer`)
 PanelGallery.vue
 ├── GalleryMainImage        (package, @/components/Gallery/GalleryMainImage.vue)
 ├── thumbnail strip         (inline <div> loop)
-└── GalleryViewer.vue       (local fork)
+└── ImageLightbox.vue     (panels/_shared/, shared fork)
     ├── ControlImagePrevious / ControlImageNext   (package)
     ├── DwcTable            (shared from panels/_shared/DwcTable.vue)
     └── VModal (Teleport)   (citation detail popup)
@@ -160,7 +164,7 @@ Each iNat image is normalized to the same shape as a TW image so the rest of the
 
 ---
 
-## Depiction type inference (`GalleryViewer.vue`)
+## Depiction type inference (`ImageLightbox.vue`)
 
 The `/inventory/images.json` endpoint does not always serialize `depiction_object_type`. `inferDepictionType` reconstructs it from the label string format:
 
@@ -249,7 +253,7 @@ Because `dwcCache` and `otuValidCache` are `reactive({})`, assigning a key trigg
 
 ## Image loading state
 
-`GalleryViewer` tracks whether the full-size image has finished loading:
+`ImageLightbox` tracks whether the full-size image has finished loading:
 
 - `isLoading` starts `true` and is reset to `true` on every index change (before the browser fetches the new src).
 - `onMounted` attaches native `load` and `error` listeners to the `<img>` element; either event sets `isLoading = false`.
@@ -318,7 +322,7 @@ All three sources (TaxonWorks, subordinate taxa, iNaturalist) produce the same s
 | `sort_order` | Array | `[]` | Forwarded to `store.loadImages` |
 | `subMaxImages` | Number | `10` | Max images returned by the subordinate-taxa fallback. Set via `bind:` in `taxa_page.yml`. |
 
-### `GalleryViewer.vue`
+### `ImageLightbox.vue`
 
 | Prop | Type | Purpose |
 |---|---|---|

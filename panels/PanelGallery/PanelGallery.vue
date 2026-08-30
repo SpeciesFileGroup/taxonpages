@@ -40,7 +40,7 @@
             />
           </div>
         </div>
-        <GalleryViewer
+        <ImageLightbox
           v-if="isViewerOpen"
           :index="galleryIndex"
           :images="activeImages"
@@ -62,7 +62,7 @@ import axios from 'axios'
 import { useImageStore } from '@/modules/otus/store/useImageStore'
 import { makeAPIRequest } from '@/utils/request'
 import GalleryMainImage from '@/components/Gallery/GalleryMainImage.vue'
-import GalleryViewer from './GalleryViewer.vue'
+import ImageLightbox from '../_shared/ImageLightbox.vue'
 import inatMark from '../PaneliNaturalist/inat-mark.svg'
 
 const INAT_MAX = 10

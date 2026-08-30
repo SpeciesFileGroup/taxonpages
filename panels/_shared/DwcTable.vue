@@ -8,14 +8,20 @@
   Depended on by (relative import paths from panels/_shared/):
     - ../PanelMapV2/PanelMapV2.vue                        — marker/list-row "show details"
     - ../PanelMapV2/components/Search/OtuSearch.vue       — search result rows
-    - ../PanelGallery/GalleryViewer.vue                    — image viewer overlay;
-        wrap the ref's parent in <Teleport to="body"> since GalleryViewer itself
+    - ./ImageLightbox.vue                                 — image viewer overlay;
+        wrap the ref's parent in <Teleport to="body"> since ImageLightbox itself
         renders inside a fixed-position overlay
     - ../PanelBiologicalAssociationsV2/PanelBiologicalAssociationsV2.vue
         — subject/object "ⓘ" button
+    - ../PanelSpecimenOccurrences/components/SingleSpeciesOccurrences.vue
+        — record-row "ⓘ" button
 
-  If you change this file, sanity-check all four call sites — none of them
-  keep their own copy anymore.
+  This component also opens ./ImageLightbox.vue (async) when a media thumbnail
+  is clicked — that instance is passed :show-info-button="false" so it cannot
+  re-open a DwcTable and recurse.
+
+  If you change this file, sanity-check all call sites — none of them keep
+  their own copy anymore.
 
   Layout: a "specimen label" reading order — identity (name, type status,
   collector/date/locality at a glance) and media up top, full Location /
