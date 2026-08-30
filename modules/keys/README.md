@@ -22,6 +22,7 @@ Toggle between two views (persisted per viewer in `localStorage` as `taxonpages:
 - One couplet at a time, step-by-step navigation
 - Breadcrumb trail showing the path taken
 - Each choice card shows "→ Couplet M · leads to K taxa" instead of a wall of downstream couplet text
+- Figures (a lead's own, or the taxon-image fallback) sit at the bottom of each choice card, beneath the "Go to couplet" button; a figure shared by every lead is shown once above the cards
 - Descending and breadcrumb clicks push the URL, so browser Back walks up the key
 - Guided deep-links: `/key/3977/4` loads directly to couplet 4, with breadcrumb `1 › 3 › 4`
 
@@ -30,10 +31,10 @@ Toggle between two views (persisted per viewer in `localStorage` as `taxonpages:
 - Each couplet marked with `id="couplet-N"` for scroll-to navigation
 - Couplet-number links navigate via the `:couplet` param and scroll the target into view
 - Current couplet highlighted with a ring; a persistent "↑ Couplet N" button (bottom-right) returns to it
-- **Per-lead layout:** each lead's target (a taxon, or "couplet N →") renders as a filled
-  chip, right-aligned so the whole page scans down a single column. A reserved ~¼-width
-  strip on the right of each lead holds its illustrating images (see below). Below ~640px
-  the strip drops under the lead text.
+- **Per-lead layout:** the lead text sits in a readable column (capped ~46ch); its target
+  (a taxon, or "couplet N →") renders as a filled chip, right-aligned so the whole page
+  scans down a single column. A fixed ~320px image column to the right of each lead holds
+  its illustrating figures (see below). Below ~640px the image column drops under the text.
 - **Target taxon names** use the TaxonWorks split — name italic (`cached_html`), author +
   year roman (`cached_author_year`) — instead of italicising the whole `target_label`.
   Resolved per lead-target OTU by `composables/useKeyTaxonNames.js` (provided as
@@ -43,27 +44,29 @@ Toggle between two views (persisted per viewer in `localStorage` as `taxonpages:
 
 ### Figures and citations
 
-- **Per-lead figures** — a lead's own `figures` (from `GET /leads/key/:id`) render as a
-  thumbnail row, click to open a keys-local lightbox (prev/next, ←/→ keys, Esc to close,
-  focus-trapped). A lead can carry figures 1–3 while its sibling carries fig 4 — each lead
-  shows its own list.
+- **Per-lead figures** — a lead's own `figures` (from `GET /leads/key/:id`) render in the
+  image column at column width, natural aspect, stacked, with the `figure_label` (or a
+  truncated caption) below each; click opens a keys-local lightbox (prev/next, ←/→ keys,
+  Esc to close, focus-trapped) with the full caption. Up to 3 shown, then a "+N more
+  images" link into the lightbox. A lead can carry figs 1–3 while its sibling carries fig
+  4 — each lead shows its own list.
 - **Shared couplet figures** — when the *same image* is attached to **every** lead of a
   couplet (e.g. one plate illustrating the contrast, added to both leads), it is hoisted
-  out of the per-lead strips into a larger block on the right of the couplet, vertically
-  centred beside the leads. Identity is the underlying image (`figureKey` — the
+  out of the per-lead figures and shown once for the couplet: in Full-key view a block on
+  the right, vertically centred beside the leads; in Guided view a "Shared figure" card
+  above the choice cards. Identity is the underlying image (`figureKey` — the
   `/images/<id>/` id), so a differing caption on each copy doesn't matter; the captioned
-  copy is kept as the representative. `partitionCoupletFigures` in `lib/images.js`,
-  Full-key view only. In a couplet that has a shared figure, each lead's *individual*
-  figures move below its text (full width of the leads column) rather than into the
-  ¼-column strip, and the taxon-image fallback is suppressed for leads with no individual
-  figure — the shared figure is the couplet's illustration.
+  copy is kept as the representative (`partitionCoupletFigures` in `lib/images.js`). Each
+  lead's remaining *individual* figures still show per lead, and the taxon-image fallback
+  is suppressed for a lead with no individual figure — the shared figure is the couplet's
+  illustration.
 - **Taxon-image fallback** — in practice no key in this project carries per-lead figures,
   so for any lead that keys out an OTU (`target_type === '/api/v1/otus'`) and has no
   figures of its own, `LeadFigures` shows images *of that taxon* instead:
   `GET /otus/:id/inventory/images.json` (OTU + CollectionObject + FieldOccurrence
   depictions in one call), and when that is empty, iNaturalist (curated taxon photos, then
-  research-grade observations — same logic as `panels/PanelGallery`). Up to 3 thumbnails
-  then a "+N" tile; a one-line caption names the taxon and the source. Loaded lazily per
+  research-grade observations — same logic as `panels/PanelGallery`). Up to 3 images then a
+  "+N more images" link; one caption line below names the taxon and the source. Loaded lazily per
   couplet via `IntersectionObserver` (300px margin) so key text always paints first;
   results are cached and de-duped per OTU for the life of the `KeyView` instance
   (`composables/useKeyImages.js`, provided as `keyImages`). Applies to both Full-key and

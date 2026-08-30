@@ -2,34 +2,41 @@
   <!-- Always rendered for an eligible lead (has own figures, or keys out an OTU) so the
        IntersectionObserver has an element to watch and the layout column keeps its width
        before images arrive. -->
-  <div v-if="eligible" ref="root" class="flex flex-col gap-1">
-    <div v-if="items.length" class="flex flex-wrap gap-1.5" :class="isLg ? 'w-full' : ''">
-      <button
-        v-for="(fig, i) in preview"
-        :key="fig.id ?? i"
-        type="button"
-        :class="[thumbClass, 'overflow-hidden rounded border border-base-muted hover:border-secondary transition']"
-        :title="figTitle(fig)"
-        @click="open(i)"
-      >
-        <img :src="thumbSrc(fig)" alt="" :class="imgClass" />
-      </button>
+  <div v-if="eligible" ref="root" class="flex flex-col gap-2">
+    <template v-if="items.length">
+      <!-- one row: a single figure fills the column; two sit side by side -->
+      <div class="flex gap-3">
+        <figure v-for="(fig, i) in preview" :key="fig.id ?? i" class="m-0 flex-1 min-w-0">
+          <button
+            type="button"
+            class="block w-full overflow-hidden rounded border border-base-muted hover:border-secondary transition"
+            :title="figTitle(fig)"
+            @click="open(i)"
+          >
+            <img :src="imgSrc(fig)" alt="" class="w-full h-auto max-h-[420px] object-contain" />
+          </button>
+          <figcaption
+            v-if="figCaption(fig)"
+            class="mt-1 text-center text-xs text-base-soft leading-snug"
+          >{{ figCaption(fig) }}</figcaption>
+        </figure>
+      </div>
+
       <button
         v-if="rest"
         type="button"
-        :class="[restClass, 'grid place-items-center rounded border border-base-muted text-xs text-base-soft hover:border-secondary hover:text-secondary transition']"
-        :title="`Show ${rest} more`"
+        class="self-start text-xs text-secondary hover:underline"
         @click="open(preview.length)"
-      >+{{ rest }}</button>
-    </div>
+      >+{{ rest }} more image{{ rest > 1 ? 's' : '' }}</button>
+
+      <p v-if="captionLine" class="text-xs text-base-soft leading-snug">{{ captionLine }}</p>
+    </template>
 
     <div
       v-else-if="fallbackEntry && fallbackEntry.state === 'loading'"
-      class="h-20 w-20 rounded border border-base-muted animate-pulse"
+      class="h-24 w-full rounded border border-base-muted animate-pulse"
       aria-hidden="true"
     />
-
-    <p v-if="captionLine" class="text-xs text-base-soft leading-snug">{{ captionLine }}</p>
 
     <ClientOnly>
       <KeyLightbox
@@ -54,20 +61,12 @@ const props = defineProps({
   node: { type: Object, default: null },
   // Explicit figure list. `null` → use `node.figures`. An array (even empty) OVERRIDES
   // `node.figures`: `[]` means "this lead has no individual figures, go to the fallback".
-  figures: { type: Array, default: null },
-  // 'sm' — the ¼-column per-lead strip; 'lg' — the shared-figure block centred beside a couplet.
-  size: { type: String, default: 'sm' }
+  figures: { type: Array, default: null }
 })
 
-const PREVIEW_N = 3
-const isLg = computed(() => props.size === 'lg')
-// 'lg' (shared couplet figure): fill the column width at natural aspect, capped height.
-// 'sm' (per-lead strip): fixed small square.
-const thumbClass = computed(() => (isLg.value ? 'w-full' : 'h-20 w-20 shrink-0'))
-const imgClass = computed(() =>
-  isLg.value ? 'w-full h-auto max-h-96 object-contain' : 'h-full w-full object-contain'
-)
-const restClass = computed(() => (isLg.value ? 'w-full h-16' : 'h-20 w-20 shrink-0'))
+// One row of figures: a lone figure fills the image column, two sit side by side.
+// The rest go to the "+N more images" lightbox.
+const PREVIEW_N = 2
 
 const keyImages = inject('keyImages', null)
 
@@ -105,8 +104,6 @@ const rest = computed(() => split.value.rest)
 const viewer = ref(null)
 const open = (i) => { viewer.value = i }
 
-// thumb / title work for both shapes: raw lead figures ({ figure_label, caption,
-// original_png }) and normalised fallback images ({ label, caption, original }).
 const apiUrl = (typeof __APP_ENV__ !== 'undefined' && __APP_ENV__.url) || ''
 const token = (typeof __APP_ENV__ !== 'undefined' && __APP_ENV__.project_token) || ''
 function originalPngUrl(fig) {
@@ -114,16 +111,26 @@ function originalPngUrl(fig) {
     ? `${apiUrl}/${String(fig.original_png).substring(8)}?project_token=${token}`
     : ''
 }
-function thumbSrc(fig) {
-  // 'lg' renders the image at column width — a small `thumb` would upscale blurry,
-  // so prefer the larger renditions there.
-  const order = isLg.value
+// Column-width render.
+// - A key's own figure (a plate/diagram, no `sourceTag`) is shown at full resolution.
+// - Taxon-image fallback photos (`sourceTag` set — inventory / iNaturalist) stay on the
+//   `medium` rendition: plenty at column width and much lighter.
+function imgSrc(fig) {
+  const order = fig.sourceTag
     ? [fig.medium, fig.original, originalPngUrl(fig), fig.thumb]
-    : [fig.thumb, fig.medium, fig.original, originalPngUrl(fig)]
+    : [originalPngUrl(fig), fig.original, fig.medium, fig.thumb]
   return order.find(Boolean) || ''
 }
 function figTitle(fig) {
   return fig.figure_label || fig.label || fig.caption || 'figure'
+}
+// Short label under each image (the full caption is in the lightbox). Fallback
+// (taxon-image) entries are covered by the single `captionLine` instead.
+function figCaption(fig) {
+  if (fig.sourceTag) return ''
+  if (fig.figure_label) return String(fig.figure_label)
+  const c = String(fig.caption || '').trim()
+  return c.length > 70 ? `${c.slice(0, 70).trimEnd()}…` : c
 }
 
 // ── lazy trigger ─────────────────────────────────────────────────────────────

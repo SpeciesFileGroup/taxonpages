@@ -19,9 +19,9 @@
              block vertically centred beside them -->
         <div
           class="flex-1 min-w-0"
-          :class="sharedFiguresOf(couplet.id).length ? 'sm:flex sm:gap-3' : ''"
+          :class="sharedFiguresOf(couplet.id).length ? 'sm:flex sm:gap-6' : ''"
         >
-         <div class="min-w-0 flex-1">
+         <div class="min-w-0 flex-1" :class="hasShared(couplet.id) ? 'sm:max-w-[440px]' : ''">
           <p v-if="fromCouplet(couplet)" class="text-xs text-base-soft mb-1">
             <RouterLink
               :to="coupletTo(fromCouplet(couplet))"
@@ -37,20 +37,21 @@
             <div class="flex gap-2">
               <span class="text-base-soft shrink-0 w-4 text-right">{{ idx === 0 ? '' : '—' }}</span>
 
-              <!-- Without a shared figure: text + right-aligned target beside a reserved
-                   ~1/4 image strip. With a shared figure: the strip moves below the text
-                   (the shared block owns the right side of the couplet). -->
+              <!-- Without a shared figure: text (capped ~440px) + right-aligned target, then a
+                   fixed 320px image column. With a shared figure: this lead's individual
+                   figures sit below its text and the shared block owns the couplet's right
+                   (the width cap then lives on the leads column above, not here). -->
               <div
                 class="flex-1 min-w-0"
-                :class="hasShared(couplet.id) ? '' : 'flex flex-col gap-2 sm:flex-row sm:gap-3'"
+                :class="hasShared(couplet.id) ? '' : 'flex flex-col gap-2 sm:flex-row sm:gap-6'"
               >
-                <div class="flex-1 min-w-0">
+                <div class="flex-1 min-w-0" :class="hasShared(couplet.id) ? '' : 'sm:max-w-[440px]'">
                   <LeadText :node="choice" :citations="citations" @open-citation="$emit('open-citation', $event)" />
                   <div class="mt-1 flex sm:justify-end">
                     <RouterLink
                       v-if="choice.isCouplet"
                       :to="coupletTo(choice.coupletNumber)"
-                      class="inline-flex items-center rounded-full bg-secondary/10 px-2.5 py-0.5 text-sm font-medium text-secondary hover:bg-secondary/20 hover:underline"
+                      class="inline-flex items-center whitespace-nowrap rounded-full bg-secondary/10 px-2.5 py-0.5 text-sm font-medium text-secondary hover:bg-secondary/20 hover:underline"
                     >couplet {{ choice.coupletNumber }} <span class="ml-1 opacity-60">→</span></RouterLink>
                     <TaxonLink
                       v-else-if="choice.targetType === '/api/v1/otus'"
@@ -63,11 +64,11 @@
                       :href="choice.targetLink"
                       target="_blank"
                       rel="noopener"
-                      class="inline-flex items-center rounded-full bg-secondary/10 px-2.5 py-0.5 text-sm text-secondary hover:bg-secondary/20 hover:underline"
+                      class="inline-flex items-center whitespace-nowrap rounded-full bg-secondary/10 px-2.5 py-0.5 text-sm text-secondary hover:bg-secondary/20 hover:underline"
                     >{{ choice.targetLabel }}</a>
                     <span
                       v-else
-                      class="inline-flex items-center rounded-full bg-base-muted px-2.5 py-0.5 text-sm text-base-content"
+                      class="inline-flex items-center whitespace-nowrap rounded-full bg-base-muted px-2.5 py-0.5 text-sm text-base-content"
                     >{{ choice.targetLabel }}</span>
                   </div>
 
@@ -79,7 +80,7 @@
                   />
                 </div>
 
-                <div v-if="!hasShared(couplet.id)" class="sm:w-2/5 sm:max-w-[380px] sm:shrink-0">
+                <div v-if="!hasShared(couplet.id)" class="sm:flex-1 sm:min-w-0 sm:max-w-[480px]">
                   <LeadFigures :node="choice" :figures="ownFiguresOf(couplet.id, choice.id)" />
                 </div>
               </div>
@@ -89,9 +90,9 @@
 
          <div
            v-if="hasShared(couplet.id)"
-           class="mt-3 sm:mt-0 sm:w-2/5 sm:max-w-[380px] sm:shrink-0 sm:self-center"
+           class="mt-3 sm:mt-0 sm:flex-1 sm:min-w-0 sm:max-w-[480px] sm:self-center"
          >
-           <LeadFigures :figures="sharedFiguresOf(couplet.id)" size="lg" />
+           <LeadFigures :figures="sharedFiguresOf(couplet.id)" />
          </div>
         </div>
       </div>

@@ -2,16 +2,17 @@
   <header class="border-b border-base-muted pb-4 mb-6">
     <h1 class="text-2xl font-semibold text-base-content">{{ meta.title }}</h1>
 
-    <p v-if="meta.taxonomicScope" class="mt-1 text-base-content">
-      <span class="text-base-soft">Scope: </span>
-      <RouterLink
+    <p v-if="meta.taxonomicScope" class="mt-1 text-base-content [&_i]:italic">
+      <span class="text-base-soft">Scope: </span><RouterLink
         v-if="meta.otuId"
         :to="{ name: 'otus-id', params: { id: meta.otuId } }"
         target="_blank"
         rel="noopener"
-        class="italic text-base-content hover:underline hover:text-secondary"
-      >{{ meta.taxonomicScope }}</RouterLink>
-      <span v-else class="italic">{{ meta.taxonomicScope }}</span>
+        class="text-secondary hover:underline"
+      ><span v-if="meta.taxonomicScopeHtml" v-html="meta.taxonomicScopeHtml" /><template v-else>{{ meta.taxonomicScope }}</template></RouterLink><span
+        v-else-if="meta.taxonomicScopeHtml"
+        v-html="meta.taxonomicScopeHtml"
+      /><template v-else>{{ meta.taxonomicScope }}</template>
     </p>
 
     <p v-if="primaryCitation" class="mt-2 text-sm text-base-content [&_i]:italic">

@@ -1,5 +1,5 @@
 <template>
-  <div class="tp-keys container mx-auto py-4">
+  <div class="tp-keys mx-auto w-full max-w-5xl py-4">
     <VSpinner v-if="loading" />
     <div v-else-if="error" class="text-danger">Could not load key {{ route.params.id }}.</div>
     <div v-else class="rounded-lg border border-base-muted bg-base-foreground p-4 sm:p-6">
@@ -88,14 +88,21 @@ provide('keyTaxonNames', useKeyTaxonNames(terminalOtuList))
 const citations = ref({})
 const activeCitation = ref(null)
 const completeness = ref(null)
+// Scope taxon for the header — resolved by loadScope() independently of the (slower)
+// completeness pipeline. `scopeTaxonName.html` is the taxon's `full_name_tag` (the same
+// field TaxonPages renders its page title from: name parts italic, author roman);
+// until it arrives the header shows the plain `metadata.taxonomic_scope` string.
+const resolvedScopeOtuId = ref(null)
+const scopeTaxonName = ref(null)
 
 const meta = computed(() => ({
   title: rawMeta.value.title || listMeta.value.text || '',
   taxonomicScope: rawMeta.value.taxonomic_scope || null,
+  taxonomicScopeHtml: scopeTaxonName.value?.html || null,
   originCitation: rawMeta.value.origin_citation || null,
   attribution: rawMeta.value.attribution || null,
   description: listMeta.value.description || null,
-  otuId: listMeta.value.otu_id || null,
+  otuId: listMeta.value.otu_id || resolvedScopeOtuId.value || null,
   // key_updated_at / *_in_words is only in the public GET /leads row, never in
   // GET /leads/key/:id — so this chip renders for public keys only (A13 Step 3).
   updatedInWords: listMeta.value.key_updated_at_in_words || null,
@@ -134,6 +141,8 @@ async function load(id) {
   error.value = false
   listMeta.value = {}
   rawMeta.value = {}
+  resolvedScopeOtuId.value = null
+  scopeTaxonName.value = null
   try {
     const keyReq = makeAPIRequest.get(`/leads/key/${id}`)
     const listReq = makeAPIRequest.get('/leads').catch(() => ({ data: [] }))
@@ -145,6 +154,7 @@ async function load(id) {
     const { data: list } = await listReq
     if (myGen !== loadGen) return
     listMeta.value = (Array.isArray(list) ? list : []).find((r) => r.id === Number(id)) || {}
+    loadScope(listMeta.value.otu_id, nodes.value, myGen)
     loadCompleteness(listMeta.value.otu_id, nodes.value, myGen)
   } catch {
     if (myGen === loadGen) error.value = true
@@ -174,6 +184,49 @@ async function loadCitations(leadIds, myGen) {
     citations.value = map
   } catch {
     if (myGen === loadGen) citations.value = {}
+  }
+}
+
+// Scope taxon for the header — its OTU id (route target) and `full_name_tag` (display).
+// Standalone so it isn't blocked behind the completeness pipeline. Public keys have the
+// scope OTU directly (listMeta.otu_id); others take the lowest common ancestor of the
+// key's terminal taxa.
+async function loadScope(scopeOtuId, nodeMap, myGen) {
+  try {
+    let tnId = null
+    let otuId = scopeOtuId || null
+
+    if (scopeOtuId) {
+      const { data: o } = await makeAPIRequest.get(`/otus/${scopeOtuId}`)
+      tnId = o?.taxon_name_id || null
+    } else {
+      const terminals = terminalOtus(nodeMap)
+      if (!terminals.length) return
+      const oq = new URLSearchParams()
+      terminals.forEach((t) => oq.append('otu_id[]', t.id))
+      oq.set('per', '1000')
+      const { data: otuRaw } = await makeAPIRequest.get(`/otus?${oq.toString()}`)
+      const tnIds = [
+        ...new Set(
+          (Array.isArray(otuRaw) ? otuRaw : [])
+            .map((o) => o.taxon_name_id)
+            .filter((v) => v != null)
+        )
+      ]
+      if (!tnIds.length) return
+      tnId = await resolveScopeFromTerminals(tnIds)
+      if (!tnId) return
+      const { data: sOtu } = await makeAPIRequest.get(`/otus?taxon_name_id[]=${tnId}&per=1`)
+      otuId = Array.isArray(sOtu) ? sOtu[0]?.id ?? null : null
+    }
+    if (!tnId || myGen !== loadGen) return
+
+    const { data: sum } = await makeAPIRequest.get(`/taxon_names/${tnId}/inventory/summary`)
+    if (myGen !== loadGen) return
+    if (otuId != null) resolvedScopeOtuId.value = otuId
+    if (sum?.full_name_tag) scopeTaxonName.value = { html: sum.full_name_tag }
+  } catch {
+    // leave nulls — the header keeps showing the plain metadata.taxonomic_scope string
   }
 }
 
@@ -374,7 +427,7 @@ watch(() => route.params.id, (id) => id && load(id), { immediate: true })
    rules are namespaced under `.tp-keys` so they don't leak app-wide once a key opens (F5). */
 @media print {
   .key-print-hide { display: none !important; }
-  .tp-keys.container { max-width: none !important; }
+  .tp-keys { max-width: none !important; }
   .tp-keys a { text-decoration: none !important; color: inherit !important; }
 }
 </style>

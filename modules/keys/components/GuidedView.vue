@@ -28,8 +28,18 @@
         :choice="choice"
         :nodes="nodes"
         :citations="citations"
+        :own-figures="coupletFigures.ownByLeadId ? (coupletFigures.ownByLeadId[choice.id] || []) : null"
         @open-citation="$emit('open-citation', $event)"
       />
+    </div>
+
+    <div
+      v-if="coupletFigures.shared.length"
+      class="mt-4 rounded border border-base-muted bg-base-foreground p-4 sm:max-w-[480px]"
+      :style="{ boxShadow: 'var(--tp-card-shadow) 0 2px 4px 0' }"
+    >
+      <p class="mb-2 text-xs italic text-base-soft">Figure for both leads</p>
+      <LeadFigures :figures="coupletFigures.shared" />
     </div>
   </div>
 </template>
@@ -37,7 +47,9 @@
 <script setup>
 import { computed } from 'vue'
 import { rootId, breadcrumb, childChoices, coupletByNumber } from '../lib/tree.js'
+import { partitionCoupletFigures } from '../lib/images.js'
 import GuidedChoice from './GuidedChoice.vue'
+import LeadFigures from './LeadFigures.vue'
 
 const props = defineProps({
   keyId: { type: [String, Number], required: true },
@@ -60,6 +72,20 @@ const parentCouplet = computed(() => {
 
 const trail = computed(() => (current.value.id ? breadcrumb(current.value.id, props.nodes) : []))
 const choices = computed(() => (current.value.id ? childChoices(current.value.id, props.nodes) : []))
+
+// A figure attached to every lead of this couplet is shown once (below), not repeated
+// in each choice card. `ownByLeadId` is null when there is no shared figure — the signal
+// for GuidedChoice to fall back to its normal per-lead figure / taxon-image behaviour.
+const coupletFigures = computed(() => {
+  const leads = choices.value
+  if (leads.length < 2) return { shared: [], ownByLeadId: null }
+  const { shared, own } = partitionCoupletFigures(leads.map((l) => l.figures || []))
+  if (!shared.length) return { shared: [], ownByLeadId: null }
+  return {
+    shared,
+    ownByLeadId: Object.fromEntries(leads.map((l, i) => [l.id, own[i] || []]))
+  }
+})
 
 // RouterLink target for a couplet number. The root couplet drops the :couplet segment
 // so its URL is the clean /key/:id.
