@@ -109,9 +109,15 @@ const meta = computed(() => ({
   // GET /leads/key/:id — so this chip renders for public keys only (A13 Step 3).
   updatedInWords: listMeta.value.key_updated_at_in_words || null,
   // couplets + taxa always come from the loaded key tree; the /leads row is only
-  // a fallback for the brief moment before nodes populate (A13 Step 1).
+  // a fallback for the brief moment before nodes populate (A13 Step 1). /leads
+  // otus_count also counts the root's scope OTU (otu_id) when the key has one, so
+  // drop that to match terminalOtuList (which is already scope-free).
   coupletsCount: couplets.value.length || listMeta.value.couplets_count || null,
-  otusCount: terminalOtuList.value.length || listMeta.value.otus_count || null
+  otusCount:
+    terminalOtuList.value.length ||
+    (listMeta.value.otus_count
+      ? listMeta.value.otus_count - (listMeta.value.otu_id ? 1 : 0)
+      : null)
 }))
 
 // Primary source = the citation the curator flagged `is_original` in TaxonWorks
@@ -311,16 +317,17 @@ async function loadCompleteness(scopeOtuId, nodeMap, myGen) {
     const { data: tnRaw } = await makeAPIRequest.get(`/taxon_names?${tq.toString()}`)
     const tnRowById = new Map((Array.isArray(tnRaw) ? tnRaw : []).map((t) => [t.id, t]))
 
-    // distinct terminal ranks as bare words (finestRank([raw]) normalises a single rank);
-    // targetRank is the finest of them, the rest are coarser ranks the key also keys out.
+    // Distinct terminal ranks as bare words (finestRank([raw]) normalises a single
+    // rank). Every one gets its own rank-scoped descendants fetch below; the actual
+    // target rank is chosen inside buildCompletenessReport (modalRank — the rank the
+    // key mostly operates at). This is only a "any usable rank at all?" guard.
     const terminalRankWords = [...new Set(
       [...tnRowById.values()].map((t) => finestRank([t.rank])).filter(Boolean)
     )]
-    const targetRank = finestRank(terminalRankWords)
-    if (!targetRank) return
+    if (!terminalRankWords.length) return
 
-    // descendants of the scope taxon, rank-scoped to [targetRank, ...coarser terminal
-    // ranks], synonyms included (no validity filter — synonym folding still needs them)
+    // descendants of the scope taxon, one rank-scoped fetch per distinct terminal
+    // rank, synonyms included (no validity filter — synonym folding still needs them)
     const mapRow = (d) => ({
       id: d.id,
       parentId: d.parent_id,

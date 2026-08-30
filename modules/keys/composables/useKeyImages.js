@@ -106,6 +106,7 @@ export function useKeyImages(terminalOtusRef) {
   const entries = reactive({})
   let metaMap = null // otuId -> { name, rank }, for the iNaturalist fallback
   let metaPromise = null
+  let gen = 0 // bumped by reset(); an in-flight resolveMeta() from an older gen must not publish
 
   function entryFor(otuId) {
     const key = String(otuId)
@@ -119,6 +120,7 @@ export function useKeyImages(terminalOtusRef) {
     for (const k of Object.keys(entries)) delete entries[k]
     metaMap = null
     metaPromise = null
+    gen++
   }
 
   // One batched pass (2 requests total, regardless of key size), lazily on first
@@ -126,34 +128,48 @@ export function useKeyImages(terminalOtusRef) {
   function resolveMeta() {
     if (metaMap) return Promise.resolve(metaMap)
     if (!metaPromise) {
+      const myGen = gen
       metaPromise = (async () => {
-        const otuIds = [
-          ...new Set((terminalOtusRef?.value || []).map((t) => t.id).filter((v) => v != null))
-        ]
-        if (!otuIds.length) return (metaMap = {})
+        const build = async () => {
+          const otuIds = [
+            ...new Set((terminalOtusRef?.value || []).map((t) => t.id).filter((v) => v != null))
+          ]
+          if (!otuIds.length) return {}
 
-        const oq = new URLSearchParams()
-        otuIds.forEach((id) => oq.append('otu_id[]', id))
-        oq.set('per', '1000')
-        const { data: otus } = await makeAPIRequest.get(`/otus?${oq.toString()}`)
+          const oq = new URLSearchParams()
+          otuIds.forEach((id) => oq.append('otu_id[]', id))
+          oq.set('per', '1000')
+          const { data: otus } = await makeAPIRequest.get(`/otus?${oq.toString()}`)
 
-        const otuIdByTnId = {}
-        const tnIds = []
-        for (const o of Array.isArray(otus) ? otus : []) {
-          if (o.taxon_name_id != null) {
-            otuIdByTnId[o.taxon_name_id] = o.id
-            tnIds.push(o.taxon_name_id)
+          const otuIdByTnId = {}
+          const tnIds = []
+          for (const o of Array.isArray(otus) ? otus : []) {
+            if (o.taxon_name_id != null) {
+              otuIdByTnId[o.taxon_name_id] = o.id
+              tnIds.push(o.taxon_name_id)
+            }
           }
+          if (!tnIds.length) return {}
+
+          const tq = new URLSearchParams()
+          tnIds.forEach((id) => tq.append('taxon_name_id[]', id))
+          tq.set('per', '1000')
+          const { data: tns } = await makeAPIRequest.get(`/taxon_names?${tq.toString()}`)
+
+          return indexTaxonMeta(tns, otuIdByTnId, (arr) => finestRank(arr))
         }
-        if (!tnIds.length) return (metaMap = {})
 
-        const tq = new URLSearchParams()
-        tnIds.forEach((id) => tq.append('taxon_name_id[]', id))
-        tq.set('per', '1000')
-        const { data: tns } = await makeAPIRequest.get(`/taxon_names?${tq.toString()}`)
-
-        return (metaMap = indexTaxonMeta(tns, otuIdByTnId, (arr) => finestRank(arr)))
-      })().catch(() => (metaMap = {}))
+        let result
+        try {
+          result = await build()
+        } catch {
+          result = {}
+        }
+        // Superseded by a reset() (key-to-key nav) while we were awaiting — return
+        // the value to any current awaiter but don't cache it as this instance's map.
+        if (myGen !== gen) return result
+        return (metaMap = result)
+      })()
     }
     return metaPromise
   }

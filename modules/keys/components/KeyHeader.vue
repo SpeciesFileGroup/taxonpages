@@ -16,11 +16,7 @@
     </p>
 
     <p v-if="primaryCitation" class="mt-2 text-sm text-base-content [&_i]:italic">
-      <span class="text-base-soft">Primary source: </span><span v-html="sanitizeAndLinkifyHtml(primaryCitation)" /><button
-        type="button"
-        class="ml-1 text-xs text-base-soft hover:underline"
-        @click="showCitation = true"
-      >(details)</button>
+      <span class="text-base-soft">Primary source: </span><span v-html="sanitizeAndLinkifyHtml(primaryCitation)" />
     </p>
 
     <p v-if="meta.description" class="mt-2 text-base-content">{{ meta.description }}</p>
@@ -59,11 +55,6 @@
       >References cited ({{ references.length }})</button>
     </div>
 
-    <VModal v-if="showCitation" @close="showCitation = false">
-      <template #header><div class="text-sm font-medium">Reference</div></template>
-      <div class="px-4 pb-4 text-sm leading-relaxed [&_i]:italic" v-html="sanitizeAndLinkifyHtml(primaryCitation)" />
-    </VModal>
-
     <VModal v-if="showCompleteness && completeness" @close="showCompleteness = false">
       <template #header><div class="text-sm font-medium">Completeness</div></template>
       <div class="px-4 pb-4">
@@ -94,7 +85,6 @@ const props = defineProps({
   primaryCitation: { type: String, default: null }
 })
 
-const showCitation = ref(false)
 const showCompleteness = ref(false)
 const showReferences = ref(false)
 
