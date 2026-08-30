@@ -20,7 +20,11 @@ You changed primary source behavior, picking the first source if no "is original
 - currently its a very sudden screen movement, sometimes moving further than necessary: If I am at couplet 1 and go to couplet 2, only a short and gentle movement is necessary to slide to the next couplet. Instead it seems to jump somewhere and is then rapidly moving to 2. This could be improved a lot! 
 - clicking one of the couplet numbers at the left, this should also select the couplet.
 
-# Offtopic (not part of the work on keys)
+# Offtopic (not part of the work on keys) — DONE 2026-08-30
+Feasibility written (`docs/feasibility_references_cited_panel.md`); panel enabled as its own
+last tab "Other references" in `config/taxa_page.yml`. Blue type badges are automatic
+(`citation_object_type`), yellow badges are the only tag component (`topics[]`, optional).
+
 Explore the feasibility of 
           - id: panel:references-cited
             bind:

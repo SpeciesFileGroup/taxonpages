@@ -8,6 +8,8 @@ This document is listing feature requests for TaxonWorks, based on needs that ar
 
 ## Keys — API
 - **`leads#api_index` (`GET /api/v1/leads`) drops keys whose root lead (metadata item) isn't the most-recently-edited node. The behavior was verified by me (Jakob, Human), by checking which keys show up in the Keys page that I made for TaxonPages**
+I also noticed that the description for the key is getting invisible if metadata is not the lead that is most recently updated.
+
 Remaining text by Claude:
   `Lead.roots_with_data` builds `key_updated_at = MAX(descendant.updated_at)` per root, then
   `root_leads` joins the whole `leads` table `ON leads_updated_at.key_updated_at = leads.updated_at`

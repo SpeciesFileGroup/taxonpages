@@ -51,3 +51,10 @@ taxa_page:
           - panel:gbif-map
           - panel:gbif-type-specimens
 
+  references:
+    label: 'Other references'
+    panels:
+      - - - id: panel:references-cited
+            bind:
+              title: 'Other references'
+
