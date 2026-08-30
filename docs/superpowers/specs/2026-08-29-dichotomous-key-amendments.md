@@ -455,9 +455,12 @@ the root lead id).
 and the Keys index card for it shows the same; a key whose citation *is* flagged original is
 unchanged.
 
-**Status:** ✅ verified 2026-08-30 (walkthrough). NOTE: user has since decided this fallback
-is wrong — a key can legitimately have *no* primary source (original TW-team work that only
-cites a few couplets). Reverting to `is_original`-only is item 1 in `docs/Task_toDo.md`.
+**Status:** ⛔ REVERTED (2026-08-30). The fallback was wrong: a key can legitimately have *no*
+primary source — original TaxonWorks-team work that only cites sources for a few individual
+couplets. `primaryCitation` / `KeysIndex` citation are now `origin_citation` **only** (the
+citation flagged `is_original` in TaxonWorks); per-couplet citations still appear under
+"References cited". The `is_original` flag is the curator's control; the data-note above still
+applies (flag it in TW to populate the line). Original A15 decision below kept for history.
 
 ---
 

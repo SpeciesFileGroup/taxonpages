@@ -39,7 +39,7 @@
 import { ref, computed, watch, onMounted, provide } from 'vue'
 import { useRoute } from 'vue-router'
 import { makeAPIRequest } from '@/utils/request'
-import { buildNodes, orderedCouplets, rootId, terminalOtus, lowestCommonAncestor } from './lib/tree.js'
+import { buildNodes, orderedCouplets, terminalOtus, lowestCommonAncestor } from './lib/tree.js'
 import KeyHeader from './components/KeyHeader.vue'
 import FullKeyView from './components/FullKeyView.vue'
 import GuidedView from './components/GuidedView.vue'
@@ -94,12 +94,12 @@ const meta = computed(() => ({
   otusCount: terminalOtuList.value.length || listMeta.value.otus_count || null
 }))
 
-const primaryCitation = computed(() => {
-  if (meta.value.originCitation) return meta.value.originCitation
-  if (!Object.keys(nodes.value).length) return null
-  const rootCites = citations.value[String(rootId(nodes.value))] || []
-  return rootCites[0]?.full || null
-})
+// Primary source = the citation the curator flagged `is_original` in TaxonWorks
+// (exposed as metadata.origin_citation). No fallback: a key that only cites
+// sources for individual couplets but is otherwise original TaxonWorks-team work
+// legitimately has NO primary source — those per-couplet citations still show
+// under "References cited".
+const primaryCitation = computed(() => meta.value.originCitation || null)
 
 const references = computed(() => {
   const byFull = new Map()
