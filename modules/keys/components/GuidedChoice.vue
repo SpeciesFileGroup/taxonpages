@@ -9,7 +9,7 @@
       <LeadText :node="choice" :citations="citations" @open-citation="$emit('open-citation', $event)" />
     </p>
 
-    <LeadFigures v-if="choice.figures.length" :figures="choice.figures" />
+    <LeadFigures :node="choice" />
 
     <ReachableTaxa :choice="choice" :nodes="nodes" />
 

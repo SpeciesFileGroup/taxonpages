@@ -14,11 +14,11 @@
         </button>
       </div>
 
-      <div class="flex-1 min-h-0 relative flex items-center justify-center px-4">
+      <div class="flex-1 min-h-0 relative flex items-center justify-center p-2 sm:p-4">
         <img
           :src="src(current)"
           :alt="caption(current)"
-          class="max-w-full max-h-full object-contain cursor-zoom-out"
+          class="h-full w-full object-contain cursor-zoom-out"
           @click="$emit('close')"
         />
         <button
@@ -66,9 +66,13 @@ const current = computed(() => props.figures[props.index] || {})
 const apiUrl = (typeof __APP_ENV__ !== 'undefined' && __APP_ENV__.url) || ''
 const token = (typeof __APP_ENV__ !== 'undefined' && __APP_ENV__.project_token) || ''
 
+// Lightbox wants the largest available source (the strip uses the small ones).
+// Raw lead figures carry `original_png` (a "/api/v1/…" path); normalised fallback
+// images (taxon-image cascade) carry an absolute `original`.
 function src(fig) {
-  if (fig.medium) return fig.medium
   if (fig.original_png) return `${apiUrl}/${String(fig.original_png).substring(8)}?project_token=${token}`
+  if (fig.original) return fig.original
+  if (fig.medium) return fig.medium
   return fig.thumb || ''
 }
 function caption(fig) {

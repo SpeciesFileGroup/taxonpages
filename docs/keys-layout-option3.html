@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keys layout — Option 3</title>
+<style>
+  :root {
+    --bg: #f4f2ee;
+    --card: #ffffff;
+    --content: #1f2328;
+    --soft: #8a8f98;
+    --muted: #e3e0da;
+    --secondary: #2f6f4f;
+    --secondary-soft: #2f6f4f1a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--content);
+         font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  .page { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
+  .explain { background: #fffce8; border: 1px solid #e8e0b0; border-radius: 8px;
+             padding: 12px 14px; margin-bottom: 20px; font-size: 13.5px; }
+  .explain b { display: block; margin-bottom: 4px; }
+  .card { background: var(--card); border: 1px solid var(--muted); border-radius: 12px; padding: 24px; }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  .sub { color: var(--soft); font-size: 13px; margin-bottom: 24px; }
+
+  /* ── Option 3: [#] [text] [target] [images] — target AND images both hard right columns ── */
+  .couplet { margin-bottom: 28px; }
+  .from { font-size: 12px; color: var(--soft); margin: 2px 0 8px 34px; }
+
+  .lead { display: grid;
+          grid-template-columns: 22px 1fr 11rem 180px;
+          gap: 12px; align-items: start; margin-bottom: 12px; }
+  @media (max-width: 720px) {
+    .lead { grid-template-columns: 22px 1fr 9rem; }
+    .imgcol { grid-column: 2 / -1; }
+  }
+  .cnum { font-weight: 600; color: var(--secondary); font-variant-numeric: tabular-nums; }
+  .bullet { color: var(--soft); text-align: right; }
+  .leadtext { min-width: 0; }
+  .targetcol { text-align: right; }
+  .imgcol { min-width: 0; }
+
+  .pill { display: inline-flex; align-items: center; gap: 4px;
+          background: var(--secondary-soft); color: var(--secondary);
+          border-radius: 999px; padding: 2px 10px; font-size: 13.5px;
+          font-style: italic; text-decoration: none; }
+  .pill:hover { text-decoration: underline; }
+  .jump { color: var(--secondary); text-decoration: none; font-size: 13.5px; white-space: nowrap; }
+  .jump:hover { text-decoration: underline; }
+  .arrow { font-style: normal; opacity: .6; }
+
+  .strip { display: flex; flex-wrap: wrap; gap: 6px; }
+  .thumb { width: 52px; height: 52px; border-radius: 6px; border: 1px solid var(--muted);
+           background: linear-gradient(135deg,#cdd6cf,#a9bcae); flex: 0 0 auto; position: relative; }
+  .thumb.more::after { content: "+2"; position: absolute; inset: 0; display: flex;
+           align-items: center; justify-content: center; background: #0007; color: #fff;
+           font-size: 12px; border-radius: 6px; }
+  .strip-note { font-size: 11px; color: var(--soft); margin-top: 4px; width: 100%; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="explain">
+    <b>Option 3 — four aligned columns: [#] [text] [target] [images]</b>
+    Both the target pill <i>and</i> the image strip live in fixed-width columns on the right,
+    so the whole page reads down in straight vertical lanes: text lane, target lane, image
+    lane. Couplet-target leads show “couplet N” in the target lane and leave the image lane
+    empty. Trade-off: the text column is the narrowest of the three options; long lead text
+    wraps more. Narrow screens: image lane wraps under the text.
+  </div>
+
+  <div class="card">
+    <h1>Key to the species of <i>Otiorhynchus</i> (demo fragment)</h1>
+    <div class="sub">Full key view · layout mock — placeholder text &amp; images</div>
+
+    <!-- Couplet 1 -->
+    <div class="couplet">
+      <div class="lead">
+        <span class="cnum">1</span>
+        <span class="leadtext">Rostrum in dorsal view distinctly shorter than pronotum;
+          elytral punctures coarse and deep, arranged in regular striae; femora edentate.</span>
+        <span class="targetcol"><a class="pill" href="#">Otiorhynchus sulcatus</a></span>
+        <span class="imgcol">
+          <span class="strip">
+            <span class="thumb"></span><span class="thumb"></span><span class="thumb more"></span>
+            <span class="strip-note">4 · iNaturalist</span>
+          </span>
+        </span>
+      </div>
+      <div class="lead">
+        <span class="bullet">—</span>
+        <span class="leadtext">Rostrum as long as or longer than pronotum; elytral punctures
+          fine, striae weak or effaced.</span>
+        <span class="targetcol"><a class="jump" href="#">couplet 2 <span class="arrow">→</span></a></span>
+        <span class="imgcol"></span>
+      </div>
+    </div>
+
+    <!-- Couplet 2 -->
+    <div class="couplet">
+      <p class="from"><a href="#" style="color:inherit;text-decoration:none">from 1</a></p>
+      <div class="lead">
+        <span class="cnum">2</span>
+        <span class="leadtext">Antennal scape reaching hind margin of eye; body length
+          4–6 mm; dorsal scales pale grey, rounded.</span>
+        <span class="targetcol"><a class="pill" href="#">Otiorhynchus ovatus</a></span>
+        <span class="imgcol">
+          <span class="strip">
+            <span class="thumb"></span><span class="thumb"></span>
+            <span class="strip-note">2 · TaxonWorks</span>
+          </span>
+        </span>
+      </div>
+      <div class="lead">
+        <span class="bullet">—</span>
+        <span class="leadtext">Antennal scape not reaching eye; body length 6–9 mm;
+          scales golden, hair-like, sparse.</span>
+        <span class="targetcol"><a class="pill" href="#">Otiorhynchus singularis</a></span>
+        <span class="imgcol">
+          <span class="strip">
+            <span class="thumb"></span><span class="thumb"></span><span class="thumb more"></span>
+            <span class="strip-note">5 · iNaturalist</span>
+          </span>
+        </span>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

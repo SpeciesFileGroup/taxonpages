@@ -40,6 +40,8 @@ import { ref, computed, watch, onMounted, provide } from 'vue'
 import { useRoute } from 'vue-router'
 import { makeAPIRequest } from '@/utils/request'
 import { buildNodes, orderedCouplets, terminalOtus, lowestCommonAncestor } from './lib/tree.js'
+import { useKeyImages } from './composables/useKeyImages.js'
+import { useKeyTaxonNames } from './composables/useKeyTaxonNames.js'
 import KeyHeader from './components/KeyHeader.vue'
 import FullKeyView from './components/FullKeyView.vue'
 import GuidedView from './components/GuidedView.vue'
@@ -74,6 +76,15 @@ const nodes = ref({})
 
 const couplets = computed(() => orderedCouplets(nodes.value))
 const terminalOtuList = computed(() => terminalOtus(nodes.value))
+
+// Per-lead taxon-image loader (OTU inventory → iNaturalist fallback), consumed by
+// LeadFigures via inject. Lives for this KeyView instance, so its cache resets on
+// navigation to another key.
+provide('keyImages', useKeyImages(terminalOtuList))
+
+// Scientific-name rendering for lead-target pills: name italic, author + year roman
+// (matches the vanilla OTU page's cached_html / cached_author_year split).
+provide('keyTaxonNames', useKeyTaxonNames(terminalOtuList))
 const citations = ref({})
 const activeCitation = ref(null)
 const completeness = ref(null)

@@ -30,10 +30,44 @@ Toggle between two views (persisted per viewer in `localStorage` as `taxonpages:
 - Each couplet marked with `id="couplet-N"` for scroll-to navigation
 - Couplet-number links navigate via the `:couplet` param and scroll the target into view
 - Current couplet highlighted with a ring; a persistent "↑ Couplet N" button (bottom-right) returns to it
+- **Per-lead layout:** each lead's target (a taxon, or "couplet N →") renders as a filled
+  chip, right-aligned so the whole page scans down a single column. A reserved ~¼-width
+  strip on the right of each lead holds its illustrating images (see below). Below ~640px
+  the strip drops under the lead text.
+- **Target taxon names** use the TaxonWorks split — name italic (`cached_html`), author +
+  year roman (`cached_author_year`) — instead of italicising the whole `target_label`.
+  Resolved per lead-target OTU by `composables/useKeyTaxonNames.js` (provided as
+  `keyTaxonNames`); `TaxonLink` falls back to the plain label until it resolves. As a
+  side effect the pill shows the OTU's full name (incl. subgenus) even when the lead's
+  stored `target_label` omitted it.
 
 ### Figures and citations
 
-- **Per-couplet figures** — thumbnail row under each lead, click to open a keys-local lightbox (prev/next, ←/→ keys, Esc to close, focus-trapped)
+- **Per-lead figures** — a lead's own `figures` (from `GET /leads/key/:id`) render as a
+  thumbnail row, click to open a keys-local lightbox (prev/next, ←/→ keys, Esc to close,
+  focus-trapped). A lead can carry figures 1–3 while its sibling carries fig 4 — each lead
+  shows its own list.
+- **Shared couplet figures** — when the *same image* is attached to **every** lead of a
+  couplet (e.g. one plate illustrating the contrast, added to both leads), it is hoisted
+  out of the per-lead strips into a larger block on the right of the couplet, vertically
+  centred beside the leads. Identity is the underlying image (`figureKey` — the
+  `/images/<id>/` id), so a differing caption on each copy doesn't matter; the captioned
+  copy is kept as the representative. `partitionCoupletFigures` in `lib/images.js`,
+  Full-key view only. In a couplet that has a shared figure, each lead's *individual*
+  figures move below its text (full width of the leads column) rather than into the
+  ¼-column strip, and the taxon-image fallback is suppressed for leads with no individual
+  figure — the shared figure is the couplet's illustration.
+- **Taxon-image fallback** — in practice no key in this project carries per-lead figures,
+  so for any lead that keys out an OTU (`target_type === '/api/v1/otus'`) and has no
+  figures of its own, `LeadFigures` shows images *of that taxon* instead:
+  `GET /otus/:id/inventory/images.json` (OTU + CollectionObject + FieldOccurrence
+  depictions in one call), and when that is empty, iNaturalist (curated taxon photos, then
+  research-grade observations — same logic as `panels/PanelGallery`). Up to 3 thumbnails
+  then a "+N" tile; a one-line caption names the taxon and the source. Loaded lazily per
+  couplet via `IntersectionObserver` (300px margin) so key text always paints first;
+  results are cached and de-duped per OTU for the life of the `KeyView` instance
+  (`composables/useKeyImages.js`, provided as `keyImages`). Applies to both Full-key and
+  Guided views.
 - **Per-couplet citations** — short inline form ("Voss, 1937: 258"), click opens a popup with full formatted reference; URLs and DOIs are clickable
 - **Key-level "Primary source"** line — the citation flagged as original in TaxonWorks, or falls back to the root lead's first citation
 - **"References cited (N)" modal** — aggregates every distinct source used anywhere in the key, with the primary marked
@@ -82,6 +116,9 @@ All API calls are GET, project-token authenticated, to the TaxonWorks base URL (
 | `GET /leads` | Public key roots with description, couplet/taxon counts, "updated" timestamp, scope OTU |
 | `GET /citations?citation_object_type=Lead&citation_object_id[]=…&extend[]=source` | Per-couplet citations with formatted source HTML |
 | `GET /otus?…` and `GET /taxon_names?…&descendants=true` | Completeness check — scope and terminal taxa with validity flags and authorship |
+| `GET /otus/:id/inventory/images.json?extend[]=depictions&extend[]=attribution&extend[]=source&extend[]=citations` | Taxon-image fallback — OTU + CollectionObject + FieldOccurrence depiction images for a lead's target taxon |
+| `GET /otus?otu_id[]=…` + `GET /taxon_names?taxon_name_id[]=…` (one batched pair) | Resolve terminal OTU ids → taxon name + rank, for the iNaturalist fallback query; and → `cached_html` + `cached_author_year` for name-italic / author-roman pill rendering |
+| `GET https://api.inaturalist.org/v1/taxa`, `/v1/taxa/:id`, `/v1/observations` | iNaturalist fallback images when a taxon has none in TaxonWorks (external; `axios`, not `makeAPIRequest`) |
 
 ## Publishing
 
