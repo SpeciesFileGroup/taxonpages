@@ -108,7 +108,19 @@ function normalizeImage(img) {
 }
 
 const store = useImageStore()
-const twImages = computed(() => (store.images || []).map(normalizeImage))
+
+// Image ids to hide from this OTU-scoped gallery: images tied to the OTU scope
+// ONLY through a data depiction (is_metadata_depiction — a label photo, a shot of
+// handwritten notes, …) on a CollectionObject/FieldOccurrence. A data depiction
+// attached directly to the OTU is kept. The /otus/:id/inventory/images endpoint
+// doesn't serialize is_metadata_depiction, so the flag comes from /depictions.
+const dataDepictionDropIds = ref(new Set())
+
+const twImages = computed(() =>
+  (store.images || [])
+    .map(normalizeImage)
+    .filter((img) => !dataDepictionDropIds.value.has(img.id))
+)
 
 const subImages = ref([])
 const isLoadingSub = ref(false)
@@ -134,14 +146,52 @@ const showCard = computed(() =>
 
 // ── TaxonWorks loading ────────────────────────────────────────────────────────
 
+// Given /depictions rows, return the Set of image ids to HIDE from an OTU-scoped
+// gallery. An image counts as a data depiction (is_metadata_depiction — a label
+// photo, a ledger page, …) if ANY of its depictions is flagged, regardless of
+// what else the image is linked to. It's kept only when the flag sits on a
+// depiction of the Otu itself; if the flag is only on a CollectionObject /
+// FieldOccurrence, the image belongs in that specimen's modal, not here.
+function dropIdsFromDepictions(rows) {
+  const otuMeta = new Set() // image has a data depiction ON an Otu
+  const foreignMeta = new Set() // image has a data depiction on a non-Otu object
+  for (const d of rows || []) {
+    if (!d.is_metadata_depiction) continue
+    if (d.depiction_object_type === 'Otu') otuMeta.add(d.image_id)
+    else foreignMeta.add(d.image_id)
+  }
+  return new Set([...foreignMeta].filter((id) => !otuMeta.has(id)))
+}
+
+// is_metadata_depiction isn't serialized by /otus/:id/inventory/images, so pull
+// the depiction rows for this OTU scope separately to build the exclusion set.
+async function fetchDataDepictionFilter() {
+  try {
+    const { data } = await makeAPIRequest.get('/depictions', {
+      params: {
+        'otu_id[]': [props.otuId],
+        'otu_scope[]': ['all', 'coordinate_otus'],
+        per: 500
+      }
+    })
+    dataDepictionDropIds.value = dropIdsFromDepictions(data)
+  } catch {
+    // Leave the set empty — show everything, as before.
+  }
+}
+
 onServerPrefetch(async () => {
-  await store.loadImages(props.otuId, { sortOrder: props.sort_order })
+  await Promise.all([
+    store.loadImages(props.otuId, { sortOrder: props.sort_order }),
+    fetchDataDepictionFilter()
+  ])
 })
 
 onMounted(() => {
   if (!store.images) {
     store.loadImages(props.otuId, { sortOrder: props.sort_order })
   }
+  fetchDataDepictionFilter()
 })
 
 onBeforeUnmount(() => {
@@ -216,7 +266,29 @@ async function fetchSubordinateFallback() {
     )
 
     const raw = results.flatMap(r => r.data || [])
-    subImages.value = raw.slice(0, props.subMaxImages).map(normalizeImage)
+
+    // Same rule as the direct gallery: drop images tied only to data depictions
+    // (is_metadata_depiction) not on an Otu. /images doesn't return the flag, so
+    // fetch the depiction rows for exactly these image ids.
+    let drop = new Set()
+    if (raw.length) {
+      try {
+        const { data } = await withTimeout(
+          makeAPIRequest.get('/depictions', {
+            params: { 'image_id[]': raw.map(i => i.id), per: 500 }
+          }),
+          SUB_IMAGE_TIMEOUT_MS
+        )
+        drop = dropIdsFromDepictions(data)
+      } catch {
+        // keep everything on failure
+      }
+    }
+
+    subImages.value = raw
+      .filter(i => !drop.has(i.id))
+      .slice(0, props.subMaxImages)
+      .map(normalizeImage)
   } catch {
     // fail silently
   } finally {
