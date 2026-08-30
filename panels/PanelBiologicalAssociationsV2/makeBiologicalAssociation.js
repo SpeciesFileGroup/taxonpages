@@ -31,6 +31,10 @@ export { isSpecimenType, resolveSpecimenRef }
  * one back. Detected by stripping tags/parens from the matched run and
  * counting words, not by naively checking for whitespace in a single
  * capture (which the subgenus case would misread as "has a species").
+ *
+ * modules/keys/KeysIndex.vue matches the same otu_tag span but keeps the
+ * author-year (name + authorship verbatim, no "sp." for a bare genus) — a
+ * deliberately different name policy, so the two are not shared.
  */
 function extractNameHtml(objectTag) {
   if (!objectTag) return null

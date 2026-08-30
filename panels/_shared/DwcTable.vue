@@ -531,10 +531,15 @@
 </template>
 
 <script setup>
-import { ref, computed, defineAsyncComponent } from 'vue'
+import { ref, computed, watch, defineAsyncComponent } from 'vue'
 import { makeAPIRequest } from '@/utils'
 import { FIELD_OCCURRENCE, COLLECTION_OBJECT } from '@/constants/objectTypes'
 import { resolveSpecimenRef } from './specimenRef.js'
+
+// Lets a host that renders this above its own overlay (ImageLightbox's ⓘ button)
+// know when the modal has been dismissed — so it can re-take key handling / the
+// body scroll lock instead of both overlays reacting to one Escape.
+const emit = defineEmits(['close'])
 
 // Async: ImageLightbox statically imports this file (its ⓘ button opens a
 // DwcTable), so importing it back statically would be a require cycle. It's
@@ -543,6 +548,9 @@ const ImageLightbox = defineAsyncComponent(() => import('./ImageLightbox.vue'))
 
 const isLoading = ref(false)
 const isModalVisible = ref(false)
+watch(isModalVisible, (visible) => {
+  if (!visible) emit('close')
+})
 const dwc = ref(null)
 const itemType = ref(null)
 const currentId = ref(null)

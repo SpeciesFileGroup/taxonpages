@@ -181,16 +181,18 @@ async function fetchDataDepictionFilter() {
 }
 
 onServerPrefetch(async () => {
-  await Promise.all([
-    store.loadImages(props.otuId, { sortOrder: props.sort_order }),
-    fetchDataDepictionFilter()
-  ])
+  await store.loadImages(props.otuId, { sortOrder: props.sort_order })
 })
 
 onMounted(() => {
   if (!store.images) {
     store.loadImages(props.otuId, { sortOrder: props.sort_order })
   }
+  // Client-only on purpose: dataDepictionDropIds isn't part of the SSR payload,
+  // so filtering twImages during onServerPrefetch would make the server markup
+  // (label photo removed) disagree with the first client render (Set still
+  // empty) — a hydration mismatch + a flash. Running it here is a post-hydration
+  // update, which Vue applies cleanly.
   fetchDataDepictionFilter()
 })
 

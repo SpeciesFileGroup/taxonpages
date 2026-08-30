@@ -107,8 +107,12 @@
       <!-- Plain figure caption: images with no OTU / CO / FO structure (e.g. a
            biological-association plate, a keys lead figure) carry the label +
            caption at the top level. Label in bold, caption below it.
-           `captionHtml` is pre-sanitised HTML (keys, linkified); `caption` is
-           plain text run through the name-italiciser (biological associations). -->
+           `figure_label` / `caption` are free-text (often prose that mentions a
+           binomial: "…feeding on Achillea millefolium", "rostrum, dorsal view")
+           and are rendered verbatim — the name-italiciser greedily italicises
+           the prose that trails a Genus+epithet pair. Both prior renderers (the
+           package ImageViewer, the old keys KeyLightbox) showed these plain.
+           `captionHtml` is pre-sanitised HTML (keys, already linkified). -->
       <div
         v-if="showPlainCaption"
         class="my-1"
@@ -116,8 +120,7 @@
         <div
           v-if="image.figure_label"
           class="font-semibold"
-          v-html="italicizeNames(image.figure_label)"
-        />
+        >{{ image.figure_label }}</div>
         <div
           v-if="image.captionHtml"
           class="opacity-70 [&_a]:text-secondary [&_a]:hover:underline"
@@ -126,8 +129,7 @@
         <div
           v-else-if="image.caption"
           class="opacity-70"
-          v-html="italicizeNames(image.caption)"
-        />
+        >{{ image.caption }}</div>
       </div>
 
       <!-- Attribution + citations (image-level) -->
@@ -180,6 +182,7 @@
     <DwcTable
       v-if="showInfoButton && !minimal"
       ref="dwcTableRef"
+      @close="onDwcTableClose"
     />
 
     <Teleport to="body">
@@ -228,6 +231,10 @@ const props = defineProps({
 const emit = defineEmits(['close', 'next', 'previous', 'selectIndex'])
 
 const dwcTableRef = ref(null)
+// The ⓘ button opens a DwcTable modal *on top of* this viewer. While it's up, this
+// viewer must not act on Escape (one press would close both) and the DwcTable's
+// VModal owns the body scroll lock.
+const dwcTableOpen = ref(false)
 const activeCitation = ref(null)
 const imageElement = ref(null)
 const viewerRef = ref(null)
@@ -477,23 +484,39 @@ const showPlainCaption = computed(() => {
 })
 
 function openDwcTable(dep) {
-  dwcTableRef.value?.show({ id: dep.objectId, type: dep.objectType })
+  if (!dwcTableRef.value) return
+  dwcTableOpen.value = true
+  dwcTableRef.value.show({ id: dep.objectId, type: dep.objectType })
 }
 
-function handleKey(e) {
-  if (e.key === 'Escape') emit('close')
-  if (e.key === 'ArrowLeft' && props.previous) emit('previous')
-  if (e.key === 'ArrowRight' && props.next) emit('next')
+function onDwcTableClose() {
+  dwcTableOpen.value = false
+  // The DwcTable's VModal cleared `overflow-hidden` on unmount; this viewer is
+  // still up, so re-assert the lock.
+  document.body.classList.add('overflow-hidden')
 }
 
-function handleKeyDown(e) {
-  if (e.key === 'Tab') trapFocus(e)
+// Capture phase so this runs before VModal's bubble-phase keydown listener: when a
+// DwcTable modal is stacked *under* this viewer (its media strip), Escape closes
+// only this viewer, not both. When a DwcTable is stacked *over* this viewer (the ⓘ
+// button), dwcTableOpen is set and we bail so that modal handles its own keys.
+function handleKeydown(e) {
+  if (dwcTableOpen.value) return
+  if (e.key === 'Escape') {
+    e.stopImmediatePropagation()
+    emit('close')
+  } else if (e.key === 'ArrowLeft' && props.previous) {
+    emit('previous')
+  } else if (e.key === 'ArrowRight' && props.next) {
+    emit('next')
+  } else if (e.key === 'Tab') {
+    trapFocus(e)
+  }
 }
 
 onMounted(() => {
   previouslyFocusedElement = document.activeElement
-  document.addEventListener('keyup', handleKey)
-  document.addEventListener('keydown', handleKeyDown)
+  document.addEventListener('keydown', handleKeydown, true)
   document.body.classList.add('overflow-hidden')
   // If the first image is already cached the load event fires before this runs
   if (imageElement.value.complete) isLoading.value = false
@@ -501,9 +524,10 @@ onMounted(() => {
   imageElement.value.addEventListener('error', () => { isLoading.value = false })
 })
 onUnmounted(() => {
-  document.removeEventListener('keyup', handleKey)
-  document.removeEventListener('keydown', handleKeyDown)
-  document.body.classList.remove('overflow-hidden')
+  document.removeEventListener('keydown', handleKeydown, true)
+  // A viewer opened *from* a DwcTable (its media strip) passes showInfoButton:false;
+  // that outer DwcTable's VModal still owns the lock, so don't clear it here.
+  if (props.showInfoButton) document.body.classList.remove('overflow-hidden')
   previouslyFocusedElement?.focus()
 })
 </script>
