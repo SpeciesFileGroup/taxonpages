@@ -4,6 +4,7 @@ This document is listing feature requests for TaxonWorks, based on needs that ar
 ## Dichotomous keys
 - Leads should be able to have alternate values, with a language (similar to sources, that can have translated titles). Alternate values with a set language would allow to have a key in its original language, and an english translation. Currently, we just dump both texts into the same field. If alternate values are delivered via API, a TaxonPages user would be able to switch language for the whole key, or check the original text for a specific couplet in case there is doubt about the translation. Extra nice: If the "New key" task would have UI features that facilitate multi language data entry. More convenient than using the radial annotator on each lead.
 - Leads should have rich formatting and data links, just as contents and news
+- Nice to have, but not super important: add the option to annotate leads with notes. Could be useful for correct representation of published keys: If I want to add a note to a couplet, doing so within the couplet would look like its part of the original work.
 
 ## Keys — API
 - **`leads#api_index` (`GET /api/v1/leads`) drops keys whose root lead (metadata item) isn't the most-recently-edited node. The behavior was verified by me (Jakob, Human), by checking which keys show up in the Keys page that I made for TaxonPages**
