@@ -14,7 +14,7 @@ const corePanels = Object.values(
   })
 )
 
-const panelsById = new Map()
+export const panelsById = new Map()
 
 for (const entry of [...userPanels, ...corePanels]) {
   if (entry?.id && !panelsById.has(entry.id)) {

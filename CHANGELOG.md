@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Taxa page regions: panels can now be placed outside the tab layout, in named regions of the taxon page — next to the taxon name, next to the rank, beside the download buttons, below the title bar, at the bottom of the header, and above the content shared by every tab. Regions are configured under `taxa_page_regions`, a key of its own next to `taxa_page` in `taxa_page.yml`, and entries take the same shape used in the tab layout: a bare panel id, or an object with `bind`, `rank_group` and `order`. A panel listed only in a region is not rendered in any tab. Panels receive the same props in both places, so one component can serve both. Unknown region names and unknown panel ids are reported in the console and skipped. See the layout section of the developer guide for the region list and the data each one guarantees.
+- Layout slots: an entry in a `layout.js` file can now carry `bind`, the props passed to the contributed component, and `meta`, an arbitrary object the layout registry carries through without interpreting, so a module can attach its own rules to a contribution. The taxon page uses `meta.rankGroup` to restrict a contribution to certain rank groups.
+
+### Changed
+
+- Taxa page header: the taxon name heading is now wrapped in a flex row together with the `taxa_page:header:taxonname:after` region, so contributed content renders next to the name without becoming part of the `<h1>`. This keeps the heading's accessible name limited to the taxon name and keeps the markup valid when a contributed panel renders block-level content. Sites with custom CSS targeting the markup around the heading may need to adjust it.
+
+### Fixed
+
+- Layout slots: a `layout.js` file placed in a local `panels/*` folder is now discovered. Previously only panels installed from NPM could contribute to a layout region, so the same panel behaved differently depending on where it came from.
+
 ## [0.6.8] - 2026-08-26
 
 ### Added

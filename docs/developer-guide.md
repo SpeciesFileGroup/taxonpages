@@ -288,9 +288,11 @@ export default {
 }
 ```
 
-These files are discovered automatically from local modules (`modules/*/layout.js`), NPM packages (`layout.js` at the package root), and the project root (`layout.js` in your project). Every component contributed to a region is rendered, so multiple packages can target the same region.
+These files are discovered automatically from local panels (`panels/*/layout.js`), local modules (`modules/*/layout.js`), NPM packages (`layout.js` at the package root), and the project root (`layout.js` in your project). Every component contributed to a region is rendered, so multiple packages can target the same region.
 
-### Available regions
+### Global regions
+
+Global regions belong to the application shell and have no prefix.
 
 | Region          | Position                      |
 | --------------- | ----------------------------- |
@@ -298,6 +300,77 @@ These files are discovered automatically from local modules (`modules/*/layout.j
 | `header:after`  | Below the main navigation bar |
 | `main:before`   | Top of the main content area  |
 | `footer:before` | Above the footer              |
+
+### Taxon page regions
+
+The taxon page exposes its own regions, prefixed with `taxa_page:`. Unlike the
+global ones, they can also be filled from configuration, and the components they
+render receive the page's data as props.
+
+Region names read `<scope>:<area>:<anchor>:<position>`, where `before` / `after`
+place a component outside the anchor and `start` / `end` place it inside, at the
+beginning or the end.
+
+| Region                             | Position                                              | Data       |
+| ---------------------------------- | ----------------------------------------------------- | ---------- |
+| `taxa_page:header:rank:after`      | Next to the rank, inline                               | Loaded     |
+| `taxa_page:header:taxonname:after` | Next to the taxon name, inline                         | Loaded     |
+| `taxa_page:header:taxoninfo:end`   | End of the taxon name block, below the common names    | Loaded     |
+| `taxa_page:header:actions:end`     | Next to the download buttons                           | May be null |
+| `taxa_page:header:titlebar:after`  | Below the title bar, full width                        | May be null |
+| `taxa_page:header:end`             | Bottom of the page header, below the tabs              | May be null |
+| `taxa_page:content:start`          | Top of the content area, on every tab                  | May be null |
+
+Components contributed to these regions receive `taxon`, `taxonId`, `otu` and
+`otuId` as props. The **Data** column says whether those are guaranteed to be
+populated: the first three regions render only once the page has loaded, while
+the rest render from the first frame, so their components must tolerate `taxon`
+and `otu` being `null`. During SSR every region renders after the data has been
+fetched; the null case happens on the client, before the request resolves.
+
+### Placing panels in a taxon page region
+
+A region can also be filled from `config/taxa_page.yml`, using the same panels
+you place in tabs. Region configuration lives under `taxa_page_regions`, a key
+of its own next to `taxa_page`:
+
+```yaml
+taxa_page:
+  overview:
+    panels:
+      - - - panel:gallery
+
+taxa_page_regions:
+  taxa_page:header:taxonname:after:
+    - panel:tags
+  taxa_page:header:titlebar:after:
+    - id: panel:annotations
+      rank_group: [SpeciesGroup]
+      order: 10
+      bind:
+        variant: inline
+```
+
+Entries take the same shape as in the tab layout: a bare panel id, or an object
+with `bind` (props passed to the component), `rank_group` (restricts the panel
+to certain rank groups) and `order` (lower renders first). A panel placed in a
+region is not rendered in any tab unless you also list it there.
+
+Panels rendered in a region get the same props they get in a tab, so the same
+component can serve both places. Since regions are usually inline, a panel meant
+for both should let the site choose its presentation rather than always wrapping
+itself in a `VCard`:
+
+```vue
+<template>
+  <component :is="variant === 'inline' ? 'span' : VCard">
+    <!-- ... -->
+  </component>
+</template>
+```
+
+Unknown region names and unknown panel ids are reported on the console at
+startup and are not rendered.
 
 ### Ordering and multiple components
 
@@ -313,10 +386,28 @@ export default {
 
 A bare component is treated as `{ component, order: 0 }`.
 
+An entry can also carry `bind` (props passed to the component) and `meta`. The
+layout registry never interprets `meta`: it is carried through untouched so a
+module can attach its own rules to a contribution. The taxon page uses it for
+rank filtering:
+
+```javascript
+export default {
+  'taxa_page:header:taxonname:after': [
+    {
+      component: ConservationStatus,
+      order: 10,
+      meta: { rankGroup: ['SpeciesGroup'] }
+    }
+  ]
+}
+```
+
 ### Notes
 
-- Contributed components receive no props. They should read their own configuration (e.g. from `__APP_ENV__`) and manage their own state.
+- Components contributed to a global region receive no props. They should read their own configuration (e.g. from `__APP_ENV__`) and manage their own state. Taxon page regions are the exception: they pass `taxon`, `taxonId`, `otu` and `otuId`.
 - For browser-only behavior such as reading `localStorage`, wrap the markup in `<ClientOnly>` to avoid SSR hydration mismatches, the same way core components do.
+- Adding a region is backwards compatible, but renaming or removing one breaks every site and package that targets it. New regions are added on demand rather than up front.
 
 ## Server Routes (API Proxy)
 

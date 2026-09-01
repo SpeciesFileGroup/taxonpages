@@ -1,13 +1,24 @@
+let registry = null
+
 export function loadLayoutSlots() {
+  if (registry) return registry
+
   const files = import.meta.glob(
-    ['@/modules/**/layout.js', '~/modules/**/layout.js', '~/layout.js'],
+    [
+      '@/modules/**/layout.js',
+      '~/modules/**/layout.js',
+      '~/panels/*/layout.js',
+      '~/layout.js'
+    ],
     {
       eager: true,
       import: 'default'
     }
   )
 
-  return makeSlotRegistry(files)
+  registry = makeSlotRegistry(files)
+
+  return registry
 }
 
 function makeSlotRegistry(files) {
@@ -31,7 +42,9 @@ function makeSlotRegistry(files) {
 
         registry[region].push({
           component: slot.component,
-          order: slot.order ?? 0
+          order: slot.order ?? 0,
+          bind: slot.bind,
+          meta: slot.meta
         })
       })
     })

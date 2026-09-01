@@ -3,6 +3,7 @@
     :is="slot.component"
     v-for="(slot, index) in slots"
     :key="index"
+    v-bind="{ ...context, ...slot.bind }"
   />
 </template>
 
@@ -10,14 +11,24 @@
 import { computed } from 'vue'
 import { loadLayoutSlots } from '@/utils'
 
-const registry = loadLayoutSlots()
-
 const props = defineProps({
   region: {
     type: String,
     required: true
+  },
+
+  context: {
+    type: Object,
+    default: () => ({})
+  },
+
+  entries: {
+    type: Array,
+    default: null
   }
 })
 
-const slots = computed(() => registry[props.region] || [])
+const registry = loadLayoutSlots()
+
+const slots = computed(() => props.entries ?? registry[props.region] ?? [])
 </script>
