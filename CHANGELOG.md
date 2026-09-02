@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-09-01
+
 ### Added
 
 - Taxa page regions: panels can now be placed outside the tab layout, in named regions of the taxon page — next to the taxon name, next to the rank, beside the download buttons, below the title bar, at the bottom of the header, and above the content shared by every tab. Regions are configured under `taxa_page_regions`, a key of its own next to `taxa_page` in `taxa_page.yml`, and entries take the same shape used in the tab layout: a bare panel id, or an object with `bind`, `rank_group` and `order`. A panel listed only in a region is not rendered in any tab. Panels receive the same props in both places, so one component can serve both. Unknown region names and unknown panel ids are reported in the console and skipped. See the layout section of the developer guide for the region list and the data each one guarantees.
