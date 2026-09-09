@@ -74,11 +74,7 @@ export function componentRegistrationPlugin({
 
     const patternsStr = patterns.join(' ')
 
-    // Panel entry points: patterns like "panels/*/main.js" or "Panel/*/main.js"
-    if (
-      patternsStr.includes('panels/*/main.js') ||
-      patternsStr.includes('Panel/*/main.js')
-    ) {
+    if (patternsStr.includes('panels/*/main.js')) {
       for (const panel of _resolvedPanels) {
         extra.push(panel.entry)
       }

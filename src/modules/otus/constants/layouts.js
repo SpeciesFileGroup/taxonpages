@@ -8,7 +8,7 @@ const userPanels = Object.values(
 )
 
 const corePanels = Object.values(
-  import.meta.glob('../components/Panel/*/main.js', {
+  import.meta.glob('@/modules/otus/components/Panel/*/main.js', {
     eager: true,
     import: 'default'
   })
