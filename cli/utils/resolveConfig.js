@@ -4,6 +4,7 @@ import { mergeConfig } from 'vite'
 import { loadConfiguration } from '../../src/utils/loadConfiguration.js'
 import { writeTailwindSources } from '../../src/plugins/vite/writeTailwindSources.js'
 import { loadPlugins } from './loadPlugins.js'
+import { DEDUPE_PACKAGES } from './dedupe.js'
 import { VitePluginRadar } from 'vite-plugin-radar'
 import Vue from '@vitejs/plugin-vue'
 import Markdown from 'unplugin-vue-markdown/vite'
@@ -63,6 +64,14 @@ export async function getViteConfig({ packageRoot, projectRoot, ssr = false }) {
     },
 
     resolve: {
+      // Force a single copy of every package that keeps module-scoped state.
+      // Vite resolves these from `config.root` (the package root, unless the
+      // project ships its own index.html) instead of from each importer, so a
+      // panel, module or component library that carries its own nested copy
+      // still shares the app's instance. `taxonpages doctor` reports the
+      // duplicates this papers over.
+      dedupe: DEDUPE_PACKAGES,
+
       alias: {
         '@': resolve(packageRoot, 'src'),
         '~': projectRoot,
@@ -165,10 +174,11 @@ export async function getViteConfig({ packageRoot, projectRoot, ssr = false }) {
   }
 
   // Apply vite() hooks from discovered plugins.
-  // Protected keys (root, base, resolve.alias) cannot be overridden.
+  // Protected keys (root, base, resolve.alias, resolve.dedupe) cannot be overridden.
   const plugins = await loadPlugins({ projectRoot, packageRoot, configuration })
   const protectedKeys = { root: config.root, base: config.base }
   const protectedAliases = { ...config.resolve.alias }
+  const protectedDedupe = [...config.resolve.dedupe]
 
   for (const plugin of plugins) {
     if (typeof plugin.vite !== 'function') continue
@@ -190,6 +200,12 @@ export async function getViteConfig({ packageRoot, projectRoot, ssr = false }) {
   config.root = protectedKeys.root
   config.base = protectedKeys.base
   config.resolve.alias = protectedAliases
+
+  // Plugins may add to the dedupe list (mergeConfig concatenates arrays) but
+  // must not be able to drop an entry the framework depends on.
+  config.resolve.dedupe = [
+    ...new Set([...protectedDedupe, ...(config.resolve.dedupe || [])])
+  ]
 
   return config
 }

@@ -144,6 +144,7 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
       }
     ],
     resolve: {
+      dedupe: ['vue'],
       alias: {
         '@setup': clientDir
       }

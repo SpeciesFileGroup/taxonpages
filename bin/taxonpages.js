@@ -139,6 +139,15 @@ program
   })
 
 program
+  .command('doctor')
+  .description('Check the project for known dependency problems')
+  .action(async () => {
+    const { doctor } = await import('../cli/commands/doctor.js')
+    const ok = doctor({ projectRoot: process.cwd() })
+    if (!ok) process.exitCode = 1
+  })
+
+program
   .command('init [directory]')
   .description('Scaffold a new TaxonPages project')
   .action(async (directory) => {

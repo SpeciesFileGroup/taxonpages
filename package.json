@@ -1,6 +1,6 @@
 {
   "name": "@sfgrp/taxonpages",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "CLI tool for building taxon pages powered by SpeciesFileGroup",
   "type": "module",
   "private": false,
@@ -25,6 +25,7 @@
     "build:ssr": "node bin/taxonpages.js build:ssr",
     "serve": "node bin/taxonpages.js serve",
     "debug": "node --inspect-brk server",
+    "doctor": "node bin/taxonpages.js doctor",
     "preview": "node bin/taxonpages.js preview",
     "setup": "node bin/taxonpages.js setup",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"

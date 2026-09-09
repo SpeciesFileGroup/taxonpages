@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `taxonpages doctor`, a new command that checks your project for known dependency problems. Right now it reports libraries installed twice: if something pulls in a second copy of Vue, Vue Router, Pinia or unhead, it lists each version and where it lives. Your site keeps working, TaxonPages resolves the conflict on its own, so this is information rather than an emergency: it lets you report the problem to the author of the package that brought the extra copy, since that package is now running against a version it was not built for. It exits with an error code when it finds something, so you can also run it in CI. If you write panels, modules or plugins yourself, the new "Shared dependencies" section of the developer guide explains how to declare these libraries so this never happens.
+
+### Fixed
+
+- Panels and plugins that broke for no apparent reason should now work. If you installed a panel or plugin and it failed with an error like `getActivePinia() was called with no active Pinia`, or the page title stopped updating, the cause was usually the same: the package brought its own copy of a library TaxonPages already provides (Vue, Vue Router, Pinia or unhead). Two copies were loaded at once and could not see each other's data. TaxonPages now makes sure a single copy of each is used. Nothing to change in your site, reinstall or rebuild and the problem is gone. Previously this protection was applied to only one of the two bundles an SSR site produces, the one that runs on the server. That is why an SSR page could render correctly and then break the moment it finished loading in the browser. It now covers every command: `dev`, `dev:ssr`, `build`, `build:ssr`, `preview` and the setup wizard.
+
 ## [0.7.0] - 2026-09-01
 
 ### Added

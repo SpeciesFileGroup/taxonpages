@@ -691,6 +691,52 @@ export default function ({ configuration }) {
 
 Once installed, `sitemap.xml` is emitted to the build output alongside the rest of the assets. This pattern — wrapping a third-party Vite plugin behind the `vite()` hook — is the most common shape for build-time plugins.
 
+## Shared dependencies
+
+TaxonPages owns the runtime: it creates the Vue app, the router, the Pinia instance and the
+unhead context, and every panel, module and plugin runs inside them. Those libraries keep
+module-scoped state, so two copies loaded side by side break in ways that are hard to read —
+`getActivePinia() was called with no active Pinia` from a store that looks correctly written,
+or `injectHead()` returning nothing.
+
+**Declare them as `peerDependencies`, never as `dependencies`:**
+
+```json
+{
+  "peerDependencies": {
+    "@sfgrp/taxonpages": ">=0.7.0",
+    "pinia": "^4.0.0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "pinia": "^4.0.0",
+    "vue": "^3.5.0"
+  }
+}
+```
+
+Add them to `devDependencies` too, with the same range, so the package still builds and tests
+on its own.
+
+**Keep the peer range wide — a caret, never an exact version.** `"pinia": "^4.0.0"` overlaps with
+whatever 4.x TaxonPages resolves to, so npm installs one copy that satisfies both. `"pinia":
+"4.0.1"` overlaps with nothing else, and npm does not report that as an error: it hoists your
+pinned copy to the top of the tree and pushes TaxonPages' own copy into a nested folder. You end
+up with two copies anyway, and TaxonPages runs against the version *you* pinned. Use the widest
+range the API you depend on allows.
+
+A package that lists `vue`, `vue-router`, `pinia`, `@unhead/vue` or `unhead` under
+`dependencies` with a range that conflicts with the one TaxonPages declares makes npm install a
+second, nested copy instead of sharing the hoisted one. Declared as a peer dependency with an
+overlapping range, npm installs a single copy that satisfies both and the problem never appears.
+
+TaxonPages also passes these packages to Vite's `resolve.dedupe`, so a duplicate that does reach
+`node_modules` is collapsed to a single copy when the site is bundled. That keeps sites working,
+but it silently runs the offending package against a version it was not built for, so it is a
+safety net rather than a fix. Run `taxonpages doctor` to see whether a project is affected: it
+reports every duplicated library with the version and path of each copy, and exits non-zero when
+it finds one, so it can be used as a check in CI.
+
 ## Creating NPM panels
 
 This section explains how to create and publish a TaxonPages panel as an NPM package.
