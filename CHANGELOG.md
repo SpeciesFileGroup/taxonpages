@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.7.2] - 2026-09-09
+
+### Changed
+
+- Update packages
+
+## [0.7.1] - 2026-09-09
+
 ### Added
 
 - `taxonpages doctor`, a new command that checks your project for known dependency problems. Right now it reports libraries installed twice: if something pulls in a second copy of Vue, Vue Router, Pinia or unhead, it lists each version and where it lives. Your site keeps working, TaxonPages resolves the conflict on its own, so this is information rather than an emergency: it lets you report the problem to the author of the package that brought the extra copy, since that package is now running against a version it was not built for. It exits with an error code when it finds something, so you can also run it in CI. If you write panels, modules or plugins yourself, the new "Shared dependencies" section of the developer guide explains how to declare these libraries so this never happens.
