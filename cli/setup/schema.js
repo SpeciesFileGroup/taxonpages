@@ -261,14 +261,22 @@ export default {
             sortable: true,
             items: {
               label: { type: 'string', label: 'Label', translatable: true },
-              link: { type: 'string', label: 'URL' },
+              link: {
+                type: 'string',
+                label: 'URL',
+                placeholder: '/page or https://example.com'
+              },
               submenu: {
                 type: 'array',
                 label: 'Submenu',
                 optional: true,
                 items: {
                   label: { type: 'string', label: 'Label', translatable: true },
-                  link: { type: 'string', label: 'URL' }
+                  link: {
+                    type: 'string',
+                    label: 'URL',
+                    placeholder: '/page or https://example.com'
+                  }
                 }
               }
             }
@@ -342,7 +350,8 @@ export default {
     sections: {
       installed: {
         label: 'Package Manager',
-        description: 'Install, update, and manage TaxonPages modules and panels',
+        description:
+          'Install, update, and manage TaxonPages modules and panels',
         editor: 'packages'
       }
     }
@@ -381,7 +390,8 @@ export default {
               subdomains: {
                 type: 'string',
                 label: 'Subdomains',
-                description: 'Characters used to replace {s} in the URL (e.g. "abc").',
+                description:
+                  'Characters used to replace {s} in the URL (e.g. "abc").',
                 optional: true
               },
               tileSize: {
@@ -393,7 +403,8 @@ export default {
               zoomOffset: {
                 type: 'number',
                 label: 'Zoom Offset',
-                description: 'Offset applied to zoom values when requesting tiles.',
+                description:
+                  'Offset applied to zoom values when requesting tiles.',
                 optional: true
               },
               minZoom: {
@@ -409,7 +420,8 @@ export default {
               maxNativeZoom: {
                 type: 'number',
                 label: 'Max Native Zoom',
-                description: 'Highest zoom level the server provides; deeper zooms are upscaled.',
+                description:
+                  'Highest zoom level the server provides; deeper zooms are upscaled.',
                 optional: true
               },
               opacity: {
@@ -421,7 +433,8 @@ export default {
               detectRetina: {
                 type: 'boolean',
                 label: 'Detect Retina',
-                description: 'Request higher-resolution tiles on high-DPI screens.',
+                description:
+                  'Request higher-resolution tiles on high-DPI screens.',
                 optional: true
               },
               noWrap: {

@@ -38,27 +38,30 @@
               </div>
               <div>
                 <div
-                  v-for="item in item.submenu"
+                  v-for="subItem in item.submenu"
+                  :key="subItem.link"
                   class="border-b last:border-b-2 border-b-base-border"
                 >
-                  <RouterLink
+                  <NavbarLink
                     class="cursor-pointer text-base-content w-full py-3 px-4 box-border block"
-                    :to="item.link"
+                    :link="subItem.link"
+                    :target="subItem.target"
                     @click="() => (isMenuVisible = false)"
                   >
-                    {{ item.label }}
-                  </RouterLink>
+                    {{ subItem.label }}
+                  </NavbarLink>
                 </div>
               </div>
             </div>
-            <RouterLink
+            <NavbarLink
               v-else
-              :to="item.link"
+              :link="item.link"
+              :target="item.target"
               class="text-base-content w-full p-4 py-3 block box-border"
               @click="() => (isMenuVisible = false)"
             >
               {{ item.label }}
-            </RouterLink>
+            </NavbarLink>
           </li>
           <!-- Flat rows rather than the header's dropdown: a menu inside an
                open menu is poor on a phone, and there are only ever a handful. -->
@@ -107,6 +110,7 @@ import { ref } from 'vue'
 import SwitchTheme from '../SwitchTheme.vue'
 import { useLocalizedConfig } from '@/i18n/useLocalizedConfig'
 import { useLocaleOptions } from '@/i18n/useLocaleOptions'
+import NavbarLink from './NavbarLink.vue'
 
 const { cDeep } = useLocalizedConfig()
 const { options: localeOptions, isMultiLocale } = useLocaleOptions()

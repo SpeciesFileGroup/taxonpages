@@ -32,13 +32,14 @@
         class="border-b hover:bg-base-foreground border-base-muted last:border-b-0"
         @click="() => (isOpen = false)"
       >
-        <RouterLink
-          :to="item.link"
+        <NavbarLink
+          :link="item.link"
+          :target="item.target"
           role="menuitem"
           class="block px-4 py-2 text-base-content hover:bg-secondary/5 focus-visible:bg-secondary/5 focus-visible:outline-none transition-colors duration-100"
         >
           {{ item.label }}
-        </RouterLink>
+        </NavbarLink>
       </div>
     </div>
   </div>
@@ -46,6 +47,7 @@
 
 <script setup>
 import { ref, nextTick, useTemplateRef, onMounted, onBeforeUnmount } from 'vue'
+import NavbarLink from './NavbarLink.vue'
 
 defineProps({
   menu: {

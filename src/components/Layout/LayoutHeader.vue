@@ -51,8 +51,8 @@ import SwitchTheme from '../SwitchTheme.vue'
 import SwitchLocale from '../SwitchLocale.vue'
 import NavbarMenu from '../Navbar/NavbarMenu.vue'
 import NavbarMobile from '../Navbar/NavbarMobile.vue'
-import { isValidUrl } from '@/utils/url'
 import { useLocalizedConfig } from '@/i18n/useLocalizedConfig'
+import { resolveAssetUrl } from '@/utils/url'
 
 const {
   header_links: rawHeaderLinks,
@@ -69,7 +69,5 @@ const header_links = cDeep(rawHeaderLinks)
 const header_logo_text = c(rawLogoText)
 const project_name = c(rawProjectName)
 
-const logoUrl = isValidUrl(header_logo_url)
-  ? header_logo_url
-  : (base_url + header_logo_url).replace('//', '/')
+const logoUrl = resolveAssetUrl(header_logo_url, base_url)
 </script>

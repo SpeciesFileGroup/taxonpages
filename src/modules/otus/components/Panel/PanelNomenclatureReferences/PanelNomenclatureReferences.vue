@@ -7,7 +7,7 @@
     />
     <VCardHeader class="flex justify-between">
       <h2 class="text-md">
-        {{ $t('panel.nomenclature_references.title') }} ({{ store.catalog.sources.length }})
+        {{ panelTitle }} ({{ store.catalog.sources.length }})
       </h2>
       <PanelDropdown
         :menu-options="menuOptions"
@@ -57,8 +57,19 @@ import PanelDropdown from '../PanelDropdown.vue'
 
 const MAX_REFERENCES = 2
 
+const props = defineProps({
+  title: {
+    type: String,
+    default: undefined
+  }
+})
+
 const { t } = useI18n()
 const store = useOtuStore()
+
+const panelTitle = computed(
+  () => props.title ?? t('panel.nomenclature_references.title')
+)
 
 const showAll = ref(false)
 const referenceList = computed(() =>

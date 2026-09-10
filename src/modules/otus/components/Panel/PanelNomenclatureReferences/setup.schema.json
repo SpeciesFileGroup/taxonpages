@@ -1,0 +1,12 @@
+{
+  "label": "Nomenclature References Panel Settings",
+  "fields": {
+    "title": {
+      "type": "string",
+      "label": "Title",
+      "description": "The title for the references panel",
+      "translatable": true,
+      "default": "Nomenclature references"
+    }
+  }
+}

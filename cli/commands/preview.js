@@ -12,9 +12,11 @@ export async function preview({ packageRoot, projectRoot, port }) {
     configFile: false,
     ...config,
     build: {
+      ...config.build,
       outDir: resolve(projectRoot, 'dist')
     },
     preview: {
+      ...config.preview,
       port: Number(port)
     }
   })

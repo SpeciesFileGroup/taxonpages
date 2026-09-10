@@ -26,8 +26,9 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, provide, ref, watch } from 'vue'
 import { useOtuPageRequest } from '@/modules/otus/helpers/useOtuPageRequest'
+import { DESCENDANTS_TREE_ROOT_ID } from './store/useDescendantsTreeStore'
 import DescendantsTree from './DescendantsTree.vue'
 import TaxonWorks from '../../../services/TaxonWorks'
 import PanelDropdown from '../PanelDropdown.vue'
@@ -38,6 +39,8 @@ const props = defineProps({
     required: true
   }
 })
+
+provide(DESCENDANTS_TREE_ROOT_ID, props.otuId)
 
 const taxonomy = ref(null)
 const isLoading = ref(false)

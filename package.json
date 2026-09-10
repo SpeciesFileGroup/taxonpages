@@ -1,6 +1,6 @@
 {
   "name": "@sfgrp/taxonpages",
-  "version": "0.6.3",
+  "version": "0.7.2",
   "description": "CLI tool for building taxon pages powered by SpeciesFileGroup",
   "type": "module",
   "private": false,
@@ -25,50 +25,48 @@
     "build:ssr": "node bin/taxonpages.js build:ssr",
     "serve": "node bin/taxonpages.js serve",
     "debug": "node --inspect-brk server",
+    "doctor": "node bin/taxonpages.js doctor",
     "preview": "node bin/taxonpages.js preview",
     "setup": "node bin/taxonpages.js setup",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
+    "lint": "eslint --fix src"
   },
   "dependencies": {
     "@geoman-io/leaflet-geoman-free": "^2.20.0",
     "@nuxt/devalue": "^2.0.2",
-    "@sfgrp/distinguish": "^0.4.6",
+    "@sfgrp/distinguish": "^0.6.1",
     "@sfgrp/pinpoint": "^0.0.12",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
-    "@unhead/ssr": "^3.2.3",
-    "@unhead/vue": "^3.2.3",
+    "@unhead/ssr": "^3.4.0",
+    "@unhead/vue": "^3.4.0",
     "@vitejs/plugin-vue": "^6.0.8",
-    "axios": "^1.19.0",
+    "axios": "^1.20.0",
     "commander": "^15.0.0",
     "compression": "^1.8.1",
     "express": "^5.2.1",
     "glob": "^13.0.6",
-    "js-yaml": "^5.2.2",
+    "js-yaml": "^5.4.1",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
-    "markdown-it-anchor": "^9.2.1",
+    "markdown-it-anchor": "^10.0.0",
     "minimist": "^1.2.8",
-    "pinia": "^4.0.2",
-    "sass": "^1.102.0",
+    "pinia": "^4.0.3",
+    "sass": "^1.104.0",
     "serve-static": "^2.2.1",
     "tailwindcss": "^4.3.3",
-    "unhead": "^3.2.3",
-    "unplugin-vue-markdown": "^32.0.0",
-    "vite": "^8.2.0",
+    "unhead": "^3.4.0",
+    "unplugin-vue-markdown": "^32.1.1",
+    "vite": "^8.2.2",
     "vite-plugin-radar": "^0.11.0",
-    "vue": "^3.5.40",
-    "vue-i18n": "^11.4.8",
-    "vue-router": "^5.2.0"
+    "vue": "^3.5.42",
+    "vue-router": "^5.3.1",
+    "vue-i18n": "^11.4.8"
   },
   "devDependencies": {
-    "eslint": "^10.8.0",
-    "eslint-plugin-vue": "^10.10.0"
-  },
-  "overrides": {
-    "vite-plugin-radar": {
-      "vite": "$vite"
-    }
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.10.0",
+    "eslint-plugin-vue": "^10.11.0",
+    "globals": "^17.12.0"
   },
   "keywords": [
     "taxonworks",

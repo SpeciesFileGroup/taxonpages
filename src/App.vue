@@ -6,6 +6,7 @@
 
 <script setup>
 import { useHead } from '@unhead/vue'
+import favicons from 'virtual:taxonpages-favicons'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -60,10 +61,12 @@ const alternateLinks = computed(() => {
 // Title and meta are site-author config, so they can carry translations too.
 const { c, cDeep } = useLocalizedConfig()
 
+const links = computed(() => [...favicons, ...alternateLinks.value])
+
 useHead({
   title: c(__APP_ENV__.project_name),
   meta: cDeep(__APP_ENV__.metadata),
   htmlAttrs: { lang: locale },
-  link: alternateLinks
+  link: links
 })
 </script>

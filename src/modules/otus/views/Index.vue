@@ -40,8 +40,11 @@
                 v-if="isReady"
                 :otu="otu"
               />
+              <TaxaPageOutlet region="taxa_page:header:actions:end" />
             </div>
           </div>
+
+          <TaxaPageOutlet region="taxa_page:header:titlebar:after" />
         </div>
 
         <TabMenu
@@ -56,10 +59,14 @@
             {{ label }}
           </TabItem>
         </TabMenu>
+
+        <TaxaPageOutlet region="taxa_page:header:end" />
       </div>
     </div>
     <div class="pt-5 pb-6">
       <div class="container mx-auto box-border">
+        <TaxaPageOutlet region="taxa_page:content:start" />
+
         <RouterView
           v-if="isReady"
           :key="route.fullPath"
@@ -97,6 +104,7 @@ import DataMap from '../components/DataMap.vue'
 import Breadcrumb from '../components/Breadcrumb/Breadcrumb.vue'
 import TaxaInfo from '../components/TaxaInfo.vue'
 import DWCDownload from '../components/DWCDownload.vue'
+import TaxaPageOutlet from '../components/TaxaPageOutlet.vue'
 
 const head = injectHead()
 
