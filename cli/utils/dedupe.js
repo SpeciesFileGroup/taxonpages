@@ -7,9 +7,11 @@ import { readdirSync, readFileSync, existsSync, realpathSync } from 'node:fs'
  *
  * Each one keeps module-scoped state that breaks silently when two copies are
  * loaded: Vue's current instance and injection keys, vue-router's and pinia's
- * injection symbols plus pinia's `activePinia`, and unhead's head symbol.
- * TaxonPages creates all of these instances and shares them through
- * provide/inject, so a second copy is never the intended behaviour.
+ * injection symbols plus pinia's `activePinia`, unhead's head symbol, and
+ * vue-i18n's `I18nInjectionKey` — a plain `Symbol()`, not `Symbol.for()`, so
+ * a second copy's `useI18n()` cannot see the instance the app installed and
+ * throws instead. TaxonPages creates all of these instances and shares them
+ * through provide/inject, so a second copy is never the intended behaviour.
  *
  * A duplicate reaches the tree whenever an ecosystem package declares one of
  * these as a regular dependency with a range that conflicts with the one
@@ -20,7 +22,8 @@ export const DEDUPE_PACKAGES = [
   'vue-router',
   'pinia',
   '@unhead/vue',
-  'unhead'
+  'unhead',
+  'vue-i18n'
 ]
 
 const MAX_DEPTH = 6

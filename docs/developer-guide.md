@@ -754,11 +754,12 @@ Once installed, `sitemap.xml` is emitted to the build output alongside the rest 
 
 ## Shared dependencies
 
-TaxonPages owns the runtime: it creates the Vue app, the router, the Pinia instance and the
-unhead context, and every panel, module and plugin runs inside them. Those libraries keep
-module-scoped state, so two copies loaded side by side break in ways that are hard to read —
-`getActivePinia() was called with no active Pinia` from a store that looks correctly written,
-or `injectHead()` returning nothing.
+TaxonPages owns the runtime: it creates the Vue app, the router, the Pinia instance, the i18n
+instance and the unhead context, and every panel, module and plugin runs inside them. Those
+libraries keep module-scoped state, so two copies loaded side by side break in ways that are
+hard to read — `getActivePinia() was called with no active Pinia` from a store that looks
+correctly written, `injectHead()` returning nothing, or `Need to install with the app.use`
+from a component whose `useI18n()` call is plainly correct.
 
 **Declare them as `peerDependencies`, never as `dependencies`:**
 
@@ -786,7 +787,7 @@ pinned copy to the top of the tree and pushes TaxonPages' own copy into a nested
 up with two copies anyway, and TaxonPages runs against the version *you* pinned. Use the widest
 range the API you depend on allows.
 
-A package that lists `vue`, `vue-router`, `pinia`, `@unhead/vue` or `unhead` under
+A package that lists `vue`, `vue-router`, `pinia`, `@unhead/vue`, `unhead` or `vue-i18n` under
 `dependencies` with a range that conflicts with the one TaxonPages declares makes npm install a
 second, nested copy instead of sharing the hoisted one. Declared as a peer dependency with an
 overlapping range, npm installs a single copy that satisfies both and the problem never appears.
