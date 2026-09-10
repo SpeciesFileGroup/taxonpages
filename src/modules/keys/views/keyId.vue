@@ -60,7 +60,19 @@ const options = ref({
 })
 
 function makeViewerImage(figure) {
-  const label = figure.caption || figure.label
+  const parts = []
+  const figureLabel = figure.label?.trim()
+  const caption = figure.caption?.trim()
+
+  if (figureLabel) {
+    parts.push(caption && !figureLabel.endsWith('.') ? `${figureLabel}.` : figureLabel)
+  }
+
+  if (caption) {
+    parts.push(caption)
+  }
+
+  const label = parts.join(' ')
 
   return {
     id: figure.id,

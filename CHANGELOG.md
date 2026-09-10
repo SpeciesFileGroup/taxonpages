@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.7.4] - 2026-09-10
+
+### Fixed
+
+- Missing figure caption in dichotomous key interface
+
 ## [0.7.3] - 2026-09-10
 
 ### Changed
