@@ -24,11 +24,11 @@
         </VTableHeader>
         <VTableBody>
           <VTableBodyRow
-            v-for="[key, value] in Object.entries(metadata)"
+            v-for="[key, value] in metadataEntries"
             :key="key"
           >
             <VTableBodyCell class="capitalize">
-              {{ key.replaceAll('_', ' ') }}
+              {{ key.replaceAll(/([a-z])([A-Z])/g, '$1 $2') }}
             </VTableBodyCell>
             <VTableBodyCell>{{ value }}</VTableBodyCell>
           </VTableBodyRow>
@@ -39,9 +39,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
-defineProps({
+const props = defineProps({
   metadata: {
     type: Object,
     required: true
@@ -49,4 +49,12 @@ defineProps({
 })
 
 const isModalVisible = ref(false)
+
+const metadataEntries = computed(() => {
+  const data = { ...props.metadata }
+
+  delete data.source
+
+  return Object.entries(data)
+})
 </script>

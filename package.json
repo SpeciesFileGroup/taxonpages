@@ -34,7 +34,7 @@
     "@geoman-io/leaflet-geoman-free": "^2.20.0",
     "@nuxt/devalue": "^2.0.2",
     "@sfgrp/distinguish": "^0.6.1",
-    "@sfgrp/pinpoint": "^0.0.12",
+    "@sfgrp/pinpoint": "^0.1.0",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
     "@unhead/ssr": "^3.4.0",
