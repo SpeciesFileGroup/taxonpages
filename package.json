@@ -28,7 +28,7 @@
     "doctor": "node bin/taxonpages.js doctor",
     "preview": "node bin/taxonpages.js preview",
     "setup": "node bin/taxonpages.js setup",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
+    "lint": "eslint --fix src"
   },
   "dependencies": {
     "@geoman-io/leaflet-geoman-free": "^2.20.0",
@@ -62,8 +62,10 @@
     "vue-router": "^5.3.1"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "eslint": "^10.10.0",
-    "eslint-plugin-vue": "^10.11.0"
+    "eslint-plugin-vue": "^10.11.0",
+    "globals": "^17.12.0"
   },
   "keywords": [
     "taxonworks",

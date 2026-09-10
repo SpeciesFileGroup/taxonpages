@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - The console no longer reports built-in panels as unknown when TaxonPages is installed as a package. Running `dev` or `dev:ssr` printed `[taxonpages] Unknown panel id "panel:<name>" in the taxa_page configuration`.
 
+### Changed
+
+- ESLint configuration
+
 ## [0.7.2] - 2026-09-09
 
 ### Changed

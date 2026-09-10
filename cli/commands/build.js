@@ -16,6 +16,7 @@ export async function runBuild({ packageRoot, projectRoot, mode }) {
       configFile: false,
       ...config,
       build: {
+        ...config.build,
         outDir: resolve(projectRoot, 'dist')
       }
     })
@@ -29,6 +30,7 @@ export async function runBuild({ packageRoot, projectRoot, mode }) {
     configFile: false,
     ...config,
     build: {
+      ...config.build,
       ssrManifest: true,
       outDir: resolve(projectRoot, 'dist/client')
     }
@@ -39,9 +41,11 @@ export async function runBuild({ packageRoot, projectRoot, mode }) {
     configFile: false,
     ...config,
     ssr: {
+      ...config.ssr,
       noExternal: true
     },
     build: {
+      ...config.build,
       ssr: resolve(packageRoot, 'src/entry-server.js'),
       outDir: resolve(projectRoot, 'dist/server')
     }
