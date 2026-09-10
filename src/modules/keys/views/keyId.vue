@@ -84,6 +84,11 @@ function goToFigure(target, current, { next, previous }) {
 
 .pinpoint-app {
   @apply py-4 flex flex-col gap-4;
+
+  ul.pinpoint-previous-list {
+    @apply py-0;
+  }
+
   ul {
     @apply ml-4;
   }
@@ -139,6 +144,10 @@ function goToFigure(target, current, { next, previous }) {
   }
 }
 
+.pinpoint-node {
+  @apply flex flex-col gap-4;
+}
+
 .pinpoint-button-go {
   display: none;
 }
@@ -153,10 +162,6 @@ function goToFigure(target, current, { next, previous }) {
 
 pinpoint-button-up::before {
   content: 's';
-}
-
-.pinpoint-node-target {
-  @apply my-4;
 }
 
 .pinpoint-key-title {
