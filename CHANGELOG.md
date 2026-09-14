@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-09-14
+
 ### Added
 
 - Internationalization. A site can be served in several languages by adding `config/i18n.yml`. Without that file a site stays single-locale and ships no extra JavaScript. See the developer guide.
