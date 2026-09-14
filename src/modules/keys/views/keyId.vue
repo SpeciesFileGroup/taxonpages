@@ -27,6 +27,18 @@
             v-html="label"
           />
         </template>
+        <template #figure-viewer="{ figures, index, close, next, previous }">
+          <ImageViewer
+            :index="index"
+            :images="figures.map(makeViewerImage)"
+            :next="figures.length > 1"
+            :previous="figures.length > 1"
+            @next="next"
+            @previous="previous"
+            @select-index="goToFigure($event, index, { next, previous })"
+            @close="close"
+          />
+        </template>
       </VuePinpoint>
     </ClientOnly>
   </div>
@@ -46,6 +58,37 @@ const options = ref({
   baseUrl: __APP_ENV__.url,
   projectToken: __APP_ENV__.project_token
 })
+
+function makeViewerImage(figure) {
+  const parts = []
+  const figureLabel = figure.label?.trim()
+  const caption = figure.caption?.trim()
+
+  if (figureLabel) {
+    parts.push(caption && !figureLabel.endsWith('.') ? `${figureLabel}.` : figureLabel)
+  }
+
+  if (caption) {
+    parts.push(caption)
+  }
+
+  const label = parts.join(' ')
+
+  return {
+    id: figure.id,
+    thumb: figure.thumb,
+    original: figure.original || figure.image,
+    depictions: label ? [{ id: figure.id, label }] : []
+  }
+}
+
+function goToFigure(target, current, { next, previous }) {
+  const step = target > current ? next : previous
+
+  for (let i = 0; i < Math.abs(target - current); i++) {
+    step()
+  }
+}
 </script>
 
 <style>
@@ -53,6 +96,11 @@ const options = ref({
 
 .pinpoint-app {
   @apply py-4 flex flex-col gap-4;
+
+  ul.pinpoint-previous-list {
+    @apply py-0;
+  }
+
   ul {
     @apply ml-4;
   }
@@ -108,6 +156,10 @@ const options = ref({
   }
 }
 
+.pinpoint-node {
+  @apply flex flex-col gap-4;
+}
+
 .pinpoint-button-go {
   display: none;
 }
@@ -124,10 +176,6 @@ pinpoint-button-up::before {
   content: 's';
 }
 
-.pinpoint-node-target {
-  @apply my-4;
-}
-
 .pinpoint-key-title {
   @apply text-center text-xl;
 }
@@ -139,7 +187,9 @@ pinpoint-button-up::before {
   @apply border-base-muted bg-base-foreground print:shadow-none print:border-0 rounded;
   box-shadow: var(--tp-card-shadow) 0 2px 4px 0;
   border: 1px solid var(--tp-card-border);
-  transition: transform 0.3s ease-out, opacity 0.3s ease-out,
+  transition:
+    transform 0.3s ease-out,
+    opacity 0.3s ease-out,
     box-shadow 0.3s ease-out;
 }
 
