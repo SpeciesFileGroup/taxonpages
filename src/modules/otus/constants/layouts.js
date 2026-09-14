@@ -32,7 +32,9 @@ function parsePanelConfiguraion(panelLayout) {
       col
         .map((panel) => {
           const isPanelKey = typeof panel === 'string'
-          const panelObj = isPanelKey ? { id: panel } : { ...panel }
+          const { rank_group, ...panelObj } = isPanelKey
+            ? { id: panel }
+            : { ...panel }
           const entry = panelsById.get(panelObj.id)
 
           if (!entry) {
@@ -45,7 +47,8 @@ function parsePanelConfiguraion(panelLayout) {
 
           return {
             ...entry,
-            ...panelObj
+            ...panelObj,
+            ...(Array.isArray(rank_group) && { rankGroup: rank_group })
           }
         })
         .filter(Boolean)

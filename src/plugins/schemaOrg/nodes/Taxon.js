@@ -1,3 +1,5 @@
+import { toLanguageTag } from '@/i18n/languageTags'
+
 function removeEmptyProperties(obj) {
   const copyObj = { ...obj }
 
@@ -75,8 +77,13 @@ function defineTaxonEntity({ name, taxonRank }) {
 }
 
 function defineCommonNames(commonNames) {
-  return commonNames.map(({ name, language }) => ({
-    '@language': language,
-    '@value': name
-  }))
+  return commonNames.map(({ name, language }) => {
+    // JSON-LD requires @language to be a BCP-47 tag. The API reports an ISO
+    // 639-2 English name ("Spanish; Castilian") or null, so emitting it raw
+    // produced invalid structured data. A language we cannot map is left
+    // untagged rather than tagged wrongly — an untagged value is valid.
+    const tag = toLanguageTag(language)
+
+    return tag ? { '@language': tag, '@value': name } : { '@value': name }
+  })
 }

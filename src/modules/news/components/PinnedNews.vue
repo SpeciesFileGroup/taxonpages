@@ -14,7 +14,7 @@
             >
               <IconCalendar class="h-3.5 w-3.5" />
               <span class="text-sm text-base-lighter">{{
-                item.createdAt
+                $d(item.createdAt, 'long')
               }}</span>
             </div>
             <h2 class="text-3xl font-medium mb-4 leading-tight">
@@ -30,7 +30,7 @@
               :to="`/news/${item.id}`"
               class="px-6 py-3 bg-primary text-primary-content font-medium rounded-lg"
             >
-              Read more →
+              {{ $t('news.read_more') }}
             </RouterLink>
           </div>
         </div>

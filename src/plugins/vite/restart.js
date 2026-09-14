@@ -1,5 +1,6 @@
 import picomatch from 'picomatch'
 import { loadConfiguration } from '../../utils/loadConfiguration.js'
+import { resolveI18nConfig } from '../../i18n/config.js'
 
 const toForwardSlash = (p) => p.replace(/\\/g, '/')
 
@@ -44,6 +45,15 @@ export function ViteRestart({ dir, projectRoot, ssr = false }) {
           '[taxonpages] hash_mode is not compatible with SSR (the URL fragment is never sent to the server). Forcing hash_mode=false for this run.'
         )
         configuration.hash_mode = false
+      }
+
+      // The locale prefix lives in the path, ahead of the fragment, so with
+      // hash_mode a Spanish page is served at /es/#/about — which only works if
+      // the host serves the app at /es/ too. Nothing here can arrange that.
+      if (configuration.hash_mode && resolveI18nConfig(configuration).isMultiLocale) {
+        console.warn(
+          '[taxonpages] hash_mode with multiple locales requires your host to serve the app at every locale prefix (e.g. /es/). If it only serves the root, non-default locales will 404.'
+        )
       }
 
       return {

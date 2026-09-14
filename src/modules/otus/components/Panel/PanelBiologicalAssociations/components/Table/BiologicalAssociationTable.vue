@@ -2,16 +2,16 @@
   <VTable>
     <VTableHeader class="normal-case">
       <VTableHeaderRow>
-        <VTableHeaderCell :colspan="subjectColspan">Subject</VTableHeaderCell>
+        <VTableHeaderCell :colspan="subjectColspan">{{ $t('panel.biological_associations.subject') }}</VTableHeaderCell>
         <VTableHeaderCell class="border-l-2 border-r-2 border-base-border">
-          Biological
+          {{ $t('panel.biological_associations.biological') }}
         </VTableHeaderCell>
-        <VTableHeaderCell :colspan="objectColspan"> Object </VTableHeaderCell>
+        <VTableHeaderCell :colspan="objectColspan">{{ $t('panel.biological_associations.object') }}</VTableHeaderCell>
         <VTableHeaderCell
           v-if="visibleColumns.assertedDistribution"
           class="hidden lg:table-cell border-l-2 border-base-border"
         >
-          Asserted
+          {{ $t('panel.biological_associations.asserted') }}
         </VTableHeaderCell>
         <VTableHeaderCell
           v-if="visibleColumns.citations || visibleColumns.images"
@@ -20,7 +20,7 @@
           "
           class="hidden lg:table-cell border-l-2 border-base-border"
         >
-          Annotations
+          {{ $t('panel.biological_associations.annotations') }}
         </VTableHeaderCell>
       </VTableHeaderRow>
       <VTableHeaderRow>
@@ -28,30 +28,30 @@
           v-if="visibleColumns.subjectOrder"
           class="cursor-pointer"
           @click="toggleSort('subjectOrder')"
-          >Order{{ sortIndicator('subjectOrder') }}</VTableHeaderCell
+          >{{ $t('panel.biological_associations.order') }}{{ sortIndicator('subjectOrder') }}</VTableHeaderCell
         >
         <VTableHeaderCell
           v-if="visibleColumns.subjectFamily"
           class="cursor-pointer"
           @click="toggleSort('subjectFamily')"
-          >Family{{ sortIndicator('subjectFamily') }}</VTableHeaderCell
+          >{{ $t('panel.biological_associations.family') }}{{ sortIndicator('subjectFamily') }}</VTableHeaderCell
         >
         <VTableHeaderCell
           v-if="visibleColumns.subjectGenus"
           class="cursor-pointer"
           @click="toggleSort('subjectGenus')"
-          >Genus{{ sortIndicator('subjectGenus') }}</VTableHeaderCell
+          >{{ $t('panel.biological_associations.genus') }}{{ sortIndicator('subjectGenus') }}</VTableHeaderCell
         >
         <VTableHeaderCell
           class="cursor-pointer"
           @click="toggleSort('subjectLabel')"
-          >Label{{ sortIndicator('subjectLabel') }}</VTableHeaderCell
+          >{{ $t('panel.biological_associations.label') }}{{ sortIndicator('subjectLabel') }}</VTableHeaderCell
         >
         <VTableHeaderCell
           v-if="visibleColumns.subjectProperties"
           class="cursor-pointer"
           @click="toggleSort('biologicalPropertySubject')"
-          >Properties{{
+          >{{ $t('panel.biological_associations.properties') }}{{
             sortIndicator('biologicalPropertySubject')
           }}</VTableHeaderCell
         >
@@ -59,54 +59,54 @@
           class="border-l-2 border-r-2 border-base-border cursor-pointer"
           @click="toggleSort('biologicalRelationship')"
         >
-          Relationship{{ sortIndicator('biologicalRelationship') }}
+          {{ $t('panel.biological_associations.relationship') }}{{ sortIndicator('biologicalRelationship') }}
         </VTableHeaderCell>
         <VTableHeaderCell
           v-if="visibleColumns.objectProperties"
           class="cursor-pointer"
           @click="toggleSort('biologicalPropertyObject')"
         >
-          Properties{{ sortIndicator('biologicalPropertyObject') }}
+          {{ $t('panel.biological_associations.properties') }}{{ sortIndicator('biologicalPropertyObject') }}
         </VTableHeaderCell>
         <VTableHeaderCell
           v-if="visibleColumns.objectOrder"
           class="cursor-pointer"
           @click="toggleSort('objectOrder')"
-          >Order{{ sortIndicator('objectOrder') }}</VTableHeaderCell
+          >{{ $t('panel.biological_associations.order') }}{{ sortIndicator('objectOrder') }}</VTableHeaderCell
         >
         <VTableHeaderCell
           v-if="visibleColumns.objectFamily"
           class="cursor-pointer"
           @click="toggleSort('objectFamily')"
-          >Family{{ sortIndicator('objectFamily') }}</VTableHeaderCell
+          >{{ $t('panel.biological_associations.family') }}{{ sortIndicator('objectFamily') }}</VTableHeaderCell
         >
         <VTableHeaderCell
           v-if="visibleColumns.objectGenus"
           class="cursor-pointer"
           @click="toggleSort('objectGenus')"
-          >Genus{{ sortIndicator('objectGenus') }}</VTableHeaderCell
+          >{{ $t('panel.biological_associations.genus') }}{{ sortIndicator('objectGenus') }}</VTableHeaderCell
         >
         <VTableHeaderCell
           class="cursor-pointer"
           @click="toggleSort('objectLabel')"
-          >Label{{ sortIndicator('objectLabel') }}</VTableHeaderCell
+          >{{ $t('panel.biological_associations.label') }}{{ sortIndicator('objectLabel') }}</VTableHeaderCell
         >
         <VTableHeaderCell
           v-if="visibleColumns.assertedDistribution"
           class="border-l-2 cursor-pointer"
           @click="toggleSort('assertedDistributions')"
         >
-          Distribution{{ sortIndicator('assertedDistributions') }}
+          {{ $t('panel.biological_associations.distribution') }}{{ sortIndicator('assertedDistributions') }}
         </VTableHeaderCell>
         <VTableHeaderCell
           v-if="visibleColumns.citations"
           class="border-l-2 border-base-border cursor-pointer"
           @click="toggleSort('citations')"
         >
-          Citations{{ sortIndicator('citations') }}
+          {{ $t('panel.biological_associations.citations') }}{{ sortIndicator('citations') }}
         </VTableHeaderCell>
         <VTableHeaderCell v-if="visibleColumns.images">
-          Images
+          {{ $t('panel.biological_associations.images') }}
         </VTableHeaderCell>
       </VTableHeaderRow>
     </VTableHeader>

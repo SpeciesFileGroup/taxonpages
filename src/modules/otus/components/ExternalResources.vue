@@ -1,6 +1,6 @@
 <template>
   <VCard>
-    <h1>External resources</h1>
+    <h1>{{ $t('otus.external_resources') }}</h1>
     <ul class="text-sm">
       <li />
     </ul>

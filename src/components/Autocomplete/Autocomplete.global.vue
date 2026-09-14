@@ -20,7 +20,7 @@
       aria-controls="autocomplete-listbox"
       :aria-activedescendant="activeDescendant"
       class="tp-autocomplete__input bg-base-foreground block box-border w-full pl-10"
-      :placeholder="placeholder"
+      :placeholder="placeholderText"
       @input="trigger"
       @keydown="handleKeydown"
     />
@@ -53,6 +53,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { makeAPIRequest } from '@/utils/request'
 import AutocompleteSpinner from './AutocompleteSpinner.vue'
 
@@ -62,9 +63,10 @@ const props = defineProps({
     default: false
   },
 
+  // Left undefined so the translated default applies.
   placeholder: {
     type: String,
-    default: 'Search...'
+    default: undefined
   },
 
   url: {
@@ -98,7 +100,11 @@ const typed = defineModel('input', {
   default: ''
 })
 
+const { t } = useI18n()
 const emit = defineEmits(['select'])
+const placeholderText = computed(
+  () => props.placeholder ?? t('component.autocomplete.placeholder')
+)
 const list = ref([])
 const isSearching = ref(false)
 const inputElement = ref(null)

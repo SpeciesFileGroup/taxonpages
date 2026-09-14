@@ -13,12 +13,12 @@
         </template>
         <template #button-up-label>
           <div class="flex gap-2 items-center">
-            <IconArrowUp class="h-3" /> Back <IconArrowUp class="h-3" />
+            <IconArrowUp class="h-3" /> {{ $t('keys.back') }} <IconArrowUp class="h-3" />
           </div>
         </template>
         <template #button-next-label>
           <div class="flex gap-2 items-center">
-            <IconArrowDown class="h-3" /> Next <IconArrowDown class="h-3" />
+            <IconArrowDown class="h-3" /> {{ $t('keys.next') }} <IconArrowDown class="h-3" />
           </div>
         </template>
         <template #target="{ id, label }">

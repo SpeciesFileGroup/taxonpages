@@ -2,8 +2,8 @@
   <div class="relative inline-flex">
     <button
       class="cursor-pointer"
-      title="Menu"
-      aria-label="Open panel options"
+      :title="$t('component.dropdown.menu')"
+      :aria-label="$t('component.dropdown.options')"
       aria-haspopup="true"
       :aria-expanded="isVisible"
       @click="toggleMenu"

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <span class="text-1xl capitalize">
-      {{ store.taxon.rank || 'Combination' }}
+    <span class="text-1xl">
+      {{ rankLabel(store.taxon.rank, i18n) || $t('otus.combination') }}
     </span>
     <TaxaPageOutlet region="taxa_page:header:rank:after" />
     <div class="flex items-center flex-wrap gap-x-2">
@@ -14,7 +14,7 @@
           <span
             v-if="!store.taxon.is_valid"
             class="ml-1 text-danger"
-            title="Invalid"
+            :title="$t('otus.invalid')"
           >
             &#10005;
           </span>
@@ -36,9 +36,12 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { useOtuStore } from '../store/store'
+import { rankLabel } from '@/i18n/vocabulary'
 import CommonNames from './CommonNames.vue'
 import TaxaPageOutlet from './TaxaPageOutlet.vue'
 
 const store = useOtuStore()
+const i18n = useI18n()
 </script>

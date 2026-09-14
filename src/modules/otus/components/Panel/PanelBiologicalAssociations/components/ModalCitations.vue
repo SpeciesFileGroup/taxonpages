@@ -2,7 +2,9 @@
   <VModal>
     <template #header>
       <h3 class="font-medium text-sm text-base-content">
-        <span class="text-base">Citations</span>
+        <span class="text-base">
+          {{ $t('panel.biological_associations.citations') }}
+        </span>
         &mdash;
         {{ biologicalAssociation.objectLabel }}
         <span class="text-base-soft italic">{{
@@ -21,8 +23,12 @@
       <VTable v-else>
         <VTableHeader>
           <VTableHeaderRow>
-            <VTableHeaderCell>Reference</VTableHeaderCell>
-            <VTableHeaderCell>Pages</VTableHeaderCell>
+            <VTableHeaderCell>
+              {{ $t('panel.biological_associations.reference') }}
+            </VTableHeaderCell>
+            <VTableHeaderCell>
+              {{ $t('panel.biological_associations.pages') }}
+            </VTableHeaderCell>
           </VTableHeaderRow>
         </VTableHeader>
         <VTableBody>

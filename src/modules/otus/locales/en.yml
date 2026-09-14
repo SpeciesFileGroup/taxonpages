@@ -1,0 +1,129 @@
+---
+# Message catalog for the otus module.
+#
+# `otus.*`  — module-level UI (views, breadcrumb, shared otu components)
+# `panel.*` — panels shipped by this module, keyed by their panel id
+#             (`panel:references-cited` -> `panel.references_cited`), so a
+#             site or NPM package overriding a panel can override its strings
+#             by redefining the same key.
+
+otus:
+  search_placeholder: Search name...
+  invalid: Invalid
+  breadcrumb: Breadcrumb
+  external_resources: External resources
+  dwc_download: Download DwC Occurrences
+  show_all: '... Show all ... ({count})'
+  show_less: Show less
+  show_all_menu: Show all
+  combination: Combination
+
+  datamap:
+    button_title: Links used to obtain the information present on this page in JSON format.
+    title: Datamap
+    description: The following links provide the information present on this page in JSON format.
+    request_key: Request Key
+    url: URL
+
+panel:
+  stats:
+    title: Stats
+    caption: Summary of taxonomic names by rank, showing valid extant names, fossil names, invalid names, and total counts.
+    taxon: Taxon
+    taxa: Taxa
+    rank: Rank
+    valid_names: Valid names
+    extant: Extant
+    fossil: Fossil
+    invalid: Invalid
+    otus_linked: OTUs linked to valid protonyms
+    taxon_names: Taxon names
+    show_taxa: Show taxa
+    hide_taxa: Hide taxa
+
+  type:
+    title: Type
+
+  type_specimen:
+    title: Type specimen
+
+  descendants:
+    title: Descendants and synonyms
+
+  references_cited:
+    title: References cited
+
+  nomenclature:
+    title: Nomenclature
+
+  nomenclature_references:
+    title: Nomenclature references
+
+  keys:
+    title: Keys
+
+  map:
+    absences: Absences
+    loading: Loading...
+    search_otu: OTU
+    search_button: Search
+
+    legend:
+      aggregate: Aggregate (Asserted distribution & Georeference)
+      asserted_absent: Absent
+      asserted_distribution: Asserted distribution
+      georeference: Georeference
+      collection_object: Collection object
+      field_occurrence: Field occurrence
+      type_material: Primary type
+    cached_map:
+      title: Cached map
+      data: Data
+      is_synced: Is synced
+      last_update: Last update
+      synced: Map is synchronized with the latest changes
+      not_synced: Map is not synchronized with the latest changes
+      note: >-
+        * Aggregate maps are generated from georeference and asserted
+        distribution data. Map computation takes time, and as such they are
+        re-calculated periodically rather than when individual georeferences
+        and asserted distributions are created, destroyed, or updated. When a
+        warning notice is present then the map is not syncronized with the
+        latest changes to the underlying data.
+
+  sounds:
+    title: Sounds
+    observations: Observations
+    view_observations: View observations
+    descriptor: Descriptor
+    no_records: No records found
+    audio_recording: 'Audio recording: {title}'
+    download: Download
+    seek: Seek time
+    volume: Volume
+    play: Play
+    pause: Pause
+    mute: Mute
+    unmute: Unmute
+
+  biological_associations:
+    title: Biological associations
+    subject: Subject
+    object: Object
+    citations: Citations
+    reference: Reference
+    pages: Pages
+    biological: Biological
+    asserted: Asserted
+    annotations: Annotations
+    relationship: Relationship
+    properties: Properties
+    distribution: Distribution
+    images: Images
+    label: Label
+    # Column headers naming a taxonomic rank. These label the column, so they
+    # are UI text — distinct from a rank value returned by the API, which is
+    # controlled vocabulary and is not translated here.
+    order: Order
+    family: Family
+    genus: Genus

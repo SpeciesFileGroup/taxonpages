@@ -7,7 +7,7 @@
       ref="dialogRef"
       role="dialog"
       aria-modal="true"
-      :aria-label="ariaLabel"
+      :aria-label="ariaLabelText"
       :class="[
         'h-full md:h-auto mx-auto bg-base-foreground container overflow-y-auto rounded-lg shadow-xl',
         containerClass
@@ -22,7 +22,7 @@
         </slot>
         <button
           type="button"
-          aria-label="Close dialog"
+          :aria-label="$t('component.modal.close')"
           class="p-1 cursor-pointer text-base-soft hover:text-base-content transition-colors duration-150"
           @click="() => emit('close')"
         >
@@ -42,19 +42,26 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-defineProps({
+const props = defineProps({
   containerClass: {
     type: String,
     default: ''
   },
 
+  // Left undefined so the translated default applies.
   ariaLabel: {
     type: String,
-    default: 'Dialog'
+    default: undefined
   }
 })
+
+const { t } = useI18n()
+const ariaLabelText = computed(
+  () => props.ariaLabel ?? t('component.modal.label')
+)
 
 const emit = defineEmits(['close'])
 const dialogRef = ref(null)

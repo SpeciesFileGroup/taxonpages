@@ -2,7 +2,7 @@
   <VButton
     size="xs"
     circle
-    title="Metadata"
+    :title="$t('keys.metadata')"
     @click="isModalVisible = true"
   >
     <IconInformation class="w-4 h-4" />
@@ -12,13 +12,13 @@
     @close="() => (isModalVisible = false)"
   >
     <template #header>
-      <h3 class="font-medium">Metadata</h3>
+      <h3 class="font-medium">{{ $t('keys.metadata') }}</h3>
     </template>
     <div class="p-4 pt-0">
       <VTable>
         <VTableHeader>
           <VTableHeaderRow>
-            <VTableHeaderCell>Data</VTableHeaderCell>
+            <VTableHeaderCell>{{ $t('keys.data') }}</VTableHeaderCell>
             <VTableHeaderCell></VTableHeaderCell>
           </VTableHeaderRow>
         </VTableHeader>

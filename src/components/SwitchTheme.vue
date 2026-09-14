@@ -9,7 +9,7 @@
     <svg
       v-if="themeMode === themeModes.dark"
       xmlns="http://www.w3.org/2000/svg"
-      class="h-6 w-6"
+      class="h-5 w-5"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -25,7 +25,7 @@
     <svg
       v-else
       xmlns="http://www.w3.org/2000/svg"
-      class="h-6 w-6"
+      class="h-5 w-5"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -42,6 +42,7 @@
 
 <script setup>
 import { computed, watch, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const themeModes = {
   dark: 'dark',
@@ -71,10 +72,12 @@ if (window !== undefined) {
   )
 }
 
+const { t } = useI18n()
+
 const title = computed(() =>
   themeMode.value === themeModes.light
-    ? 'Change to dark mode'
-    : 'Change to light mode'
+    ? t('component.theme.to_dark')
+    : t('component.theme.to_light')
 )
 
 const toggleTheme = () => {

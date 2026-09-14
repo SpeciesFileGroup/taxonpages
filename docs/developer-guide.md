@@ -186,6 +186,37 @@ For simple settings, define `fields` in your schema. The setup wizard auto-rende
 
 The configuration values are stored in `config/<file>` and accessible at runtime via the `__APP_ENV__` global object.
 
+##### Translatable fields
+
+A `string` field whose value is text the reader sees can be marked
+`translatable`. On a multi-locale site the setup wizard then offers one input
+per configured locale and writes the locale map described in
+[Translating site content](#translating-site-content):
+
+```json
+{
+  "title": {
+    "type": "string",
+    "label": "Title",
+    "translatable": true
+  }
+}
+```
+
+Mark a field only if your component resolves it through `localize` or
+`localizeDeep` — otherwise the wizard offers a translation that never renders.
+Leave identity unmarked: URLs, ids, and anything cited elsewhere.
+
+The flag changes nothing for a single-locale site. The wizard still shows one
+input and still writes a plain string, so a field can be marked before any
+locale is configured.
+
+You do not need the flag for the wizard to *recognise* an existing translation:
+a value that is already a locale map is edited as one either way, so config
+written by hand is never flattened. What the flag adds is the ability to create
+a translation from the UI, and it is also what lets the wizard recognise text
+left behind for a locale that has since been removed from `config/i18n.yml`.
+
 #### Custom editor component
 
 When the auto-generated form is not enough (e.g., drag-and-drop layout builders, visual editors, or complex interactive UIs), modules can provide a custom Vue component as the settings editor:
@@ -261,13 +292,39 @@ const configKey = computed(
 </script>
 ```
 
-Shared setup UI components like `PanelConfigEditor` are available via Vue's `inject`:
+Shared setup UI components are registered globally, so a custom editor can use
+them without importing anything:
 
-```javascript
-import { inject } from 'vue'
+| Component               | Purpose                                                        |
+| ----------------------- | -------------------------------------------------------------- |
+| `SwModal`               | Modal dialog                                                    |
+| `SwPanelConfigEditor`   | Form for a panel's `bind` values, driven by its `setup.schema.json` |
+| `SwTranslatableField`   | Text input with one value per locale (see [Translatable fields](#translatable-fields)) |
+| `SwTranslatedText`      | Read-only display of a value that may be translated             |
 
-const PanelConfigEditor = inject('tp:PanelConfigEditor')
+```vue
+<SwTranslatableField
+  :field="{ placeholder: 'Section heading' }"
+  :model-value="value"
+  @update:model-value="update($event)"
+/>
+
+<!-- Labelling something you are not editing here -->
+<SwTranslatedText :value="tab.label" :fallback="tabKey" />
 ```
+
+Both are safe to use unconditionally: on a single-locale site the field renders
+a single input and emits a plain string, so there is no need to branch on
+whether the site is translated. Reach for `SwTranslatedText` anywhere a config
+value is only being shown — a plain `{{ tab.label }}` renders a translated value
+as `[object Object]`.
+
+> **Do not import from the wizard client.** A custom editor lives in a module,
+> and a module is built by the main application as well as by the wizard —
+> Tailwind scans it either way. The `@setup` alias only exists while
+> `taxonpages setup` is running, so an import through it fails to resolve during
+> `taxonpages dev` and `taxonpages build`, taking the whole site's dependency
+> scan down with it. Use the globally registered components above instead.
 
 The Tailwind CSS utility classes used in the setup wizard are available in custom editor components.
 
@@ -622,10 +679,11 @@ The `vite()` hook merges returned config additively. Protected keys (`root`, `ba
 
 ### Vue app setup
 
-Plugins that need to extend the Vue app (e.g., register a Vue plugin like i18n) should provide a `vueSetup.js` file in the plugin directory:
+Plugins that need to extend the Vue app (e.g., register a Vue plugin or a
+global directive) should provide a `vueSetup.js` file in the plugin directory:
 
 ```
-taxonpages-plugin-i18n/
+taxonpages-plugin-tooltip/
 ├── package.json
 └── src/
     ├── plugin.js       # Plugin factory (vite hook, etc.)
@@ -634,17 +692,20 @@ taxonpages-plugin-i18n/
 
 ```javascript
 // src/vueSetup.js — note: this file is NOT inside the plugin.js factory
-import { createI18n } from 'vue-i18n'
+import TooltipDirective from './TooltipDirective.js'
 
-export default function (app, { router, store }) {
-  const i18n = createI18n({
-    /* ... */
-  })
-  app.use(i18n)
+export default function (app, { router, store, i18n }) {
+  app.directive('tooltip', TooltipDirective)
 }
 ```
 
-The `vueSetup.js` file is discovered automatically if it exists in the plugin's root directory. It exports a default function that receives the Vue app instance and `{ router, store }`.
+The `vueSetup.js` file is discovered automatically if it exists in the plugin's root directory. It exports a default function that receives the Vue app instance and `{ router, store, i18n }`.
+
+> **Do not install your own i18n instance here.** TaxonPages creates one in
+> core and passes it as `i18n`, so a second instance would shadow it and
+> detach your strings from the site's locale. To translate a plugin's own
+> strings, ship a `locales/<locale>.yml` catalog instead — it is merged into
+> the core catalog automatically.
 
 ### Plugin context
 
@@ -693,11 +754,12 @@ Once installed, `sitemap.xml` is emitted to the build output alongside the rest 
 
 ## Shared dependencies
 
-TaxonPages owns the runtime: it creates the Vue app, the router, the Pinia instance and the
-unhead context, and every panel, module and plugin runs inside them. Those libraries keep
-module-scoped state, so two copies loaded side by side break in ways that are hard to read —
-`getActivePinia() was called with no active Pinia` from a store that looks correctly written,
-or `injectHead()` returning nothing.
+TaxonPages owns the runtime: it creates the Vue app, the router, the Pinia instance, the i18n
+instance and the unhead context, and every panel, module and plugin runs inside them. Those
+libraries keep module-scoped state, so two copies loaded side by side break in ways that are
+hard to read — `getActivePinia() was called with no active Pinia` from a store that looks
+correctly written, `injectHead()` returning nothing, or `Need to install with the app.use`
+from a component whose `useI18n()` call is plainly correct.
 
 **Declare them as `peerDependencies`, never as `dependencies`:**
 
@@ -725,7 +787,7 @@ pinned copy to the top of the tree and pushes TaxonPages' own copy into a nested
 up with two copies anyway, and TaxonPages runs against the version *you* pinned. Use the widest
 range the API you depend on allows.
 
-A package that lists `vue`, `vue-router`, `pinia`, `@unhead/vue` or `unhead` under
+A package that lists `vue`, `vue-router`, `pinia`, `@unhead/vue`, `unhead` or `vue-i18n` under
 `dependencies` with a range that conflicts with the one TaxonPages declares makes npm install a
 second, nested copy instead of sharing the hoisted one. Declared as a peer dependency with an
 overlapping range, npm installs a single copy that satisfies both and the problem never appears.
@@ -1080,3 +1142,173 @@ Example: `MyAmazingComponent.global.vue`
 Both `.global.vue` and `.client.vue` files declared inside an NPM panel or module package are auto-registered the same way as local ones — they become usable across the entire application (other panels, modules, markdown pages, custom layouts) without manual imports.
 
 Unlike local projects, where global components must live under a `components/` folder, an NPM package can place `.global.vue` / `.client.vue` files in **any subdirectory** of the package. Discovery is recursive from the package root.
+
+## Internationalization
+
+i18n is part of the core, not a plugin. A site with no `config/i18n.yml` runs
+single-locale in English with no locale prefix and no extra JavaScript, so
+nothing below is mandatory.
+
+### Translating your own strings
+
+Ship a `locales/<locale>.yml` catalog in your panel, module, or plugin. It is
+discovered and merged automatically — there is nothing to register:
+
+```
+panels/PanelTest/
+├── main.js
+├── PanelTest.vue
+└── locales/
+    ├── en.yml
+    └── es.yml
+```
+
+Namespace keys by your package id so they cannot collide:
+
+```yaml
+# panels/PanelTest/locales/en.yml
+panel:
+  test:
+    title: Test panel
+    empty: Nothing to show
+```
+
+```vue
+<h2>{{ $t('panel.test.title') }}</h2>
+```
+
+Use `$t` in templates. In `<script setup>`, get it from `useI18n()`:
+
+```javascript
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
+```
+
+Catalogs merge in ascending priority: core, then NPM packages, then local
+`panels/` and `modules/`, then the site's own `~/locales/<locale>.yml`. A site
+can therefore override any string a package ships by redefining its key —
+the same local-wins-over-npm rule that applies to components.
+
+A key missing from the active locale falls back to the fallback locale, then to
+the default. **A missing translation never blocks a feature** — ship the English
+key and translate later.
+
+### Dates
+
+Do not format dates yourself: a component cannot know the reader's locale, and
+a formatter pinned to one is a bug. Keep `Date` objects in your data and render
+them with `$d(value, 'long')`.
+
+### Linking across locales
+
+`<RouterLink>` always stays inside the active locale — the locale prefix is the
+router's history base, so every link is prefixed for you and no existing link
+needs changing. To point *at another* locale (a language switcher), build the
+path with `localePath()` and use a plain `<a>`, since crossing locales is a
+document navigation, not a route change:
+
+```javascript
+import { localePath } from '@/i18n/locale.js'
+
+localePath('/about', 'es', __APP_ENV__) // -> '/es/about'
+```
+
+### Translating site content
+
+Two things a site maintainer owns can be translated, both opt-in.
+
+**Config values.** Replace a string with a map of locales. A plain string stays
+a plain string, so existing config needs no migration:
+
+```yaml
+# config/header.yml
+header_links:
+  - label: Home                        # untranslated, still fine
+    link: /
+  - label:
+      en: News
+      es: Noticias
+    link: /news
+```
+
+This works for `header_links` labels (including submenus), `header_logo_text`,
+`copyright_text`, `project_name`, `metadata` entries, `news_module.announcements`
+messages, and in `taxa_page.yml` for tab `label`s and panel `bind` values.
+
+A map is read as a translation only when *every* key is a locale you configured
+in `config/i18n.yml`. That is deliberate: `bind: { id: 5 }` must not be mistaken
+for a translation into Indonesian.
+
+These values can also be edited from `taxonpages setup`, which shows one input
+per locale and reports how many are filled. A field belonging to your own
+module or panel needs `"translatable": true` in its `setup.schema.json` to be
+offered there — see [Translatable fields](#translatable-fields).
+
+`project_citation` and `project_authors` are **not** localized — they are how
+the site is cited in the literature.
+
+**Pages.** Add a sibling file with the locale in its name:
+
+```
+pages/
+├── about.md         # default locale
+├── about.es.md      # Spanish
+└── grants.md        # no translation — /es/grants serves this
+```
+
+The suffix is opt-in per page and the fallback is simply the absence of a file:
+nothing to configure, nothing to keep in sync.
+
+The extension does not have to match: `home.vue` is translated by `home.es.md`
+just as well, which is usually what you want — a translator writes markdown, not
+a component. A translated file whose base page does not exist (a typo, or a page
+since renamed) is reported at startup rather than silently ignored.
+
+### What is not translated
+
+Scientific names, authorships, and citations are nomenclature: they are
+language-independent by rule and must never be run through `t()`. The same goes
+for slugs and URLs — a taxon page is `/es/otus/761985`, never a translated
+slug. Its identity is the id.
+
+### Common names
+
+Common names are the one piece of remote data that is genuinely multilingual:
+TaxonWorks tags each with a language. Names in the reader's language are shown
+first; the rest stay visible, with the language as a tooltip.
+
+Note the API reports the language as an ISO 639-2 *English name* — `"English"`,
+`"Japanese"`, `"Spanish; Castilian"` — or `null`, never a code.
+`src/i18n/languageTags.js` maps those to BCP-47 tags for the languages that have
+an ISO 639-1 code, which are the ones a site can configure as a locale. A
+language outside that list is not an error: its name still labels the value, it
+simply never matches a locale. Add entries there if you need more.
+
+### Adding a locale
+
+List it in `config/i18n.yml` and add `<locale>.yml` catalogs. Routes for the new
+prefix appear on their own; anything untranslated falls back. A locale that is
+10% translated is useful on day one.
+
+`taxonpages setup` has a **Languages** section that writes this file: it picks
+locales, sets which one is served on unprefixed URLs, and warns before removing
+a locale by listing the config values, pages, and catalogs that would stop being
+shown. Removing a locale never deletes any of them — adding it back restores
+everything.
+
+A site with no `config/i18n.yml` is single-locale and pays nothing for i18n, so
+the section offers to remove the file rather than leaving a defaulted one
+behind.
+
+Alongside it, a **Translations** section lists every translatable value across
+all config files with its status in each language, filterable to what one
+language is still missing. It appears only once a site has more than one
+locale.
+
+It finds values two ways, and the difference is visible in what it can tell
+you. Fields a schema marks `translatable` are listed whether or not they have
+been translated, so they can be reported as missing. Everything else is found
+by looking for values that already *are* locale maps — which is how
+`taxa_page.yml` tab labels and panel `bind` values appear, since a custom
+editor declares no fields. The consequence is that a tab label that has never
+been translated cannot be listed as missing: nothing declares it ahead of time.

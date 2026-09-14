@@ -9,7 +9,7 @@
     @close="isModalVisible = false"
   >
     <template #header>
-      <h3>JSON Data</h3>
+      <h3>{{ $t('common.json_data') }}</h3>
     </template>
     <div
       class="p-5 font-normal"
@@ -34,6 +34,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useOtuPageRequestStore } from '../../store/request'
 
 const props = defineProps({
@@ -50,13 +51,14 @@ const props = defineProps({
 
 const request = computed(() => store.getRequest(props.panelKey))
 
+const { t } = useI18n()
 const store = useOtuPageRequestStore()
 const isModalVisible = ref(false)
 
 const menuOptions = computed(() => [
   ...props.menuOptions,
   {
-    label: 'JSON Data',
+    label: t('common.json_data'),
     action: () => (isModalVisible.value = true)
   }
 ])

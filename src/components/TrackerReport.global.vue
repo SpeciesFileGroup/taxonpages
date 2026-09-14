@@ -2,9 +2,9 @@
   <component
     :is="tag"
     type="button"
-    title="Report a problem"
+    :title="$t('component.tracker.title')"
     :class="[buttonClass, 'cursor-pointer']"
-    aria-label="Report a problem"
+    :aria-label="$t('component.tracker.title')"
     @click="openTracker"
   >
     <IconGithub
@@ -16,14 +16,16 @@
   <VModal
     v-if="isModalVisible"
     class="tp-tracker-report-modal text-base-content"
-    aria-label="Report a problem"
+    :aria-label="$t('component.tracker.title')"
     @close="isModalVisible = false"
   >
     <template #header>
-      <h1 class="font-medium text-base px-1">Report a problem</h1>
+      <h1 class="font-medium text-base px-1">
+        {{ $t('component.tracker.title') }}
+      </h1>
     </template>
     <div class="font-normal p-5 pt-0 text-base">
-      <span>My issue is with:</span>
+      <span>{{ $t('component.tracker.issue_with') }}</span>
       <ul class="mx-5 my-2">
         <li v-for="item in issue_trackers">
           <a
@@ -32,7 +34,7 @@
             rel="noopener"
           >
             {{ item.label }}
-            <span class="sr-only">(opens in new window)</span>
+            <span class="sr-only">{{ $t('common.opens_new_window') }}</span>
           </a>
           <span
             v-if="item.description"
@@ -48,8 +50,14 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useLocalizedConfig } from '@/i18n/useLocalizedConfig'
 
-const { issue_trackers } = __APP_ENV__
+const { issue_trackers: rawIssueTrackers } = __APP_ENV__
+
+const { cDeep } = useLocalizedConfig()
+
+const issue_trackers = cDeep(rawIssueTrackers)
+
 const TAXONPAGES_ISSUE_TRACKER =
   'https://github.com/SpeciesFileGroup/taxonpages/issues/new/choose'
 
@@ -71,7 +79,7 @@ defineProps({
 
   iconClass: {
     type: Array,
-    default: () => ['w-5.5 h-5.5']
+    default: () => ['w-5 h-5']
   },
 
   tag: {
@@ -83,7 +91,7 @@ defineProps({
 const isModalVisible = ref(false)
 
 function openTracker() {
-  if (issue_trackers) {
+  if (rawIssueTrackers) {
     isModalVisible.value = true
   } else {
     window.open(TAXONPAGES_ISSUE_TRACKER, '_blank')

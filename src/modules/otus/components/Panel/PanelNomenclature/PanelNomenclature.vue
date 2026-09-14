@@ -7,7 +7,7 @@
     />
     <VCardHeader class="flex justify-between">
       <h2 class="text-md">
-        Nomenclature ({{ store.catalog.timeline.length }})
+        {{ $t('panel.nomenclature.title') }} ({{ store.catalog.timeline.length }})
       </h2>
       <PanelDropdown
         :menu-options="menuOptions"
@@ -50,6 +50,7 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { ref, computed } from 'vue'
 import { splitList } from './splitList'
 import { useOtuStore } from '@/modules/otus/store/store'
@@ -81,6 +82,7 @@ const props = defineProps({
   }
 })
 
+const { t } = useI18n()
 const store = useOtuStore()
 
 const showAll = ref(false)
@@ -90,7 +92,7 @@ const citationList = computed(() =>
 
 const menuOptions = computed(() => [
   {
-    label: showAll.value ? 'Show less' : 'Show all',
+    label: showAll.value ? t('otus.show_less') : t('otus.show_all_menu'),
     action: () => (showAll.value = !showAll.value)
   }
 ])

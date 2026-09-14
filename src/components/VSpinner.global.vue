@@ -27,16 +27,16 @@
           fill="currentFill"
         />
       </svg>
-      <span class="sr-only">Loading...</span>
+      <span class="sr-only">{{ $t('component.spinner.loading') }}</span>
 
       <div
-        v-if="legend.length"
+        v-if="legendText.length"
         :class="['text-base-content', 'text-center', legendClass]"
         :style="legendStyle"
       >
         <span
           v-if="showLegend"
-          v-html="legend"
+          v-html="legendText"
         />
         <slot />
       </div>
@@ -45,7 +45,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const FULL_SCREEN_STYLE = {
   position: 'fixed',
@@ -66,9 +67,11 @@ const props = defineProps({
     default: false
   },
 
+  // Left undefined so the translated default applies. Callers that pass
+  // legend="" to hide the legend still get an empty string, not the default.
   legend: {
     type: String,
-    default: 'Loading, please wait.'
+    default: undefined
   },
 
   resize: {
@@ -112,8 +115,10 @@ const props = defineProps({
   }
 })
 
+const { t } = useI18n()
 const spinnerElement = ref(null)
 const cssProperties = ref({})
+const legendText = computed(() => props.legend ?? t('component.spinner.legend'))
 let resizeObserver
 
 onMounted(() => {

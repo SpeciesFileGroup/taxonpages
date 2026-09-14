@@ -8,7 +8,7 @@
       <img
         v-if="copyright_image"
         :src="copyright_image"
-        alt="Copyright holder logo"
+        :alt="$t('component.footer_copyright.logo_alt')"
       />
     </component>
     <span>{{ copyright_text }}</span>
@@ -16,5 +16,9 @@
 </template>
 
 <script setup>
-const { copyright_image, copyright_image_link, copyright_text } = __APP_ENV__
+import { useLocalizedConfig } from '@/i18n/useLocalizedConfig'
+
+const { copyright_image, copyright_image_link } = __APP_ENV__
+const { c } = useLocalizedConfig()
+const copyright_text = c(__APP_ENV__.copyright_text)
 </script>

@@ -1,0 +1,231 @@
+---
+# Framework-wide message catalog.
+#
+# `common.*`    — strings shared across modules and panels
+# `component.*` — strings belonging to a shared component in src/components
+#
+# Anything specific to a module or panel belongs in that package's own
+# catalog (e.g. src/modules/otus/locales/en.yml), namespaced by its id.
+#
+# Keep `common` for short, context-free strings whose translation does not
+# depend on where they appear. When in doubt, duplicate into the module's own
+# catalog instead — one shared key that needs two different translations is
+# worse than two keys.
+#
+# A site can override any key here by redefining it in ~/locales/en.yml.
+common:
+  no_records: No records found.
+  json_data: JSON Data
+  total: Total
+  source: Source
+  close: Close
+  expand: Expand
+  opens_new_window: (opens in new window)
+
+component:
+  spinner:
+    loading: Loading...
+    legend: Loading, please wait.
+
+  pagination:
+    label: Pagination
+    first: Go to first page
+    previous: Go to previous page
+    next: Go to next page
+    last: Go to last page
+
+  autocomplete:
+    placeholder: Search...
+
+  clipboard:
+    copy: Copy to clipboard
+    copied: Copied to clipboard
+
+  image_viewer:
+    label: Image viewer
+    previous: Previous image
+    next: Next image
+    close: Close image viewer
+
+  gallery:
+    image_error: Image was not found or format is not supported
+    depiction_alt: Depiction image
+    depicted_in: 'Depicted in:'
+
+  dropdown:
+    menu: Menu
+    options: Open panel options
+
+  modal:
+    label: Dialog
+    close: Close dialog
+
+  navbar:
+    menu: Menu
+    open_menu: Open navigation menu
+    open_main_menu: Open main menu
+    section_navigation: Section navigation
+
+  footer_copyright:
+    logo_alt: Copyright holder logo
+
+  theme:
+    to_dark: Change to dark mode
+    to_light: Change to light mode
+
+  locale:
+    switch: Change language
+
+  address:
+    send_email: Send email
+
+  tracker:
+    title: Report a problem
+    issue_with: 'My issue is with:'
+
+  pagination_info:
+    records: '{from} - {to} of {total} records.'
+    no_records: 0 records.
+
+  footer:
+    retrieved_on: Retrieved on {date}
+    at: at
+    analytics: This site uses {service}.
+    data_provided_by: Data provided by
+    pages_by: Pages by
+    support_by: Support (Services) by
+
+nomenclature:
+  type_status:
+    neotype: Neotype
+    holotype: Holotype
+    neolectotype: Neolectotype
+    lectotype: Lectotype
+    syntype: Syntype
+    paralectotype: Paralectotype
+    paralectotypes: Paralectotypes
+    paratype: Paratype
+    paratypes: Paratypes
+
+dwc:
+  categories:
+    taxon: Taxon
+    location: Location
+    event: Event
+    occurrence: Occurrence
+    identification: Identification
+    record_level: Record-level
+    other: Other
+
+  labels:
+    # Taxon
+    kingdom: Kingdom
+    phylum: Phylum
+    class: Class
+    order: Order
+    superfamily: Superfamily
+    family: Family
+    subfamily: Subfamily
+    tribe: Tribe
+    genus: Genus
+    subgenus: Subgenus
+    species: Species
+    scientificName: Scientific name
+    scientificNameAuthorship: Authorship
+    taxonRank: Rank
+    taxonID: Taxon ID
+    taxonomicStatus: Taxonomic status
+    nomenclaturalCode: Nomenclatural code
+    specificEpithet: Specific epithet
+    infraspecificEpithet: Infraspecific epithet
+    higherClassification: Higher classification
+    vernacularName: Common name
+    nameAccordingTo: Name according to
+    namePublishedIn: Name published in
+    acceptedNameUsage: Accepted name
+    parentNameUsage: Parent name
+    originalNameUsage: Original name
+    taxonRemarks: Taxon remarks
+
+    # Location
+    decimalLatitude: Latitude
+    decimalLongitude: Longitude
+    coordinateUncertaintyInMeters: Coordinate uncertainty (m)
+    geodeticDatum: Geodetic datum
+    country: Country
+    countryCode: Country code
+    stateProvince: State/Province
+    county: County
+    municipality: Municipality
+    locality: Locality
+    verbatimLocality: Verbatim locality
+    minimumElevationInMeters: Min. elevation (m)
+    maximumElevationInMeters: Max. elevation (m)
+    verbatimElevation: Verbatim elevation
+    continent: Continent
+    waterBody: Water body
+    island: Island
+    islandGroup: Island group
+    minimumDepthInMeters: Min. depth (m)
+    maximumDepthInMeters: Max. depth (m)
+    verbatimDepth: Verbatim depth
+    locationRemarks: Location remarks
+    georeferencedBy: Georeferenced by
+    georeferencedDate: Georeferenced date
+    georeferenceProtocol: Georeference protocol
+    georeferenceSources: Georeference sources
+    georeferenceRemarks: Georeference remarks
+
+    # Event
+    eventDate: Date
+    eventTime: Time
+    year: Year
+    month: Month
+    day: Day
+    verbatimEventDate: Verbatim date
+    habitat: Habitat
+    samplingProtocol: Sampling protocol
+    samplingEffort: Sampling effort
+    fieldNotes: Field notes
+    eventRemarks: Event remarks
+    fieldNumber: Field number
+
+    # Occurrence
+    occurrenceID: Occurrence ID
+    catalogNumber: Catalog number
+    recordNumber: Record number
+    recordedBy: Recorded by
+    individualCount: Individual count
+    sex: Sex
+    lifeStage: Life stage
+    reproductiveCondition: Reproductive condition
+    behavior: Behavior
+    occurrenceRemarks: Occurrence remarks
+    occurrenceStatus: Occurrence status
+    preparations: Preparations
+    disposition: Disposition
+    associatedMedia: Associated media
+    associatedReferences: Associated references
+    associatedTaxa: Associated taxa
+    otherCatalogNumbers: Other catalog numbers
+    typeStatus: Type status
+
+    # Identification
+    identifiedBy: Identified by
+    dateIdentified: Date identified
+    identificationRemarks: Identification remarks
+    identificationQualifier: Identification qualifier
+    institutionID: Institution ID
+
+    # Record-level
+    modified: Last modified
+    language: Language
+    license: License
+    rightsHolder: Rights holder
+    bibliographicCitation: Citation
+    references: References
+    institutionCode: Institution code
+    collectionCode: Collection code
+    datasetName: Dataset
+    basisOfRecord: Basis of record
+    informationWithheld: Information withheld

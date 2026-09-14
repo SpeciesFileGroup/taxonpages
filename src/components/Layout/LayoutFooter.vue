@@ -13,7 +13,7 @@
           class="[&>*:not(:last-child)]:after:content-['|'] [&>*:not(:last-child)]:after:mx-1"
         >
           <span>
-            Data provided by
+            {{ $t('component.footer.data_provided_by') }}
             <a
               class="text-footer-link hover:text-footer-link-hover font-medium"
               target="_blank"
@@ -21,11 +21,11 @@
               href="https://taxonworks.org/"
             >
               TaxonWorks
-              <span class="sr-only">(opens in new window)</span>
+              <span class="sr-only">{{ $t('common.opens_new_window') }}</span>
             </a>
           </span>
           <span>
-            Pages by
+            {{ $t('component.footer.pages_by') }}
             <a
               class="text-footer-link hover:text-footer-link-hover font-medium"
               target="_blank"
@@ -33,11 +33,11 @@
               href="https://github.com/SpeciesFileGroup/taxonpages"
             >
               TaxonPages
-              <span class="sr-only">(opens in new window)</span>
+              <span class="sr-only">{{ $t('common.opens_new_window') }}</span>
             </a>
           </span>
           <span>
-            Support (Services) by
+            {{ $t('component.footer.support_by') }}
             <a
               class="text-footer-link hover:text-footer-link-hover font-medium"
               target="_blank"
@@ -45,14 +45,14 @@
               href="https://speciesfilegroup.org"
             >
               Species File Group
-              <span class="sr-only">(opens in new window)</span>
+              <span class="sr-only">{{ $t('common.opens_new_window') }}</span>
             </a>
           </span>
           <FooterAnalytics class="italic" />
         </div>
         <TrackerReport
           icon
-          label="Report a problem"
+          :label="$t('component.tracker.title')"
           button-class="flex gap-2 items-center pl-0 pr-0 pt-0 pb-0 self-end"
         />
       </div>

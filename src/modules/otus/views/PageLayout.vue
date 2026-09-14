@@ -21,7 +21,7 @@
             :taxon-id="taxonId"
             :taxon="taxon"
             :panel-key="id"
-            v-bind="bind"
+            v-bind="localizeBind(bind)"
           />
         </template>
       </div>
@@ -31,8 +31,10 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { isAvailableForRank } from '../utils'
 import { defaultTabRouteName } from '../router/index.js'
+import { localizeDeep } from '@/i18n/localize'
 import layouts from '../constants/layouts.js'
 
 const props = defineProps({
@@ -63,7 +65,12 @@ const props = defineProps({
 })
 
 const router = useRouter()
+const { locale } = useI18n()
 const pageLayout = layouts[router.currentRoute.value.meta.tab]
+
+// Panel props come from taxa_page.yml, where any of them may carry a
+// translation (a title, typically) alongside values that are not text at all.
+const localizeBind = (bind) => localizeDeep(bind, locale.value, __APP_ENV__)
 const columnClasses = {
   1: ['md:grid-cols-1'],
   2: ['md:grid-cols-2'],

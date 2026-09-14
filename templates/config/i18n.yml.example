@@ -1,0 +1,38 @@
+---
+# Internationalization.
+#
+# This file is optional. Without it the site runs single-locale in English,
+# with no locale prefix in URLs and no extra JavaScript.
+
+i18n:
+  # Locale served on unprefixed URLs. Also the last-resort fallback.
+  default_locale: en
+
+  # Locales the site is built for. The default locale is always included.
+  locales:
+    - en
+
+  # When false, the default locale has no URL prefix (/about) and the others
+  # do (/es/about). Keep it false to preserve existing links: published URLs
+  # such as /otus/805980 must keep resolving without a redirect.
+  prefix_default_locale: false
+
+  # Locale used when a key is missing from the active locale. Defaults to
+  # default_locale. Untranslated strings render in this locale rather than
+  # showing a raw key.
+  fallback: en
+
+  # What to do with a visitor's Accept-Language header.
+  #   suggest — offer the matching locale, but never redirect
+  #   off     — ignore the header entirely
+  # The URL always decides which locale renders. Redirecting on a header
+  # would break CDN caching (one URL, several responses) and confuse crawlers.
+  #
+  # Reserved: the setting is validated but nothing acts on it yet — no
+  # suggestion UI ships today, so both values currently behave the same.
+  detect: suggest
+
+# Note: hash_mode with more than one locale needs your host to serve the app at
+# each locale prefix (a Spanish page lives at /es/#/about), because the prefix
+# sits in the path, ahead of the fragment. hash_mode is also incompatible with
+# SSR, which never sees the fragment at all.

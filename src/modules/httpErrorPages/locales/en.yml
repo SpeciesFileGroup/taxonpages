@@ -1,0 +1,8 @@
+---
+http_errors:
+  not_found:
+    title: Page not found.
+    body: Uh oh, we can't seem to find the page you're looking for. Try going back to the previous page.
+  server_error:
+    title: Internal Server Error.
+    body: Uh oh, looks like something went wrong!<br />We track these errors automatically, but if the problem persists feel free to contact us.

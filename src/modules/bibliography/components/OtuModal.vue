@@ -23,7 +23,7 @@
           v-if="!isLoading && !list.length"
           class="text-xl text-center my-8 w-full"
         >
-          No records found.
+          {{ $t('common.no_records') }}
         </div>
 
         <div v-if="list.length">
@@ -43,7 +43,7 @@
           <VTable>
             <VTableHeader>
               <VTableHeaderRow>
-                <VTableHeaderCell>OTU</VTableHeaderCell>
+                <VTableHeaderCell>{{ $t('bibliography.otu') }}</VTableHeaderCell>
               </VTableHeaderRow>
             </VTableHeader>
             <VTableBody>

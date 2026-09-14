@@ -6,6 +6,13 @@
  *
  * Field types: 'string', 'number', 'boolean', 'array', 'object', 'select'
  * Modules can provide custom editors via setup.schema.json with editor: 'custom'
+ *
+ * A string field marked `translatable: true` holds text the reader sees, and
+ * so may carry one value per configured locale. The set marked here is the one
+ * core resolves through `localize`/`localizeDeep` at runtime — marking a field
+ * core does not localize would offer a translation that never renders.
+ * Anything that is identity rather than text (a URL, a meta tag's `name`, a
+ * citation) is deliberately left unmarked.
  */
 
 import { TILE_PRESETS } from './constants/tilePresets.js'
@@ -53,8 +60,11 @@ export default {
           project_name: {
             type: 'string',
             label: 'Project Name',
+            translatable: true,
             placeholder: 'My Species File'
           },
+          // Not translatable: a citation is how the site is referred to in the
+          // literature, and stays in one form.
           project_citation: {
             type: 'string',
             label: 'Citation',
@@ -72,6 +82,15 @@ export default {
           }
         }
       },
+      i18n: {
+        file: 'i18n.yml',
+        label: 'Languages',
+        description:
+          'Languages the site is built for, and how they appear in URLs',
+        editor: 'i18n'
+      },
+      // A `translations` section is injected here by the server, but only for
+      // a site with more than one locale — see withTranslationsSection.
       router: {
         file: 'router.yml',
         label: 'Router',
@@ -100,8 +119,10 @@ export default {
             type: 'array',
             label: 'Meta Tags',
             items: {
+              // `name` is the meta tag's name — part of the HTML contract,
+              // never text.
               name: { type: 'string', label: 'Name' },
-              content: { type: 'string', label: 'Content' }
+              content: { type: 'string', label: 'Content', translatable: true }
             }
           }
         }
@@ -231,6 +252,7 @@ export default {
           header_logo_text: {
             type: 'string',
             label: 'Logo Text',
+            translatable: true,
             placeholder: 'Site name'
           },
           header_links: {
@@ -238,7 +260,7 @@ export default {
             label: 'Navigation Links',
             sortable: true,
             items: {
-              label: { type: 'string', label: 'Label' },
+              label: { type: 'string', label: 'Label', translatable: true },
               link: {
                 type: 'string',
                 label: 'URL',
@@ -249,7 +271,7 @@ export default {
                 label: 'Submenu',
                 optional: true,
                 items: {
-                  label: { type: 'string', label: 'Label' },
+                  label: { type: 'string', label: 'Label', translatable: true },
                   link: {
                     type: 'string',
                     label: 'URL',
@@ -279,6 +301,7 @@ export default {
           copyright_text: {
             type: 'string',
             label: 'Copyright Text',
+            translatable: true,
             placeholder: 'License description'
           }
         }
@@ -292,8 +315,12 @@ export default {
             type: 'array',
             label: 'Trackers',
             items: {
-              label: { type: 'string', label: 'Label' },
-              description: { type: 'string', label: 'Description' },
+              label: { type: 'string', label: 'Label', translatable: true },
+              description: {
+                type: 'string',
+                label: 'Description',
+                translatable: true
+              },
               url: { type: 'string', label: 'URL' }
             }
           }
@@ -323,7 +350,8 @@ export default {
     sections: {
       installed: {
         label: 'Package Manager',
-        description: 'Install, update, and manage TaxonPages modules and panels',
+        description:
+          'Install, update, and manage TaxonPages modules and panels',
         editor: 'packages'
       }
     }
@@ -362,7 +390,8 @@ export default {
               subdomains: {
                 type: 'string',
                 label: 'Subdomains',
-                description: 'Characters used to replace {s} in the URL (e.g. "abc").',
+                description:
+                  'Characters used to replace {s} in the URL (e.g. "abc").',
                 optional: true
               },
               tileSize: {
@@ -374,7 +403,8 @@ export default {
               zoomOffset: {
                 type: 'number',
                 label: 'Zoom Offset',
-                description: 'Offset applied to zoom values when requesting tiles.',
+                description:
+                  'Offset applied to zoom values when requesting tiles.',
                 optional: true
               },
               minZoom: {
@@ -390,7 +420,8 @@ export default {
               maxNativeZoom: {
                 type: 'number',
                 label: 'Max Native Zoom',
-                description: 'Highest zoom level the server provides; deeper zooms are upscaled.',
+                description:
+                  'Highest zoom level the server provides; deeper zooms are upscaled.',
                 optional: true
               },
               opacity: {
@@ -402,7 +433,8 @@ export default {
               detectRetina: {
                 type: 'boolean',
                 label: 'Detect Retina',
-                description: 'Request higher-resolution tiles on high-DPI screens.',
+                description:
+                  'Request higher-resolution tiles on high-DPI screens.',
                 optional: true
               },
               noWrap: {

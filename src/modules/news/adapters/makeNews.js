@@ -1,12 +1,3 @@
-function formatDate(date) {
-  return new Intl.DateTimeFormat('en-US', {
-    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  }).format(date)
-}
-
 export function makeNews(data = {}) {
   return {
     id: data.id,
@@ -15,7 +6,9 @@ export function makeNews(data = {}) {
     type: data.type.split('::').pop(),
     creator: data.creator,
     updater: data.updater,
-    createdAt: formatDate(new Date(data.created_at)),
-    updatedAt: formatDate(new Date(data.updated_at))
+    // Dates stay as Date objects: formatting them here would pin them to a
+    // locale this adapter cannot know. Views render them with $d().
+    createdAt: new Date(data.created_at),
+    updatedAt: new Date(data.updated_at)
   }
 }

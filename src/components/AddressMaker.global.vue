@@ -2,7 +2,7 @@
   <button
     type="button"
     class="text-secondary cursor-pointer whitespace-nowrap inline bg-transparent border-0 p-0 font-inherit text-inherit"
-    aria-label="Send email"
+    :aria-label="$t('component.address.send_email')"
     @click="openClient"
   >
     <span v-html="data.username" />

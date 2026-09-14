@@ -19,7 +19,10 @@
           @click="activeTab = tabKey"
         >
           <span class="inline-flex items-center gap-1.5">
-            {{ tab.label || tabKey }}
+            <SwTranslatedText
+              :value="tab.label"
+              :fallback="tabKey"
+            />
           </span>
         </button>
       </div>
@@ -51,7 +54,10 @@
     >
       <!-- Tab settings -->
       <div class="p-5 border-b border-base-border space-y-4">
-        <div class="flex gap-3 flex-wrap items-end">
+        <!-- items-start, not items-end: the label field grows downwards when
+             its translations are expanded, and the other controls must stay
+             put rather than being pushed to the bottom of the row. -->
+        <div class="flex gap-3 flex-wrap items-start">
           <div class="flex-1 min-w-[140px]">
             <label class="block text-sm font-medium text-base-content mb-1.5"
               >Tab Key</label
@@ -67,22 +73,16 @@
             <label class="block text-sm font-medium text-base-content mb-1.5"
               >Label</label
             >
-            <input
-              type="text"
-              class="tp-input"
-              :value="layoutData[activeTab].label || ''"
-              placeholder="Uses tab key if empty"
-              @input="
-                updateTabProp(
-                  activeTab,
-                  'label',
-                  $event.target.value || undefined
-                )
+            <SwTranslatableField
+              :field="{ placeholder: 'Uses tab key if empty' }"
+              :model-value="layoutData[activeTab].label"
+              @update:model-value="
+                updateTabProp(activeTab, 'label', $event || undefined)
               "
             />
           </div>
           <button
-            class="tp-btn tp-btn-danger tp-btn-sm"
+            class="tp-btn tp-btn-danger tp-btn-sm mt-[26px]"
             @click="removeTab(activeTab)"
           >
             Remove Tab

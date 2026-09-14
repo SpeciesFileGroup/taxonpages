@@ -6,7 +6,7 @@
       legend=""
     />
     <VCardHeader class="flex justify-between">
-      <h2 class="text-md">{{ title }} ({{ list.length }})</h2>
+      <h2 class="text-md">{{ panelTitle }} ({{ list.length }})</h2>
       <PanelDropdown
         :menu-options="menuOptions"
         panel-key="panel:citations"
@@ -49,6 +49,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { splitList } from '../PanelNomenclature/splitList'
 import CitationRow from './components/PanelCitationsRow.vue'
 import ShowMore from '../PanelNomenclature/PanelNomenclatureShowMore.vue'
@@ -80,20 +81,27 @@ const props = defineProps({
     default: undefined
   },
 
+  // Left undefined so the translated default applies. A title supplied by
+  // taxa_page.yml (`bind: { title: ... }`) still wins over it.
   title: {
     type: String,
-    default: 'References cited'
+    default: undefined
   }
 })
 
+const { t } = useI18n()
 const isLoading = ref(false)
 const list = ref([])
 const showAll = ref(false)
 const citationList = computed(() => splitList(list.value, MAX_CITATIONS))
 
+const panelTitle = computed(
+  () => props.title ?? t('panel.references_cited.title')
+)
+
 const menuOptions = computed(() => [
   {
-    label: showAll.value ? 'Show less' : 'Show all',
+    label: showAll.value ? t('otus.show_less') : t('otus.show_all_menu'),
     action: () => (showAll.value = !showAll.value)
   }
 ])

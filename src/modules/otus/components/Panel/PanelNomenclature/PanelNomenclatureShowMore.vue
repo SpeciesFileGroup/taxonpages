@@ -8,7 +8,7 @@
     >
       <IconPlusCircle class="h-5 w-5" />
     </div>
-    <span>... Show all ... ({{ count }})</span>
+    <span>{{ $t('otus.show_all', { count }) }}</span>
   </li>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
   <VCard v-if="sounds.length">
     <VCardHeader class="flex justify-between">
-      <h2 class="text-md">Sounds ({{ sounds.length }})</h2>
+      <h2 class="text-md">{{ $t('panel.sounds.title') }} ({{ sounds.length }})</h2>
     </VCardHeader>
     <ul>
       <PanelSoundRow

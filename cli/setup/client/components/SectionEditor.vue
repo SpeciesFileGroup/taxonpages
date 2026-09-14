@@ -22,6 +22,15 @@
       :section="section"
     />
 
+    <!-- Languages editor -->
+    <I18nEditor
+      v-else-if="section.editor === 'i18n'"
+      :section="section"
+    />
+
+    <!-- Translation coverage -->
+    <TranslationsOverview v-else-if="section.editor === 'translations'" />
+
     <!-- Style editor -->
     <StyleEditor v-else-if="section.editor === 'style'" />
 
@@ -115,6 +124,8 @@ import PackagesEditor from './PackagesEditor.vue'
 import ApiConnectionEditor from './ApiConnectionEditor.vue'
 import StatusOverview from './StatusOverview.vue'
 import StyleEditor from './StyleEditor.vue'
+import I18nEditor from './I18nEditor.vue'
+import TranslationsOverview from './TranslationsOverview.vue'
 import { useConfig } from '../composables/useConfig.js'
 
 const props = defineProps({

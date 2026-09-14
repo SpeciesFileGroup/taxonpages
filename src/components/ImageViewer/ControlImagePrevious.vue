@@ -2,7 +2,7 @@
   <button
     type="button"
     class="p-2 cursor-pointer opacity-50 bg-base-content text-base-background"
-    title="Previous image"
+    :title="$t('component.image_viewer.previous')"
   >
     <IconArrowLeft class="h-8 w-8" />
   </button>

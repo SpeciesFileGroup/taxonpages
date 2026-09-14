@@ -4,10 +4,15 @@
       v-if="haveRecords"
       class="horizontal-left-content"
     >
-      {{ recordsAtCurrentPage }} - {{ recordsAtNextPage }} of
-      {{ pagination.total }} records.
+      {{
+        $t('component.pagination_info.records', {
+          from: recordsAtCurrentPage,
+          to: recordsAtNextPage,
+          total: pagination.total
+        })
+      }}
     </span>
-    <span v-else>0 records.</span>
+    <span v-else>{{ $t('component.pagination_info.no_records') }}</span>
   </div>
 </template>
 

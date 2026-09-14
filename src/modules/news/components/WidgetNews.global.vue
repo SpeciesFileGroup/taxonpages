@@ -12,7 +12,9 @@
             class="flex items-center gap-2"
           >
             <IconCalendar class="h-3.5 w-3.5" />
-            <span class="text-sm text-base-lighter">{{ item.createdAt }}</span>
+            <span class="text-sm text-base-lighter">
+              {{ $d(item.createdAt, 'long') }}
+            </span>
           </div>
         </div>
         <h3 class="text-xl font-medium mb-3 leading-snug">

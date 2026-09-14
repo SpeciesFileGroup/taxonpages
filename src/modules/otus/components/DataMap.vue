@@ -3,7 +3,7 @@
     <VButton
       class="md:block hidden"
       size="sm"
-      title="Links used to obtain the information present on this page in JSON format."
+      :title="$t('otus.datamap.button_title')"
       @click="isModalVisible = true"
     >
       <IconJson class="w-4 h-4" />
@@ -13,19 +13,20 @@
       @close="isModalVisible = false"
     >
       <template #header>
-        <h3 class="font-medium">Datamap</h3>
+        <h3 class="font-medium">{{ $t('otus.datamap.title') }}</h3>
       </template>
       <div class="p-4 pt-0">
         <p class="text-sm mb-2">
-          The following links provide the information present on this page in
-          JSON format.
+          {{ $t('otus.datamap.description') }}
         </p>
 
         <VTable>
           <VTableHeader>
             <VTableHeaderRow>
-              <VTableHeaderCell> Request Key </VTableHeaderCell>
-              <VTableHeaderCell> URL </VTableHeaderCell>
+              <VTableHeaderCell>
+                {{ $t('otus.datamap.request_key') }}
+              </VTableHeaderCell>
+              <VTableHeaderCell>{{ $t('otus.datamap.url') }}</VTableHeaderCell>
             </VTableHeaderRow>
           </VTableHeader>
           <VTableBody>

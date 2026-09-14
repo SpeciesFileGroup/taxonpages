@@ -21,9 +21,17 @@
       {{ field.description }}
     </p>
 
+    <!-- String, one text per locale -->
+    <TranslatableField
+      v-if="asTranslation"
+      :field="field"
+      :model-value="modelValue"
+      @update:model-value="$emit('update:modelValue', $event)"
+    />
+
     <!-- String -->
     <input
-      v-if="field.type === 'string'"
+      v-else-if="field.type === 'string'"
       type="text"
       class="tp-input"
       :value="modelValue"
@@ -83,10 +91,39 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import TranslatableField from './TranslatableField.vue'
+import { useI18nConfig } from '../composables/useI18nConfig.js'
+
+const props = defineProps({
   field: { type: Object, required: true },
   modelValue: { default: null }
 })
 
 defineEmits(['update:modelValue'])
+
+const { isTranslation } = useI18nConfig()
+
+/**
+ * Whether to edit this value as one text per locale.
+ *
+ * Two ways in. The schema marking the field `translatable` is the intended
+ * one; on a single-locale site the component still renders a single input and
+ * emits a plain string, so the form looks exactly as it did before i18n
+ * existed.
+ *
+ * The value already being a translation is the other, and holds whatever the
+ * schema says. That is what stops the plain input from rendering a map as
+ * "[object Object]" and flattening every translation in it on the next
+ * keystroke — for a field nobody remembered to mark, or one belonging to a
+ * package whose schema this wizard cannot change.
+ */
+const asTranslation = computed(() => {
+  if (props.field.type !== 'string') return false
+
+  return (
+    props.field.translatable === true ||
+    isTranslation(props.modelValue, false)
+  )
+})
 </script>
