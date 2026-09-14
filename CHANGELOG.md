@@ -7,7 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-<<<<<<< HEAD
 ### Added
 
 - Internationalization. A site can be served in several languages by adding `config/i18n.yml`. Without that file a site stays single-locale and ships no extra JavaScript. See the developer guide.
@@ -21,8 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Fixed
 
 - Taxa page: a panel's `rank_group` in `taxa_page.yml` had no effect and now applies, overriding the rank group a panel declares for itself. Config that previously did nothing will start hiding panels; tab-level `rank_group` is unchanged.
-- The console no longer reports built-in panels as unknown when TaxonPages is installed as a package. Running `dev` or `dev:ssr` printed `[taxonpages] Unknown panel id "panel:<name>" in the taxa_page configuration`.
-=======
+
 ## [0.7.4] - 2026-09-10
 
 ### Fixed
@@ -30,7 +28,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Missing figure caption in dichotomous key interface
 
 ## [0.7.3] - 2026-09-10
->>>>>>> development
 
 ### Changed
 
