@@ -3,27 +3,24 @@ import { registerOnlyClientComponents } from '@/components/clientComponents'
 import { registerGlobalComponents } from './components/globalComponents'
 import { createHead } from '@unhead/vue/client'
 import { schemaOrgPlugin } from '@/plugins/schemaOrg'
-import { extractLocale } from '@/i18n/locale.js'
-import { stripBase } from '@/utils/url'
+import { localeFromLocation } from '@/i18n/locale.js'
 
 const originUrl = window.location.origin
 const storeInitialState = window.initialState
 
-// The locale comes from the URL, resolved with the same function the server
-// used. Deriving it rather than negotiating it again is what guarantees the
-// client renders the same locale the server did.
-const { locale } = extractLocale(
-  stripBase(window.location.pathname, __APP_ENV__.base_url),
-  __APP_ENV__
-)
+// The locale comes from the URL, by the same rules the server applies (both
+// land in extractLocale). Deriving it rather than negotiating it again is what
+// guarantees the client renders the same locale the server did.
+const locale = localeFromLocation(window.location, __APP_ENV__)
 
-const { app, router, store } = createApp({ originUrl, locale })
+const { app, router, store, i18n } = createApp({ originUrl, locale })
 
 const head = createHead({
   plugins: [
     schemaOrgPlugin(
       {
-        host: originUrl
+        host: originUrl,
+        getLocale: () => i18n.global.locale.value
       },
       () => {
         const route = router.currentRoute.value

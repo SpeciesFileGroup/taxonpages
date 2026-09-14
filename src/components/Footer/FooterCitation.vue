@@ -25,13 +25,15 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { localePath, stripLocale } from '@/i18n/locale'
 import { useFooterStore } from '@/store'
-const { project_authors, project_citation, project_url, hash_mode } =
-  __APP_ENV__
+const { project_authors, project_citation, project_url } = __APP_ENV__
 
 const store = useFooterStore()
 const currentDate = new Date().toISOString().split('T')[0]
 const route = useRoute()
+const { locale } = useI18n()
 
 const currentUrl = computed(() => {
   const projectUrl = (project_url || '').replace(/\/$/, '')
@@ -40,8 +42,13 @@ const currentUrl = computed(() => {
     return ''
   }
 
-  return hash_mode
-    ? projectUrl + '/#' + route.fullPath
-    : projectUrl + route.fullPath
+  return (
+    projectUrl +
+    localePath(
+      stripLocale(route.fullPath, __APP_ENV__),
+      locale.value,
+      __APP_ENV__
+    )
+  )
 })
 </script>

@@ -12,7 +12,7 @@
       </div>
 
       <h3 class="text-2xl mb-3 leading-snug">
-        <RouterLink :to="`/news/${news.id}`"> {{ news.title }}</RouterLink>
+        <RouterLink :to="{ name: 'news-id', params: { id: news.id } }"> {{ news.title }}</RouterLink>
       </h3>
       <p
         class="mb-4 line-clamp-3"

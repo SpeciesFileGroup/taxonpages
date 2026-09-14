@@ -6,7 +6,7 @@
       class="container flex flex-wrap justify-between items-center mx-auto font-medium text-secondary-content"
     >
       <RouterLink
-        to="/"
+        :to="homeLink"
         class="flex items-center !text-primary-content"
       >
         <img
@@ -26,7 +26,10 @@
         <NavbarMenu :menu="header_links" />
         <div class="h-6 w-px ml-[1px] bg-primary-content/25"></div>
         <div class="flex flex-row gap-4">
-          <div class="flex items-center">
+          <div
+            v-if="isMultiLocale"
+            class="flex items-center"
+          >
             <SwitchLocale class="text-primary-content" />
           </div>
           <div class="flex items-center">
@@ -51,7 +54,11 @@ import SwitchTheme from '../SwitchTheme.vue'
 import SwitchLocale from '../SwitchLocale.vue'
 import NavbarMenu from '../Navbar/NavbarMenu.vue'
 import NavbarMobile from '../Navbar/NavbarMobile.vue'
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useLocalizedConfig } from '@/i18n/useLocalizedConfig'
+import { resolveI18nConfig } from '@/i18n/config'
+import { localeRoutePath } from '@/i18n/locale'
 import { resolveAssetUrl } from '@/utils/url'
 
 const {
@@ -70,4 +77,9 @@ const header_logo_text = c(rawLogoText)
 const project_name = c(rawProjectName)
 
 const logoUrl = resolveAssetUrl(header_logo_url, base_url)
+
+const { locale } = useI18n()
+const { isMultiLocale } = resolveI18nConfig(__APP_ENV__)
+
+const homeLink = computed(() => localeRoutePath('/', locale.value, __APP_ENV__))
 </script>

@@ -18,7 +18,7 @@
           </div>
         </div>
         <h3 class="text-xl font-medium mb-3 leading-snug">
-          <RouterLink :to="`/news/${item.id}`">{{ item.title }}</RouterLink>
+          <RouterLink :to="{ name: 'news-id', params: { id: item.id } }">{{ item.title }}</RouterLink>
         </h3>
         <p
           v-if="show_content"

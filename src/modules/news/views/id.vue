@@ -27,7 +27,7 @@
               />
             </div>
             <RouterLink
-              to="/news"
+              :to="{ name: 'news-index' }"
               class="uppercase flex flex-row gap-2 font- items-center mt-6"
             >
               <svg

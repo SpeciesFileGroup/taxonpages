@@ -11,7 +11,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { loadUserLayouts } from './utils'
-import { localePath } from '@/i18n/locale.js'
+import { localePath, stripLocale } from '@/i18n/locale.js'
 import { resolveI18nConfig } from '@/i18n/config.js'
 import { useLocalizedConfig } from '@/i18n/useLocalizedConfig'
 import ApplicationLayout from '@/layout/Application.vue'
@@ -36,7 +36,8 @@ const { locales, defaultLocale, isMultiLocale } = resolveI18nConfig(__APP_ENV__)
 // address, already used to build the citation URL; without it the best we can
 // do is a path, which crawlers tolerate.
 const origin = (__APP_ENV__.project_url || '').replace(/\/$/, '')
-const hrefFor = (code) => origin + localePath(route.path, code, __APP_ENV__)
+const hrefFor = (code) =>
+  origin + localePath(stripLocale(route.path, __APP_ENV__), code, __APP_ENV__)
 
 // Alternates are derived from the current route, never hand-written, so they
 // cannot drift from the routes that actually exist. A single-locale site emits

@@ -1,4 +1,5 @@
 import { toLanguageTag } from '@/i18n/languageTags'
+import { localePath, stripLocale } from '@/i18n/locale'
 
 function removeEmptyProperties(obj) {
   const copyObj = { ...obj }
@@ -14,14 +15,11 @@ function removeEmptyProperties(obj) {
   return copyObj
 }
 
-function makeUrlPath(host, path) {
-  const { hash_mode, base_url = '' } = __APP_ENV__
-  const fullPath = (base_url + (hash_mode ? '/#' + path : path)).replaceAll(
-    '//',
-    '/'
-  )
-
-  return [host, fullPath].join('')
+function makeUrlPath(host, path, locale) {
+  return [
+    host,
+    localePath(stripLocale(path, __APP_ENV__), locale, __APP_ENV__)
+  ].join('')
 }
 
 export function taxonResolver(
@@ -36,11 +34,11 @@ export function taxonResolver(
     commonNames,
     alternateName
   },
-  { host }
+  { host, locale }
 ) {
   return removeEmptyProperties({
     '@type': 'Taxon',
-    '@id': makeUrlPath(host, id),
+    '@id': makeUrlPath(host, id, locale),
     'http://purl.org/dc/terms/conformsTo': {
       '@id': 'https://bioschemas.org/profiles/Taxon/1.0-RELEASE'
     },

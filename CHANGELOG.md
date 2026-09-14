@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-09-14
+
+### Fixed
+
+- Internationalization with `hash_mode: true`. The locale was carried as a path segment ahead of the fragment (`/base/es/#/about`), which asks the host to serve a document at every locale prefix — the one thing hash mode exists to avoid — so every non-default locale 404'd on a static host, and the language switcher never reached the requested page. Under `hash_mode` the locale is now a route the router owns (`/base/#/es/about`), so switching language is an ordinary in-app navigation with no page reload. The default locale keeps unprefixed URLs. Sites using the default `hash_mode: false` carry the locale in the router's history base as before and are unaffected.
+  - The locale cannot ride in the history base under `hash_mode`: that base is the path the host serves, and the fragment below it is the router's own, which rewrites any locale written into it from outside. Nesting the route table under an optional `/:locale` segment — restricted to the configured locales, so it cannot swallow an ordinary first segment — is what lets the router perform the switch itself.
+  - Links that resolve by route name carry the locale automatically, since vue-router inherits an optional parent param from the current route. Links that resolve by path do not: `header_links[].link` and similar config values are localized on the way to the router. A panel or module whose links use `:to="{ name }"` keeps the reader's language with no changes; one that builds a path string does not.
+  - The footer citation URL and the schema.org `@id` of a taxon dropped the locale, citing the default locale's URL on every translated page. The citation URL also omitted `base_url`.
+
 ## [0.8.0] - 2026-09-14
 
 ### Added

@@ -66,7 +66,11 @@ export async function createServer({
       )
     : {}
 
-  const configuration = loadConfiguration(projectRoot)
+  // SSR never uses hash routing — the fragment is never sent to the server —
+  // and the vite plugin already forces hash_mode off for the SSR client build.
+  // Mirror that here so the locale helpers below build plain paths and not
+  // fragment URLs.
+  const configuration = { ...loadConfiguration(projectRoot), hash_mode: false }
   const { base_url } = configuration
 
   const app = express()

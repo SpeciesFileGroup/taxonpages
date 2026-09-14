@@ -80,6 +80,7 @@
                 'text-base-content w-full p-4 py-3 flex items-center gap-2 box-border',
                 item.isCurrent && 'font-medium'
               ]"
+              @click="() => (isMenuVisible = false)"
             >
               <IconLanguage class="size-5" />
               {{ item.label }}

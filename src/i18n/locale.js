@@ -14,10 +14,16 @@
  * no changes. For the default locale the base is unchanged, which is why a
  * single-locale site is bit-for-bit what it was before.
  *
+ * Under hash_mode the base is the path the host serves, so it cannot vary by
+ * locale — that would ask for a document per language, the one thing hash mode
+ * exists to avoid. There the locale is a route param instead, owned by the
+ * router (see src/router), which is what lets it be switched without a reload.
+ *
  * Free of Node built-ins: imported by build, server and browser code alike.
  */
 
 import { resolveI18nConfig } from './config.js'
+import { stripBase } from '../utils/url.js'
 
 /**
  * Split a leading locale segment off a path.
@@ -56,6 +62,29 @@ export function extractLocale(path = '/', configuration = {}) {
 }
 
 /**
+ * The locale a browser URL asks for.
+ *
+ * Where the locale sits depends on the mode, and this is the one place that
+ * needs to know: under hash_mode the whole route lives in the fragment and the
+ * path is only base_url, everywhere else the locale is a path segment. Callers
+ * hand over the location and get a locale.
+ *
+ * Browser-only by use, not by implementation — the location is a parameter, so
+ * this module stays loadable under Node (server.js imports it directly).
+ *
+ * @param {{ pathname: string, hash: string }} location - `window.location`
+ * @param {object} [configuration] - Loaded configuration (`__APP_ENV__`)
+ * @returns {string}
+ */
+export function localeFromLocation(location, configuration = {}) {
+  const path = configuration.hash_mode
+    ? location.hash.slice(1)
+    : stripBase(location.pathname, configuration.base_url)
+
+  return extractLocale(path, configuration).locale
+}
+
+/**
  * Locales whose URLs carry a prefix.
  *
  * With `prefix_default_locale: false` (the default) this excludes the default
@@ -89,12 +118,17 @@ export function isPrefixed(locale, configuration = {}) {
  * The router history base for a locale: the app's base_url, plus the locale
  * segment when that locale is prefixed.
  *
+ * Under hash_mode every locale shares one base, and the locale is a route
+ * param instead. See localePath.
+ *
  * @param {string} locale
  * @param {object} [configuration]
  * @returns {string} Base path, always with a trailing slash
  */
 export function localeBase(locale, configuration = {}) {
   const base = withTrailingSlash(configuration.base_url || '/')
+
+  if (configuration.hash_mode) return base
 
   return isPrefixed(locale, configuration) ? `${base}${locale}/` : base
 }
@@ -104,16 +138,70 @@ export function localeBase(locale, configuration = {}) {
  * switcher) — those cannot use <RouterLink>, since the router only ever
  * generates URLs inside the active locale's base.
  *
+ * Under hash_mode the locale segment sits inside the fragment, which is where
+ * the route lives.
+ *
  * @param {string} path - Path within the app, base- and locale-free
  * @param {string} locale
  * @param {object} [configuration]
- * @returns {string} Path including base_url and the locale prefix
+ * @returns {string} Path including base_url and the locale
  */
 export function localePath(path, locale, configuration = {}) {
-  const base = localeBase(locale, configuration)
   const suffix = path.startsWith('/') ? path.slice(1) : path
 
-  return `${base}${suffix}`
+  if (configuration.hash_mode) {
+    const base = withTrailingSlash(configuration.base_url || '/')
+    const prefix = isPrefixed(locale, configuration) ? `${locale}/` : ''
+
+    return `${base}#/${prefix}${suffix}`
+  }
+
+  return `${localeBase(locale, configuration)}${suffix}`
+}
+
+
+/**
+ * The locale-free form of an in-app path.
+ *
+ * Under hash_mode the locale is part of the route, so a path read back off the
+ * router — `route.path`, `route.fullPath` — already carries it, while
+ * localePath expects a path without one. Feeding one to the other without this
+ * yields `/es/es/about`.
+ *
+ * A no-op everywhere else: there the locale is the history base, which
+ * vue-router strips before the path ever reaches route.path.
+ *
+ * @param {string} path
+ * @param {object} [configuration]
+ * @returns {string}
+ */
+export function stripLocale(path, configuration = {}) {
+  return configuration.hash_mode
+    ? extractLocale(path, configuration).path
+    : path
+}
+
+/**
+ * Put the locale segment on a path that the router will resolve.
+ *
+ * For links whose target is a path rather than a route name, and so cannot
+ * inherit the locale param the way a named target does — config values such as
+ * `header_links[].link`, which a site author writes as a plain path.
+ *
+ * A no-op outside hash_mode, where the locale is the history base and the
+ * router prepends it already.
+ *
+ * @param {string} path - In-app path, e.g. `/news`
+ * @param {string} locale
+ * @param {object} [configuration]
+ * @returns {string}
+ */
+export function localeRoutePath(path, locale, configuration = {}) {
+  if (!configuration.hash_mode || !isPrefixed(locale, configuration)) {
+    return path
+  }
+
+  return path === '/' ? `/${locale}` : `/${locale}${path}`
 }
 
 function withTrailingSlash(value) {

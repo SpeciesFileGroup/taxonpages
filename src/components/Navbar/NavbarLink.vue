@@ -10,6 +10,8 @@
 <script setup>
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { localeRoutePath } from '@/i18n/locale'
 import { isExternalLink } from '@/utils/url'
 
 const props = defineProps({
@@ -25,6 +27,7 @@ const props = defineProps({
 })
 
 const isExternal = computed(() => isExternalLink(props.link))
+const { locale } = useI18n()
 
 const linkAttributes = computed(() =>
   isExternal.value
@@ -33,6 +36,6 @@ const linkAttributes = computed(() =>
         target: props.target,
         rel: props.target === '_blank' ? 'noopener noreferrer' : undefined
       }
-    : { to: props.link }
+    : { to: localeRoutePath(props.link, locale.value, __APP_ENV__) }
 )
 </script>

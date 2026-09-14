@@ -47,10 +47,16 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted, onBeforeUnmount } from 'vue'
+import { ref, nextTick, onMounted, onBeforeUnmount, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useLocaleOptions } from '@/i18n/useLocaleOptions'
 
 const { options, isMultiLocale } = useLocaleOptions()
+const route = useRoute()
+
+// Under hash_mode picking a locale is an in-app navigation, so no page load
+// comes along to dismiss the menu.
+watch(() => route.fullPath, closeMenu)
 
 const root = ref(null)
 const menu = ref(null)

@@ -7,6 +7,7 @@ import { createPinia } from 'pinia'
 import { createSSRApp } from 'vue'
 import { createRouter } from './router'
 import { createI18n } from './i18n'
+import { syncLocaleWithRoute } from './i18n/routeLocale'
 import { vueSetupHooks } from 'virtual:taxonpages-plugins'
 
 export function createApp({ originUrl, locale } = {}) {
@@ -20,6 +21,12 @@ export function createApp({ originUrl, locale } = {}) {
   app.use(router)
   app.use(store)
   app.use(i18n)
+
+  // Under hash_mode the locale is a route param, so it can change without a
+  // page load. Everywhere else it is fixed for the life of this instance.
+  if (__APP_ENV__.hash_mode) {
+    syncLocaleWithRoute(router, i18n, __APP_ENV__)
+  }
 
   // Apply vue setup hooks from discovered plugins. i18n is installed first so
   // plugins can translate their own strings.

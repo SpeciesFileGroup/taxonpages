@@ -16,12 +16,13 @@ import devalue from '@nuxt/devalue'
  * @param {string} [locale] - Resolved by the caller from the URL.
  */
 export async function render(url, manifest, originUrl, locale) {
-  const { app, router, store } = createApp({ originUrl, locale })
+  const { app, router, store, i18n } = createApp({ originUrl, locale })
   const head = createHead({
     plugins: [
       schemaOrgPlugin(
         {
-          host: originUrl
+          host: originUrl,
+          getLocale: () => i18n.global.locale.value
         },
         () => {
           const route = router.currentRoute.value

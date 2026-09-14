@@ -27,7 +27,7 @@
           </div>
           <div class="flex items-center justify-between">
             <RouterLink
-              :to="`/news/${item.id}`"
+              :to="{ name: 'news-id', params: { id: item.id } }"
               class="px-6 py-3 bg-primary text-primary-content font-medium rounded-lg"
             >
               {{ $t('news.read_more') }}
