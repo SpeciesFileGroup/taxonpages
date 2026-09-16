@@ -16,7 +16,7 @@
       :autofocus="autofocus"
       autocomplete="off"
       aria-autocomplete="list"
-      :aria-expanded="list.length > 0"
+      :aria-expanded="isListboxVisible"
       aria-controls="autocomplete-listbox"
       :aria-activedescendant="activeDescendant"
       class="tp-autocomplete__input bg-base-foreground block box-border w-full pl-10"
@@ -30,7 +30,7 @@
     />
 
     <ul
-      v-if="list.length"
+      v-if="isListboxVisible"
       id="autocomplete-listbox"
       class="tp-autocomplete__list list absolute z-[500] max-h-52 w-full overflow-y-auto border bg-base-foreground border-base-border !m-0 rounded-md shadow-lg mt-1"
       role="listbox"
@@ -46,6 +46,14 @@
         @mousedown.prevent="selectItem(item)"
       >
         <span v-html="label ? item[label] : item" />
+      </li>
+      <li
+        v-if="showNoResults"
+        class="tp-autocomplete__item tp-autocomplete__empty px-3 py-2 border-b text-xs text-base-soft border-base-border truncate"
+        role="option"
+        aria-disabled="true"
+      >
+        {{ t('component.autocomplete.no_results') }}
       </li>
     </ul>
   </div>
@@ -107,8 +115,16 @@ const placeholderText = computed(
 )
 const list = ref([])
 const isSearching = ref(false)
+const hasSearched = ref(false)
 const inputElement = ref(null)
 const activeIndex = ref(-1)
+
+const showNoResults = computed(
+  () => hasSearched.value && !isSearching.value && !list.value.length
+)
+const isListboxVisible = computed(
+  () => list.value.length > 0 || showNoResults.value
+)
 
 const activeDescendant = computed(() =>
   activeIndex.value >= 0
@@ -125,6 +141,7 @@ let timeout
 
 function trigger(e) {
   clearTimeout(timeout)
+  hasSearched.value = false
 
   if (e.target.value.length) {
     timeout = setTimeout(() => {
@@ -140,6 +157,7 @@ function trigger(e) {
         })
         .then(({ data }) => {
           list.value = data
+          hasSearched.value = true
         })
         .catch(() => {})
         .finally(() => {
@@ -194,6 +212,7 @@ const selectItem = (item) => {
   }
 
   list.value = []
+  hasSearched.value = false
   activeIndex.value = -1
   inputElement.value.inputRef.blur()
 }

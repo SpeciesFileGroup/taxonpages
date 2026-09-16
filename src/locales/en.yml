@@ -36,6 +36,7 @@ component:
 
   autocomplete:
     placeholder: Search...
+    no_results: No results found
 
   clipboard:
     copy: Copy to clipboard

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Autocomplete showed nothing when a search returned no results. It now displays a `No results found` message.
+
 ## [0.8.1] - 2026-09-14
 
 ### Fixed
