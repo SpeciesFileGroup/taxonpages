@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.2] - 2026-09-17
+
 ### Added
 
 - The content panel accepts request `params` from its `bind` config in `taxa_page.yml`.
