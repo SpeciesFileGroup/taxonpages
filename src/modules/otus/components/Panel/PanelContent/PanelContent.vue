@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onBeforeMount, onBeforeUnmount } from 'vue'
+import { computed, ref, onBeforeMount, onBeforeUnmount, watch } from 'vue'
 import { useOtuPageRequest } from '@/modules/otus/helpers/useOtuPageRequest'
 import TaxonWorks from '../../../services/TaxonWorks'
 import ContentTopic from './PanelContentTopic.vue'
@@ -19,11 +19,17 @@ const props = defineProps({
   otuId: {
     type: Number,
     required: true
+  },
+
+  params: {
+    type: Object,
+    default: () => ({})
   }
 })
 
 const contents = ref([])
-const controller = new AbortController()
+
+let controller
 
 const contentList = computed(() =>
   contents.value.reduce((acc, current) => {
@@ -37,10 +43,14 @@ const contentList = computed(() =>
   }, {})
 )
 
-onBeforeMount(() => {
+function loadContents() {
+  controller?.abort()
+  controller = new AbortController()
+
   useOtuPageRequest('panel:content', () =>
     TaxonWorks.getOtuContent(props.otuId, {
       params: {
+        ...props.params,
         extend: ['depiction']
       },
       signal: controller.signal
@@ -49,10 +59,21 @@ onBeforeMount(() => {
     .then(({ data }) => {
       contents.value = data
     })
-    .catch((e) => {})
-})
+    .catch(() => {})
+}
+
+onBeforeMount(loadContents)
+
+watch(
+  () => props.params,
+  () => {
+    contents.value = []
+    loadContents()
+  },
+  { deep: true }
+)
 
 onBeforeUnmount(() => {
-  controller.abort()
+  controller?.abort()
 })
 </script>

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- The content panel accepts request `params` from its `bind` config in `taxa_page.yml`.
+
 ### Fixed
 
 - Autocomplete showed nothing when a search returned no results. It now displays a `No results found` message.
