@@ -1,37 +1,12 @@
 import picomatch from 'picomatch'
 import { loadConfiguration } from '../../utils/loadConfiguration.js'
-
-const toForwardSlash = (p) => p.replace(/\\/g, '/')
-
-const GLOB_CHARS = /[*?[\]{}()!+]/
-
-function getWatchTarget(pattern) {
-  const normalizedPattern = toForwardSlash(pattern)
-  const isAbsolute = normalizedPattern.startsWith('/')
-  const segments = normalizedPattern.split('/')
-  const staticSegments = []
-
-  for (const segment of segments) {
-    if (GLOB_CHARS.test(segment)) {
-      break
-    }
-
-    staticSegments.push(segment)
-  }
-
-  if (staticSegments.length === 0 || (staticSegments.length === 1 && staticSegments[0] === '')) {
-    return '.'
-  }
-
-  const result = staticSegments.join('/')
-
-  return isAbsolute && !result.startsWith('/') ? '/' + result : result
-}
+import { toForwardSlash } from '../../utils/paths.js'
+import { watchTargetsFor } from './watchTargets.js'
 
 export function ViteRestart({ dir, projectRoot, ssr = false }) {
   const patterns = (Array.isArray(dir) ? dir : [dir]).map(toForwardSlash)
   const isMatch = picomatch(patterns, { dot: true })
-  const watchTargets = [...new Set(patterns.map(getWatchTarget))]
+  const watchTargets = watchTargetsFor(patterns)
 
   return {
     name: 'vite-restart',

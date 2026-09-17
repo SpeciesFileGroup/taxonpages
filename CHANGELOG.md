@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Fixed
 
 - Autocomplete showed nothing when a search returned no results. It now displays a `No results found` message.
+- New modules, panels, layouts and `config/style` stylesheets are now picked up while `dev` is running. Adding one had no effect until the server was restarted by hand.
+- Editing a site's `locales/*.yml` now reloads the page. The change was only picked up on the next restart.
 
 ## [0.8.1] - 2026-09-14
 

@@ -12,14 +12,15 @@
 import { resolve } from 'node:path'
 import { writeFileSync } from 'node:fs'
 import picomatch from 'picomatch'
-
-const toForwardSlash = (p) => p.replace(/\\/g, '/')
+import { toForwardSlash } from '../../utils/paths.js'
+import { watchTargetsFor } from './watchTargets.js'
 
 export function ViteRestartOnEntryChange({ entries, projectRoot }) {
   const patterns = (Array.isArray(entries) ? entries : [entries]).map(
     toForwardSlash
   )
   const isMatch = picomatch(patterns, { dot: true })
+  const watchTargets = watchTargetsFor(patterns)
   const sentinelPath = resolve(
     projectRoot,
     'node_modules',
@@ -39,6 +40,13 @@ export function ViteRestartOnEntryChange({ entries, projectRoot }) {
         )
         writeFileSync(sentinelPath, Date.now().toString(), 'utf-8')
       }
+
+      // These directories live outside the Vite root, so nothing watches
+      // them until the module graph pulls a file in — which a not-yet-created
+      // entry point never is. Without this the handlers below never fire and
+      // a module or panel added while the server runs stays invisible until
+      // the next manual restart.
+      server.watcher.add(watchTargets)
 
       server.watcher.on('add', handler('added'))
       server.watcher.on('unlink', handler('removed'))

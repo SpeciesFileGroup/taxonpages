@@ -167,10 +167,15 @@ export async function getViteConfig({ packageRoot, projectRoot, ssr = false }) {
 
       ViteRestartOnRouteDelete(routesConfig),
 
+      // Every project-root glob whose *set of files* is baked in at transform
+      // time, so a file appearing or disappearing needs the server to restart.
+      // Edits within an existing file are left to HMR.
       ViteRestartOnEntryChange({
         entries: [
           resolve(projectRoot, 'modules/**/router/*.js'),
-          resolve(projectRoot, 'panels/*/main.js')
+          resolve(projectRoot, 'panels/*/main.js'),
+          resolve(projectRoot, 'layouts/*.vue'),
+          resolve(projectRoot, 'config/style/*.{scss,css}')
         ],
         projectRoot
       }),

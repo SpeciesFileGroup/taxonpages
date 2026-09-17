@@ -28,6 +28,7 @@ import { readFileSync, existsSync } from 'node:fs'
 import { globSync } from 'glob'
 import { loadYaml } from '../../utils/loadYaml.js'
 import { toForwardSlash } from '../../utils/paths.js'
+import { watchTargetsFor } from './watchTargets.js'
 import { discoverAllPackages } from './discoverPackages.js'
 
 const VIRTUAL_ID = 'virtual:taxonpages-locales'
@@ -84,7 +85,10 @@ export function localeDiscoveryPlugin({
         server.ws.send({ type: 'full-reload' })
       }
 
-      server.watcher.add(patterns)
+      // chokidar takes literal paths, not globs, and ~/locales lives outside
+      // the Vite root: watch the enclosing directories and let `invalidate`
+      // filter the events.
+      server.watcher.add(watchTargetsFor(patterns))
       server.watcher.on('change', invalidate)
       server.watcher.on('add', invalidate)
       server.watcher.on('unlink', invalidate)
