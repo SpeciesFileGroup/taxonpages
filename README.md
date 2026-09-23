@@ -14,7 +14,7 @@ TaxonPages is distributed as an NPM package. Use the `taxonpages` CLI to scaffol
 
 ### Requirements
 
-- [Node.js](https://nodejs.org/en/download/) >= 20.19.0 or >=22.12.0
+- [Node.js](https://nodejs.org/en/download/) >= 22.12.0
 
 ### Quick start
 
@@ -99,6 +99,7 @@ npm run dev
 
 - **[User Guide](docs/user-guide.md)** — Configure your site: pages, theme, analytics, layout, taxa page panels, and installing extensions from NPM.
 - **[Developer Guide](docs/developer-guide.md)** — Build and publish your own panels, modules, and plugins for the TaxonPages ecosystem.
+- **[Testing](docs/testing.md)** — Run and write tests when contributing to TaxonPages.
 - **[Migration Guide](docs/migration.md)** — Upgrade an existing TaxonPages site (legacy fork-based setup) to the new NPM-based version.
 
 ## License

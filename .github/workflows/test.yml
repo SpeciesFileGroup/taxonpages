@@ -1,0 +1,39 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - setup
+      - development
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['22.12', '24']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Unit, component and integration tests (with coverage thresholds)
+        run: npm run test:coverage
+
+      - name: SPA and SSR build smoke tests
+        run: npm run test:build

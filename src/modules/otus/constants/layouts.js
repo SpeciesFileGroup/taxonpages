@@ -1,4 +1,8 @@
 import { DEFAULT_OVERVIEW_LAYOUT } from './layouts/index.js'
+import {
+  makePanelRegistry,
+  buildTabLayouts
+} from '../utils/parseTaxaPageLayout.js'
 
 const userPanels = Object.values(
   import.meta.glob('~/panels/*/main.js', {
@@ -14,58 +18,12 @@ const corePanels = Object.values(
   })
 )
 
-export const panelsById = new Map()
-
-for (const entry of [...userPanels, ...corePanels]) {
-  if (entry?.id && !panelsById.has(entry.id)) {
-    panelsById.set(entry.id, entry)
-  }
-}
+export const panelsById = makePanelRegistry([...userPanels, ...corePanels])
 
 const { taxa_page } = __APP_ENV__
 
 const tabsLayout = taxa_page || DEFAULT_OVERVIEW_LAYOUT
 
-function parsePanelConfiguraion(panelLayout) {
-  return panelLayout.map((row) =>
-    row.map((col) =>
-      col
-        .map((panel) => {
-          const isPanelKey = typeof panel === 'string'
-          const { rank_group, ...panelObj } = isPanelKey
-            ? { id: panel }
-            : { ...panel }
-          const entry = panelsById.get(panelObj.id)
-
-          if (!entry) {
-            console.error(
-              `[taxonpages] Unknown panel id "${panelObj.id}" in the taxa_page ` +
-                `configuration. No panel declares it, so it will not be rendered.`
-            )
-            return null
-          }
-
-          return {
-            ...entry,
-            ...panelObj,
-            ...(Array.isArray(rank_group) && { rankGroup: rank_group })
-          }
-        })
-        .filter(Boolean)
-    )
-  )
-}
-
-const layouts = {}
-
-for (const key in tabsLayout) {
-  const tabLayout = tabsLayout[key]
-
-  layouts[key] = {
-    panels: parsePanelConfiguraion(tabLayout?.panels || {}),
-    rankGroup: tabLayout.rank_group || [],
-    label: tabLayout.label
-  }
-}
+const layouts = buildTabLayouts(tabsLayout, panelsById)
 
 export default layouts

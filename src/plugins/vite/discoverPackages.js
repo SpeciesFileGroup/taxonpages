@@ -9,7 +9,7 @@
  * Conflict resolution: local always wins over npm.
  */
 
-import { resolve, join } from 'node:path'
+import { resolve, join, sep } from 'node:path'
 import { readdirSync, readFileSync, existsSync } from 'node:fs'
 
 const VALID_TYPES = ['module', 'panel', 'plugin']
@@ -293,7 +293,7 @@ function tryReadDescriptor(pkgDir, pkgName) {
   const entryPath = resolve(pkgDir, entry)
 
   // Path traversal protection
-  if (!entryPath.startsWith(pkgDir)) {
+  if (!isInside(pkgDir, entryPath)) {
     console.error(
       `[taxonpages] Package "${pkgName}": entry "${entry}" escapes package boundary. Skipping.`
     )
@@ -321,7 +321,7 @@ function tryReadDescriptor(pkgDir, pkgName) {
   const schemaRelPath = manifest.setupSchema || './setup.schema.json'
   const schemaPath = resolve(pkgDir, schemaRelPath)
 
-  if (schemaPath.startsWith(pkgDir) && existsSync(schemaPath)) {
+  if (isInside(pkgDir, schemaPath) && existsSync(schemaPath)) {
     try {
       configSchema = JSON.parse(readFileSync(schemaPath, 'utf-8'))
     } catch {
@@ -335,7 +335,7 @@ function tryReadDescriptor(pkgDir, pkgName) {
     const vueSetupRelPath = manifest.vueSetup || './vueSetup.js'
     const vueSetupPath = resolve(pkgDir, vueSetupRelPath)
 
-    if (vueSetupPath.startsWith(pkgDir) && existsSync(vueSetupPath)) {
+    if (isInside(pkgDir, vueSetupPath) && existsSync(vueSetupPath)) {
       vueSetup = vueSetupPath
     }
   }
@@ -350,6 +350,20 @@ function tryReadDescriptor(pkgDir, pkgName) {
     configSchema,
     vueSetup
   }
+}
+
+/**
+ * Whether a resolved path lies inside a directory.
+ *
+ * A bare prefix test is not enough: `node_modules/foo-evil/x.js` starts with
+ * `node_modules/foo`, so `../foo-evil/x.js` would pass as an entry of `foo`.
+ *
+ * @param {string} dir
+ * @param {string} path
+ * @returns {boolean}
+ */
+function isInside(dir, path) {
+  return path.startsWith(dir.endsWith(sep) ? dir : dir + sep)
 }
 
 function safeReaddir(dir) {

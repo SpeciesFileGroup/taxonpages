@@ -274,7 +274,7 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
  * @param {string} projectRoot
  * @returns {object}
  */
-function withTranslationsSection(schema, projectRoot) {
+export function withTranslationsSection(schema, projectRoot) {
   const { isMultiLocale } = resolveI18nConfig(loadConfiguration(projectRoot))
 
   if (!isMultiLocale) return schema
@@ -300,7 +300,7 @@ function withTranslationsSection(schema, projectRoot) {
   return { ...schema, core: { ...schema.core, sections } }
 }
 
-function injectModuleSchemas(baseSchema, packageRoot, projectRoot) {
+export function injectModuleSchemas(baseSchema, packageRoot, projectRoot) {
   const merged = JSON.parse(JSON.stringify(baseSchema))
 
   // Core modules: packageRoot/src/modules/*/setup.schema.json
@@ -386,7 +386,7 @@ function scanModuleSchemas(modulesDir) {
  * @param {object} moduleSchema - Parsed setup.schema.json
  * @param {string} [moduleDir] - Absolute path to the module directory (for resolving component paths)
  */
-function moduleSchemaToSection(name, moduleSchema, moduleDir) {
+export function moduleSchemaToSection(name, moduleSchema, moduleDir) {
   const section = {
     file: moduleSchema.file || `${name}.yml`,
     label: moduleSchema.label || name,

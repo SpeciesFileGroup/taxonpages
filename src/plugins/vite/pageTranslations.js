@@ -19,6 +19,7 @@
  */
 
 import { existsSync } from 'node:fs'
+import { createHash } from 'node:crypto'
 import { extname, dirname, basename, join, relative } from 'node:path'
 import { globSync } from 'glob'
 import { toForwardSlash } from '../../utils/paths.js'
@@ -146,10 +147,16 @@ export function pageTranslationsPlugin() {
     load(id) {
       if (!id.startsWith(RESOLVED_PREFIX)) return
 
-      const payload = id.slice(RESOLVED_PREFIX.length)
-      const { file, translations } = JSON.parse(
-        Buffer.from(payload, 'base64url').toString('utf8')
-      )
+      const page = pages.get(id.slice(1))
+
+      if (!page) {
+        throw new Error(
+          `[taxonpages] Unknown translated page "${id.slice(1)}". ` +
+            `Restart the server so routes are generated again.`
+        )
+      }
+
+      const { file, translations } = page
 
       const entries = Object.entries(translations)
       const imports = entries
@@ -182,14 +189,31 @@ export default defineComponent({
 }
 
 /**
+ * Pages registered by pageVirtualId, by virtual id.
+ *
+ * The id itself carries no paths: it becomes the chunk file name in a build,
+ * and absolute paths in it exceed the file system's name limit for any site in
+ * a moderately deep directory. pageVirtualId runs while routes are generated
+ * and the plugin's load() afterwards, in the same process, so the id only needs
+ * to find the entry here.
+ *
+ * @type {Map<string, {file: string, translations: Record<string, string>}>}
+ */
+const pages = new Map()
+
+/**
  * The virtual module id for a page and its translations.
+ *
+ * Short and deterministic: a hash of the page and its translations, so the
+ * client and server builds agree on it, plus the page's name, which is what
+ * the chunk ends up named after.
  *
  * @param {string} file - Absolute path of the default-locale page
  * @param {Record<string, string>} translations
  * @returns {string}
  */
 export function pageVirtualId(file, translations) {
-  const payload = JSON.stringify({
+  const page = {
     file: toForwardSlash(file),
     translations: Object.fromEntries(
       Object.entries(translations).map(([locale, path]) => [
@@ -197,7 +221,15 @@ export function pageVirtualId(file, translations) {
         toForwardSlash(path)
       ])
     )
-  })
+  }
 
-  return VIRTUAL_PREFIX + Buffer.from(payload, 'utf8').toString('base64url')
+  const hash = createHash('sha256')
+    .update(JSON.stringify(page))
+    .digest('hex')
+    .slice(0, 12)
+  const id = `${VIRTUAL_PREFIX}${hash}/${basename(file, extname(file))}`
+
+  pages.set(id, page)
+
+  return id
 }

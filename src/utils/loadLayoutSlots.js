@@ -21,7 +21,7 @@ export function loadLayoutSlots() {
   return registry
 }
 
-function makeSlotRegistry(files) {
+export function makeSlotRegistry(files) {
   const registry = {}
 
   Object.values(files).forEach((contributions) => {
