@@ -1,4 +1,4 @@
-import { resolve, join } from 'node:path'
+import { resolve, join, sep } from 'node:path'
 import { readFileSync, existsSync } from 'node:fs'
 
 const DEFAULT_ENTRIES = {
@@ -9,8 +9,9 @@ const DEFAULT_ENTRIES = {
 /**
  * Read a TaxonPages package's manifest from node_modules.
  *
- * Returns null if the package is not installed, has invalid JSON, or does not
- * declare a `taxonpages` manifest field with a valid `type`.
+ * Returns null if the package is not installed, has invalid JSON, does not
+ * declare a `taxonpages` manifest field with a valid `type`, or declares an
+ * entry outside its own directory — the same packages discovery ignores.
  *
  * @param {string} projectRoot - Path to the user's project
  * @param {string} pkgName - NPM package name (scoped names handled)
@@ -34,6 +35,8 @@ export function readPackageManifest(projectRoot, pkgName) {
 
   const entry = manifest.entry || DEFAULT_ENTRIES[manifest.type]
   const entryPath = resolve(pkgDir, entry)
+
+  if (!entryPath.startsWith(pkgDir + sep)) return null
 
   return {
     type: manifest.type,
