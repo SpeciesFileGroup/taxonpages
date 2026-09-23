@@ -163,9 +163,6 @@ const isLoading = ref(false)
 const errorMessage = ref(null)
 const image = computed(() => props.images[props.index])
 
-previouslyFocusedElement = document.activeElement
-document.addEventListener('keyup', handleKeyboard)
-
 function handleError() {
   isLoading.value = false
   errorMessage.value = 'Image was not found or format is not supported'
@@ -176,6 +173,8 @@ function handleLoad() {
 }
 
 onMounted(() => {
+  previouslyFocusedElement = document.activeElement
+  document.addEventListener('keyup', handleKeyboard)
   imageElement.value.addEventListener('load', handleLoad)
   imageElement.value.addEventListener('error', handleError)
   document.body.classList.add('overflow-hidden')
