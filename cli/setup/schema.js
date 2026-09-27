@@ -345,6 +345,13 @@ export default {
     sections: {}
   },
 
+  // Filled at request time from plugins that ship a setup.schema.json. Empty
+  // groups are hidden by the sidebar.
+  plugins: {
+    label: 'Plugins',
+    sections: {}
+  },
+
   packages: {
     label: 'Packages',
     sections: {

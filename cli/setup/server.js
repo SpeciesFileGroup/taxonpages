@@ -24,10 +24,12 @@ import schema from './schema.js'
 import { loadConfiguration } from '../../src/utils/loadConfiguration.js'
 import { resolveI18nConfig } from '../../src/i18n/config.js'
 import {
+  discoverAllPackages,
   discoverNpmPackages,
   extractBaseName,
   loadSchema
 } from '../../src/plugins/vite/discoverPackages.js'
+import { loadPlugins } from '../utils/loadPlugins.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -87,7 +89,53 @@ function discoverCustomEditors(packageRoot, projectRoot) {
     }
   }
 
+  // Plugins, local and NPM
+  for (const plugin of discoverSchemaPlugins(projectRoot)) {
+    const { configSchema } = plugin
+    if (configSchema.editor === 'custom' && configSchema.component) {
+      editors.set(
+        pluginEditorKey(plugin),
+        resolve(plugin.path, configSchema.component)
+      )
+    }
+  }
+
   return editors
+}
+
+/**
+ * Plugins that ship a setup.schema.json, local and NPM, with local winning a
+ * name conflict as it does at runtime.
+ *
+ * @param {string} projectRoot
+ */
+function discoverSchemaPlugins(projectRoot) {
+  const { configuration } = safeConfiguration(projectRoot)
+
+  return discoverAllPackages(projectRoot, {
+    disabled: configuration.packages?.disabled
+  }).plugins.filter((p) => p.configSchema)
+}
+
+function safeConfiguration(projectRoot) {
+  try {
+    return { configuration: loadConfiguration(projectRoot) }
+  } catch {
+    return { configuration: {} }
+  }
+}
+
+/**
+ * Section and editor key for a plugin. Prefixed so a plugin can never take
+ * over the editor of a module that happens to share its name.
+ *
+ * @param {{ name: string, source: string }} plugin
+ */
+export function pluginEditorKey(plugin) {
+  const baseName =
+    plugin.source === 'npm' ? extractBaseName(plugin.name, 'plugin') : plugin.name
+
+  return `plugin-${baseName}`
 }
 
 /**
@@ -198,8 +246,13 @@ export async function createSetupServer({ packageRoot, projectRoot, port }) {
   app.use('/api/status', createStatusRoutes(packageRoot, projectRoot))
   app.use('/api/style', createStyleRoutes(projectRoot))
 
+  await mountPluginSetupRoutes(app, { packageRoot, projectRoot })
+
   app.get('/api/schema', (_req, res) => {
-    const mergedSchema = injectModuleSchemas(schema, packageRoot, projectRoot)
+    const mergedSchema = injectPluginSchemas(
+      injectModuleSchemas(schema, packageRoot, projectRoot),
+      projectRoot
+    )
     res.json(withTranslationsSection(mergedSchema, projectRoot))
   })
 
@@ -298,6 +351,66 @@ export function withTranslationsSection(schema, projectRoot) {
   if (!sections.translations) sections.translations = translations
 
   return { ...schema, core: { ...schema.core, sections } }
+}
+
+/**
+ * Mount each plugin's `setupServer()` routes under /api/plugins/<name>.
+ *
+ * Runs behind the same CSRF guard as the wizard's own API, so a plugin's
+ * state-changing routes are protected without doing anything itself.
+ *
+ * @param {import('express').Express} app
+ * @param {{ packageRoot: string, projectRoot: string }} options
+ */
+async function mountPluginSetupRoutes(app, { packageRoot, projectRoot }) {
+  const { configuration } = safeConfiguration(projectRoot)
+  const plugins = await loadPlugins({ projectRoot, packageRoot, configuration })
+
+  for (const plugin of plugins) {
+    if (typeof plugin.setupServer !== 'function') continue
+
+    const router = express.Router()
+
+    try {
+      plugin.setupServer(router, { projectRoot, packageRoot })
+      app.use(`/api/plugins/${encodeURIComponent(plugin.name)}`, router)
+    } catch (err) {
+      console.error(
+        `[taxonpages] Plugin "${plugin.name}" setupServer() hook failed:`,
+        err.message
+      )
+    }
+  }
+}
+
+/**
+ * Add a section for every plugin that ships a setup.schema.json, and drop the
+ * Plugins group when there is none so the sidebar shows no empty heading.
+ *
+ * @param {object} baseSchema
+ * @param {string} projectRoot
+ * @returns {object}
+ */
+export function injectPluginSchemas(baseSchema, projectRoot) {
+  const merged = JSON.parse(JSON.stringify(baseSchema))
+  const sections = merged.plugins?.sections || {}
+
+  for (const plugin of discoverSchemaPlugins(projectRoot)) {
+    const key = pluginEditorKey(plugin)
+    if (sections[key]) continue
+
+    const section = moduleSchemaToSection(key, plugin.configSchema, plugin.path)
+    section.file = plugin.configSchema.file || `${key}.yml`
+    sections[key] = section
+  }
+
+  if (Object.keys(sections).length) {
+    merged.plugins = { label: 'Plugins', ...merged.plugins, sections }
+  } else {
+    delete merged.plugins
+  }
+
+  return merged
 }
 
 export function injectModuleSchemas(baseSchema, packageRoot, projectRoot) {

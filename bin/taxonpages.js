@@ -158,9 +158,13 @@ program
 // Apply cli() hooks from discovered plugins
 try {
   const { loadPlugins } = await import('../cli/utils/loadPlugins.js')
+  const { loadConfiguration } = await import(
+    '../src/utils/loadConfiguration.js'
+  )
   const plugins = await loadPlugins({
     projectRoot: process.cwd(),
-    packageRoot
+    packageRoot,
+    configuration: loadConfiguration(process.cwd())
   })
 
   for (const plugin of plugins) {

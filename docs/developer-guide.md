@@ -674,8 +674,33 @@ All hooks are optional. A plugin only needs to implement the hooks it uses.
 | `vite()`   | During Vite config resolution          | Core Vite config object       | Config object to deep-merge |
 | `server()` | After API routes, before SSR catch-all | Express app, `{ isProd }`     | Nothing                     |
 | `cli()`    | Before `program.parse()` in the CLI    | Commander.js program instance | Nothing                     |
+| `setupServer()` | When `taxonpages setup` starts    | Express router, `{ projectRoot, packageRoot }` | Nothing  |
 
 The `vite()` hook merges returned config additively. Protected keys (`root`, `base`, `resolve.alias`) cannot be overridden by plugins.
+
+### Plugin settings in the setup wizard
+
+A plugin can ship a `setup.schema.json` at its root, in the same format as a [module's](#module-configuration-schema). The wizard lists it under a **Plugins** group, keyed `plugin-<name>` so it never collides with a module of the same name. Both field-based schemas and custom editors (`"editor": "custom"`) work; a custom editor follows the same rules as a module's and must not import from the wizard client.
+
+When the settings page needs more than reading and writing its YAML file — starting a job, reporting its progress — the plugin adds routes with `setupServer()`. They are mounted at `/api/plugins/<plugin name>` on the wizard's server, behind the same CSRF check as the wizard's own API, so state-changing requests from a custom editor must send the token from `<meta name="csrf-token">` in an `x-csrf-token` header:
+
+```javascript
+// src/plugin.js
+export default function () {
+  return {
+    name: 'my-plugin',
+
+    setupServer(router, { projectRoot }) {
+      router.get('/status', (req, res) => res.json({ ok: true }))
+      router.post('/rebuild', (req, res) => { /* ... */ res.status(202).end() })
+    }
+  }
+}
+```
+
+### Serving the API from a plugin
+
+A plugin can replace the remote TaxonWorks API with one it serves itself, from `server()` (and from a Vite `configureServer` hook for `taxonpages dev`). Point the site at it with a relative `url`, such as `/my-plugin/api/v1`: the browser resolves it against the page, and on the server TaxonPages resolves it against the address the request arrived on, so server renders call the same process. An `ssr_url`, when set, still takes precedence on the server.
 
 ### Vue app setup
 

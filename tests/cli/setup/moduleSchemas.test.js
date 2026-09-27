@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   injectModuleSchemas,
+  injectPluginSchemas,
   moduleSchemaToSection,
   withTranslationsSection
 } from '../../../cli/setup/server.js'
@@ -77,5 +78,44 @@ describe('withTranslationsSection', () => {
 
     expect(keys.indexOf('translations')).toBe(keys.indexOf('i18n') + 1)
     expect(Object.keys(schema.core.sections)).not.toContain('translations')
+  })
+})
+
+describe('injectPluginSchemas', () => {
+  it('adds local and NPM plugins that ship a schema, under a prefixed key', () => {
+    const projectRoot = createProject({
+      'package.json': { dependencies: { '@acme/taxonpages-plugin-offline': '*' } },
+      'plugins/sitemap/plugin.js': 'export default () => ({ name: "sitemap" })',
+      'plugins/sitemap/setup.schema.json': { label: 'Sitemap', fields: {} },
+      'plugins/bare/plugin.js': 'export default () => ({ name: "bare" })',
+      'node_modules/@acme/taxonpages-plugin-offline/package.json': npmPackage(
+        '@acme/taxonpages-plugin-offline',
+        { type: 'plugin' }
+      ),
+      'node_modules/@acme/taxonpages-plugin-offline/src/plugin.js': 'export default () => ({ name: "offline" })',
+      'node_modules/@acme/taxonpages-plugin-offline/setup.schema.json': {
+        label: 'Offline',
+        file: 'offline.yml',
+        editor: 'custom',
+        component: './setup/OfflineEditor.vue'
+      }
+    })
+
+    const merged = injectPluginSchemas(schema, projectRoot)
+
+    expect(Object.keys(merged.plugins.sections)).toEqual(['plugin-sitemap', 'plugin-offline'])
+    expect(merged.plugins.sections['plugin-offline']).toMatchObject({
+      file: 'offline.yml',
+      editor: 'custom',
+      component: 'virtual:editor/plugin-offline'
+    })
+    expect(merged.plugins.sections['plugin-sitemap'].file).toBe('plugin-sitemap.yml')
+  })
+
+  it('drops the Plugins group when no plugin has a schema', () => {
+    const merged = injectPluginSchemas(schema, createProject({ 'package.json': {} }))
+
+    expect(merged.plugins).toBeUndefined()
+    expect(schema.plugins).toBeDefined()
   })
 })

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Plugins can ship a `setup.schema.json`, shown in the setup wizard under a new **Plugins** group, and add their own wizard routes with a `setupServer()` hook, mounted at `/api/plugins/<name>`.
+- The API `url` can be relative (`/my-plugin/api/v1`), for an API served by the site's own server. Server renders resolve it against the address the request arrived on, never the `Host` header.
+- The OTU page breadcrumb shows a parent without an `id` as plain text instead of a link. Before, such a parent broke the whole page render.
+
 ### Changed
 
 - Node.js 22.12 or later is required. Node 20 reached end of life in April 2026, and several dependencies (`commander`, `vue-i18n`, `unplugin-vue-markdown`) already required Node 22.
@@ -16,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Sites with translated pages (`about.es.md`) failed to build from a deeply nested directory with `File name too long`. The generated module id embedded every absolute page path, and became a chunk file name.
 - A panel, module or plugin package could point its `entry`, `setupSchema` or `vueSetup` at a sibling package whose name starts with its own (`../foo-evil/` from `foo`), passing the check meant to keep them inside the package. `taxonpages package add`, `remove` and `update` did not check the entry at all; they now ignore such a package, as discovery does.
 - The image viewer listened to the keyboard from its setup instead of on mount, so rendering it on the server would fail.
+- Plugins always received an empty `configuration` in their context when TaxonPages was started from the CLI: the CLI loaded them first, without it, and every later hook got that cached copy.
 
 ## [0.8.2] - 2026-09-17
 

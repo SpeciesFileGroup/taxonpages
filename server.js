@@ -158,7 +158,7 @@ export async function createServer({
   }
 
   // Apply server() hooks from discovered plugins
-  const plugins = await loadPlugins({ projectRoot, packageRoot })
+  const plugins = await loadPlugins({ projectRoot, packageRoot, configuration })
 
   for (const plugin of plugins) {
     if (typeof plugin.server !== 'function') continue
@@ -229,7 +229,7 @@ export async function createServer({
       const { locale, path: routePath } = extractLocale(url, configuration)
 
       const [appHtml, appState, preloadLinks, tagMeta, statusCode] =
-        await render(routePath, manifest, origin, locale)
+        await render(routePath, manifest, origin, locale, socketOrigin(req))
       const html = setHtmlLang(
         template
           .replace(`<!--preload-links-->`, preloadLinks)
@@ -250,6 +250,22 @@ export async function createServer({
   })
 
   return { app, httpServer, vite }
+}
+
+/**
+ * The address a request arrived on, as an origin this process can call itself
+ * back on. Taken from the socket rather than the Host header, which the client
+ * controls.
+ *
+ * @param {import('express').Request} req
+ * @returns {string}
+ */
+export function socketOrigin(req) {
+  const { localAddress, localPort } = req.socket
+  const address = (localAddress || '127.0.0.1').replace(/^::ffff:/, '')
+  const host = address.includes(':') ? `[${address}]` : address
+
+  return `http://${host}:${localPort}`
 }
 
 function makeAppContainer(app = '') {

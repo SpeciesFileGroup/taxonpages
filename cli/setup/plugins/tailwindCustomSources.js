@@ -1,6 +1,9 @@
 import { resolve } from 'node:path'
 import { writeFileSync } from 'node:fs'
-import { discoverNpmPackages } from '../../../src/plugins/vite/discoverPackages.js'
+import {
+  discoverAllPackages,
+  discoverNpmPackages
+} from '../../../src/plugins/vite/discoverPackages.js'
 import { toForwardSlash } from '../../../src/utils/paths.js'
 
 /**
@@ -24,6 +27,13 @@ export function writeSetupTailwindSources(clientDir, packageRoot, projectRoot) {
     .filter((p) => p.type === 'module' && p.configSchema)
   for (const pkg of npmPackages) {
     sources.push(`@source "${toForwardSlash(resolve(pkg.path, 'setup/**/*.vue'))}";`)
+  }
+
+  // Plugins with a custom editor, local and NPM
+  const plugins = discoverAllPackages(projectRoot).plugins
+    .filter((p) => p.configSchema?.editor === 'custom')
+  for (const plugin of plugins) {
+    sources.push(`@source "${toForwardSlash(resolve(plugin.path, 'setup/**/*.vue'))}";`)
   }
 
   writeFileSync(sourcesFile, sources.join('\n') + '\n')

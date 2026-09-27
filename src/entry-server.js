@@ -6,6 +6,7 @@ import { createHead } from '@unhead/vue/server'
 import { renderSSRHead } from 'unhead/server'
 import { registerFakeClientComponents } from '@/ssr/utils/registerFakeClientComponents'
 import { schemaOrgPlugin } from '@/plugins/schemaOrg'
+import { resolveSSRBaseURL } from '@/utils/request'
 import devalue from '@nuxt/devalue'
 
 /**
@@ -14,8 +15,12 @@ import devalue from '@nuxt/devalue'
  * @param {object} manifest
  * @param {string} originUrl
  * @param {string} [locale] - Resolved by the caller from the URL.
+ * @param {string} [serverOrigin] - Address this server listens on, used to
+ *   reach an API served by the same process (a relative `url`).
  */
-export async function render(url, manifest, originUrl, locale) {
+export async function render(url, manifest, originUrl, locale, serverOrigin) {
+  resolveSSRBaseURL(serverOrigin)
+
   const { app, router, store, i18n } = createApp({ originUrl, locale })
   const head = createHead({
     plugins: [

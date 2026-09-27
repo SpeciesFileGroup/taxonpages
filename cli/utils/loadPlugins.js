@@ -10,7 +10,7 @@ let _cache = null
  *
  * Each plugin entry file must export a default function (the factory)
  * that receives a context object and returns a plugin descriptor
- * with optional hooks: vite, server, vue, cli, buildEnd, setupSchema.
+ * with optional hooks: vite, server, cli, setupServer.
  *
  * Results are cached per process — subsequent calls return the same array.
  *
@@ -18,7 +18,7 @@ let _cache = null
  * @param {string} options.projectRoot
  * @param {string} options.packageRoot
  * @param {object} [options.configuration] - Loaded YAML configuration
- * @returns {Promise<Array<{name: string, vite?: Function, server?: Function, vue?: Function, cli?: Function, buildEnd?: Function, setupSchema?: Function}>>}
+ * @returns {Promise<Array<{name: string, vite?: Function, server?: Function, cli?: Function, setupServer?: Function}>>}
  */
 export async function loadPlugins({ projectRoot, packageRoot, configuration }) {
   if (_cache) return _cache
