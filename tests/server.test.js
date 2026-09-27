@@ -16,3 +16,23 @@ describe('socketOrigin', () => {
     expect(socketOrigin(request('::1', 6173))).toBe('http://[::1]:6173')
   })
 })
+
+describe('describeUnhandledRejection', () => {
+  it('reduces an axios error to its message and URL', async () => {
+    const { describeUnhandledRejection } = await import('../server.js')
+    const error = Object.assign(new Error('Request failed with status code 404'), {
+      isAxiosError: true,
+      config: { method: 'get', baseURL: 'http://127.0.0.1:6173/offline/api/v1', url: '/taxon_names.json' }
+    })
+
+    expect(describeUnhandledRejection(error)).toBe(
+      '[taxonpages] Unhandled promise rejection, the server keeps running: ' +
+        'Request failed with status code 404 (GET http://127.0.0.1:6173/offline/api/v1/taxon_names.json)'
+    )
+  })
+
+  it('logs the stack of any other error', async () => {
+    const { describeUnhandledRejection } = await import('../server.js')
+    expect(describeUnhandledRejection(new Error('boom'))).toMatch(/keeps running: Error: boom\n\s+at /)
+  })
+})

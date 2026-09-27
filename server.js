@@ -50,6 +50,8 @@ export async function createServer({
   isProd = process.env.NODE_ENV === 'production',
   hmrPort
 } = {}) {
+  keepAliveOnUnhandledRejection()
+
   const resolveProject = (p) => path.resolve(projectRoot, p)
   const resolvePackage = (p) => path.resolve(packageRoot, p)
 
@@ -250,6 +252,29 @@ export async function createServer({
   })
 
   return { app, httpServer, vite }
+}
+
+let rejectionGuardInstalled = false
+
+function keepAliveOnUnhandledRejection() {
+  if (rejectionGuardInstalled) return
+  rejectionGuardInstalled = true
+
+  process.on('unhandledRejection', (reason) => {
+    console.error(describeUnhandledRejection(reason))
+  })
+}
+
+export function describeUnhandledRejection(reason) {
+  const prefix = '[taxonpages] Unhandled promise rejection, the server keeps running:'
+
+  if (reason?.isAxiosError) {
+    const method = (reason.config?.method || 'get').toUpperCase()
+    const url = [reason.config?.baseURL, reason.config?.url].filter(Boolean).join('')
+    return `${prefix} ${reason.message} (${method} ${url.replace(/project_token=[^&]*/, 'project_token=…')})`
+  }
+
+  return `${prefix} ${reason instanceof Error ? reason.stack : String(reason)}`
 }
 
 /**

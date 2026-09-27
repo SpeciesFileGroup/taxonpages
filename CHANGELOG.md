@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Sites with translated pages (`about.es.md`) failed to build from a deeply nested directory with `File name too long`. The generated module id embedded every absolute page path, and became a chunk file name.
 - A panel, module or plugin package could point its `entry`, `setupSchema` or `vueSetup` at a sibling package whose name starts with its own (`../foo-evil/` from `foo`), passing the check meant to keep them inside the package. `taxonpages package add`, `remove` and `update` did not check the entry at all; they now ignore such a package, as discovery does.
 - The image viewer listened to the keyboard from its setup instead of on mount, so rendering it on the server would fail.
+- An unhandled promise rejection during a server render (a panel or module starting a request in setup without catching its error) ended the whole `serve` or `dev:ssr` process. It is now logged, in one line, and the server keeps running.
 - Plugins always received an empty `configuration` in their context when TaxonPages was started from the CLI: the CLI loaded them first, without it, and every later hook got that cached copy.
 
 ## [0.8.2] - 2026-09-17
