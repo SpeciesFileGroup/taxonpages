@@ -17,6 +17,7 @@ otus:
   show_less: Show less
   show_all_menu: Show all
   combination: Combination
+  invalid_name_notice: 'This name is not valid/accepted. The valid name is {name}.'
 
   datamap:
     button_title: Links used to obtain the information present on this page in JSON format.

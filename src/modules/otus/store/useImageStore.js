@@ -16,10 +16,10 @@ export const useImageStore = defineStore('imageStore', {
       this.controller?.abort()
     },
 
-    async loadImages(otuId, { sortOrder }) {
+    async loadImages(otuId, { sortOrder, coordinateOtus = true }) {
       const params = {
         extend: ['depictions', 'attribution', 'source', 'citations'],
-        otu_scope: ['all', 'coordinate_otus'],
+        otu_scope: coordinateOtus ? ['all', 'coordinate_otus'] : ['all'],
         sort_order: sortOrder
       }
 

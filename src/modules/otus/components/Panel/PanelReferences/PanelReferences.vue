@@ -81,8 +81,6 @@ const props = defineProps({
     default: undefined
   },
 
-  // Left undefined so the translated default applies. A title supplied by
-  // taxa_page.yml (`bind: { title: ... }`) still wins over it.
   title: {
     type: String,
     default: undefined
@@ -91,8 +89,18 @@ const props = defineProps({
 
 const { t } = useI18n()
 const isLoading = ref(false)
-const list = ref([])
+const items = ref([])
 const showAll = ref(false)
+const list = computed(() => {
+  const otuItems =
+    props.taxon?.is_valid === false
+      ? items.value.filter((item) => item.otu.id === Number(props.otuId))
+      : items.value
+
+  return makeCitationList(otuItems).sort(
+    (a, b) => (a.source?.year ?? 0) - (b.source?.year ?? 0)
+  )
+})
 const citationList = computed(() => splitList(list.value, MAX_CITATIONS))
 
 const panelTitle = computed(
@@ -133,9 +141,7 @@ onMounted(() => {
     TaxonWorks.getOtuCitations(props.otuId)
   )
     .then(({ data }) => {
-      list.value = makeCitationList(data).sort(
-        (a, b) => (a.source?.year ?? 0) - (b.source?.year ?? 0)
-      )
+      items.value = data
     })
     .finally(() => {
       isLoading.value = false

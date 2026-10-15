@@ -11,13 +11,12 @@
             :title="store.taxon.short_status"
             v-html="store.taxon.full_name_tag"
           />
-          <span
+
+          <IconWarning
             v-if="!store.taxon.is_valid"
-            class="ml-1 text-danger"
-            :title="$t('otus.invalid')"
-          >
-            &#10005;
-          </span>
+            class="ml-1 text-danger w-4 h-4 inline"
+          />
+
           <span
             v-if="store.taxon.descorator_status.length"
             class="text-base-soft text-base"
@@ -31,6 +30,18 @@
     <span class="text-1xl">
       <CommonNames />
     </span>
+    <div
+      v-if="!store.taxon.is_valid"
+      class="text-sm"
+    >
+      <i>
+        {{
+          $t('otus.invalid_name_notice', {
+            name: store.taxon.valid_name.valid_full_name
+          })
+        }}
+      </i>
+    </div>
     <TaxaPageOutlet region="taxa_page:header:taxoninfo:end" />
   </div>
 </template>

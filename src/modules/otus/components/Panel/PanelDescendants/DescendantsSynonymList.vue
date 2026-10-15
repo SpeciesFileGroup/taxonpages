@@ -5,13 +5,21 @@
       :key="synonym"
     >
       <span class="text-orange-500 mr-1">=</span>
-      <span v-html="synonym" />
+
+      <RouterLink
+        v-if="synonym.otu_id"
+        :to="{ name: 'otus-id', params: { id: synonym.otu_id } }"
+        v-html="synonym.name"
+      />
+      <span
+        v-else
+        v-html="synonym"
+      />
     </li>
   </ul>
 </template>
 
 <script setup>
-
 const props = defineProps({
   list: {
     type: Array,
