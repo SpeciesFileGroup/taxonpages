@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.3] - 2026-10-15
+
 ### Added
 
 - Plugins can ship a `setup.schema.json`, shown in the setup wizard under a new **Plugins** group, and add their own wizard routes with a `setupServer()` hook, mounted at `/api/plugins/<name>`.
