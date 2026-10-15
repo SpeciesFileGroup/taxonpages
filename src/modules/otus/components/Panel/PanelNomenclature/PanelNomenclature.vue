@@ -22,9 +22,10 @@
       />
 
       <PanelNomenclatureShowMore
-        v-if="!showAll && citationList.middle.length"
+        v-if="citationList.middle.length"
         :count="citationList.middle.length"
-        @click="showAll = true"
+        :expanded="showAll"
+        @toggle="showAll = !showAll"
       />
     </ul>
     <AnimationOpacity>

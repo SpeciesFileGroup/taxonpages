@@ -23,9 +23,10 @@
       />
 
       <PanelNomenclatureShowMore
-        v-if="!showAll && referenceList.middle.length"
+        v-if="referenceList.middle.length"
         :count="referenceList.middle.length"
-        @click="showAll = true"
+        :expanded="showAll"
+        @toggle="showAll = !showAll"
       />
       <AnimationOpacity>
         <div v-show="showAll">
