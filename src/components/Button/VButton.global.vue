@@ -23,7 +23,9 @@ const props = defineProps({
     type: String,
     default: 'primary',
     validator: (v) =>
-      ['primary', 'secondary', 'danger', 'success', 'warning'].includes(v)
+      ['primary', 'secondary', 'base', 'danger', 'success', 'warning'].includes(
+        v
+      )
   },
 
   outline: {
@@ -55,6 +57,7 @@ const variantClasses = computed(() => {
         'bg-transparent hover:bg-primary/10 text-primary hover:text-primary border border-transparent',
       secondary:
         'bg-transparent hover:bg-secondary/10 text-secondary hover:text-secondary border border-transparent',
+      base: 'bg-transparent hover:bg-base-content/10 text-base-content border border-transparent',
       success:
         'bg-transparent hover:bg-success/10 text-success hover:text-success border border-transparent',
       warning:
@@ -72,6 +75,7 @@ const variantClasses = computed(() => {
         'bg-transparent hover:bg-primary/10 text-primary border border-primary',
       secondary:
         'bg-transparent hover:bg-secondary/10 text-secondary border border-secondary',
+      base: 'bg-transparent hover:bg-base-content/10 text-base-content border border-base-border',
       success:
         'bg-transparent hover:bg-success/10 text-success border border-success',
       warning:
@@ -88,6 +92,7 @@ const variantClasses = computed(() => {
       'bg-primary hover:bg-primary/85 active:bg-primary/75 text-primary-content border border-transparent',
     secondary:
       'bg-secondary hover:bg-secondary/85 active:bg-secondary/75 text-secondary-content border border-transparent',
+    base: 'bg-base-muted hover:bg-base-content/10 active:bg-base-content/15 text-base-content border border-transparent',
     success:
       'bg-success hover:bg-success/85 active:bg-success/75 text-white border border-transparent',
     warning:
@@ -115,7 +120,7 @@ const sizeClasses = computed(() => {
   const sizes = {
     xs: 'px-1.5 py-1 text-xs',
     sm: 'px-2 py-1.25 text-sm leading-tight',
-    md: 'px-2.5 py-1.5 text-sm',
+    md: 'px-3 py-1.5 text-sm',
     lg: 'px-3 py-2 text-sm',
     xl: 'px-3.5 py-2.5 text-sm leading-tight'
   }
