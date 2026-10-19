@@ -1,7 +1,7 @@
 <template>
   <li class="border-b border-base-muted p-3 px-5">
     <span
-      class="break-all block"
+      class="break-normal block"
       :title="stripHTML(citation.label)"
       v-html="citation.label"
     />

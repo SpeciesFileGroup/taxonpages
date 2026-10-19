@@ -128,6 +128,7 @@ dwc:
     family: Family
     subfamily: Subfamily
     tribe: Tribe
+    subtribe: Subtribe
     genus: Genus
     subgenus: Subgenus
     species: Species

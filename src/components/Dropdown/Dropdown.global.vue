@@ -1,7 +1,10 @@
 <template>
   <div class="relative inline-flex">
-    <button
+    <VButton
       class="cursor-pointer"
+      ghost
+      variant="base"
+      size="sm"
       :title="$t('component.dropdown.menu')"
       :aria-label="$t('component.dropdown.options')"
       aria-haspopup="true"
@@ -10,7 +13,7 @@
       @keydown.escape="closeMenu"
     >
       <slot name="button" />
-    </button>
+    </VButton>
     <ul
       v-if="isVisible"
       ref="element"

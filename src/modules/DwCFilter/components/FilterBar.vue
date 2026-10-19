@@ -27,7 +27,7 @@
           </div>
           <FacetDistribution v-model="parameters" />
           <div
-            class="hidden md:flex flex-row gap-2 justify-center md:self-end text-sm"
+            class="hidden md:flex flex-row gap-2 justify-center md:self-end text-sm ml-2"
           >
             <VButton
               size="md"
@@ -35,7 +35,13 @@
             >
               {{ $t('dwc_filter.search') }}
             </VButton>
-            <VButton @click="() => emit('reset')">{{ $t('dwc_filter.reset') }}</VButton>
+            <VButton
+              outline
+              variant="base"
+              @click="() => emit('reset')"
+            >
+              {{ $t('dwc_filter.clear') }}
+            </VButton>
           </div>
         </div>
 
@@ -48,16 +54,16 @@
               }
             "
           >
-            <div class="text-secondary flex flex-row gap-1 cursor-pointer">
-              <IconMinusCircle
-                v-if="showMoreFilters"
-                class="w-5 h-5"
-              />
-              <IconPlusCircle
-                v-else
-                class="w-5 h-5"
-              />
+            <div
+              class="text-secondary flex flex-row gap-1 items-center cursor-pointer"
+            >
               <span>{{ $t('dwc_filter.more_filters') }}</span>
+              <IconArrowDown
+                :class="[
+                  'size-3 stroke-3 transition-transform',
+                  showMoreFilters && 'rotate-180'
+                ]"
+              />
             </div>
           </div>
         </div>
@@ -67,7 +73,9 @@
         >
           <FacetOrder v-model="parameters" />
           <div class="flex flex-col gap-2">
-            <h3 class="text-base font-medium">{{ $t('dwc_filter.specimen_records') }}</h3>
+            <h3 class="text-base font-medium">
+              {{ $t('dwc_filter.specimen_records') }}
+            </h3>
             <FacetInstitutionCode v-model="parameters" />
             <FacetTypeStatus v-model="parameters" />
           </div>
@@ -80,13 +88,15 @@
             size="md"
             @click="() => emit('search')"
           >
-            Search
+            {{ $t('dwc_filter.search') }}
           </VButton>
           <VButton
             size="md"
+            outline
+            variant="base"
             @click="() => emit('reset')"
           >
-            Reset
+            {{ $t('dwc_filter.clear') }}
           </VButton>
         </div>
       </div>
@@ -106,7 +116,7 @@ const parameters = defineModel({
   required: true
 })
 
-const emit = defineEmits(['search'])
+const emit = defineEmits(['search', 'reset'])
 
 const showMoreFilters = ref(false)
 </script>

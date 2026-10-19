@@ -13,7 +13,7 @@ otus:
   breadcrumb: Breadcrumb
   external_resources: External resources
   dwc_download: Download DwC Occurrences
-  show_all: '... Show all ... ({count})'
+  show_more: Show {count} more
   show_less: Show less
   show_all_menu: Show all
   combination: Combination

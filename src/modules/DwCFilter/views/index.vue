@@ -34,7 +34,7 @@
             />
             <VPaginationInfo :pagination="pagination" />
           </div>
-          <DropdownMenu
+          <ResultActions
             :parameters="{ ...parameters, ...wildcardParam }"
             :request="requestData"
           />
@@ -91,7 +91,7 @@ import { makeAPIRequest } from '@/utils'
 import { useRoute, useRouter } from 'vue-router'
 import { flattenParameters } from '../utils/flattenParameters'
 import FilterBar from '../components/FilterBar.vue'
-import DropdownMenu from '../components/DropdownMenu.vue'
+import ResultActions from '../components/ResultActions.vue'
 import OtuModal from '../components/OtuModal/OtuModal.vue'
 
 const PER = 50

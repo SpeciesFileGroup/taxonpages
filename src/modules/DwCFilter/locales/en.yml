@@ -11,13 +11,18 @@ dwc_filter:
   author: Author
   author_placeholder: Type author...
   search: Search
-  reset: Reset
+  clear: Clear
+  download_dwc: Download DwC
   more_filters: More filters
   specimen_records: Specimen records
   otu: OTU
 
   classification: Classification
   classification_placeholder: Type name...
+  classification_rank: Rank
+  classification_name: Name
+  classification_add: Add rank
+  classification_remove: Remove rank
 
   type: Type
   type_none: None
