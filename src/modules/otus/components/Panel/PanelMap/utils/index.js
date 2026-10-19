@@ -1,3 +1,4 @@
+export * from './filterFeaturesByOtu'
 export * from './isRankGroup'
 export * from './makeGeoJSONFeature'
 export * from './makeSegmentedCircle'

@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { useOtuPageRequest } from '../../../../helpers/useOtuPageRequest'
 import { RESPONSE_ERROR } from '../../../../constants'
 import {
+  filterFeaturesByOtu,
   isRankGroup,
   removeDuplicateShapes,
   makeGeoJSONFeature
@@ -11,14 +12,22 @@ import { ASSERTED_ABSENT } from '@/constants/objectTypes'
 import { LEGEND } from '../constants'
 import { makeAPIRequest } from '@/utils'
 
-async function loadAbsentFeatures(otuId, enabled) {
+async function loadAbsentFeatures(
+  otuId,
+  enabled,
+  { coordinateOtus = true } = {}
+) {
   if (!enabled) return []
 
   const { data } = await makeAPIRequest.get(
     `/otus/${otuId}/inventory/distribution_is_absent.geojson`
   )
 
-  data.features.forEach((feature) => {
+  const features = coordinateOtus
+    ? data.features
+    : filterFeaturesByOtu(data.features, otuId)
+
+  features.forEach((feature) => {
     feature.properties.base = [
       {
         ...feature.properties.base,
@@ -27,7 +36,7 @@ async function loadAbsentFeatures(otuId, enabled) {
     ]
   })
 
-  return data.features
+  return features
 }
 
 function sortFeaturesByType({ features, shapeTypes }, reference) {
@@ -91,9 +100,11 @@ export const useDistributionStore = defineStore('distributionStore', {
       }
     },
 
-    async showAbsences(otuId) {
+    async showAbsences(otuId, { coordinateOtus = true } = {}) {
       if (!this.absencesCache) {
-        this.absencesCache = await loadAbsentFeatures(otuId, true)
+        this.absencesCache = await loadAbsentFeatures(otuId, true, {
+          coordinateOtus
+        })
       }
 
       if (!this.absencesCache.length) return
@@ -152,7 +163,7 @@ export const useDistributionStore = defineStore('distributionStore', {
         })
     },
 
-    async loadSpeciesGroupShapes(otuId, { withAbsences }) {
+    async loadSpeciesGroupShapes(otuId, { withAbsences, coordinateOtus }) {
       const { data } = await useOtuPageRequest('panel:map', () =>
         TaxonWorks.getOtuGeoJSONDistribution(otuId, {
           signal: this.controller.signal
@@ -165,17 +176,28 @@ export const useDistributionStore = defineStore('distributionStore', {
         return
       }
 
-      const absent = await loadAbsentFeatures(otuId, withAbsences)
+      const absent = await loadAbsentFeatures(otuId, withAbsences, {
+        coordinateOtus
+      })
+
+      const otuFeatures = coordinateOtus
+        ? data.features
+        : filterFeaturesByOtu(data.features, otuId)
 
       const { features, shapeTypes } = sortFeaturesByType(
-        removeDuplicateShapes(data.features),
+        removeDuplicateShapes(otuFeatures),
         Object.keys(LEGEND)
       )
 
       this.applyDistribution({ features, shapeTypes, absent })
     },
 
-    async loadDistribution({ otuId, rankString, withAbsences = true }) {
+    async loadDistribution({
+      otuId,
+      rankString,
+      withAbsences = true,
+      coordinateOtus = true
+    }) {
       const isSpeciesGroup =
         rankString &&
         (isRankGroup('SpeciesGroup', rankString) ||
@@ -189,7 +211,10 @@ export const useDistributionStore = defineStore('distributionStore', {
       }
 
       try {
-        await this.loadSpeciesGroupShapes(otuId, { withAbsences })
+        await this.loadSpeciesGroupShapes(otuId, {
+          withAbsences,
+          coordinateOtus
+        })
       } catch (e) {
         if (e.name !== RESPONSE_ERROR.CanceledError) {
           this.getAggregateShape(otuId, { withAbsences })
