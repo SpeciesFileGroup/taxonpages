@@ -1,6 +1,6 @@
 <template>
   <VCard v-if="typeMaterials.length">
-    <VCardHeader class="flex justify-between">
+    <VCardHeader class="flex items-center justify-between">
       <h2 class="text-md">{{ $t('panel.type_specimen.title') }}</h2>
       <PanelDropdown panel-key="panel:typeMaterial" />
     </VCardHeader>

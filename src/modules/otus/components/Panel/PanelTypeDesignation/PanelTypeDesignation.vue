@@ -1,6 +1,6 @@
 <template>
   <VCard>
-    <VCardHeader class="flex justify-between">
+    <VCardHeader class="flex items-center justify-between">
       <h2 class="text-md">{{ $t('panel.type.title') }}</h2>
       <PanelDropdown panel-key="panel:type" />
     </VCardHeader>

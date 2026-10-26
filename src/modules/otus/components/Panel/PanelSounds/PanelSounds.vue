@@ -1,6 +1,6 @@
 <template>
   <VCard v-if="sounds.length">
-    <VCardHeader class="flex justify-between">
+    <VCardHeader class="flex items-center justify-between">
       <h2 class="text-md">{{ $t('panel.sounds.title') }} ({{ sounds.length }})</h2>
     </VCardHeader>
     <ul>

@@ -7,7 +7,7 @@
         legend=""
       />
     </ClientOnly>
-    <VCardHeader class="flex justify-between">
+    <VCardHeader class="flex items-center justify-between">
       <h2 class="text-md">{{ $t('panel.descendants.title') }}</h2>
       <PanelDropdown panel-key="panel:descendants" />
     </VCardHeader>
