@@ -38,7 +38,7 @@
     "prepublishOnly": "npm test && npm run test:build"
   },
   "dependencies": {
-    "@geoman-io/leaflet-geoman-free": "^2.20.2",
+    "@geoman-io/leaflet-geoman-free": "^2.20.4",
     "@nuxt/devalue": "^2.0.2",
     "@sfgrp/distinguish": "^0.6.1",
     "@sfgrp/pinpoint": "^0.1.0",
@@ -58,12 +58,12 @@
     "markdown-it-anchor": "^10.0.0",
     "minimist": "^1.2.8",
     "pinia": "^4.1.0",
-    "sass": "^1.105.2",
+    "sass": "^1.106.1",
     "serve-static": "^2.2.1",
     "tailwindcss": "^4.3.3",
     "unhead": "^3.4.3",
     "unplugin-vue-markdown": "^32.1.1",
-    "vite": "^8.3.4",
+    "vite": "^8.3.5",
     "vite-plugin-radar": "^0.11.0",
     "vue": "^3.5.44",
     "vue-i18n": "^11.4.16",
@@ -74,9 +74,9 @@
     "@vitest/coverage-v8": "^5.0.5",
     "@vue/test-utils": "^2.5.1",
     "eslint": "^10.13.0",
-    "eslint-plugin-vue": "^10.11.1",
+    "eslint-plugin-vue": "^10.12.0",
     "globals": "^17.13.0",
-    "happy-dom": "^21.0.3",
+    "happy-dom": "^21.0.4",
     "vitest": "^5.0.5"
   },
   "keywords": [
