@@ -120,6 +120,7 @@ panel:
     properties: Properties
     distribution: Distribution
     images: Images
+    tags: Tags
     label: Label
     # Column headers naming a taxonomic rank. These label the column, so they
     # are UI text — distinct from a rank value returned by the API, which is

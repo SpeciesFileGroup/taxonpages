@@ -4,7 +4,8 @@ import { RESPONSE_ERROR } from '@/modules/otus/constants'
 import {
   loadBiologicalAssociations as fetchBiologicalAssociations,
   loadImages,
-  loadAssertedDistributions
+  loadAssertedDistributions,
+  loadTags
 } from '../utils'
 
 export const useBiologicalAssociationsStore = defineStore(
@@ -24,7 +25,13 @@ export const useBiologicalAssociationsStore = defineStore(
 
       async loadPage(
         otuId,
-        { page = 1, per = 50, images = true, assertedDistribution = true } = {}
+        {
+          page = 1,
+          per = 50,
+          images = true,
+          assertedDistribution = true,
+          tags = false
+        } = {}
       ) {
         this.isLoading = true
         this.controller = new AbortController()
@@ -33,9 +40,10 @@ export const useBiologicalAssociationsStore = defineStore(
           const result = await fetchBiologicalAssociations(otuId, { page, per })
           const baIds = result.biologicalAssociations.map((ba) => ba.id)
 
-          const [depictions, ads] = await Promise.all([
+          const [depictions, ads, tagList] = await Promise.all([
             images ? loadImages(baIds) : [],
-            assertedDistribution ? loadAssertedDistributions(baIds) : []
+            assertedDistribution ? loadAssertedDistributions(baIds) : [],
+            tags ? loadTags(baIds) : []
           ])
 
           this.biologicalAssociations = result.biologicalAssociations.map(
@@ -44,7 +52,10 @@ export const useBiologicalAssociationsStore = defineStore(
               images: depictions.filter((d) => d.objectId == ba.id),
               assertedDistributions: ads
                 .filter((ad) => ad.asserted_distribution_object_id === ba.id)
-                .map((ad) => ad.asserted_distribution_shape.name)
+                .map((ad) => ad.asserted_distribution_shape.name),
+              tags: tagList
+                .filter((t) => t.tag_object_id === ba.id)
+                .map((t) => t.keyword.name)
             })
           )
 
