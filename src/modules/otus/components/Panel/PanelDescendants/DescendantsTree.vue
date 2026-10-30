@@ -17,6 +17,7 @@
       v-if="taxonomy.nomenclatural_synonyms.length"
       class="pb-4"
       :list="taxonomy.nomenclatural_synonyms"
+      :otu-ids="taxonomy.nomenclatural_synonyms_otu_id"
     />
     <AnimationOpacity>
       <ul
