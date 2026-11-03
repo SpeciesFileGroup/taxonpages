@@ -14,10 +14,8 @@
           {{ $t('panel.biological_associations.asserted') }}
         </VTableHeaderCell>
         <VTableHeaderCell
-          v-if="visibleColumns.citations || visibleColumns.images"
-          :colspan="
-            (visibleColumns.citations ? 1 : 0) + (visibleColumns.images ? 1 : 0)
-          "
+          v-if="annotationsColspan"
+          :colspan="annotationsColspan"
           class="hidden lg:table-cell border-l-2 border-base-border"
         >
           {{ $t('panel.biological_associations.annotations') }}
@@ -99,8 +97,16 @@
           {{ $t('panel.biological_associations.distribution') }}{{ sortIndicator('assertedDistributions') }}
         </VTableHeaderCell>
         <VTableHeaderCell
-          v-if="visibleColumns.citations"
+          v-if="visibleColumns.tags"
           class="border-l-2 border-base-border cursor-pointer"
+          @click="toggleSort('tags')"
+        >
+          {{ $t('panel.biological_associations.tags') }}{{ sortIndicator('tags') }}
+        </VTableHeaderCell>
+        <VTableHeaderCell
+          v-if="visibleColumns.citations"
+          class="cursor-pointer"
+          :class="{ 'border-l-2 border-base-border': !visibleColumns.tags }"
           @click="toggleSort('citations')"
         >
           {{ $t('panel.biological_associations.citations') }}{{ sortIndicator('citations') }}
@@ -188,8 +194,15 @@
         </VTableBodyCell>
 
         <VTableBodyCell
-          v-if="visibleColumns.citations"
+          v-if="visibleColumns.tags"
           class="border-l-2 border-base-border"
+        >
+          {{ ba.tags.join('; ') }}
+        </VTableBodyCell>
+
+        <VTableBodyCell
+          v-if="visibleColumns.citations"
+          :class="{ 'border-l-2 border-base-border': !visibleColumns.tags }"
         >
           <BiologicalAssociationCitations
             :biological-association="ba"
@@ -229,6 +242,11 @@ const props = defineProps({
   assertedDistribution: {
     type: Boolean,
     default: true
+  },
+
+  tags: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -248,6 +266,7 @@ const visibleColumns = computed(() => ({
   assertedDistribution:
     props.assertedDistribution &&
     props.biologicalAssociations.some((ba) => ba.assertedDistributions?.length),
+  tags: props.tags && props.biologicalAssociations.some((ba) => ba.tags?.length),
   citations:
     props.citations && props.biologicalAssociations.some((ba) => ba.citations),
   images:
@@ -273,6 +292,15 @@ const objectColspan = computed(
       visibleColumns.value.objectFamily,
       visibleColumns.value.objectGenus,
       visibleColumns.value.objectProperties
+    ].filter(Boolean).length
+)
+
+const annotationsColspan = computed(
+  () =>
+    [
+      visibleColumns.value.tags,
+      visibleColumns.value.citations,
+      visibleColumns.value.images
     ].filter(Boolean).length
 )
 

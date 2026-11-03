@@ -21,6 +21,7 @@
             :citations="citations"
             :images="images"
             :asserted-distribution="assertedDistribution"
+            :tags="tags"
           />
         </div>
 
@@ -72,6 +73,11 @@ const props = defineProps({
   assertedDistribution: {
     type: Boolean,
     default: true
+  },
+
+  tags: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -83,7 +89,8 @@ function loadPage(page = 1) {
     page,
     per: props.per,
     images: props.images,
-    assertedDistribution: props.assertedDistribution
+    assertedDistribution: props.assertedDistribution,
+    tags: props.tags
   })
 }
 

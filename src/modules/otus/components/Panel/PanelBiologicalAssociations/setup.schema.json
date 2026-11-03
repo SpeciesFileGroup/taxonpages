@@ -24,6 +24,12 @@
       "label": "Show asserted distribution",
       "description": "Display asserted distribution data for associations",
       "default": true
+    },
+    "tags": {
+      "type": "boolean",
+      "label": "Show tags",
+      "description": "Display tags (keywords) attached to each association",
+      "default": false
     }
   }
 }

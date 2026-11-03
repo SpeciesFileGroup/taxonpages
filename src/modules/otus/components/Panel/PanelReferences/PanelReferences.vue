@@ -5,7 +5,7 @@
       logo-class="w-8 h-8"
       legend=""
     />
-    <VCardHeader class="flex justify-between">
+    <VCardHeader class="flex items-center justify-between">
       <h2 class="text-md">{{ panelTitle }} ({{ list.length }})</h2>
       <PanelDropdown
         :menu-options="menuOptions"

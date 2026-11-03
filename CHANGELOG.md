@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.5] - 2026-10-29
+
+### Added
+
+- The biological associations panel can show a Tags column with the tags of each association. Turn it on with the prop `tags`.
+
+## [0.8.4] - 2026-10-26
+
+### Changed
+
+- Updated dependencies
+
 ## [0.8.3] - 2026-10-15
 
 ### Added

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="bg-base-foreground border-b border-base-border/60 px-4 sm:px-6">
+    <div class="bg-base-foreground border-b border-base-border px-4 sm:px-6">
       <div class="container mx-auto">
         <div class="pt-6 pb-6">
           <div
