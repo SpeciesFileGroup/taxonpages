@@ -164,9 +164,7 @@ watch(showAbsences, async (visible) => {
 
   isLoadingAbsent.value = true
   try {
-    await store.showAbsences(props.otuId, {
-      coordinateOtus: coordinateOtus.value
-    })
+    await store.showAbsences(props.otuId)
   } finally {
     isLoadingAbsent.value = false
   }

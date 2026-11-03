@@ -3,7 +3,6 @@ import { defineStore } from 'pinia'
 import { useOtuPageRequest } from '../../../../helpers/useOtuPageRequest'
 import { RESPONSE_ERROR } from '../../../../constants'
 import {
-  filterFeaturesByOtu,
   isRankGroup,
   removeDuplicateShapes,
   makeGeoJSONFeature
@@ -11,6 +10,10 @@ import {
 import { ASSERTED_ABSENT } from '@/constants/objectTypes'
 import { LEGEND } from '../constants'
 import { makeAPIRequest } from '@/utils'
+
+function makeCoordinateOtusParams(coordinateOtus) {
+  return coordinateOtus ? {} : { coordinate_otus: false }
+}
 
 async function loadAbsentFeatures(
   otuId,
@@ -20,12 +23,11 @@ async function loadAbsentFeatures(
   if (!enabled) return []
 
   const { data } = await makeAPIRequest.get(
-    `/otus/${otuId}/inventory/distribution_is_absent.geojson`
+    `/otus/${otuId}/inventory/distribution_is_absent.geojson`,
+    { params: makeCoordinateOtusParams(coordinateOtus) }
   )
 
-  const features = coordinateOtus
-    ? data.features
-    : filterFeaturesByOtu(data.features, otuId)
+  const { features } = data
 
   features.forEach((feature) => {
     feature.properties.base = [
@@ -74,6 +76,8 @@ export const useDistributionStore = defineStore('distributionStore', {
         cachedMap: null
       },
       absencesCache: null,
+      // Aggregate maps include coordinate OTUs, so their absences do too
+      absencesCoordinateOtus: true,
       controller: null
     }
   },
@@ -100,10 +104,10 @@ export const useDistributionStore = defineStore('distributionStore', {
       }
     },
 
-    async showAbsences(otuId, { coordinateOtus = true } = {}) {
+    async showAbsences(otuId) {
       if (!this.absencesCache) {
         this.absencesCache = await loadAbsentFeatures(otuId, true, {
-          coordinateOtus
+          coordinateOtus: this.absencesCoordinateOtus
         })
       }
 
@@ -137,6 +141,8 @@ export const useDistributionStore = defineStore('distributionStore', {
     },
 
     async getAggregateShape(otuId, { withAbsences = true } = {}) {
+      this.absencesCoordinateOtus = true
+
       useOtuPageRequest('panel:map', () =>
         TaxonWorks.getOtuDistribution(otuId, {
           signal: this.controller.signal
@@ -164,8 +170,11 @@ export const useDistributionStore = defineStore('distributionStore', {
     },
 
     async loadSpeciesGroupShapes(otuId, { withAbsences, coordinateOtus }) {
+      this.absencesCoordinateOtus = coordinateOtus
+
       const { data } = await useOtuPageRequest('panel:map', () =>
         TaxonWorks.getOtuGeoJSONDistribution(otuId, {
+          params: makeCoordinateOtusParams(coordinateOtus),
           signal: this.controller.signal
         })
       )
@@ -180,12 +189,8 @@ export const useDistributionStore = defineStore('distributionStore', {
         coordinateOtus
       })
 
-      const otuFeatures = coordinateOtus
-        ? data.features
-        : filterFeaturesByOtu(data.features, otuId)
-
       const { features, shapeTypes } = sortFeaturesByType(
-        removeDuplicateShapes(otuFeatures),
+        removeDuplicateShapes(data.features),
         Object.keys(LEGEND)
       )
 
