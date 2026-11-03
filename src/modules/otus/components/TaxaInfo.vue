@@ -34,20 +34,32 @@
       v-if="!store.taxon.is_valid"
       class="text-sm"
     >
-      <i>
-        {{
-          $t('otus.invalid_name_notice', {
-            name: store.taxon.valid_name.valid_full_name
-          })
-        }}
-      </i>
+      <Translation
+        keypath="otus.invalid_name_notice"
+        tag="i"
+      >
+        <template #name>
+          <RouterLink
+            v-if="store.taxon.valid_name.otu_id"
+            :to="{
+              name: 'otus-id',
+              params: { id: store.taxon.valid_name.otu_id }
+            }"
+          >
+            {{ store.taxon.valid_name.valid_full_name }}
+          </RouterLink>
+          <template v-else>
+            {{ store.taxon.valid_name.valid_full_name }}
+          </template>
+        </template>
+      </Translation>
     </div>
     <TaxaPageOutlet region="taxa_page:header:taxoninfo:end" />
   </div>
 </template>
 
 <script setup>
-import { useI18n } from 'vue-i18n'
+import { useI18n, Translation } from 'vue-i18n'
 import { useOtuStore } from '../store/store'
 import { rankLabel } from '@/i18n/vocabulary'
 import CommonNames from './CommonNames.vue'
