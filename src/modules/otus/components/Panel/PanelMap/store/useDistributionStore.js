@@ -203,10 +203,11 @@ export const useDistributionStore = defineStore('distributionStore', {
       withAbsences = true,
       coordinateOtus = true
     }) {
+      // An OTU without a rank (e.g. no taxon name) is handled like a species-group OTU
       const isSpeciesGroup =
-        rankString &&
-        (isRankGroup('SpeciesGroup', rankString) ||
-          isRankGroup('SpeciesAndInfraspeciesGroup', rankString))
+        !rankString ||
+        isRankGroup('SpeciesGroup', rankString) ||
+        isRankGroup('SpeciesAndInfraspeciesGroup', rankString)
 
       this.controller = new AbortController()
 
