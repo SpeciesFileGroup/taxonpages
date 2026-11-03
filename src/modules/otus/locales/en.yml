@@ -47,6 +47,7 @@ panel:
 
   type_specimen:
     title: Type specimen
+    related_names: Related names
 
   descendants:
     title: Descendants and synonyms
