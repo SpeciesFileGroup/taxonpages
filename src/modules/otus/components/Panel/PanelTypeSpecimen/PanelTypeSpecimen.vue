@@ -1,5 +1,5 @@
 <template>
-  <VCard v-if="typeMaterials.length">
+  <VCard v-if="currentTypeMaterial || otherTypeMaterials.length">
     <VCardHeader class="flex items-center justify-between">
       <h2 class="text-md">{{ $t('panel.type_specimen.title') }}</h2>
       <PanelDropdown panel-key="panel:typeMaterial" />
@@ -53,6 +53,11 @@ const props = defineProps({
   taxonId: {
     type: [String, Number],
     default: undefined
+  },
+
+  taxon: {
+    type: Object,
+    default: undefined
   }
 })
 
@@ -65,7 +70,9 @@ const currentTypeMaterial = computed(() =>
 )
 
 const otherTypeMaterials = computed(() =>
-  typeMaterials.value.filter((item) => item !== currentTypeMaterial.value)
+  props.taxon?.is_valid === false
+    ? []
+    : typeMaterials.value.filter((item) => item !== currentTypeMaterial.value)
 )
 
 watch(
