@@ -80,12 +80,14 @@ const panelTitle = computed(
 
 const showAll = ref(false)
 const sources = computed(() =>
-  sourcesCitedBy(
-    itemsForTaxonName(props.taxonId, store.catalog.timeline, {
-      hasRank: !!store.taxon?.rank
-    }),
-    store.catalog.sources
-  )
+  store.taxon?.is_valid === false
+    ? sourcesCitedBy(
+        itemsForTaxonName(props.taxonId, store.catalog.timeline, {
+          hasRank: !!store.taxon?.rank
+        }),
+        store.catalog.sources
+      )
+    : store.catalog.sources
 )
 const referenceList = computed(() => splitList(sources.value, MAX_REFERENCES))
 
