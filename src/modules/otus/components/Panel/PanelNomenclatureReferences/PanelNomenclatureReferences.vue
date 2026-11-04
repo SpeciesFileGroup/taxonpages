@@ -7,7 +7,7 @@
     />
     <VCardHeader class="flex items-center justify-between">
       <h2 class="text-md">
-        {{ panelTitle }} ({{ store.catalog.sources.length }})
+        {{ panelTitle }} ({{ sources.length }})
       </h2>
       <PanelDropdown
         :menu-options="menuOptions"
@@ -18,7 +18,7 @@
     <ul class="text-sm">
       <PanelReferenceRow
         v-for="reference in referenceList.first"
-        :key="reference"
+        :key="reference.id"
         :reference="reference"
       />
 
@@ -32,7 +32,7 @@
         <div v-show="showAll">
           <PanelReferenceRow
             v-for="reference in referenceList.middle"
-            :key="reference"
+            :key="reference.id"
             :reference="reference"
           />
         </div>
@@ -40,7 +40,7 @@
 
       <PanelReferenceRow
         v-for="reference in referenceList.last"
-        :key="reference"
+        :key="reference.id"
         :reference="reference"
       />
     </ul>
@@ -52,6 +52,7 @@ import { useI18n } from 'vue-i18n'
 import { computed, ref } from 'vue'
 import { splitList } from '../PanelNomenclature/splitList'
 import { useOtuStore } from '@/modules/otus/store/store'
+import { itemsForTaxonName, sourcesCitedBy } from '@/modules/otus/utils'
 import PanelNomenclatureShowMore from '../PanelNomenclature/PanelNomenclatureShowMore.vue'
 import PanelReferenceRow from './PanelReferenceRow.vue'
 import PanelDropdown from '../PanelDropdown.vue'
@@ -59,6 +60,11 @@ import PanelDropdown from '../PanelDropdown.vue'
 const MAX_REFERENCES = 2
 
 const props = defineProps({
+  taxonId: {
+    type: [Number, String],
+    required: true
+  },
+
   title: {
     type: String,
     default: undefined
@@ -73,9 +79,15 @@ const panelTitle = computed(
 )
 
 const showAll = ref(false)
-const referenceList = computed(() =>
-  splitList(store.catalog.sources, MAX_REFERENCES)
+const sources = computed(() =>
+  sourcesCitedBy(
+    itemsForTaxonName(props.taxonId, store.catalog.timeline, {
+      hasRank: !!store.taxon?.rank
+    }),
+    store.catalog.sources
+  )
 )
+const referenceList = computed(() => splitList(sources.value, MAX_REFERENCES))
 
 const menuOptions = computed(() => [
   {

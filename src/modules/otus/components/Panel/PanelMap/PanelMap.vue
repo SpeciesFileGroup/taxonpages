@@ -88,7 +88,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useDistributionStore } from './store/useDistributionStore.js'
 import { makeClusterIconFor } from './clusters'
 import { useGeojsonOptions } from './composables/useGeojsonOptions.js'
@@ -133,6 +133,7 @@ const dwcTableRef = ref(null)
 const store = useDistributionStore()
 const popupElement = ref(null)
 const { popupItem, geojsonOptions } = useGeojsonOptions({ popupElement })
+const coordinateOtus = computed(() => props.taxon?.is_valid !== false)
 const SHOW_ABSENCES_KEY = 'panel:map:show-absences'
 
 function readStoredShowAbsences() {
@@ -175,7 +176,8 @@ onMounted(() => {
   store.loadDistribution({
     otuId: props.otuId,
     rankString: props.taxon.rank_string,
-    withAbsences: showAbsences.value
+    withAbsences: showAbsences.value,
+    coordinateOtus: coordinateOtus.value
   })
 })
 

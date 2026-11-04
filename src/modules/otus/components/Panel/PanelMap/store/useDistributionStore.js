@@ -11,14 +11,25 @@ import { ASSERTED_ABSENT } from '@/constants/objectTypes'
 import { LEGEND } from '../constants'
 import { makeAPIRequest } from '@/utils'
 
-async function loadAbsentFeatures(otuId, enabled) {
+function makeCoordinateOtusParams(coordinateOtus) {
+  return coordinateOtus ? {} : { coordinate_otus: false }
+}
+
+async function loadAbsentFeatures(
+  otuId,
+  enabled,
+  { coordinateOtus = true } = {}
+) {
   if (!enabled) return []
 
   const { data } = await makeAPIRequest.get(
-    `/otus/${otuId}/inventory/distribution_is_absent.geojson`
+    `/otus/${otuId}/inventory/distribution_is_absent.geojson`,
+    { params: makeCoordinateOtusParams(coordinateOtus) }
   )
 
-  data.features.forEach((feature) => {
+  const { features } = data
+
+  features.forEach((feature) => {
     feature.properties.base = [
       {
         ...feature.properties.base,
@@ -27,7 +38,7 @@ async function loadAbsentFeatures(otuId, enabled) {
     ]
   })
 
-  return data.features
+  return features
 }
 
 function sortFeaturesByType({ features, shapeTypes }, reference) {
@@ -65,6 +76,8 @@ export const useDistributionStore = defineStore('distributionStore', {
         cachedMap: null
       },
       absencesCache: null,
+      // Aggregate maps include coordinate OTUs, so their absences do too
+      absencesCoordinateOtus: true,
       controller: null
     }
   },
@@ -93,7 +106,9 @@ export const useDistributionStore = defineStore('distributionStore', {
 
     async showAbsences(otuId) {
       if (!this.absencesCache) {
-        this.absencesCache = await loadAbsentFeatures(otuId, true)
+        this.absencesCache = await loadAbsentFeatures(otuId, true, {
+          coordinateOtus: this.absencesCoordinateOtus
+        })
       }
 
       if (!this.absencesCache.length) return
@@ -126,6 +141,8 @@ export const useDistributionStore = defineStore('distributionStore', {
     },
 
     async getAggregateShape(otuId, { withAbsences = true } = {}) {
+      this.absencesCoordinateOtus = true
+
       useOtuPageRequest('panel:map', () =>
         TaxonWorks.getOtuDistribution(otuId, {
           signal: this.controller.signal
@@ -152,9 +169,12 @@ export const useDistributionStore = defineStore('distributionStore', {
         })
     },
 
-    async loadSpeciesGroupShapes(otuId, { withAbsences }) {
+    async loadSpeciesGroupShapes(otuId, { withAbsences, coordinateOtus }) {
+      this.absencesCoordinateOtus = coordinateOtus
+
       const { data } = await useOtuPageRequest('panel:map', () =>
         TaxonWorks.getOtuGeoJSONDistribution(otuId, {
+          params: makeCoordinateOtusParams(coordinateOtus),
           signal: this.controller.signal
         })
       )
@@ -165,7 +185,9 @@ export const useDistributionStore = defineStore('distributionStore', {
         return
       }
 
-      const absent = await loadAbsentFeatures(otuId, withAbsences)
+      const absent = await loadAbsentFeatures(otuId, withAbsences, {
+        coordinateOtus
+      })
 
       const { features, shapeTypes } = sortFeaturesByType(
         removeDuplicateShapes(data.features),
@@ -175,11 +197,17 @@ export const useDistributionStore = defineStore('distributionStore', {
       this.applyDistribution({ features, shapeTypes, absent })
     },
 
-    async loadDistribution({ otuId, rankString, withAbsences = true }) {
+    async loadDistribution({
+      otuId,
+      rankString,
+      withAbsences = true,
+      coordinateOtus = true
+    }) {
+      // An OTU without a rank (e.g. no taxon name) is handled like a species-group OTU
       const isSpeciesGroup =
-        rankString &&
-        (isRankGroup('SpeciesGroup', rankString) ||
-          isRankGroup('SpeciesAndInfraspeciesGroup', rankString))
+        !rankString ||
+        isRankGroup('SpeciesGroup', rankString) ||
+        isRankGroup('SpeciesAndInfraspeciesGroup', rankString)
 
       this.controller = new AbortController()
 
@@ -189,7 +217,10 @@ export const useDistributionStore = defineStore('distributionStore', {
       }
 
       try {
-        await this.loadSpeciesGroupShapes(otuId, { withAbsences })
+        await this.loadSpeciesGroupShapes(otuId, {
+          withAbsences,
+          coordinateOtus
+        })
       } catch (e) {
         if (e.name !== RESPONSE_ERROR.CanceledError) {
           this.getAggregateShape(otuId, { withAbsences })

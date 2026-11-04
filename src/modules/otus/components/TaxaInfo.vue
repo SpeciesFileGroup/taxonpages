@@ -11,13 +11,12 @@
             :title="store.taxon.short_status"
             v-html="store.taxon.full_name_tag"
           />
-          <span
+
+          <IconWarning
             v-if="!store.taxon.is_valid"
-            class="ml-1 text-danger"
-            :title="$t('otus.invalid')"
-          >
-            &#10005;
-          </span>
+            class="ml-1 text-danger w-4 h-4 inline"
+          />
+
           <span
             v-if="store.taxon.descorator_status.length"
             class="text-base-soft text-base"
@@ -31,12 +30,36 @@
     <span class="text-1xl">
       <CommonNames />
     </span>
+    <div
+      v-if="!store.taxon.is_valid"
+      class="text-sm"
+    >
+      <Translation
+        keypath="otus.invalid_name_notice"
+        tag="i"
+      >
+        <template #name>
+          <RouterLink
+            v-if="store.taxon.valid_name.otu_id"
+            :to="{
+              name: 'otus-id',
+              params: { id: store.taxon.valid_name.otu_id }
+            }"
+          >
+            {{ store.taxon.valid_name.valid_full_name }}
+          </RouterLink>
+          <template v-else>
+            {{ store.taxon.valid_name.valid_full_name }}
+          </template>
+        </template>
+      </Translation>
+    </div>
     <TaxaPageOutlet region="taxa_page:header:taxoninfo:end" />
   </div>
 </template>
 
 <script setup>
-import { useI18n } from 'vue-i18n'
+import { useI18n, Translation } from 'vue-i18n'
 import { useOtuStore } from '../store/store'
 import { rankLabel } from '@/i18n/vocabulary'
 import CommonNames from './CommonNames.vue'
