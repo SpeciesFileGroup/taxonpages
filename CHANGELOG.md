@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.6] - 2026-11-04
+
+### Added
+
+- Pages for invalid names.
+  - Synonyms in the descendants and synonyms panel link to their page.
+  - The page shows a notice under the title with the valid name, linked to its page.
+  - The nomenclature, nomenclature references, references, map, gallery and type specimen panels show only the data of the invalid name and its OTU, not of the valid name and its other synonyms.
+- The type specimen panel lists the type material of related names (synonyms).
+
+### Fixed
+
+- Type material with type `syntypes` was sorted ahead of holotypes and every other type in the type specimen panel, so it could be shown as the main type.
+
 ## [0.8.5] - 2026-10-29
 
 ### Added
