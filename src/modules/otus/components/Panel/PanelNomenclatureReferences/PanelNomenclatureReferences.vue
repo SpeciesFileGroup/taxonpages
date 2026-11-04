@@ -81,7 +81,9 @@ const panelTitle = computed(
 const showAll = ref(false)
 const sources = computed(() =>
   sourcesCitedBy(
-    itemsForTaxonName(props.taxonId, store.catalog.timeline),
+    itemsForTaxonName(props.taxonId, store.catalog.timeline, {
+      hasRank: !!store.taxon?.rank
+    }),
     store.catalog.sources
   )
 )

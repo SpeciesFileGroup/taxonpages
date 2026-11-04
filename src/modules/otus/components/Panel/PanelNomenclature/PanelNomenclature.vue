@@ -89,7 +89,9 @@ const store = useOtuStore()
 
 const showAll = ref(false)
 const timeline = computed(() =>
-  itemsForTaxonName(props.taxonId, store.catalog.timeline)
+  itemsForTaxonName(props.taxonId, store.catalog.timeline, {
+    hasRank: !!store.taxon?.rank
+  })
 )
 const citationList = computed(() => splitList(timeline.value, MAX_CITATIONS))
 
