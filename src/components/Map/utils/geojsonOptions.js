@@ -31,35 +31,39 @@ function isAllAbsent(base) {
   return Array.isArray(base) && base.length > 0 && base.every((b) => b.is_absent)
 }
 
+export function makeFeatureMarker({ L, feature, latLng }) {
+  const base = feature.properties.base
+  const type = isAllAbsent(base) ? ASSERTED_ABSENT : getRelevantType(base)
+  const markerStyle = Icons[type] || Icons.Georeference
+  const priorityIndex = TYPES.indexOf(type)
+  const zIndexOffset =
+    priorityIndex === -1 ? 0 : (TYPES.length - priorityIndex) * 1000
+
+  const marker = L.marker(latLng, {
+    icon: L.divIcon(markerStyle),
+    zIndexOffset
+  })
+
+  marker.on('add', () => {
+    const el = marker.getElement()
+
+    if (el) {
+      el.setAttribute('aria-label', type)
+    }
+  })
+
+  marker.pm.setOptions(DISABLE_LAYER_OPTIONS)
+
+  return marker
+}
+
 export default ({ L }) => ({
   onEachFeature: (feature, layer) => {
     layer.pm.setOptions(DISABLE_LAYER_OPTIONS)
     layer.pm.disable()
   },
 
-  pointToLayer: (feature, latLng) => {
-    const type = getRelevantType(feature.properties.base)
-    const markerStyle = Icons[type] || Icons.Georeference
-    const priorityIndex = TYPES.indexOf(type)
-    const zIndexOffset = priorityIndex === -1 ? 0 : (TYPES.length - priorityIndex) * 1000
-
-    const marker = L.marker(latLng, {
-      icon: L.divIcon(markerStyle),
-      zIndexOffset
-    })
-
-    marker.on('add', () => {
-      const el = marker.getElement()
-
-      if (el) {
-        el.setAttribute('aria-label', type)
-      }
-    })
-
-    marker.pm.setOptions(DISABLE_LAYER_OPTIONS)
-
-    return marker
-  },
+  pointToLayer: (feature, latLng) => makeFeatureMarker({ L, feature, latLng }),
 
   style: (feature) => {
     const base = feature.properties?.base

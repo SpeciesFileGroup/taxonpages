@@ -7,6 +7,7 @@
           class="h-96 max-h-96"
           dragging
           :cluster="cluster"
+          :small-shapes-as-markers="!isAggregateMap(store.distribution.geojson)"
           :zoom="zoom"
           :zoom-bounds="8"
           :geojson="store.distribution.geojson"
@@ -91,6 +92,7 @@
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useDistributionStore } from './store/useDistributionStore.js'
 import { makeClusterIconFor } from './clusters'
+import { isAggregateMap } from './utils'
 import { useGeojsonOptions } from './composables/useGeojsonOptions.js'
 import { LEGEND } from './constants'
 import MapPopup from './components/Popup/MapPopup.vue'
