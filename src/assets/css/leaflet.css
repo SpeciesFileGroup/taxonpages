@@ -20,6 +20,10 @@
   fill: url(#hatch-pattern);
 }
 
+.map-shape-replaced {
+  visibility: hidden;
+}
+
 .dark {
   color-scheme: dark;
 
