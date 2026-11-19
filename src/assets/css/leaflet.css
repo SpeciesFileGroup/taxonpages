@@ -20,7 +20,6 @@
   fill: url(#hatch-pattern);
 }
 
-/* A shape too small to see, replaced by markers (smallShapesAsMarkers.js). */
 .map-shape-replaced {
   visibility: hidden;
 }
