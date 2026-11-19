@@ -13,7 +13,8 @@ import L from 'leaflet'
 import iconRetina from 'leaflet/dist/images/marker-icon-2x.png'
 import iconUrl from 'leaflet/dist/images/marker-icon.png'
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png'
-import geojsonDefaultOptions from './utils/geojsonOptions'
+import geojsonDefaultOptions, { makeFeatureMarker } from './utils/geojsonOptions'
+import { createSmallShapeMarkers } from './utils/smallShapesAsMarkers'
 
 import '@geoman-io/leaflet-geoman-free'
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
@@ -113,6 +114,11 @@ const props = defineProps({
   clusterIconCreateFunction: {
     type: Function,
     default: undefined
+  },
+
+  smallShapesAsMarkers: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -132,6 +138,7 @@ let mapObject
 let observeMap
 let drawnItems
 let geoJSONGroup
+let smallShapeMarkers
 
 const leafletMap = ref(null)
 
@@ -142,9 +149,12 @@ const fitBoundsOptions = computed(() => ({
   }
 }))
 
+watch(() => props.smallShapesAsMarkers, setSmallShapeMarkers)
+
 watch(
   () => props.geojson,
   (newVal) => {
+    smallShapeMarkers?.clear()
     geoJSONGroup.clearLayers()
     setGeoJSON(newVal)
   },
@@ -218,6 +228,8 @@ onMounted(() => {
   })
 
   geoJSONGroup.addTo(mapObject)
+
+  setSmallShapeMarkers(props.smallShapesAsMarkers)
 
   mapObject.addLayer(drawnItems)
   mapObject.addLayer(geoJSONGroup)
@@ -316,18 +328,40 @@ const initEvents = () => {
 }
 
 onUnmounted(() => {
+  smallShapeMarkers?.destroy()
   geoJSONGroup.clearLayers()
   observeMap?.disconnect()
 })
+
+function setSmallShapeMarkers(enabled) {
+  smallShapeMarkers?.destroy()
+  smallShapeMarkers = undefined
+
+  if (!enabled) return
+
+  smallShapeMarkers = createSmallShapeMarkers({
+    L,
+    map: mapObject,
+    makeMarker: (feature, latLng) => makeFeatureMarker({ L, feature, latLng })
+  })
+
+  smallShapeMarkers.register(geoJSONGroup)
+  smallShapeMarkers.sync()
+}
 
 function setGeoJSON(geojson) {
   if (geojson) {
     const args = { L, mapObject }
 
-    L.geoJSON(geojson, {
+    const geojsonLayer = L.geoJSON(geojson, {
       ...geojsonDefaultOptions(args),
       ...props.geojsonOptions(args)
     }).addTo(geoJSONGroup)
+
+    if (smallShapeMarkers) {
+      smallShapeMarkers.register(geojsonLayer)
+      smallShapeMarkers.sync()
+    }
 
     const bounds = geoJSONGroup.getBounds()
 

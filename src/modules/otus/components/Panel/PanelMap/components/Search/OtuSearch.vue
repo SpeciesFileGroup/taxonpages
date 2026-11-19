@@ -17,6 +17,7 @@
         ref="mapRef"
         class="w-full h-full"
         controls
+        :small-shapes-as-markers="!isAggregateMap(shapes)"
         :zoom="4"
         :dragging="!disableZoom"
         :zoom-bounds="maxZoom"
@@ -71,6 +72,7 @@
 <script setup>
 import { computed, ref, onMounted, onUnmounted, useTemplateRef } from 'vue'
 import { useGeojsonOptions } from '../../composables/useGeojsonOptions.js'
+import { isAggregateMap } from '../../utils'
 import TaxonWorks from '../../../../../services/TaxonWorks.js'
 import SearchBar from './SearchBar.vue'
 import ListResults from './ListResults.vue'

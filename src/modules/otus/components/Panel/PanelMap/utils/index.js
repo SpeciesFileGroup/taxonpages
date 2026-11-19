@@ -1,4 +1,5 @@
 export * from './isRankGroup'
+export * from './isAggregateMap'
 export * from './makeGeoJSONFeature'
 export * from './makeSegmentedCircle'
 export * from './removeDuplicateShapes'

@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.8.7] - 2026-11-19
+
+### Added
+
+- The map panel and its OTU search show a marker in place of a shape (polygon or line) too small to see at the current zoom, and far from any visible shape. [#382]
+  - Each part of a shape is measured on its own, so the islands of a MultiPolygon get a marker each, and small parts that touch count as one, so neighbouring provinces still draw their country.
+  - Close markers of the same feature are merged into one, so a group of islets gets a single marker.
+  - The marker opens the same popup as the shape. Zooming in brings the shape back.
+  - Maps of aggregated data are not affected.
+  - Available in `VMap` with the prop `small-shapes-as-markers`, off by default.
+
+### Changed
+
+- Updated dependencies
+
+### Fixed
+
+- A point in the map panel whose records are all absences was drawn with the asserted distribution marker instead of the asserted absent one.
+
 ## [0.8.6] - 2026-11-04
 
 ### Added
